@@ -1,0 +1,2 @@
+You will read a transcript of an educational podcast. Some of it will be self-promotion: i.e. "follow me on instagram at...", or "join us for an event" etc., which is not directly relevant to the topic of the podcast. Identify, and write word for word such off-topic parts - we want to programmatically remove it from the transript.
+
