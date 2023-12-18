@@ -17,3 +17,7 @@ Visiting Paul afterward, she learns he is a writer who has not had anything publ
 
 # apparently -cb helps 
 ../llama.cpp/server -m ../llama.cpp/models/openassistant-llama2-13b-orca-8k-3319.Q5_K_M.gguf  -c 1536 -cb
+
+
+"default_popup": "hello.html",
+
