@@ -1,2 +1,12 @@
-You will read a transcript of an educational podcast. Some of it will be self-promotion: i.e. "follow me on instagram at...", or "join us for an event" etc., which is not directly relevant to the topic of the podcast. Identify, and write word for word such off-topic parts - we want to programmatically remove it from the transript.
+You will read a . Some of it will be self-promotion: i.e. "follow me on instagram at...", or "join us for an event" etc., which is not directly relevant to the topic of the podcast. Identify, and write word for word such off-topic parts - we want to programmatically remove it from the transript.
 
+I will give you a piece of text which is 
+{article / transcript of an educational podcast}
+Identify the broad topic in which 
+{readers / listeners}
+are interested, which the text is about. Then identify facts, or key takeaways which they may want to remember later.
+Create 
+{}
+flashcard question and answer pairs separated by a dash, for example: 
+{} - {}
+or deletion clozes if you want to find it within original text later...
