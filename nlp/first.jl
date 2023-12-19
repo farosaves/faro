@@ -1,5 +1,7 @@
 using HTTP, JSON3, YAML
 
+include("prompts.jl")
+
 dicts_to_nt(x) = x
 dicts_to_nt(d::Dict) = (; (Symbol(k) => dicts_to_nt(v) for (k, v) in d)...)
 config = dicts_to_nt(YAML.load_file("nlp/config.yaml"))
@@ -16,10 +18,9 @@ prompt(config, message) =
     $message
 
     ### $(config.convo.Bot_name):
-    """
+    $(config.convo.hack_prompt)"""
 
 n_keep = length(tokenize(config.instruction))
-message = "Hello! How are you?"
 
 handle(resp) =
     let str = String(resp.body)
@@ -35,12 +36,12 @@ complete_one(message) = handle(HTTP.request("POST",
     body=JSON3.write(Dict(
         :prompt => prompt(config, message),
         :n_keep => n_keep,
-        :stop => ["\n### Human:"],
+        :stop => ["\n### $(config.convo.User_name):"],
         pairs(config.inference)...
     ))))
 
 complete_one("Is Pluto a planet?")
-text = read("nlp/example_texts/ama1200.txt", String)
+text = read("nlp/example_texts/aman.txt", String)
 const AString = AbstractString
 a_type = "transcript of an educational podcast"
 
@@ -50,12 +51,11 @@ buildmessage(text, a_type::AString, instruction; text_first=config.prompt.text_f
         if text_first
             "Here is the text:\n\"$text\"\nHere the text ends.\n$instruction"
         else
-
+            "$instruction.\nHere is the text:\n\"$text\"\nHere the text ends."
         end
     end
 
-include("prompts.jl")
 begin
-    ans = complete_one(buildmessage(text, a_type, Prompts.v1))
+    ans = complete_one(buildmessage(text, a_type, Prompts.v2))
     println(ans)
 end
