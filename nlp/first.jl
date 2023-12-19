@@ -1,5 +1,4 @@
 using HTTP, JSON3, YAML
-using CondaPkg, PythonCall
 
 dicts_to_nt(x) = x
 dicts_to_nt(d::Dict) = (; (Symbol(k) => dicts_to_nt(v) for (k, v) in d)...)
@@ -13,15 +12,14 @@ prompt(config, message) =
     """### System:
     $(config.instruction)
 
-    ### $(config.convo_params.User_name):
+    ### $(config.convo.User_name):
     $message
 
-    ### $(config.convo_params.Bot_name):
+    ### $(config.convo.Bot_name):
     """
 
 n_keep = length(tokenize(config.instruction))
 message = "Hello! How are you?"
-
 
 handle(resp) =
     let str = String(resp.body)
@@ -38,7 +36,26 @@ complete_one(message) = handle(HTTP.request("POST",
         :prompt => prompt(config, message),
         :n_keep => n_keep,
         :stop => ["\n### Human:"],
-        pairs(config.inference_params)...
+        pairs(config.inference)...
     ))))
 
 complete_one("Is Pluto a planet?")
+text = read("nlp/example_texts/ama1200.txt", String)
+const AString = AbstractString
+a_type = "transcript of an educational podcast"
+
+buildmessage(text, a_type::AString, instruction; text_first=config.prompt.text_first) =
+    let
+        "I will give you a text which is a $a_type.\n" *
+        if text_first
+            "Here is the text:\n\"$text\"\nHere the text ends.\n$instruction"
+        else
+
+        end
+    end
+
+include("prompts.jl")
+begin
+    ans = complete_one(buildmessage(text, a_type, Prompts.v1))
+    println(ans)
+end

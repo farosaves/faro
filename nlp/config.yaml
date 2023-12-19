@@ -1,13 +1,15 @@
 API_URL: http://127.0.0.1:8080
 instruction: You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can.
-inference_params:
+inference:
   temperature: 0.7
   top_k: 40
   top_p: 0.95
-  n_predict: 256
+  n_predict: 512
   cache_prompt: true
   slot_id: -1
   stream: true
-convo_params:
+convo:
   User_name: User
   Bot_name: Assistant
+prompt:
+  text_first: true
