@@ -17,7 +17,12 @@ Visiting Paul afterward, she learns he is a writer who has not had anything publ
 
 # apparently -cb helps 
 ../llama.cpp/server -m ../llama.cpp/models/openassistant-llama2-13b-orca-8k-3319.Q5_K_M.gguf  -c 1536 -cb
+../llama.cpp/server -m ../llama.cpp/models/solar-10.7b-instruct-v1.0.Q5_K_M.gguf  -c 1536 -cb  # or 2048 ? 
 
+You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can. 
 
 "default_popup": "hello.html",
+
+
+
 

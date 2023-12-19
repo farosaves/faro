@@ -1,0 +1,30 @@
+You will read a . Some of it will be self-promotion: i.e. "follow me on instagram at...", or "join us for an event" etc., which is not directly relevant to the topic of the podcast. Identify, and write word for word such off-topic parts - we want to programmatically remove it from the transript.
+
+I will give you a piece of text which is 
+{article / transcript of an educational podcast}
+Identify the broad topic in which the
+{readers / listeners}
+are interested, which the text is about. Then identify facts, or key takeaways which they may want to remember later.
+Create 
+{}
+flashcard question and answer pairs separated by a dash, for example: 
+{} - {}
+or deletion clozes if you want to find it within original text later...
+
+
+Here is a transcript of an educational podcast:
+
+Here the transcript ends. First, write down the broad topic in which the listeners are interested, that it is about.
+Then identify facts, or key takeaways which they may want to remember later from it.
+Then create 10 flashcard question and answer pairs separated by a dash, for example:
+"Who was the first president of the United States? - George Washington".
+Here is the text:
+
+
+Here the transcript ends. First, write down the broad topic in which the listeners are interested, that it is about.
+Then based on that text, write down exactly 5 questions and answers to them separated by a dash, keeping the answers short, and adhering to the following format:
+1. Why did George Washington want to be called Mr. President? - To emphasize the difference between the democratic government, and the European monarchies.
+2. Why is Pluto no longer considered a planet? - Because it has not cleared its neighboring region of other objects.
+
+
+I will give you a part of a transcript of an educational podcast. I want a written version of it. So could you please shorten it a bit, but conserving all the important information, and making the language more suitable for writing? Here it is:
