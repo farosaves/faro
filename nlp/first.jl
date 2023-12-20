@@ -10,7 +10,7 @@ tokenize(s) = JSON3.read(HTTP.post(
     "$(config.API_URL)/tokenize";
     body=JSON3.write(:content => s)).body).tokens
 
-prompt(config, message) =
+prompt(config, message; forcedstart="") =
     """### System:
     $(config.instruction)
 
@@ -18,7 +18,7 @@ prompt(config, message) =
     $message
 
     ### $(config.convo.Bot_name):
-    $(config.convo.hack_prompt)"""
+    $forcedstart"""
 
 n_keep = length(tokenize(config.instruction))
 
@@ -31,10 +31,10 @@ handle(resp) =
         (join(x.content for x in datas))
     end
 
-complete_one(message) = handle(HTTP.request("POST",
+complete_one(message; forcedstart="") = handle(HTTP.request("POST",
     "$(config.API_URL)/completion";
     body=JSON3.write(Dict(
-        :prompt => prompt(config, message),
+        :prompt => prompt(config, message; forcedstart),
         :n_keep => n_keep,
         :stop => ["\n### $(config.convo.User_name):"],
         pairs(config.inference)...
@@ -56,6 +56,16 @@ buildmessage(text, a_type::AString, instruction; text_first=config.prompt.text_f
     end
 
 begin
-    ans = complete_one(buildmessage(text, a_type, Prompts.v2))
+    ans = complete_one(buildmessage(text, a_type, Prompts.v2); forcedstart=Prompts.forcedstart_v1)
+    println(ans)
+end
+
+begin
+    ans = complete_one(buildmessage(text, a_type, Prompts.brevify_v1))
+    println(ans)
+end
+
+begin
+    ans = complete_one(buildmessage(text, a_type, Prompts.brevify_v1); forcedstart=Prompts.forcedstart_brevify)
     println(ans)
 end

@@ -11,6 +11,5 @@ inference:
 convo:
   User_name: User
   Bot_name: Assistant
-  hack_prompt: "Here is the topic and the question answer pairs separated by a dash like you specified.\nTopic:"
 prompt:
   text_first: true
