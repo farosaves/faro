@@ -41,9 +41,11 @@ complete_one(message; forcedstart="") = handle(HTTP.request("POST",
     ))))
 
 complete_one("Is Pluto a planet?")
-text = read("nlp/example_texts/aman.txt", String)
+text = read("nlp/example_texts/huberman_ama12.txt", String)
 const AString = AbstractString
 a_type = "transcript of an educational podcast"
+
+println("text tokens: ", length(tokenize(text)))
 
 buildmessage(text, a_type::AString, instruction; text_first=config.prompt.text_first) =
     let

@@ -9,6 +9,11 @@ Then based on that text, give me exactly 5 questions and answers to them separat
 1. Why did George Washington want to be called Mr. President? - To emphasize the difference between the democratic government, and the European monarchies.
 2. Why is Pluto no longer considered a planet? - Because it has not cleared its neighboring region of other objects."
 
+v3(n_questions) = "Give me the broad topic in which the listeners are interested, that it is about.
+Then based on that text, give me exactly $n_questions questions and answers to them separated by a dash, preferably one sentence each, and most importantly following the following format:
+1. Why did George Washington want to be called Mr. President? - To emphasize the difference between the democratic government, and the European monarchies.
+2. Why is Pluto no longer considered a planet? - Because it has not cleared its neighboring region of other objects."
+
 forcedstart_v1 = "Here is the topic and the question answer pairs separated by a dash like you specified.\nTopic:"
 
 brevify_v1 = "Give me the broad topic in which the listeners are interested, that it is about.
