@@ -69,3 +69,12 @@ begin
     ans = complete_one(buildmessage(text, a_type, Prompts.brevify_v1); forcedstart=Prompts.forcedstart_brevify)
     println(ans)
 end
+
+article_text = read("nlp/example_texts/wikipedia_article.txt", String)
+println(length(split(article_text)))
+article_type = "fragment of a wikipedia article"
+
+begin
+    ans = complete_one(buildmessage(article_text, article_type, Prompts.v2); forcedstart=Prompts.forcedstart_v1)
+    println(ans)
+end

@@ -19,5 +19,5 @@ Visiting Paul afterward, she learns he is a writer who has not had anything publ
 
 You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can. 
 
-
-
+# information captured and organised
+# 
