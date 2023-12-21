@@ -4,7 +4,7 @@ inference:
   temperature: 0.7
   top_k: 40
   top_p: 0.95
-  n_predict: 512
+  n_predict: 512 # up to 1 minute on my macbook
   cache_prompt: true
   slot_id: -1
   stream: true

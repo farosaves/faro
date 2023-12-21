@@ -77,6 +77,8 @@ println(length(split(article_text)))
 article_type = "fragment of a wikipedia article"
 
 begin
-    ans = complete_one(buildmessage(article_text, article_type, Prompts.v2); forcedstart=Prompts.forcedstart_v1)
+    ans = complete_one(buildmessage(article_text, article_type, Prompts.v3(15)); forcedstart=Prompts.forcedstart_v1)
     println(ans)
 end
+
+buildmessage(article_text, article_type, Prompts.v3(15))
