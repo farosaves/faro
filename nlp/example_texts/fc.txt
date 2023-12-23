@@ -1,0 +1,12 @@
+A somatostatinoma is a {{c1::tumor originating from the pancreatic delta cells}}.
+
+These are classified as {{c2::pancreatic neuroendocrine tumors}} and are often associated with psammoma bodies.
+
+The clinical presentation of a somatostatinoma may include:
+
+{{c3::achlorhydria}}, resulting from the inhibition of gastrin secretion,
+
+{{c4::gallstones and steatorrhea}}, due to the inhibition of secretin and cholecystokinin (CCK),
+
+{{c5::diabetes}}, as a consequence of insulin inhibition.
+

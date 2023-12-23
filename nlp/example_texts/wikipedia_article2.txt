@@ -1,0 +1,33 @@
+Somatostatinomas are a tumor of the delta cells of the endocrine pancreas that produces somatostatin. Increased levels of somatostatin inhibit pancreatic hormones and gastrointestinal hormones. Thus, somatostatinomas are associated with mild diabetes mellitus (due to inhibition of insulin release), steatorrhoea and gallstones (due to inhibition of cholecystokinin release), and achlorhydria (due to inhibition of gastrin release). Somatostatinomas are commonly found in the head of pancreas. Only ten percent of somatostatinomas are functional tumours [9], and 60–70% of tumours are malignant. Nearly two-thirds of patients with malignant somatostatinomas will present with metastatic disease.
+
+Pathophysiology
+In a normal subject, actions of somatostatin include:
+
+In the anterior pituitary gland, the effects of somatostatin are:
+Inhibit the release of growth hormone, thus opposing the effects of growth hormone-releasing hormone (GHRH)
+Inhibit the release of thyroid-stimulating hormone (TSH)
+Somatostatin suppresses the release of gastrointestinal hormones
+Gastrin
+Cholecystokinin (CCK)
+Secretin
+Motilin
+Vasoactive intestinal peptide (VIP)
+Gastric inhibitory polypeptide (GIP)
+Enteroglucagon
+Lowers the rate of gastric emptying, and reduces smooth muscle contractions and blood flow within the intestine
+Suppresses the release of pancreatic hormones
+Inhibits the release of insulin[1]
+Inhibits the release of glucagon[2]
+Suppresses the exocrine secretory action of pancreas.
+This explains how abnormally elevated somatostatin can cause diabetes mellitus, by inhibiting insulin secretion, steatorrhoea by inhibiting cholecystokinin and secretin, gall stones by inhibiting cholecystokinin which normally induce gallbladder myocytes to contract, and hypochlorhydria caused by inhibiting gastrin, which normally stimulate acid secretion.[citation needed]
+
+Somatostatinomas are associated with calcium deposits called psammoma bodies.[3]
+
+Diagnosis
+Fasting plasma somatostatin greater than 30 pg/mL.
+
+SRS (Somatostatin Receptor Scintigraphy) – It is a radio-nucleotide scan by giving Octreotide tagged with Indium111 isotope, which shows an increase in uptake by the tumour cells.[4]
+
+Treatment
+Treatment is by chemotherapy with streptozocin, dacarbazine, doxorubicin or by 'watchful waiting' and surgical debulking via Whipple procedure and other resections of the gastrointestinal organs affected.[5]
+
