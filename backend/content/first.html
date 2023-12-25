@@ -37,13 +37,12 @@
           </div>
         </div>
       </div>
-      <h3 class="mb-4 border-b border-gray-600 pb-2 text-lg font-semibold">My Deck{{editing}}</h3>
+      <h3 class="mb-4 border-b border-gray-600 pb-2 text-lg font-semibold">My Deck</h3>
       <div class="flex flex-col space-y-4">
-        <!-- Defining a chick flick is, as The New York Times has stated, more of a parlor game than a science.  -->
-
         <div class="textarea textarea-bordered text-center">
           <div class="flex">
-            <a href="https://en.wikipedia.org/wiki/Chick_flick" class="text-xl hover:underline flex-1">Chick Flick</a
+            <a href="https://en.wikipedia.org/wiki/Chick_flick" class="text-xl hover:underline flex-1" target="_blank"
+              >Chick Flick</a
             ><br />
             <!-- @click="getElementById('fcfield').setAttribute('contenteditable', true)"" -->
             <button @click="editing=!editing">
@@ -63,13 +62,23 @@
               </svg>
             </button>
           </div>
-          <span v-effect="$el.setAttribute('contenteditable', editing)">
+
+          <span v-effect="$el.setAttribute('contenteditable', editing)" v-scope="{pre: false, post: false}">
+            <a @click="pre=true" v-if="!pre" class="hover:underline">[...]</a>
+            <span v-if="pre"
+              >Defining a chick flick is, as The New York Times has stated, more of a parlor game than a science. </span
+            ><br />
+
             These films are generally held in popular culture as having
             <b class="text-yellow-400" v-if="!show">???</b><i class="text-yellow-400" v-if="show">formulaic</i>,
-            paint-by-numbers plot lines and characters.
+            paint-by-numbers plot lines and characters.<br />
+            <a @click="post=true" v-if="!post" class="hover:underline">[...]</a>
+            <span v-if="post">
+              This makes usage of the term "problematic" for implying "frivolity, artlessness, and utter commercialism",
+              according to ReelzChannel. </span
+            ><br />
           </span>
         </div>
-        <!-- This makes usage of the term "problematic" for implying "frivolity, artlessness, and utter commercialism", according to ReelzChannel. -->
         <!-- <div class="flex justify-between items-center p-4 bg-gray-800 rounded">
           <span class="text-md font-medium">umsonst</span>
         </div> -->
