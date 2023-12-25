@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/petite-vue" defer init></script>
+  </head>
+
+  <body id="page-top" data-spy="scroll" data-target=".side-menu">
+    <div
+      class="relative mx-auto max-w-xl rounded-lg border border-gray-700 bg-black p-6 text-white space-y-4"
+      v-scope="{ show: false, editing: false }"
+    >
+      <div class="absolute right-4 top-4">
+        <div class="group">
+          <!-- Italic 'i' within a circle -->
+          <span
+            class="material-icons flex cursor-pointer items-center justify-center rounded-full border border-white italic"
+            style="width: 24px; height: 24px"
+            >i</span
+          >
+          <div
+            class="absolute right-0 z-10 w-40 rounded-lg bg-gray-700 p-4 text-xs opacity-0 shadow-lg transition-opacity duration-300 group-hover:opacity-100"
+          >
+            Source:
+            <a
+              href="https://en.m.wikipedia.org/wiki/2023_Booker_Prize"
+              class="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+              >https://en.m.wikipedia.org/wiki/2023_Booker_Prize</a
+            ><br />
+            Captured: 2023-12-23
+          </div>
+        </div>
+      </div>
+      <h3 class="mb-4 border-b border-gray-600 pb-2 text-lg font-semibold">My Deck{{editing}}</h3>
+      <div class="flex flex-col space-y-4">
+        <!-- Defining a chick flick is, as The New York Times has stated, more of a parlor game than a science.  -->
+
+        <div class="textarea textarea-bordered text-center">
+          <div class="flex">
+            <a href="https://en.wikipedia.org/wiki/Chick_flick" class="text-xl hover:underline flex-1">Chick Flick</a
+            ><br />
+            <!-- @click="getElementById('fcfield').setAttribute('contenteditable', true)"" -->
+            <button @click="editing=!editing">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6 flex-2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                />
+              </svg>
+            </button>
+          </div>
+          <span v-effect="$el.setAttribute('contenteditable', editing)">
+            These films are generally held in popular culture as having
+            <b class="text-yellow-400" v-if="!show">???</b><i class="text-yellow-400" v-if="show">formulaic</i>,
+            paint-by-numbers plot lines and characters.
+          </span>
+        </div>
+        <!-- This makes usage of the term "problematic" for implying "frivolity, artlessness, and utter commercialism", according to ReelzChannel. -->
+        <!-- <div class="flex justify-between items-center p-4 bg-gray-800 rounded">
+          <span class="text-md font-medium">umsonst</span>
+        </div> -->
+      </div>
+      <div class="flex flex-col space-y-4" v-if="!show">
+        <button class="btn btn-primary max-w" @click="show=true">Show</button>
+      </div>
+      <div class="flex" v-if="show">
+        <div class="tooltip flex-1" data-tip="shortcut: 1️⃣">
+          <button class="btn" style="color: red; width: 100%">&lt;5m<br />Again</button>
+        </div>
+        <div class="tooltip flex-1" data-tip="shortcut: 2️⃣">
+          <button class="btn flex-1" style="color: white; width: 100%">10m<br />Hard</button>
+        </div>
+        <div class="tooltip flex-1" data-tip="shortcut: 3️⃣">
+          <button class="btn flex-1" style="color: green; width: 100%">1d<br />Good</button>
+        </div>
+        <div class="tooltip flex-1" data-tip="shortcut: 4️⃣">
+          <button class="btn flex-1" style="color: blue; width: 100%">4d<br />Easy</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
