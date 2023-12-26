@@ -17,6 +17,8 @@ Visiting Paul afterward, she learns he is a writer who has not had anything publ
 ../llama.cpp/server -m ../llama.cpp/models/openassistant-llama2-13b-orca-8k-3319.Q5_K_M.gguf  -c 1536 -cb
 ../llama.cpp/server -m ../llama.cpp/models/solar-10.7b-instruct-v1.0.Q5_K_M.gguf -c 8192 -cb -ngl 49
 ../llama.cpp/server -m ../llama.cpp/models/orcamaid-v2-fix-13b-32k.Q5_K_M.gguf -c 8192 -cb -ngl 41
+../llama.cpp/server -m ../llama.cpp/models/codeninja-1.0-openchat-7b.Q5_K_M.gguf -c 8192 -cb --port 8888
+
 
 You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can. 
 
