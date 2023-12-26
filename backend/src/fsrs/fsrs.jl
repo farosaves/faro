@@ -2,53 +2,78 @@ using Dates, MLStyle
 
 include("models.jl")
 
-next_interval(stab::Real; p::Parameters) =
-    let new_interval = stab * 9 * (1 / p.request_retention - 1)
-        min(max(round(new_interval), 1), p.maximum_interval)
+
+ds(card::Card, r::CardRating; p=p, now=now()) =
+    let retrievability = retrievability(card; now)
+        init_stability(r::CardRating; p::Parameters) =
+            max(p.w[Int(r)], 0.1)
+        init_difficulty(r::CardRating; p::Parameters) =
+            min(max(p.w[5] - p.w[6] * (Int(r) - 3), 1), 10)
+
+        init_ds(r::CardRating; p::Parameters=p) =
+            init_difficulty(r; p), init_stability(r; p)
+
+        # stability(c::Card, r::CardRating; p::Parameters=p) =
+        #     c.state == New ? init_stability(r; p) : next_stability(c, r; p)
+
+        # next_stability(c::Card, r::CardRating; p::Parameters=p) =
+        #     if rating == Hard
+        #         next_forget_stability(c.difficulty, c.stability, retrievability(c); p)
+        #     else
+        #         next_recall_stability(c.difficulty, c.stability, retrievability(c), r; p)
+        #     end
+
+        next_interval(stab::Real; p::Parameters) =
+            let new_interval = stab * 9 * (1 / p.request_retention - 1)
+                min(max(round(new_interval), 1), p.maximum_interval)
+            end
+
+        mean_reversion(init::Real, current::Real; p=p)::Real =
+            p.w[7] * init + (1 - p.w[7]) * current
+
+        next_difficulty(d::Real, r::CardRating; p=p) =
+            let next_d = d - p.w[7] * (Int(r) - 3)
+                min(max(mean_reversion(p.w[5], next_d; p), 1), 10)
+            end
+
+        next_recall_stability(d::Real, s::Real, r::Real, rating::CardRating; p=p) =
+            let hard_penalty = rating == Hard ? p.w[16] : 1,
+                easy_bonus = rating == Easy ? p.w[17] : 1
+
+                s * (1 + exp(p.w[9]) *
+                         (11 - d) *
+                         (s^-p.w[10]) *
+                         (exp((1 - r) * p.w[11]) - 1) *
+                         hard_penalty *
+                         easy_bonus)
+            end
+
+        next_forget_stability(d::Real, s::Real, r::Real; p=p) =
+            p.w[12] *
+            (d^-p.w[13]) *
+            ((s + 1)^p.w[14] - 1) *
+            exp((1 - r) * p.w[15])
+
+        next_ds(c::Card, r::CardRating, retrievability::Real; p=p) =
+            next_difficulty(c.difficulty, r; p), r == Again ?
+                                                 next_forget_stability(c.difficulty, c.stability, retrievability; p) :
+                                                 next_recall_stability(c.difficulty, c.stability, retrievability, r; p)
+
+        card.state == New ? init_ds(r; p) : next_ds(card, r, retrievability; p)
     end
 
-mean_reversion(init::Real, current::Real; p=p)::Real =
-    p.w[7] * init + (1 - p.w[7]) * current
-
-next_difficulty(d::Real, r::CardRating; p=p) =
-    let next_d = d - p.w[7] * (Int(r) - 3)
-        min(max(mean_reversion(p.w[5], next_d; p), 1), 10)
-    end
-
-next_recall_stability(d::Real, s::Real, r::Real, rating::CardRating; p=p) =
-    let hard_penalty = rating == Hard ? p.w[16] : 1,
-        easy_bonus = rating == Easy ? p.w[17] : 1
-
-        s * (1 + exp(p.w[9]) *
-                 (11 - d) *
-                 (s^-p.w[10]) *
-                 (exp((1 - r) * p.w[11]) - 1) *
-                 hard_penalty *
-                 easy_bonus)
-    end
-
-next_forget_stability(d::Real, s::Real, r::Real; p=p) =
-    p.w[12] *
-    (d^-p.w[13]) *
-    ((s + 1)^p.w[14] - 1) *
-    exp((1 - r) * p.w[15])
-
-next_ds(c::Card, r::CardRating, retrievability::Real; p=p) =
-    next_difficulty(c.difficulty, r; p), r == Again ?
-                                         next_forget_stability(c.difficulty, c.stability, retrievability; p) :
-                                         next_recall_stability(c.difficulty, c.stability, retrievability, r; p)
-
-
-card = Card(Again)
-next_ds(card, Easy, 0.8)
-
+c = Card()
+ds(c, Easy)
+difficulty, stability = ds(c, Easy)
+c = Card(; state=Learning, difficulty, stability)
+ds(c, Good)
 
 # again hard good easy
 next_intervals(card::Card; now=now(), p=p) =
     @match card.state begin
         New => (Minute(1), Minute(5), Minute(10), Day(next_interval(card.stability; p)))
-        Review => let retr = retrievability(card; now)
-            Minute(5), collect(# compute new ds for the rating
+        Review => let retr =
+                Minute(5), collect(# compute new ds for the rating
                 let (difficulty, stability) = next_ds(c, rating, retr)
                     Day(next_interval(stability; p))
                 end

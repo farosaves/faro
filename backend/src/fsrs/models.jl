@@ -78,15 +78,8 @@ w_default = [0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18,
 Parameters(; request_retention=0.9, maximum_interval=36500, w=w_default) = Parameters(request_retention, maximum_interval, w)
 p::Parameters = Parameters()
 
-init_stability(r::CardRating; p::Parameters) =
-    max(p.w[Int(r)], 0.1)
-init_difficulty(r::CardRating; p::Parameters) =
-    min(max(p.w[5] - p.w[6] * (Int(r) - 3), 1), 10)
 
-init_ds(r::CardRating; p::Parameters=p) =
-    init_difficulty(r; p), init_stability(r; p)
-
-Card(r::CardRating; p=p) =
-    let (difficulty, stability) = init_ds(r; p)
-        Card(; difficulty, stability)
-    end
+# Card(r::CardRating; p=p) =
+#     let (difficulty, stability) = init_ds(r; p)
+#         Card(; difficulty, stability)
+#     end
