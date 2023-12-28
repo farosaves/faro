@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Create Flashcard</title>
+    <!-- TODO: Source locally -->
+    <link href="./css/daisyui.min.css" rel="stylesheet" type="text/css" />
+    <script src="./css/tailwind.output.css"></script>
+    <style>
+      /* Ensure the popup has a minimum width */
+      body {
+        min-width: 320px; /* Adjust as necessary for your content */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="p-4 max-w-sm mx-auto">
+      <div class="card bordered">
+        <div class="card-body">
+          <h2 class="card-title">Create Flashcard</h2>
+          <div class="progress progress-primary" value="70"></div>
+          <div class="progress progress-secondary mt-2" value="100"></div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Add tags</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Add tags"
+              class="input input-bordered"
+            />
+          </div>
+
+          <div class="form-control mt-2">
+            <label class="label">
+              <span class="label-text">Flashcard preview...</span>
+            </label>
+            <textarea
+              class="textarea textarea-bordered"
+              placeholder="Flashcard preview..."
+            ></textarea>
+          </div>
+
+          <div class="form-control mt-2">
+            <label class="label">
+              <span class="label-text">Select deck...</span>
+            </label>
+            <select class="select select-bordered">
+              <option disabled selected>Select deck...</option>
+              <!-- Options would be dynamically inserted here -->
+            </select>
+          </div>
+
+          <div class="card-actions justify-end">
+            <button class="btn btn-primary">Create</button>
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-error">Delete</button>
+          </div>
+          <!-- Error message container -->
+        </div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
