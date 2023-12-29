@@ -36,9 +36,6 @@ card = Card(db)(; userId, cardContentId, dtime2string(topairs(fsrs.Card()))...)
 
 
 
-topairs(card)
-topairs(Card(; cardId=0, userId=0, cardContentId=0))
-
 Card(userId,)
 
 
