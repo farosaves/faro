@@ -41,11 +41,11 @@ export function make_prompt3(website_title, text) {
 	Only return sentences like this and they need to follow the specified format.`
 }
 
-export function QA_prompt1(website_title, text) {return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function QA_prompt1(n_cards, website_title, text) {return `I will give you a piece of text which is taken from the website titled "${website_title}".
 The text is as follows: "${text}"
 Here the text ends.
 Give me the broad topic in which the reader is interested, that it is about.
-Then based on that text, give me exactly $n_questions questions and answers to them separated by a dash, preferably one sentence each, and most importantly following the following format:
+Then based on that text, give me exactly ${n_cards} questions and answers to them separated by a dash, preferably one sentence each, and most importantly following the following format:
 1. Why did George Washington want to be called Mr. President? - To emphasize the difference between the democratic government, and the European monarchies.
 2. Why is Pluto no longer considered a planet? - Because it has not cleared its neighboring region of other objects.`
 }

@@ -8,9 +8,9 @@ const replicate = new Replicate({
   auth: REPLICATE_API_TOKEN,
 });
 
-export async function POST({ request }, mixtral=false) {
-	const { n_deletions, website_title, text } = await request.json();
-	let prompt = QA_prompt1(website_title, text)
+export async function POST({ request }, mixtral=false, qa=true) {
+	const { n_cards, website_title, text } = await request.json();
+	let prompt = QA_prompt1(n_cards, website_title, text)
 	let prompt_format = `<s>[INST] {prompt} [/INST] ${prompt_response0()}`
 	let prompt_full = `<s>### User:
 	${prompt}

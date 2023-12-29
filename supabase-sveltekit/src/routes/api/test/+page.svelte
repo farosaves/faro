@@ -1,5 +1,5 @@
 <script>
-	let n_deletions = 1;
+	let n_cards = 2;
 	let res = 'placeholder';
 	let website_title = 'Chick flick';
 	let text =
@@ -9,7 +9,7 @@
 		res = 'waiting...';
 		const response = await fetch('/api/make-flashcard', {
 			method: 'POST',
-			body: JSON.stringify({ n_deletions, text, website_title }),
+			body: JSON.stringify({ n_cards, text, website_title }),
 			headers: {
 				'content-type': 'application/json'
 			}
