@@ -6,6 +6,7 @@
 		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
 
 	async function callapi() {
+		res = 'waiting...';
 		const response = await fetch('/api/make-flashcard', {
 			method: 'POST',
 			body: JSON.stringify({ n_deletions, text, website_title }),
