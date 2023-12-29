@@ -24,3 +24,13 @@ You are an AI assistant. User will you give you a task. Your goal is to complete
 
 # information captured and organised
 # 
+
+
+
+I will give you a piece of text which is taken from the website: 
+The text is as follows: "{}"
+Here the text ends.
+First identify the topic that the reader is interested in.
+Then for each sentence we want to have a deletion cloze flashcard like this:
+"The World War Two began in year ???. - 1939"
+"Abraham Lincoln was the ??? president of the United States? - 16th"
