@@ -15,7 +15,7 @@
 			}
 		});
 
-		res = (await response.json()).output.join('');
+		res = (await response.json()).output;
 		console.log(res);
 	}
 </script>
