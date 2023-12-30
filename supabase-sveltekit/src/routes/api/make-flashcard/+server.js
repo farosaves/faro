@@ -28,6 +28,16 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 			}
 		  }
 		);
+	console.log(output)
+
+	let lines = output.split("\n");
+	let topic = lines[0];
+	let numre = /^\d{1,2}\.\s/;
+	let qas = lines.slice(1).map((str) => {
+		return str.replace(numre, "").split(" - ");
+	  });
+
+	return {topic, qas}
 }
 
 
@@ -35,9 +45,8 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 export async function POST({ request }, mixtral=false, qa=true) {
 	const { n_cards, website_title, text, link } = await request.json();
 	
-	let output = qa ? flashcards_qa(n_cards, website_title, text)
-	console.log(output)
+	let {topic, qas} = qa ? await flashcards_qa(n_cards, website_title, text) : ""
 
-	return json({output});
+	return json({qas});
 }
 
