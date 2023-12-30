@@ -26,7 +26,7 @@
 
 <div class="col-6 form-widget">
 	<input class="text-xl" bind:value={website_title} />
-	<input bind:value={text} />
+	<input class="resize" bind:value={text} />
 
 	<div class="overflow-x-auto">
 		<table class="table">

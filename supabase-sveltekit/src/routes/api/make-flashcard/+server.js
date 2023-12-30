@@ -36,6 +36,7 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 	let qas = lines.slice(1).map((str) => {
 		return str.replace(numre, "").split(" - ");
 	  });
+	qas = qas.filter(t => Array.isArray(t) && t.length == 2)
 
 	return {topic, qas}
 }
