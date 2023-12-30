@@ -4,26 +4,64 @@
 		['Kto ty jestes? ', 'Polak maly'],
 		['Jaki znak twoj?', 'Orzel bialy']
 	];
+	let qas_accepted = [false, false];
+	let qas_rejected = [false, false];
+	let card_content_ids = [null, null];
 	let website_title = 'Chick flick';
 	let link = 'https://en.wikipedia.org/wiki/Chick_flick';
 	let text =
 		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
 
+	export let data;
+	let session = data.session;
+	let snippet_id = undefined;
+
 	async function callapi() {
 		// qas = 'waiting...';
 		const response = await fetch('/api/make-flashcard', {
 			method: 'POST',
-			body: JSON.stringify({ n_cards, text, website_title, link }),
+			body: JSON.stringify({ n_cards, text, website_title, link, session }),
 			headers: {
 				'content-type': 'application/json'
 			}
 		});
+		let ret = await response.json();
+		qas = ret.qas;
+		snippet_id = ret.snippet_id;
+		card_content_ids = ret.card_content_ids;
+		qas_accepted = card_content_ids.map((x) => false);
+		qas_rejected = card_content_ids.map((x) => false);
 
-		qas = (await response.json()).qas;
 		console.log(qas);
+	}
+	function reject(n) {
+		return () => {
+			qas_rejected[n] = true;
+			qas_accepted[n] = false;
+		};
+	}
+	function accept(n) {
+		return async () => {
+			await fetch('http://127.0.0.1:2227/api/accept_card_content', {
+				method: 'POST',
+				body: JSON.stringify({ card_content_id: card_content_ids[n] }),
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+			qas_rejected[n] = false;
+			qas_accepted[n] = true;
+		};
+	}
+	function accept_reject_undo(n) {
+		return () => {
+			qas_rejected[n] = false;
+			qas_accepted[n] = false;
+		};
 	}
 </script>
 
+{(data.session?.user.email, snippet_id)}
 <div class="col-6 form-widget">
 	<input class="text-xl" bind:value={website_title} />
 	<input class="resize" bind:value={text} />
@@ -45,6 +83,24 @@
 						<th>{index + 1}</th>
 						<td>{question}</td>
 						<td>{answer}</td>
+						<td class="flex flex-col">
+							{#if !qas_accepted[index] && !qas_rejected[index]}
+								<button class="btn w-full" style="color:green" on:click={accept(index)}>
+									Accept</button
+								>
+								<button class="btn w-full" style="color:red" on:click={reject(index)}>
+									Reject</button
+								>
+							{:else}
+								<button
+									class="btn w-full"
+									style="color:{qas_accepted[index] ? 'green' : 'red'}"
+									on:click={accept_reject_undo(index)}
+								>
+									{qas_accepted[index] ? 'Accepted' : 'Rejected'}<br />(undo)</button
+								>
+							{/if}
+						</td>
 					</tr>
 				{/each}
 			</tbody>

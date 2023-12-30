@@ -1,7 +1,5 @@
-using Oxygen
-
-get("/") do
-    read("backend/content/first.html", String)
-end
-
-serve()
+using LFWBackend
+import LFWBackend: db
+LFWBackend.run()
+LFWBackend.db[LFWBackend.CardContent[]]
+using HTTP, JSON3

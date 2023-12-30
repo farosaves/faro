@@ -1,21 +1,12 @@
-using Dates, FunnyORM, SQLite
+using Dates
 using PyCall
 
-# imports
-include("models/Users.jl")
-include("models/Cards.jl")
-include("models/CardContents.jl")
 
 fsrs = pyimport("fsrs")
 FSRS, Rating, State = let
     fsrs.FSRS, fsrs.Rating, fsrs.State
 end
 # utility
-
-topairs(t) =
-    let fldnames = fieldnames(typeof(t))
-        fldnames .=> getfield.(Ref(t), fldnames)
-    end
 topairs(t::PyObject) = map(p -> Symbol(first(p)) => last(p), collect(pairs(t.__dict__)))
 dtime2string(c::Vector{Pair{Symbol}}) =
     let onsecond(f) = pair -> first(pair) => f(last(pair))
@@ -24,10 +15,6 @@ dtime2string(c::Vector{Pair{Symbol}}) =
         map(onsecond(f), c)
     end
 # db connection
-dbpath = "src/util/local.db"
-include("util/dbinit.jl")
-db = FunnyORM.DB{SQLite.DB}(dbpath)
-
 
 userId = 0
 # create card

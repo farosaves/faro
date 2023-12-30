@@ -2,12 +2,16 @@ import { error, json } from '@sveltejs/kit';
 import { REPLICATE_API_TOKEN } from '$env/static/private';
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { QA_prompt1, QA_prompt_response1, prompt_response0 } from './prompts';
+import { createClient } from '@supabase/supabase-js'
 
 import Replicate from "replicate";
 
 const replicate = new Replicate({
   auth: REPLICATE_API_TOKEN,
 });
+
+// Create a single supabase client for interacting with your database
+const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 	let prompt_format = `<s>[INST] {prompt} [/INST] ${prompt_response0()}`
@@ -41,13 +45,33 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 	return {topic, qas}
 }
 
-
-
 export async function POST({ request }, mixtral=false, qa=true) {
-	const { n_cards, website_title, text, link } = await request.json();
-	
-	let {topic, qas} = qa ? await flashcards_qa(n_cards, website_title, text) : ""
+	const { n_cards, website_title, text, link, session } = await request.json();
+	// console.log()
 
-	return json({qas});
+	// const { data } = await supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select()
+	const {data} = await (await fetch('http://127.0.0.1:2227/api/add_snippet', {
+		method: 'POST',
+		body: JSON.stringify({ origin_website: link, snippet_text: text }),
+		headers: {
+			'content-type': 'application/json'
+		}
+	})).json();
+	
+	console.log(data)
+	// let {topic, qas} = qa ? await flashcards_qa(n_cards, website_title, text) : ""
+	let qas = [["hey", "ho"]];
+	let card_contents = [];
+	for (const [front, back] of qas) {
+		card_contents.push(await (await fetch('http://127.0.0.1:2227/api/add_card_content', {
+			method: 'POST',
+			body: JSON.stringify({ front, back, snippet_id: data.id }),
+			headers: {
+				'content-type': 'application/json'
+			}
+		})).json());
+	}
+	console.log()
+	return json({qas, snippet_id: data.id, card_content_ids: card_contents.map(x=>x.cardContentId)});
 }
 

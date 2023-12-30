@@ -1,3 +1,4 @@
+using FunnyORM, SQLite
 db = FunnyORM.DB{SQLite.DB}(dbpath)
 DBInterface.execute(
     db.connection,
@@ -12,10 +13,27 @@ email TEXT
 DBInterface.execute(
     db.connection,
     """
+CREATE TABLE IF NOT EXISTS Snippets (
+id INTEGER PRIMARY KEY NOT NULL,
+created_at TEXT NOT NULL,
+snippet_text TEXT NOT NULL,
+origin_website TEXT,
+predicted_topic TEXT
+);
+"""
+)
+
+DBInterface.execute(
+    db.connection,
+    """
 CREATE TABLE IF NOT EXISTS CardContents (
 cardContentId INTEGER PRIMARY KEY NOT NULL,
 front TEXT NOT NULL,
-back TEXT NOT NULL
+back TEXT NOT NULL,
+isactive INTEGER NOT NULL DEFAULT 0,
+snippet_id INTEGER NOT NULL,
+FOREIGN KEY (snippet_id)
+    REFERENCES Snippets (id)
 );
 """
 )
@@ -46,7 +64,8 @@ DBInterface.execute(
 db = FunnyORM.DB{SQLite.DB}(dbpath)
 
 FunnyORM.generate_file(db, :User)
-FunnyORM.generate_file(db, :CardContents)
-FunnyORM.generate_file(db, :Cards)
+FunnyORM.generate_file(db, :CardContent)
+FunnyORM.generate_file(db, :Card)
+FunnyORM.generate_file(db, :Snippet)
 
 # init with sentences

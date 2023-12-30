@@ -4,8 +4,10 @@ authors = ["asjir <pa.paradysz@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 DBInterface = "a10d1c49-ce27-4219-8d33-6db1a4562965"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FunnyORM = "6f72f9d7-811b-4da6-baae-56a3a3823ad6"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"

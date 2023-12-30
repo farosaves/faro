@@ -1,4 +1,4 @@
-Base.@kwdef struct Cards <: AbstractModel
+Base.@kwdef struct Card <: AbstractModel
     cardId::Union{Int64}
     cardContentId::Union{Int64}
     userId::Union{Int64}
@@ -12,9 +12,9 @@ Base.@kwdef struct Cards <: AbstractModel
     state::Union{Missing, Int64} = missing
     last_review::Union{Missing, String} = missing
 end
-FunnyORM.tablename(::Type{Cards}) = begin
+FunnyORM.tablename(::Type{Card}) = begin
     Symbol("Cards")
 end
-FunnyORM.pk(::Type{Cards}) = begin
+FunnyORM.pk(::Type{Card}) = begin
     Symbol("cardId")
 end
