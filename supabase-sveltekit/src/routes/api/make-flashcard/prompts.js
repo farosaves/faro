@@ -40,6 +40,23 @@ export function make_prompt3(website_title, text) {
 	"The 16th president of the United States was {{Abraham Lincoln}}"
 	Only return sentences like this and they need to follow the specified format.`
 }
+export function make_prompt4(website_title, text) { 
+	return `I will give you a piece of text which is taken from the website titled "${website_title}".
+	The text is as follows: "${text}"
+	Here the text ends.
+	First give me the topic that the raeder is interested in.
+	Then for each sentence give verbatim a piece of information from each sentence that is important to remember. 
+	We want to make an exam question by deleting the piece of text you give back.
+	For example if the topic was World War Two, and text was:
+	The World War Two began in 1939. The war began with a German attack on Poland.
+	You'd return:
+	Beginning of World War Two
+	1. 1939
+	2. Poland
+	or alternatively: 2. German attack on Poland
+	In particular it doesn't make sense to return World War Two for 1. because it is already the topic.
+	`
+}
 
 export function QA_prompt1(n_cards, website_title, text) {return `I will give you a piece of text which is taken from the website titled "${website_title}".
 The text is as follows: "${text}"
