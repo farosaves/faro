@@ -31,7 +31,6 @@
 		card_content_ids = ret.card_content_ids;
 		qas_accepted = card_content_ids.map((x) => false);
 		qas_rejected = card_content_ids.map((x) => false);
-
 		console.log(qas);
 	}
 	function reject(n) {
@@ -42,6 +41,7 @@
 	}
 	function accept(n) {
 		return async () => {
+			console.log(card_content_ids);
 			await fetch('http://127.0.0.1:2227/api/accept_card_content', {
 				method: 'POST',
 				body: JSON.stringify({ card_content_id: card_content_ids[n] }),
@@ -54,7 +54,14 @@
 		};
 	}
 	function accept_reject_undo(n) {
-		return () => {
+		return async () => {
+			await fetch('http://127.0.0.1:2227/api/undo_accept_card_content', {
+				method: 'POST',
+				body: JSON.stringify({ card_content_id: card_content_ids[n] }),
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
 			qas_rejected[n] = false;
 			qas_accepted[n] = false;
 		};
@@ -62,6 +69,7 @@
 </script>
 
 {(data.session?.user.email, snippet_id)}
+{card_content_ids.join(' ')}
 <div class="col-6 form-widget">
 	<input class="text-xl" bind:value={website_title} />
 	<input class="resize" bind:value={text} />

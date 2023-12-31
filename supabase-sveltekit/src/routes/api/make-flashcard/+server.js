@@ -63,15 +63,15 @@ export async function POST({ request }, mixtral=false, qa=true) {
 	let qas = [["hey", "ho"]];
 	let card_contents = [];
 	for (const [front, back] of qas) {
-		card_contents.push(await (await fetch('http://127.0.0.1:2227/api/add_card_content', {
+		card_contents.push((await (await fetch('http://127.0.0.1:2227/api/add_card_content', {
 			method: 'POST',
 			body: JSON.stringify({ front, back, snippet_id: data.id }),
 			headers: {
 				'content-type': 'application/json'
 			}
-		})).json());
+		})).json()).data);
 	}
-	console.log()
+
 	return json({qas, snippet_id: data.id, card_content_ids: card_contents.map(x=>x.cardContentId)});
 }
 

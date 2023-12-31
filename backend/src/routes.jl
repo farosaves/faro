@@ -11,18 +11,25 @@ end
 
 post("/api/accept_card_content") do req::HTTP.Request
     data = Oxygen.json(req)
-    cc = only(db[CardContent[data.card_content_id]])
+    ccs = db[CardContent[data.card_content_id]]
+    @info data
+    cc = only(ccs)
     cc = db[cc](isactive=true)
     Dict(:data => Dict(topairs(cc)...))
 end
 
-
+post("/api/undo_accept_card_content") do req::HTTP.Request
+    data = Oxygen.json(req)
+    cc = only(db[CardContent[data.card_content_id]])
+    cc = db[cc](isactive=false)
+    Dict(:data => Dict(topairs(cc)...))
+end
 
 post("/api/add_snippet") do req::HTTP.Request
     data = Oxygen.json(req)
     (; origin_website, snippet_text) = data
     snippet = Snippet(db)(; created_at=string(now()), origin_website, snippet_text)
-    # JSON3.write()
     Dict(:data => Dict(topairs(snippet)...))
 end
+
 
