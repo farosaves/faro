@@ -45,18 +45,21 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 	return {topic, qas}
 }
 
-export async function POST({ request }, mixtral=false, qa=true) {
-	const { n_cards, website_title, text, link, session } = await request.json();
+export async function POST({ request, locals }, mixtral=false, qa=true) {
+	const { n_cards, website_title, text, link } = await request.json();
 	// console.log()
+	// const session = await locals.getSession();
 
-	// const { data } = await supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select()
-	const {data} = await (await fetch('http://127.0.0.1:2227/api/add_snippet', {
-		method: 'POST',
-		body: JSON.stringify({ origin_website: link, snippet_text: text }),
-		headers: {
-			'content-type': 'application/json'
-		}
-	})).json();
+	// if (!session || !session.user) {return json("EE")}
+
+	const { data } = await supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select()
+	// const {data} = await (await fetch('http://127.0.0.1:2227/api/add_snippet', {
+	// 	method: 'POST',
+	// 	body: JSON.stringify({ origin_website: link, snippet_text: text }),
+	// 	headers: {
+	// 		'content-type': 'application/json'
+	// 	}
+	// })).json();
 	
 	console.log(data)
 	// let {topic, qas} = qa ? await flashcards_qa(n_cards, website_title, text) : ""

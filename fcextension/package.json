@@ -6,6 +6,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@sveltejs/adapter-auto": "^3.0.1",
     "@sveltejs/adapter-static": "^3.0.1",
     "@sveltejs/kit": "*",
     "autoprefixer": "^10.4.16",
