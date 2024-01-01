@@ -23,7 +23,12 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["activeTab", "scripting", "http://localhost:5173/*"],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "http://localhost:5173/*",
+    "contextMenus"
+  ],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
