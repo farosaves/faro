@@ -52,7 +52,7 @@ export async function POST({ request, locals }, mixtral=false, qa=true) {
 
 	// if (!session || !session.user) {return json("EE")}
 
-	const { data } = await supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select()
+	const { data } = await locals.supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select()
 	// const {data} = await (await fetch('http://127.0.0.1:2227/api/add_snippet', {
 	// 	method: 'POST',
 	// 	body: JSON.stringify({ origin_website: link, snippet_text: text }),
