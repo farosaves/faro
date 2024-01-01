@@ -15,12 +15,26 @@
     </style>
   </head>
   <body>
-    <div class="p-4 max-w-sm mx-auto">
+    <div
+      id="loginStatus"
+      class="hidden mx-4 my-4 shadow-lg alert alert-warning"
+    >
+      <div>
+        <span id="loginStatusLabel">Please click login below to continue.</span>
+      </div>
+    </div>
+
+    <!-- Login Button -->
+    <div id="loginButtonContainer" class="hidden max-w-sm p-4 mx-auto">
+      <button id="loginButton" class="w-full btn btn-primary">Log in</button>
+    </div>
+
+    <div id="flashcardContent" class="max-w-sm p-4 mx-auto">
       <div class="card bordered">
         <div class="card-body">
           <h2 class="card-title">Create Flashcard</h2>
           <div class="progress progress-primary" value="70"></div>
-          <div class="progress progress-secondary mt-2" value="100"></div>
+          <div class="mt-2 progress progress-secondary" value="100"></div>
 
           <div class="form-control">
             <label class="label">
@@ -33,7 +47,7 @@
             />
           </div>
 
-          <div class="form-control mt-2">
+          <div class="mt-2 form-control">
             <label class="label">
               <span class="label-text">Flashcard preview...</span>
             </label>
@@ -43,7 +57,7 @@
             ></textarea>
           </div>
 
-          <div class="form-control mt-2">
+          <div class="mt-2 form-control">
             <label class="label">
               <span class="label-text">Select deck...</span>
             </label>
@@ -53,7 +67,7 @@
             </select>
           </div>
 
-          <div class="card-actions justify-end">
+          <div class="justify-end card-actions">
             <button class="btn btn-primary">Create</button>
             <button class="btn btn-ghost">Cancel</button>
             <button class="btn btn-error">Delete</button>
