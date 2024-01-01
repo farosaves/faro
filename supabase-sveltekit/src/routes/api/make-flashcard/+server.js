@@ -10,9 +10,6 @@ const replicate = new Replicate({
   auth: REPLICATE_API_TOKEN,
 });
 
-// Create a single supabase client for interacting with your database
-const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
-
 async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 	let prompt_format = `<s>[INST] {prompt} [/INST] ${prompt_response0()}`
 	let prompt = QA_prompt1(n_cards, website_title, text)
