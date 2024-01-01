@@ -38,6 +38,7 @@
 		"@supabase/auth-ui-shared": "^0.1.8",
 		"@supabase/auth-ui-svelte": "^0.2.8",
 		"@supabase/supabase-js": "^2.39.1",
-		"daisyui": "^4.4.24"
+		"daisyui": "^4.4.24",
+		"replicate": "^0.25.2"
 	}
 }
