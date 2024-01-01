@@ -1,13 +1,19 @@
 {
-  "dependencies": {
-    "chrome-types": "^0.1.246"
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build && node removeInlineScript.cjs",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.4.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-vue": "^9.19.2"
+    "@sveltejs/adapter-static": "^3.0.1",
+    "@sveltejs/kit": "*",
+    "autoprefixer": "^10.4.16",
+    "daisyui": "^4.4.24",
+    "postcss": "^8.4.32",
+    "postcss-loader": "^7.3.4",
+    "svelte": "^4",
+    "tailwindcss": "^3.4.0",
+    "vite": "^5"
   }
 }
