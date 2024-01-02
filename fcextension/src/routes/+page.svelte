@@ -9,4 +9,9 @@
 <button class="btn btn-primary" on:click={() => (cnt += 1)}
   >Hello daisyUI</button
 >
+<button
+  class="btn btn-primary"
+  on:click={() => chrome.tabs.create({ url: "https://kit.svelte.dev" })}
+  >Hello daisyUI</button
+>
 <p>{cnt}</p>

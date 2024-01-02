@@ -39,6 +39,7 @@
 		"@supabase/auth-ui-svelte": "^0.2.8",
 		"@supabase/supabase-js": "^2.39.1",
 		"daisyui": "^4.4.24",
+		"fsrs.js": "^1.2.0",
 		"replicate": "^0.25.2"
 	}
 }
