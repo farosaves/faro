@@ -1,28 +1,36 @@
 using Oxygen, HTTP, JSON3
 
 include("db.jl")
+include("card.jl")
 
-post("/api/add_card_content") do req::HTTP.Request
-    data = Oxygen.json(req)
-    (; front, back, snippet_id) = data
-    cc = CardContent(db)(; front, back, snippet_id, isactive=false)
-    Dict(:data => Dict(topairs(cc)...))
-end
+f = FSRS()
 
-post("/api/accept_card_content") do req::HTTP.Request
+
+post("/api/add_card") do req::HTTP.Request
     data = Oxygen.json(req)
-    ccs = db[CardContent[data.card_content_id]]
     @info data
-    cc = only(ccs)
-    cc = db[cc](isactive=true)
-    Dict(:data => Dict(topairs(cc)...))
+    (; front, back, snippet_id) = data
+    cc = CardContent(db)(; front, back, snippet_id)
+    userId = 0
+    # create card
+    cardContentId = cc.cardContentId
+    r = f.repeat(fsrs.Card(), now())
+    card = Card(db)(; userId, cardContentId, dtime2string(topairs(r[1].card))..., isactive=false)
+    Dict(:data => Dict(topairs(card)...))
 end
 
-post("/api/undo_accept_card_content") do req::HTTP.Request
+post("/api/accept_card") do req::HTTP.Request
     data = Oxygen.json(req)
-    cc = only(db[CardContent[data.card_content_id]])
-    cc = db[cc](isactive=false)
-    Dict(:data => Dict(topairs(cc)...))
+    card = only(db[Card[data.card_id]])
+    card = db[card](isactive=true)
+    Dict(:data => Dict(topairs(card)...))
+end
+
+post("/api/undo_accept_card") do req::HTTP.Request
+    data = Oxygen.json(req)
+    card = only(db[Card[data.card_id]])
+    card = db[card](isactive=false)
+    Dict(:data => Dict(topairs(card)...))
 end
 
 post("/api/add_snippet") do req::HTTP.Request

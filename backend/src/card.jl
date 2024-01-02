@@ -1,7 +1,6 @@
 using Dates
 using PyCall
 
-
 fsrs = pyimport("fsrs")
 FSRS, Rating, State = let
     fsrs.FSRS, fsrs.Rating, fsrs.State
@@ -19,16 +18,11 @@ dtime2string(c::Vector{Pair{Symbol}}) =
 userId = 0
 # create card
 cardContentId = 0
-card = Card(db)(; userId, cardContentId, dtime2string(topairs(fsrs.Card()))...)
-
-
-
-Card(userId,)
-
-
-
 f = FSRS()
-r = f.repeat(card, now())
+r = f.repeat(fsrs.Card(), now())
+card = Card(db)(; userId, cardContentId, dtime2string(topairs(r[1].card))..., isactive=0)
+
+
 
 c = r[4].card
 c.stability

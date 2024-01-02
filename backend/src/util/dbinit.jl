@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS CardContents (
 cardContentId INTEGER PRIMARY KEY NOT NULL,
 front TEXT NOT NULL,
 back TEXT NOT NULL,
-isactive INTEGER NOT NULL DEFAULT 0,
 snippet_id INTEGER NOT NULL,
 FOREIGN KEY (snippet_id)
     REFERENCES Snippets (id)
@@ -53,6 +52,7 @@ DBInterface.execute(
     lapses INTEGER,
     state INTEGER,
     last_review TEXT,
+    isactive INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (userId)
         REFERENCES Users (userId)
     FOREIGN KEY (cardContentId)

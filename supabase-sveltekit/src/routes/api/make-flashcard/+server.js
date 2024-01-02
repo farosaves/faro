@@ -1,8 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import { REPLICATE_API_TOKEN } from '$env/static/private';
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { QA_prompt1, QA_prompt_response1, prompt_response0 } from './prompts';
-import { createClient } from '@supabase/supabase-js'
+import {FSRS, Card} from "fsrs.js"
 
 import Replicate from "replicate";
 
@@ -42,36 +41,28 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 	return {topic, qas}
 }
 
+// Would it make sense to split out this logic? 
+// My first intuition is no - because you always want to have snippet, title, website may be null
+async function add_card(front, back, snippet_id, locals) {
+	let fsrs = new FSRS();
+	let card = new Card();
+	let card_content = (await locals.supabase.from('card_contents').insert({front, back, snippet_id}).select().maybeSingle()).data
+	let saved_card = (await locals.supabase.from('cards').insert({card_content_id: card_content.id, ...card}).select().maybeSingle()).data
+	return saved_card
+}
+
 export async function POST({ request, locals }, mixtral=false, qa=true) {
 	const { n_cards, website_title, text, link } = await request.json();
-	// console.log()
-	// const session = await locals.getSession();
 
-	// if (!session || !session.user) {return json("EE")}
+	const { data } = await locals.supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select().maybeSingle()
 
-	const { data } = await locals.supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select()
-	// const {data} = await (await fetch('http://127.0.0.1:2227/api/add_snippet', {
-	// 	method: 'POST',
-	// 	body: JSON.stringify({ origin_website: link, snippet_text: text }),
-	// 	headers: {
-	// 		'content-type': 'application/json'
-	// 	}
-	// })).json();
-	
 	console.log(data)
-	// let {topic, qas} = qa ? await flashcards_qa(n_cards, website_title, text) : ""
 	let qas = [["hey", "ho"]];
-	let card_contents = [];
+	let cards = [];
 	for (const [front, back] of qas) {
-		card_contents.push((await (await fetch('http://127.0.0.1:2227/api/add_card_content', {
-			method: 'POST',
-			body: JSON.stringify({ front, back, snippet_id: data.id }),
-			headers: {
-				'content-type': 'application/json'
-			}
-		})).json()).data);
+		cards.push(await add_card(front, back, data.id, locals));
 	}
-
-	return json({qas, snippet_id: data.id, card_content_ids: card_contents.map(x=>x.cardContentId)});
+	console.log(cards)
+	return json({qas, snippet_id: data.id, card_ids: cards.map(x=>x.id)});
 }
 
