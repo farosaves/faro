@@ -54,4 +54,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     flashcardContentEl.classList.add("hidden"); // Hide flashcard content
     loginButtonContainerEl.classList.add("hidden"); // Hide login button
   }
+
+  // Retrieve the selected text from local storage
+  chrome.storage.local.get("selectedText", function (data) {
+    if (data.selectedText) {
+      // If there is selected text, populate it in the textarea or other relevant field
+      document.getElementById("yourTextareaElementId").value =
+        data.selectedText;
+    }
+  });
+
+  // Add event listener for your 'Create' button
+  document
+    .getElementById("yourCreateButtonId")
+    .addEventListener("click", async () => {
+      const text = document.getElementById("yourTextareaElementId").value;
+      // Your logic to send this text to your SvelteKit app
+      // Example POST request:
+      try {
+        const response = await fetch(`${DOMAIN}/create-flashcard`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: text }),
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          // Handle success
+        } else {
+          // Handle error
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
 });

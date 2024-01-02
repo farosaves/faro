@@ -3,8 +3,6 @@ import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/publi
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 import type { Handle } from '@sveltejs/kit';
 
-// the handle hook in hooks.server.ts modifies the event.locals object, which is then available in the context of each request.
-
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
@@ -12,9 +10,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event
 	});
 
-	/**
-	 * A convenience helper so we can just call await getSession() instead const { data: { session } } = await supabase.auth.getSession()
-	 */
 	event.locals.getSession = async () => {
 		const {
 			data: { session }
@@ -22,9 +17,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return session;
 	};
 
-	return resolve(event, {
+	const response = await resolve(event, {
 		filterSerializedResponseHeaders(name) {
 			return name === 'content-range';
 		}
 	});
+
+	// Set CORS headers
+	response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173');
+	response.headers.set('Access-Control-Allow-Credentials', 'true');
+
+	return response;
 };
