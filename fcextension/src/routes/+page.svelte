@@ -41,9 +41,6 @@
         loginStatusMessage = isLoggedIn
           ? "Logged in successfully."
           : loginStatusMessage;
-        loginStatusMessage = isLoggedIn
-          ? "Logged in successfully."
-          : loginStatusMessage;
       } else {
         loginStatusMessage = "Error checking login status.";
       }
