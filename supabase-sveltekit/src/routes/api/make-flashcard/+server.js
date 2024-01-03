@@ -54,7 +54,6 @@ async function add_card(front, back, snippet_id, locals) {
 
 export async function POST({ request, locals }, mixtral=false, qa=true) {
 	const { n_cards, website_title, text, link } = await request.json();
-
 	const { data } = await locals.supabase.from('snippets').insert({origin_website: link, snippet_text: text}).select().maybeSingle()
 
 	console.log(data)
