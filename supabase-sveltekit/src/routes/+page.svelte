@@ -1,10 +1,10 @@
 <script>
-    import '../styles.css';
-    import { Auth } from '@supabase/auth-ui-svelte'
-	import { ThemeSupa } from '@supabase/auth-ui-shared'
+	import { ThemeSupa } from '@supabase/auth-ui-shared';
+	import { Auth } from '@supabase/auth-ui-svelte';
+	import '../styles.css';
 
-	export let data
-  </script>
+	export let data;
+</script>
 
 <svelte:head>
 	<title>User Management</title>
@@ -21,4 +21,3 @@
 		/>
 	</div>
 </div>
-

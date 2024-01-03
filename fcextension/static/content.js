@@ -16,3 +16,14 @@
 //     chrome.runtime.sendMessage({ error: "No text selected." });
 //   }
 // }
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "getHighlightedText") {
+    const selectedText = window.getSelection().toString();
+    console.log({ selectedText });
+    chrome.runtime.sendMessage({
+      action: "highlightedText",
+      text: selectedText,
+    });
+  }
+});
