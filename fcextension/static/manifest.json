@@ -23,5 +23,9 @@
       "js": ["content.js"]
     }
   ],
-  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs"]
+
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs",  "sidePanel"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  }
 }
