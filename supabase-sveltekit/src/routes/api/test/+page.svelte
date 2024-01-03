@@ -1,4 +1,5 @@
 <script>
+	const DOMAIN = 'http://localhost:5173';
 	let n_cards = 2;
 	let qas = [
 		['Kto ty jestes? ', 'Polak maly'],
@@ -18,7 +19,7 @@
 	let snippet_id = undefined;
 
 	async function callapi() {
-		const response = await fetch('/api/make-flashcard', {
+		const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
 			method: 'POST',
 			body: JSON.stringify({ n_cards, text, website_title, link, session }),
 			headers: {
@@ -62,6 +63,11 @@
 		};
 	}
 </script>
+
+<!-- <h1>All sites sidepanel extension</h1>
+<p>This side panel is enabled on all sites</p>
+<p class="text-2xl">tailwind test ( works fine)</p>
+<button class="btn btn-primary">daisy test</button> -->
 
 {(data.session?.user.email, snippet_id)}
 {card_ids.join(' ')}
