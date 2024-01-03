@@ -3,15 +3,17 @@
 
   let isLoggedIn = false;
   let loginStatusMessage = 'Please click login below to continue.';
-  const DOMAIN = "http://localhost:5174";
+  const DOMAIN = "http://localhost:5173";
 
   onMount(async () => {
     if (typeof window === 'undefined') return;
-
     try {
       const response = await fetch(`${DOMAIN}/api/check-login`, {
         method: "GET",
         credentials: "include",
+        headers: {
+        'Accept': 'application/json',
+      }
       });
       if (response.ok) {
         const data = await response.json();

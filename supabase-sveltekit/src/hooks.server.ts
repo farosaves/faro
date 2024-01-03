@@ -23,8 +23,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 
-	// Set CORS headers
-	response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173');
+	response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5174');
 	response.headers.set('Access-Control-Allow-Credentials', 'true');
 
 	return response;
