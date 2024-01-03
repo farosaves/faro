@@ -46,6 +46,7 @@ async function flashcards_qa(n_cards, website_title, text, mixtral=false) {
 async function add_card(front, back, snippet_id, locals) {
 	let fsrs = new FSRS();
 	let card = new Card();
+	card = fsrs.repeat(card, new Date())[1].card
 	let card_content = (await locals.supabase.from('card_contents').insert({front, back, snippet_id}).select().maybeSingle()).data
 	let saved_card = (await locals.supabase.from('cards').insert({card_content_id: card_content.id, ...card}).select().maybeSingle()).data
 	return saved_card

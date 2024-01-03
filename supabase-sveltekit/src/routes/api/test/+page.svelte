@@ -18,7 +18,6 @@
 	let snippet_id = undefined;
 
 	async function callapi() {
-		// qas = 'waiting...';
 		const response = await fetch('/api/make-flashcard', {
 			method: 'POST',
 			body: JSON.stringify({ n_cards, text, website_title, link, session }),
