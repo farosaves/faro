@@ -1,7 +1,9 @@
 <script>
   import { onMount } from "svelte";
   export let data;
-  let { supabase } = data;
+  let { supabase, session } = data;
+  let email = session ? session.user.email : "none@none";
+
   const DOMAIN = "http://localhost:5173";
 
   import Snippet from "$lib/Snippet.svelte";
@@ -35,8 +37,7 @@
   }
 </script>
 
-{session.user.email}<br />
-{email}
+{email}<br />
 <div class="max-w-xs mx-auto space-y-4">
   <Snippet bind:showing_content={showing_contents[0]} {fun} />
   <Snippet bind:showing_content={showing_contents[1]} {fun} />
