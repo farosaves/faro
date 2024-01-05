@@ -8,8 +8,6 @@
   let qas_accepted = [false, false];
   let qas_rejected = [false, false];
   let card_ids = [null, null];
-  let website_title = "Chick flick";
-  let link = "https://en.wikipedia.org/wiki/Chick_flick";
   let text =
     "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.";
 
@@ -42,10 +40,7 @@
   }
   function accept(n) {
     return async () => {
-      const { error } = await supabase
-        .from("cards")
-        .update({ is_active: true })
-        .eq("id", card_ids[n]);
+      const { error } = await supabase.from("cards").update({ is_active: true }).eq("id", card_ids[n]);
       console.log(error);
       qas_rejected[n] = false;
       qas_accepted[n] = true;
@@ -53,19 +48,33 @@
   }
   function accept_reject_undo(n) {
     return async () => {
-      const { error } = await supabase
-        .from("cards")
-        .update({ is_active: false })
-        .eq("id", card_ids[n]);
+      const { error } = await supabase.from("cards").update({ is_active: false }).eq("id", card_ids[n]);
       console.log(error);
       qas_rejected[n] = false;
       qas_accepted[n] = false;
     };
   }
-
-  let showing_cards = false;
+  // export let showing_contents = [false, false];
+  // export let id = 0;
+  export let showing_content;
+  export let fun;
 </script>
 
+<div class="collapse bg-base-200">
+  <input type="checkbox" bind:checked={showing_content} on:click={fun} />
+  <div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">{text}</div>
+  <div class="collapse-content">
+    <ul class="flex flex-col">
+      {#each qas.entries() as [index, [question, answer]]}
+        <li class="flex flex-row">
+          <button class="btn">{index + 1}. </button>
+          <div class="flex flex-col"><span>{question}</span><span>{answer}</span></div>
+        </li>
+      {/each}
+    </ul>
+  </div>
+</div>
+<!-- 
 <span
   class="block p-4 my-2 bg-blue-500 text-white hover:bg-blue-600 rounded-md"
   on:click={() => {
@@ -74,15 +83,7 @@
 >
 {#if showing_cards}
   <div class="overflow-x-auto">
-    <ul>
-      {#each qas.entries() as [index, [question, answer]]}
-        <li class="flex flex-row">
-          <span>{index + 1}. </span><span>{question}</span>
-        </li>
-      {/each}
-    </ul>
     <table class="table">
-      <!-- head -->
       <thead>
         <tr>
           <th></th>
@@ -91,7 +92,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- row 1 -->
         {#each qas.entries() as [index, [question, answer]]}
           <tr>
             <th>{index + 1}</th>
@@ -99,28 +99,15 @@
             <td>{answer}</td>
             <td class="flex flex-col">
               {#if !qas_accepted[index] && !qas_rejected[index]}
-                <button
-                  class="btn w-full"
-                  style="color:green"
-                  on:click={accept(index)}
-                >
-                  Accept</button
-                >
-                <button
-                  class="btn w-full"
-                  style="color:red"
-                  on:click={reject(index)}
-                >
-                  Reject</button
-                >
+                <button class="btn w-full" style="color:green" on:click={accept(index)}> Accept</button>
+                <button class="btn w-full" style="color:red" on:click={reject(index)}> Reject</button>
               {:else}
                 <button
                   class="btn w-full"
                   style="color:{qas_accepted[index] ? 'green' : 'red'}"
                   on:click={accept_reject_undo(index)}
                 >
-                  {qas_accepted[index] ? "Accepted" : "Rejected"}<br
-                  />(undo)</button
+                  {qas_accepted[index] ? "Accepted" : "Rejected"}<br />(undo)</button
                 >
               {/if}
             </td>
@@ -129,4 +116,4 @@
       </tbody>
     </table>
   </div>
-{/if}
+{/if} -->
