@@ -11,6 +11,18 @@
   let fun = () => {
     showing_contents = showing_contents.map((_) => false);
   };
+  onMount(async () => {
+    let r = await fetch(`${DOMAIN}/api/my-email`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    let data = await r.json();
+    console.log(data);
+    email = data.email;
+  });
 
   let website_title = "Chick flick";
   let link = "https://en.wikipedia.org/wiki/Chick_flick";
