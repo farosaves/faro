@@ -1,6 +1,6 @@
 <script>
   const DOMAIN = "http://localhost:5173";
-  // import { onMount } from "svelte";
+  import { onMount } from "svelte";
   // export let data;
   // let { supabase } = data;
   // $: ({ supabase } = data);
