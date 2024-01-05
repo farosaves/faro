@@ -66,9 +66,9 @@ async function add_card(front, back, snippet_id, locals) {
 	).data;
 	return saved_card;
 }
-
 export async function POST({ request, locals }, mixtral = false, qa = true) {
 	const { n_cards, website_title, text, link } = await request.json();
+
 	const { data, error } = await locals.supabase
 		.from('snippets')
 		.insert({ origin_website: link, snippet_text: text })
@@ -76,7 +76,6 @@ export async function POST({ request, locals }, mixtral = false, qa = true) {
 		.maybeSingle();
 
 	console.log(error);
-	// console.log(data);
 	let qas = [['hey', 'ho']];
 	let cards = [];
 	for (const [front, back] of qas) {

@@ -1,12 +1,15 @@
 <script>
+  const DOMAIN = "http://localhost:5173";
   export let data;
+  let { supabase } = data;
+  $: ({ supabase } = data);
   let session = data.session;
+
   import Snippet from "$lib/Snippet.svelte";
   let showing_contents = [false, false];
   let fun = () => {
     showing_contents = showing_contents.map((_) => false);
   };
-  const DOMAIN = "http://localhost:5173";
 
   let website_title = "Chick flick";
   let link = "https://en.wikipedia.org/wiki/Chick_flick";
@@ -33,6 +36,7 @@
   }
 </script>
 
+{session}
 <div class="max-w-xs mx-auto space-y-4">
   <Snippet {data} bind:showing_content={showing_contents[0]} {fun} />
   <Snippet {data} bind:showing_content={showing_contents[1]} {fun} />

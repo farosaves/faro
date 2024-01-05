@@ -1,5 +1,9 @@
 <script>
 	const DOMAIN = 'http://localhost:5173';
+	export let data;
+	let { supabase } = data;
+	$: ({ supabase } = data);
+
 	let n_cards = 2;
 	let qas = [
 		['Kto ty jestes? ', 'Polak maly'],
@@ -13,15 +17,12 @@
 	let text =
 		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
 
-	export let data;
-	let session = data.session;
-	let supabase = data.supabase;
 	let snippet_id = undefined;
 
 	async function callapi() {
 		const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
 			method: 'POST',
-			body: JSON.stringify({ n_cards, text, website_title, link, session }),
+			body: JSON.stringify({ n_cards, text, website_title, link }),
 			headers: {
 				'content-type': 'application/json'
 			}
@@ -69,7 +70,7 @@
 <p class="text-2xl">tailwind test ( works fine)</p>
 <button class="btn btn-primary">daisy test</button> -->
 
-{(data.session?.user.email, snippet_id)}
+{data.session?.user.email}
 {card_ids.join(' ')}
 <div class="col-6 form-widget">
 	<input class="text-xl" bind:value={website_title} />
@@ -118,4 +119,15 @@
 
 	<!-- <span class="text-center">{res}</span> -->
 	<button on:click={callapi}>Replicate test</button>
+	<button
+		on:click={async () => {
+			await fetch(`${DOMAIN}/api/my-email`, {
+				method: 'POST',
+				body: JSON.stringify({ n_cards }),
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+		}}>ayy</button
+	>
 </div>

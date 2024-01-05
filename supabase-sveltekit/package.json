@@ -34,9 +34,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/auth-helpers-sveltekit": "^0.10.7",
 		"@supabase/auth-ui-shared": "^0.1.8",
 		"@supabase/auth-ui-svelte": "^0.2.8",
+		"@supabase/ssr": "^0.0.10",
 		"@supabase/supabase-js": "^2.39.1",
 		"daisyui": "^4.4.24",
 		"fsrs.js": "^1.2.0",
