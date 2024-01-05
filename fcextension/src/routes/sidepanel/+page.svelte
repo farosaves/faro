@@ -1,23 +1,8 @@
 <script>
-  const DOMAIN = "http://localhost:5173";
   import { onMount } from "svelte";
-  // export let data;
-  // let { supabase } = data;
-  // $: ({ supabase } = data);
-  // let session = data.session;
-  let email = "none@none";
-  onMount(async () => {
-    let r = await fetch(`${DOMAIN}/api/my-email`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-    let data = await r.json();
-    console.log(data);
-    email = data.email;
-  });
+  export let data;
+  let { supabase } = data;
+  const DOMAIN = "http://localhost:5173";
 
   import Snippet from "$lib/Snippet.svelte";
   let showing_contents = [false, false];
@@ -50,6 +35,7 @@
   }
 </script>
 
+{session.user.email}<br />
 {email}
 <div class="max-w-xs mx-auto space-y-4">
   <Snippet bind:showing_content={showing_contents[0]} {fun} />

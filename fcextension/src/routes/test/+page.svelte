@@ -1,21 +1,15 @@
 <script>
   import { onMount } from "svelte";
-  import { getSupabase, url } from "$lib/utils.ts";
-  let supabase;
-  let email = "none@none";
+  const DOMAIN = "http://localhost:5173";
+  export let data;
+  let { supabase, session } = data;
+  let email = session ? session.user.email : "none@none";
   onMount(async () => {
-    let r = await fetch(`${url}/api/my-email`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-    let data = await r.json();
-    console.log(data);
-    email = data.email;
+    console.log(session);
   });
 </script>
 
-AA
+Sb: {supabase}<br />
+Session: {session}<br />
+
 {email}
