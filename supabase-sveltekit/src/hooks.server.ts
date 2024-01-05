@@ -27,9 +27,12 @@ export const handle: Handle = async ({ event, resolve }) => {
     return session
   }
 
-  return resolve(event, {
+  const response = await resolve(event, {
     filterSerializedResponseHeaders(name) {
       return name === 'content-range'
     },
   })
+  response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5174');
+  response.headers.set('Access-Control-Allow-Credentials', 'true');
+  return response
 }

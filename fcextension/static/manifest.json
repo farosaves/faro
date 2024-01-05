@@ -23,8 +23,7 @@
       "js": ["content.js"]
     }
   ],
-
-  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs",  "sidePanel"],
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs", "sidePanel", "cookies"],
   "side_panel": {
     "default_path": "sidepanel.html"
   }

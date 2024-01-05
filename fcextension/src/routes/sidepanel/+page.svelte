@@ -1,9 +1,23 @@
 <script>
   const DOMAIN = "http://localhost:5173";
-  export let data;
-  let { supabase } = data;
-  $: ({ supabase } = data);
-  let session = data.session;
+  // import { onMount } from "svelte";
+  // export let data;
+  // let { supabase } = data;
+  // $: ({ supabase } = data);
+  // let session = data.session;
+  let email = "none@none";
+  onMount(async () => {
+    let r = await fetch(`${DOMAIN}/api/my-email`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    let data = await r.json();
+    console.log(data);
+    email = data.email;
+  });
 
   import Snippet from "$lib/Snippet.svelte";
   let showing_contents = [false, false];
@@ -36,10 +50,10 @@
   }
 </script>
 
-{session}
+{email}
 <div class="max-w-xs mx-auto space-y-4">
-  <Snippet {data} bind:showing_content={showing_contents[0]} {fun} />
-  <Snippet {data} bind:showing_content={showing_contents[1]} {fun} />
+  <Snippet bind:showing_content={showing_contents[0]} {fun} />
+  <Snippet bind:showing_content={showing_contents[1]} {fun} />
   <span class="block p-4 my-2 bg-green-500 text-white hover:bg-green-600 rounded-md">Clickable Text 2</span>
   <span class="block p-4 my-2 bg-yellow-500 text-white hover:bg-yellow-600 rounded-md">Clickable Text 3</span>
   <div class="h-8"></div>
