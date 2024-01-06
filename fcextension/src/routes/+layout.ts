@@ -1,30 +1,34 @@
 export const prerender = true;
+import type { PageLoad } from './$types';
 
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public'
-import { createBrowserClient, isBrowser, parse } from '@supabase/ssr'
 
-export const load = async ({ fetch, data, depends }) => {
+
+import { createBrowserClient, isBrowser, parse } from '@supabase/ssr'
+import type { Database } from '$lib/supabase';
+let url = "http://localhost:5173/"
+
+export const load: PageLoad = async ({ fetch, data, depends }) => {
   depends('supabase:auth')
 
-  const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+  const supabase = createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     global: {
       fetch,
     },
     cookies: {
-      get(key) {
+      async get(name) {
         if (!isBrowser()) {
-          return // JSON.stringify(data.session)  // here no clue whats going on
+          return // (await chrome.cookies.get({url, name})).value
         }
 
         const cookie = parse(document.cookie)
-        return cookie[key]
+        return cookie[name]
       },
     },
   })
-
+  let a = await supabase.from("snippets").select("*")
   const {
     data: { session },
   } = await supabase.auth.getSession()
-
   return { supabase, session }
 }

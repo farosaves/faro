@@ -8,7 +8,7 @@
   let qas_accepted = [false, false];
   let qas_rejected = [false, false];
   let card_ids = [null, null];
-  let text =
+  export let text =
     "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.";
 
   export let data = {};
@@ -20,9 +20,7 @@
     const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
       method: "POST",
       body: JSON.stringify({ n_cards, text, website_title, link, session }),
-      headers: {
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
     });
     let ret = await response.json();
     qas = ret.qas;

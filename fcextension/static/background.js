@@ -28,9 +28,7 @@ function updateContextMenu(loggedIn) {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "loginStatus") {
     // Perform action, e.g., open a login page
-    chrome.sidePanel.open(
-        {tabId: tab.id}
-        )      
+    chrome.sidePanel.open({ tabId: tab.id });
   }
 });
 

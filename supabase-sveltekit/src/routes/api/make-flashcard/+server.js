@@ -18,7 +18,7 @@ async function flashcards_qa(n_cards, website_title, text, mixtral = false) {
 	### Assistant: 
 	${QA_prompt_response1()}`;
 
-	mixtral ? console.log(prompt, prompt_format) : console.log(prompt_full);
+	// mixtral ? console.log(prompt, prompt_format) : console.log(prompt_full);
 	const output = await replicate.run(
 		mixtral
 			? 'mistralai/mixtral-8x7b-instruct-v0.1'
@@ -31,7 +31,6 @@ async function flashcards_qa(n_cards, website_title, text, mixtral = false) {
 					}
 		}
 	);
-	console.log(output);
 
 	let lines = output.split('\n');
 	let topic = lines[0];
@@ -81,6 +80,5 @@ export async function POST({ request, locals }, mixtral = false, qa = true) {
 	for (const [front, back] of qas) {
 		cards.push(await add_card(front, back, data.id, locals));
 	}
-	console.log(cards);
 	return json({ qas, snippet_id: data.id, card_ids: cards.map((x) => x.id) });
 }

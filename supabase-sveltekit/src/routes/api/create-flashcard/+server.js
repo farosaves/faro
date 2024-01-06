@@ -13,7 +13,7 @@ export async function POST({ locals, request }) {
 	const data = await request.json();
 	const text = data.text;
 
-	console.log({ text });
+	// console.log({ text });
 
 	if (!text) {
 		return new Response(JSON.stringify({ error: 'No text provided' }), {

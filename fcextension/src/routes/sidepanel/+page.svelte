@@ -1,28 +1,27 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
+  import { getSession } from "$lib/utils.js";
+  import Snippet from "$lib/Snippet.svelte";
+  // import type { Database } from "$lib/supabase.js";
   export let data;
-  let { supabase, session } = data;
-  let email = session ? session.user.email : "none@none";
+  let { supabase } = data;
+  let session;
+  async function getSnippets() {
+    supabase;
+    return;
+  }
+  onMount(async () => {
+    session = await getSession(supabase);
+    console.log(session.user.email);
+  });
+  $: email = session ? session.user.email : "none@none";
 
   const DOMAIN = "http://localhost:5173";
 
-  import Snippet from "$lib/Snippet.svelte";
   let showing_contents = [false, false];
   let fun = () => {
     showing_contents = showing_contents.map((_) => false);
   };
-  onMount(async () => {
-    let r = await fetch(`${DOMAIN}/api/my-email`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-    let data = await r.json();
-    console.log(data);
-    email = data.email;
-  });
 
   let website_title = "Chick flick";
   let link = "https://en.wikipedia.org/wiki/Chick_flick";
@@ -47,12 +46,20 @@
     qas_rejected = card_ids.map((x) => false);
     console.log(qas);
   }
+  const handleInserts = (payload) => {
+    console.log("Change received!", payload);
+  };
+
+  supabase
+    .channel("snippets")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "todos" }, handleInserts)
+    .subscribe();
 </script>
 
 {email}<br />
 <div class="max-w-xs mx-auto space-y-4">
-  <Snippet bind:showing_content={showing_contents[0]} {fun} />
-  <Snippet bind:showing_content={showing_contents[1]} {fun} />
+  <Snippet {text} bind:showing_content={showing_contents[0]} {fun} />
+  <Snippet {text} bind:showing_content={showing_contents[1]} {fun} />
   <span class="block p-4 my-2 bg-green-500 text-white hover:bg-green-600 rounded-md">Clickable Text 2</span>
   <span class="block p-4 my-2 bg-yellow-500 text-white hover:bg-yellow-600 rounded-md">Clickable Text 3</span>
   <div class="h-8"></div>
