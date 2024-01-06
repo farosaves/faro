@@ -156,6 +156,7 @@ export interface Database {
           origin_website: string | null
           predicted_topic: string | null
           snippet_text: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -163,6 +164,7 @@ export interface Database {
           origin_website?: string | null
           predicted_topic?: string | null
           snippet_text: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -170,6 +172,7 @@ export interface Database {
           origin_website?: string | null
           predicted_topic?: string | null
           snippet_text?: string
+          user_id?: string
         }
         Relationships: []
       }
