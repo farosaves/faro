@@ -1,76 +1,80 @@
-<script>
-  const DOMAIN = "http://localhost:5173";
-  let n_cards = 2;
-  let qas = [
-    ["Kto ty jestes? ", "Polak maly"],
-    ["Jaki znak twoj?", "Orzel bialy"],
-  ];
-  let qas_accepted = [false, false];
-  let qas_rejected = [false, false];
-  let card_ids = [null, null];
-  export let text =
-    "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.";
+<script lang="ts">
+	const DOMAIN = 'http://localhost:5173';
+	import type { Session } from '@supabase/gotrue-js';
+	import type { CardContentData, SnippetData, SupabaseClient } from '$lib/first';
+	import { onMount } from 'svelte';
+	let n_cards = 2;
+	// let qas = [
+	// 	['Kto ty jestes? ', 'Polak maly'],
+	// 	['Jaki znak twoj?', 'Orzel bialy']
+	// ];
+	let qas_accepted = [false, false];
+	let qas_rejected = [false, false];
+	let card_ids = [null, null];
 
-  export let data = {};
-  let session = data.session;
-  let supabase = data.supabase;
-  let snippet_id = undefined;
+	export let ss: { supabase: SupabaseClient; session: Session };
+	export let snippet_data: SnippetData;
+	export let session = ss.session;
+	export let supabase = ss.supabase;
+	let qas: CardContentData[] = [];
+	onMount(async () => {
+		const { data } = await supabase
+			.from('card_contents')
+			.select()
+			.eq('snippet_id', snippet_data.id);
+		console.log(data);
+		qas = data || [];
+	});
 
-  async function callapi() {
-    const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
-      method: "POST",
-      body: JSON.stringify({ n_cards, text, website_title, link, session }),
-      headers: { "content-type": "application/json" },
-    });
-    let ret = await response.json();
-    qas = ret.qas;
-    snippet_id = ret.snippet_id;
-    card_ids = ret.card_ids;
-    qas_accepted = card_ids.map((x) => false);
-    qas_rejected = card_ids.map((x) => false);
-    console.log(qas);
-  }
-  function reject(n) {
-    return () => {
-      qas_rejected[n] = true;
-      qas_accepted[n] = false;
-    };
-  }
-  function accept(n) {
-    return async () => {
-      const { error } = await supabase.from("cards").update({ is_active: true }).eq("id", card_ids[n]);
-      console.log(error);
-      qas_rejected[n] = false;
-      qas_accepted[n] = true;
-    };
-  }
-  function accept_reject_undo(n) {
-    return async () => {
-      const { error } = await supabase.from("cards").update({ is_active: false }).eq("id", card_ids[n]);
-      console.log(error);
-      qas_rejected[n] = false;
-      qas_accepted[n] = false;
-    };
-  }
-  // export let showing_contents = [false, false];
-  // export let id = 0;
-  export let showing_content;
-  export let fun;
+	function reject(n) {
+		return () => {
+			qas_rejected[n] = true;
+			qas_accepted[n] = false;
+		};
+	}
+	function accept(n) {
+		return async () => {
+			const { error } = await supabase
+				.from('cards')
+				.update({ is_active: true })
+				.eq('id', card_ids[n]);
+			console.log(error);
+			qas_rejected[n] = false;
+			qas_accepted[n] = true;
+		};
+	}
+	function accept_reject_undo(n) {
+		return async () => {
+			const { error } = await supabase
+				.from('cards')
+				.update({ is_active: false })
+				.eq('id', card_ids[n]);
+			console.log(error);
+			qas_rejected[n] = false;
+			qas_accepted[n] = false;
+		};
+	}
+	// export let showing_contents = [false, false];
+	// export let id = 0;
+	export let showing_content: boolean;
+	export let fun: Function;
 </script>
 
 <div class="collapse bg-base-200">
-  <input type="checkbox" bind:checked={showing_content} on:click={fun} />
-  <div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">{text}</div>
-  <div class="collapse-content">
-    <ul class="flex flex-col">
-      {#each qas.entries() as [index, [question, answer]]}
-        <li class="flex flex-row">
-          <button class="btn">{index + 1}. </button>
-          <div class="flex flex-col"><span>{question}</span><span>{answer}</span></div>
-        </li>
-      {/each}
-    </ul>
-  </div>
+	<input type="checkbox" bind:checked={showing_content} on:click={fun} />
+	<div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">
+		{snippet_data.snippet_text}
+	</div>
+	<div class="collapse-content">
+		<ul class="flex flex-col">
+			{#each qas.entries() as [index, { front, back }]}
+				<li class="flex flex-row">
+					<button class="btn">{index + 1}. </button>
+					<div class="flex flex-col"><span>{front}</span><span>{back}</span></div>
+				</li>
+			{/each}
+		</ul>
+	</div>
 </div>
 <!-- 
 <span

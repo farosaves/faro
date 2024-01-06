@@ -5,6 +5,7 @@
   let loginStatusMessage = "Please click login below to continue.";
   let highlightedText = "";
   const DOMAIN = "http://localhost:5173";
+  
 
   onMount(async () => {
     if (typeof window === "undefined") return;
@@ -38,9 +39,7 @@
       if (response.ok) {
         const data = await response.json();
         isLoggedIn = data.isLoggedIn;
-        loginStatusMessage = isLoggedIn
-          ? "Logged in successfully."
-          : loginStatusMessage;
+        loginStatusMessage = isLoggedIn ? "Logged in successfully." : loginStatusMessage;
       } else {
         loginStatusMessage = "Error checking login status.";
       }
@@ -79,9 +78,7 @@
   </div>
 
   <div id="loginButtonContainer" class="max-w-sm p-4 mx-auto">
-    <a href={`${DOMAIN}`} target="_blank" class="w-full btn btn-primary"
-      >Log in</a
-    >
+    <a href={`${DOMAIN}`} target="_blank" class="w-full btn btn-primary">Log in</a>
   </div>
 {:else}
   <div id="flashcardContent" class="max-w-sm p-4 mx-auto">
@@ -95,11 +92,7 @@
           <label class="label">
             <span class="label-text">Add tags</span>
           </label>
-          <input
-            type="text"
-            placeholder="Add tags"
-            class="input input-bordered"
-          />
+          <input type="text" placeholder="Add tags" class="input input-bordered" />
         </div>
 
         <div class="mt-2 form-control">
@@ -118,10 +111,7 @@
           <label class="label">
             <span class="label-text">Flashcard preview...</span>
           </label>
-          <textarea
-            class="textarea textarea-bordered"
-            placeholder="Flashcard preview..."
-          ></textarea>
+          <textarea class="textarea textarea-bordered" placeholder="Flashcard preview..."></textarea>
         </div>
 
         <div class="mt-2 form-control">
