@@ -1,10 +1,12 @@
 <script lang="ts">
+  export let data;
   import { onMount } from "svelte";
   import { getSession } from "$lib/utils.js";
   import Snippet from "$lib/Snippet.svelte";
   // import type { Database } from "$lib/supabase.js";
-  export let data;
+
   let { supabase } = data;
+
   let session;
   async function getSnippets() {
     supabase;

@@ -2,8 +2,8 @@
 	import { ThemeSupa } from '@supabase/auth-ui-shared';
 	import { Auth } from '@supabase/auth-ui-svelte';
 	import '../styles.css';
-
 	export let data;
+	data.supabase.auth.
 </script>
 
 <svelte:head>
