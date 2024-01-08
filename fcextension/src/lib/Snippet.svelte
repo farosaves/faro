@@ -55,21 +55,22 @@
 	</div>
 	<div class="collapse-content">
 		<ul class="flex flex-col">
-			{#each qas.entries() as [index, { front, back }]}
+			{#each qas.entries() as [index, { front, back, is_accepted: previously_accepted }]}
 				<li class="flex flex-row">
 					<button class="btn">{index + 1}. </button>
 					<div class="flex flex-col">
 						<span>{front}</span><span>{back}</span>
-						{qas_accepted[index]}
 						<div class="flex flex-row">
-							{#if !qas_accepted[index] && !qas_rejected[index]}
+							<!-- all of this stuff is just soo crazy, like there should just be a bin button, and mby a big undo button if worried about accidental deletions
+							but making new ones is easy so even that is not an issue -->
+							{#if !qas_accepted[index] && !qas_rejected[index] && !previously_accepted}
 								<button class="btn w-auto" style="color:green" on:click={accept(index)}>
 									Accept</button
 								>
 								<button class="btn w-auto" style="color:red" on:click={reject(index)}>
 									Reject</button
 								>
-							{:else}
+							{:else if !previously_accepted}
 								<button
 									class="btn w-auto"
 									style="color:{qas_accepted[index] ? 'green' : 'red'}"

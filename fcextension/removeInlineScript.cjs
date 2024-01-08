@@ -43,4 +43,21 @@ async function removeInlineScript(directory) {
 		});
 }
 
+async function commentFirstLine(directory) {
+	let files = await glob('**/*.js', {
+		cwd: directory,
+		dot: true,
+		aboslute: true,
+		filesOnly: true
+	});
+	files = files
+		.filter((file) => file == 'background.js' || file == 'content.js')
+		.map((file) => path.join(directory, file))
+		.forEach((file) => {
+			let script = fs.readFileSync(file);
+			fs.writeFileSync(file, ['//', script].join(''));
+		});
+}
+
 removeInlineScript(path.resolve(__dirname, 'build'));
+commentFirstLine(path.resolve(__dirname, 'build'));
