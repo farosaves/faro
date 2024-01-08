@@ -1,11 +1,13 @@
 import 'chrome';
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+	const { selectedText, contextText } = response;
 	if (request.action === 'uploadText') {
-		fetch('https://flashcardize.com/api/upload', {
+		fetch(`${DOMAIN}/api/upload`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ text: request.text })
+			body: JSON.stringify({ selectedText, contextText })
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))
@@ -31,6 +33,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 	if (info.menuItemId === 'loginStatus') {
 		// Perform action, e.g., open a login page
 		chrome.sidePanel.open({ tabId: tab.id });
+		const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+		fetch(`${DOMAIN}/api/upload`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ selectedText: 'az', contextText: 'baz' })
+		});
+
 		chrome.runtime.sendMessage({ action: 'getHighlightedText' });
 	}
 });

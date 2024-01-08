@@ -1,3 +1,4 @@
+import 'chrome';
 // seems this doesn't work, maybe because content.js is per-page, so doesn't do installation?
 // chrome.runtime.onInstalled.addListener(function () {
 //   chrome.action.onClicked.addListener(function (tab) {
@@ -17,15 +18,14 @@
 //     chrome.runtime.sendMessage({ error: "No text selected." });
 //   }
 // }
-import 'chrome';
-
+console.log('hello');
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
 		const selectedText = window.getSelection().toString();
 		console.log({ selectedText });
 		const contextText = window.getSelection().anchorNode.textContent();
 		chrome.runtime.sendMessage({
-			action: 'highlightedText',
+			action: 'uploadText',
 			selectedText,
 			contextText
 		});
@@ -40,3 +40,18 @@ function sendHighlightedText() {
 		chrome.runtime.sendMessage({ error: 'No text selected.' });
 	}
 }
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+	const { selectedText, contextText } = response;
+	if (request.action === 'uploadText') {
+		fetch(`${DOMAIN}/api/upload`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ selectedText, contextText })
+		})
+			.then((response) => response.json())
+			.then((data) => console.log(data))
+			.catch((error) => console.error('Error:', error));
+	}
+});
