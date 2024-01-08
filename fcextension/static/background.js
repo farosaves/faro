@@ -3,11 +3,11 @@ import 'chrome';
 function uploadSelected(request, sender, sendResponse) {
 	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
 	if (request.action === 'uploadText') {
-		const { selectedText, contextText } = request;
+		const { selectedText, contextText, website_title, website_url } = request;
 		fetch(`${DOMAIN}/api/upload`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ selectedText, contextText })
+			body: JSON.stringify({ selectedText, contextText, website_title, website_url })
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))
@@ -33,27 +33,13 @@ async function onCMclick(info, tab) {
 	if (info.menuItemId === 'loginStatus') {
 		chrome.sidePanel.open({ tabId: tab.id });
 		console.log('url', await chrome.tabs.query({ active: true, currentWindow: true }));
-		// doenst work.. mby await chrome.tabs.sendMessage(tab.id, message);?
-		await chrome.tabs.sendMessage(tab.id, { action: 'getHighlightedText' });
+		await chrome.tabs.sendMessage(tab.id, {
+			action: 'getHighlightedText',
+			website_title: tab.title,
+			website_url: tab.url
+		});
 	}
 }
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-// 	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
-// 	if (request.action === 'uploadText') {
-// 		const { selectedText, contextText } = request;
-// 		fetch(`${DOMAIN}/api/upload`, {
-// 			method: 'POST',
-// 			headers: { 'Content-Type': 'application/json' },
-// 			body: JSON.stringify({
-// 				selectedText,
-// 				contextText
-// 				// website_title,
-// 				// website_url
-// 			})
-// 		});
-// 	}
-// 	// args: [DOMAIN, tab.title, tab.url]
-// });
 
 async function onCmClick(info, tab) {
 	chrome.sidePanel.open({ tabId: tab.id });

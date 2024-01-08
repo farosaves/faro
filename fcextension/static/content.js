@@ -19,16 +19,18 @@ import 'chrome';
 //   }
 // }
 console.log('hello');
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
+		const { website_title, website_url } = request;
 		const selectedText = window.getSelection().toString();
 		console.log({ selectedText });
 		const contextText = window.getSelection().anchorNode.textContent;
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
 			selectedText,
-			contextText
+			contextText,
+			website_title,
+			website_url
 		});
 	}
 });
