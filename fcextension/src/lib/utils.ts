@@ -29,26 +29,5 @@ export let getSession = async (supabase: SupabaseClient) => {
 	} = await supabase.auth.getSession();
 	return session;
 };
-export let zip = (x:Array<any>, y:Array<any>) =>
-    Array.from(Array(Math.max(x.length, y.length)), (_, i) => [x[i], y[i]]);
-
-// export function supascribe(
-// 	supabase: SupabaseClient,
-// 	table: string,
-// 	handle: Function,
-// 	session: Session
-// ) {
-// 	supabase
-// 		.channel(table)
-// 		.on(
-// 			'postgres_changes',
-// 			{
-// 				event: 'INSERT',
-// 				schema: 'public',
-// 				table,
-// 				filter: `user_id=eq.${session.user.id}`
-// 			},
-// 			handle
-// 		)
-// 		.subscribe();
-// }
+// export let zip = (x:Array<any>, y:Array<any>) =>
+//     Array.from(Array(Math.max(x.length, y.length)), (_, i) => [x[i], y[i]]);
