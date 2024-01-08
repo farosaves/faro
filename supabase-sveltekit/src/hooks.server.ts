@@ -1,10 +1,14 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public'
+import type { Database } from '$lib/dbtypes'
 import { createServerClient } from '@supabase/ssr'
 import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
-  // console.log("handle cookies", event.cookies.getAll())
-  event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+  if (event.request.method === "OPTIONS") {
+		return new Response(JSON.stringify({}), {status: 200} )
+	}
+
+  event.locals.supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       get: (key) => event.cookies.get(key),
       set: (key, value, options) => {
@@ -33,7 +37,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       return name === 'content-range'
     },
   })
-  response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5174');
+  response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Credentials', 'true');
   return response
 }

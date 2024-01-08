@@ -1,9 +1,9 @@
 import 'chrome';
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+function uploadSelected(request, sender, sendResponse) {
 	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
-	const { selectedText, contextText } = response;
 	if (request.action === 'uploadText') {
+		const { selectedText, contextText } = request;
 		fetch(`${DOMAIN}/api/upload`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -13,7 +13,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			.then((data) => console.log(data))
 			.catch((error) => console.error('Error:', error));
 	}
-});
+}
+chrome.runtime.onMessage.addListener(uploadSelected);
 
 chrome.runtime.onInstalled.addListener(() => {
 	chrome.contextMenus.create({
@@ -28,21 +29,55 @@ function updateContextMenu(loggedIn) {
 	const title = loggedIn ? 'User is logged in' : 'User is not logged in';
 	chrome.contextMenus.update('loginStatus', { title: title });
 }
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+async function onCMclick(info, tab) {
 	if (info.menuItemId === 'loginStatus') {
-		// Perform action, e.g., open a login page
 		chrome.sidePanel.open({ tabId: tab.id });
-		const DOMAIN = 'http://localhost:5173'; // Replace with your domain
-		fetch(`${DOMAIN}/api/upload`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ selectedText: 'az', contextText: 'baz' })
-		});
-
-		chrome.runtime.sendMessage({ action: 'getHighlightedText' });
+		console.log('url', await chrome.tabs.query({ active: true, currentWindow: true }));
+		// doenst work.. mby await chrome.tabs.sendMessage(tab.id, message);?
+		await chrome.tabs.sendMessage(tab.id, { action: 'getHighlightedText' });
 	}
-});
+}
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+// 	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+// 	if (request.action === 'uploadText') {
+// 		const { selectedText, contextText } = request;
+// 		fetch(`${DOMAIN}/api/upload`, {
+// 			method: 'POST',
+// 			headers: { 'Content-Type': 'application/json' },
+// 			body: JSON.stringify({
+// 				selectedText,
+// 				contextText
+// 				// website_title,
+// 				// website_url
+// 			})
+// 		});
+// 	}
+// 	// args: [DOMAIN, tab.title, tab.url]
+// });
+
+async function onCmClick(info, tab) {
+	chrome.sidePanel.open({ tabId: tab.id });
+	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+	await chrome.scripting.executeScript({
+		target: { tabId: tab.id },
+		function: (DOMAIN, website_title, website_url) => {
+			let selectedText = getSelection().toString();
+			let contextText = getSelection().anchorNode.textContent;
+			fetch(`${DOMAIN}/api/upload`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					selectedText,
+					contextText,
+					website_title,
+					website_url
+				})
+			});
+		},
+		args: [DOMAIN, tab.title, tab.url]
+	});
+}
+chrome.contextMenus.onClicked.addListener(onCMclick);
 
 // This function checks the user's login status.
 async function checkLoginStatus() {
@@ -98,6 +133,6 @@ function startPollingLoginStatus(interval) {
 // Start polling for login status every 10 minutes.
 startPollingLoginStatus(10 * 60 * 1000);
 
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-	chrome.tabs.sendMessage(tabs[0].id, { action: 'getHighlightedText' });
-});
+// chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+// 	chrome.tabs.sendMessage(tabs[0].id, { action: 'getHighlightedText' });
+// });

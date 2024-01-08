@@ -19,11 +19,12 @@ import 'chrome';
 //   }
 // }
 console.log('hello');
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
 		const selectedText = window.getSelection().toString();
 		console.log({ selectedText });
-		const contextText = window.getSelection().anchorNode.textContent();
+		const contextText = window.getSelection().anchorNode.textContent;
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
 			selectedText,
@@ -41,17 +42,19 @@ function sendHighlightedText() {
 	}
 }
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
-	const { selectedText, contextText } = response;
-	if (request.action === 'uploadText') {
-		fetch(`${DOMAIN}/api/upload`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ selectedText, contextText })
-		})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error('Error:', error));
-	}
-});
+// const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+// 	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
+// 	if (request.action === 'uploadText') {
+// 		const { selectedText, contextText } = request;
+// 		// console.log({ selectedText,  });
+// 		fetch(`${DOMAIN}/api/upload`, {
+// 			method: 'POST',
+// 			headers: { 'Content-Type': 'application/json' },
+// 			body: JSON.stringify({ selectedText, contextText })
+// 		})
+// 			.then((response) => response.json())
+// 			.then((data) => console.log(data))
+// 			.catch((error) => console.error('Error:', error));
+// 	}
+// });
