@@ -18,6 +18,10 @@ export let getSession = async (supabase: SupabaseClient) => {
 		}
 	});
 	const { access_token, refresh_token } = await resp.json();
+	// log
+	console.log(access_token);
+    console.log(refresh_token);
+    // set session
 	await supabase.auth.setSession({ access_token, refresh_token });
 
 	const {
