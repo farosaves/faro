@@ -12,7 +12,7 @@
 		"moduleResolution": "bundler"
 	},
 	"typeAcquisition": {
-		"include": ["chrome"]
+		// "include": ["chrome"]
 	}
 
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

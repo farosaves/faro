@@ -17,24 +17,26 @@
 //     chrome.runtime.sendMessage({ error: "No text selected." });
 //   }
 // }
+import 'chrome';
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "getHighlightedText") {
-    const selectedText = window.getSelection().toString();
-    console.log({ selectedText });
-    chrome.runtime.sendMessage({
-      action: "highlightedText",
-      text: selectedText,
-    });
-  }
+	if (request.action === 'getHighlightedText') {
+		const selectedText = window.getSelection().toString();
+		console.log({ selectedText });
+		const contextText = window.getSelection().anchorNode.textContent();
+		chrome.runtime.sendMessage({
+			action: 'highlightedText',
+			selectedText,
+			contextText
+		});
+	}
 });
 
 function sendHighlightedText() {
-  const text = window.getSelection().toString();
-  if (text) {
-    chrome.runtime.sendMessage({ text: text });
-  } else {
-    chrome.runtime.sendMessage({ error: "No text selected." });
-  }
+	const text = window.getSelection().toString();
+	if (text) {
+		chrome.runtime.sendMessage({ text: text });
+	} else {
+		chrome.runtime.sendMessage({ error: 'No text selected.' });
+	}
 }
-
