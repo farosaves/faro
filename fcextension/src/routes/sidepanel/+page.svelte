@@ -75,7 +75,6 @@
 <div class="max-w-xs mx-auto space-y-4">
 	<!-- <Snippet {data} {text} bind:showing_content={showing_contents[1]} {fun} /> -->
 	{#each snippets as snippet_data, i}
-		{i}
 		<Snippet {ss} {snippet_data} bind:showing_content={showing_contents[i]} {fun} />
 	{/each}
 

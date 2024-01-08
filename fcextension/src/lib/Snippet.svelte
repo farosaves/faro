@@ -3,19 +3,14 @@
 	import type { Session } from '@supabase/gotrue-js';
 	import type { CardContentData, SnippetData, SupabaseClient } from '$lib/first';
 	import { onMount } from 'svelte';
-	let n_cards = 2;
-	// let qas = [
-	// 	['Kto ty jestes? ', 'Polak maly'],
-	// 	['Jaki znak twoj?', 'Orzel bialy']
-	// ];
 	let qas_accepted = [false, false];
 	let qas_rejected = [false, false];
 	let card_ids = [null, null];
 
 	export let ss: { supabase: SupabaseClient; session: Session };
 	export let snippet_data: SnippetData;
-	export let session = ss.session;
-	export let supabase = ss.supabase;
+	let session = ss.session;
+	let supabase = ss.supabase;
 	let qas: CardContentData[] = [];
 	onMount(async () => {
 		const { data } = await supabase
