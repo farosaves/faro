@@ -1,58 +1,51 @@
 <script lang="ts">
 	const DOMAIN = 'http://localhost:5173';
 	import type { Session } from '@supabase/gotrue-js';
-	import type { CardContentData, SnippetData, SupabaseClient } from '$lib/first';
+	import type { SupabaseClient } from '$lib/first';
 	import { onMount } from 'svelte';
-	let qas_accepted = [false, false];
-	let qas_rejected = [false, false];
-	let card_ids = [null, null];
+	import type { MouseEventHandler } from 'svelte/elements';
+	import type { CardContents, Snippets } from './dbtypes';
+	let qas_accepted: boolean[] = [];
+	let qas_rejected: boolean[] = [];
 
 	export let ss: { supabase: SupabaseClient; session: Session };
-	export let snippet_data: SnippetData;
+	export let snippet_data: Snippets;
 	let session = ss.session;
 	let supabase = ss.supabase;
-	let qas: CardContentData[] = [];
-	onMount(async () => {
+	let qas: CardContents[] = [];
+	async function qasinit() {
 		const { data } = await supabase
 			.from('card_contents')
 			.select()
-			.eq('snippet_id', snippet_data.id);
+			.eq('snippet_id', snippet_data.id)
+			.eq('is_rejected', false);
 		console.log(data);
 		qas = data || [];
-	});
-
-	function reject(n: number) {
-		return () => {
-			qas_rejected[n] = true;
-			qas_accepted[n] = false;
+		qas_accepted = qas.map((v) => v.is_accepted);
+		qas_rejected = qas.map((v) => v.is_rejected);
+	}
+	onMount(qasinit);
+	function decide(n: number, is_accepted: boolean, is_rejected: boolean) {
+		return async () => {
+			const ret = await supabase
+				.from('card_contents')
+				.update({ is_accepted, is_rejected })
+				.eq('id', qas[n].id);
+			qas_rejected[n] = is_rejected;
+			qas_accepted[n] = is_accepted;
 		};
+	}
+	function reject(n: number) {
+		return decide(n, false, true);
 	}
 	function accept(n: number) {
-		return async () => {
-			const { error } = await supabase
-				.from('cards')
-				.update({ is_active: true })
-				.eq('id', card_ids[n]);
-			console.log(error);
-			qas_rejected[n] = false;
-			qas_accepted[n] = true;
-		};
+		return decide(n, true, false);
 	}
-	function accept_reject_undo(n) {
-		return async () => {
-			const { error } = await supabase
-				.from('cards')
-				.update({ is_active: false })
-				.eq('id', card_ids[n]);
-			console.log(error);
-			qas_rejected[n] = false;
-			qas_accepted[n] = false;
-		};
+	function accept_reject_undo(n: number) {
+		return decide(n, false, false);
 	}
-	// export let showing_contents = [false, false];
-	// export let id = 0;
 	export let showing_content: boolean;
-	export let fun: Function;
+	export let fun: MouseEventHandler<any>;
 </script>
 
 <div class="collapse bg-base-200">
@@ -65,7 +58,28 @@
 			{#each qas.entries() as [index, { front, back }]}
 				<li class="flex flex-row">
 					<button class="btn">{index + 1}. </button>
-					<div class="flex flex-col"><span>{front}</span><span>{back}</span></div>
+					<div class="flex flex-col">
+						<span>{front}</span><span>{back}</span>
+						{qas_accepted[index]}
+						<div class="flex flex-row">
+							{#if !qas_accepted[index] && !qas_rejected[index]}
+								<button class="btn w-auto" style="color:green" on:click={accept(index)}>
+									Accept</button
+								>
+								<button class="btn w-auto" style="color:red" on:click={reject(index)}>
+									Reject</button
+								>
+							{:else}
+								<button
+									class="btn w-auto"
+									style="color:{qas_accepted[index] ? 'green' : 'red'}"
+									on:click={accept_reject_undo(index)}
+								>
+									{qas_accepted[index] ? 'Accepted' : 'Rejected'}<br />(undo)</button
+								>
+							{/if}
+						</div>
+					</div>
 				</li>
 			{/each}
 		</ul>

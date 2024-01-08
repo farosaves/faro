@@ -2,10 +2,10 @@
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { getSession, zip } from '$lib/utils';
+	import { getSession } from '$lib/utils';
 	import Snippet from '$lib/Snippet.svelte';
 	import { redirect } from '@sveltejs/kit';
-	import type { SnippetData } from '$lib/first.js';
+	import type { Snippets } from '$lib/dbtypes.js';
 	let { supabase } = data;
 	let session: Session;
 	$: ss = { supabase, session };
@@ -14,9 +14,9 @@
 		error && console.log('getSnippets error', error);
 		return data ?? [];
 	}
-	let snippets: SnippetData[] = [];
+	let snippets: Snippets[] = [];
 
-	const onSnippetInsert = (payload: { new: SnippetData }) => {
+	const onSnippetInsert = (payload: { new: Snippets }) => {
 		console.log(payload.new);
 		snippets = [...snippets, payload.new];
 		showing_contents = [...showing_contents, false];
@@ -50,21 +50,6 @@
 
 	let website_title = 'Chick flick';
 	let link = 'https://en.wikipedia.org/wiki/Chick_flick';
-
-	// async function callapi() {
-	// 	const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify({ n_cards, text, website_title, link, session }),
-	// 		headers: { 'content-type': 'application/json' }
-	// 	});
-	// 	let ret = await response.json();
-	// 	qas = ret.qas;
-	// 	snippet_id = ret.snippet_id;
-	// 	card_ids = ret.card_ids;
-	// 	qas_accepted = card_ids.map((x) => false);
-	// 	qas_rejected = card_ids.map((x) => false);
-	// 	console.log(qas);
-	// }
 
 	let text =
 		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
