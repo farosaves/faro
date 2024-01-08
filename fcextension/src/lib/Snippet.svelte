@@ -21,13 +21,13 @@
 		qas = data || [];
 	});
 
-	function reject(n) {
+	function reject(n: number) {
 		return () => {
 			qas_rejected[n] = true;
 			qas_accepted[n] = false;
 		};
 	}
-	function accept(n) {
+	function accept(n: number) {
 		return async () => {
 			const { error } = await supabase
 				.from('cards')
