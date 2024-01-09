@@ -4,7 +4,7 @@ function uploadSelected(request, sender, sendResponse) {
 	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
 	if (request.action === 'uploadText') {
 		const { selectedText, contextText, website_title, website_url } = request;
-		fetch(`${DOMAIN}/api/upload`, {
+		fetch(`${DOMAIN}/api/upload-snippet`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ selectedText, contextText, website_title, website_url })

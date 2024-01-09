@@ -45,26 +45,6 @@ async function flashcards_qa(n_cards, website_title, text, mixtral = false) {
 
 // Would it make sense to split out this logic?
 // My first intuition is no - because you always want to have snippet, title, website may be null
-async function add_card(front, back, snippet_id, locals) {
-	let fsrs = new FSRS();
-	let card = new Card();
-	card = fsrs.repeat(card, new Date())[1].card;
-	let card_content = (
-		await locals.supabase
-			.from('card_contents')
-			.insert({ front, back, snippet_id })
-			.select()
-			.maybeSingle()
-	).data;
-	let saved_card = (
-		await locals.supabase
-			.from('cards')
-			.insert({ card_content_id: card_content.id, ...card })
-			.select()
-			.maybeSingle()
-	).data;
-	return saved_card;
-}
 export async function POST({ request, locals }, mixtral = false, qa = true) {
 	const { n_cards, website_title, text, link } = await request.json();
 

@@ -5,7 +5,7 @@ export interface Database {
 		Tables: {
 			card_contents: {
 				Row: {
-					back: string;
+					back: string | null;
 					created_at: string;
 					front: string;
 					id: number;
@@ -14,7 +14,7 @@ export interface Database {
 					snippet_id: number | null;
 				};
 				Insert: {
-					back: string;
+					back?: string | null;
 					created_at?: string;
 					front: string;
 					id?: number;
@@ -23,7 +23,7 @@ export interface Database {
 					snippet_id?: number | null;
 				};
 				Update: {
-					back?: string;
+					back?: string | null;
 					created_at?: string;
 					front?: string;
 					id?: number;
@@ -153,7 +153,9 @@ export interface Database {
 					origin_website: string | null;
 					predicted_topic: string | null;
 					snippet_text: string;
+					tag: string[] | null;
 					user_id: string;
+					website_title: string | null;
 				};
 				Insert: {
 					created_at?: string;
@@ -161,7 +163,9 @@ export interface Database {
 					origin_website?: string | null;
 					predicted_topic?: string | null;
 					snippet_text: string;
+					tag?: string[] | null;
 					user_id?: string;
+					website_title?: string | null;
 				};
 				Update: {
 					created_at?: string;
@@ -169,7 +173,9 @@ export interface Database {
 					origin_website?: string | null;
 					predicted_topic?: string | null;
 					snippet_text?: string;
+					tag?: string[] | null;
 					user_id?: string;
+					website_title?: string | null;
 				};
 				Relationships: [];
 			};

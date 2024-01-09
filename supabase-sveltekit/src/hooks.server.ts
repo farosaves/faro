@@ -5,7 +5,8 @@ import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
   if (event.request.method === "OPTIONS") {
-		return new Response(JSON.stringify({}), {status: 200} )
+		const r =  new Response(JSON.stringify({}), {status: 200} )
+    return r
 	}
 
   event.locals.supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
@@ -37,7 +38,10 @@ export const handle: Handle = async ({ event, resolve }) => {
       return name === 'content-range'
     },
   })
-  response.headers.set('Access-Control-Allow-Origin', '*');
+  // console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174
+  const origin = event.request.headers.get("origin")
+  // here if we want access control we can check origin programatically
+  response.headers.set('Access-Control-Allow-Origin', origin || "*");
   response.headers.set('Access-Control-Allow-Credentials', 'true');
   return response
 }
