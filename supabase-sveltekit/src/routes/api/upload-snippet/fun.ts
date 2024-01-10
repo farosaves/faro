@@ -1,17 +1,9 @@
-export let is4Cloze = (selectedText: string) => selectedText.split(' ').length < 6;
-
-export function makeCloze(selectedText: string, contextText: string) {
-	return {
-		front: contextText.replace(selectedText, '{{c1:' + selectedText + '}}'),
-		back: null
-	};
-}
+export let is2short = (selectedText: string) => selectedText.split(' ').length < 6;
 
 export function makeQuote(selectedText: string, contextText: string) {
-	if (!is4Cloze(selectedText)) {
+	if (!is2short(selectedText)) {
 		return selectedText;
 	}
-
     const regex_post = /^([^\.!\?]|\.\d|\d\.|\.[^\.]\.)+/u // from the start 
     const regex_pre = /([^\.\?]|\.\d|\d\.|\.[^\.]\.)+$/u  // from the end
 	let [pre, post] = contextText.split(selectedText)
