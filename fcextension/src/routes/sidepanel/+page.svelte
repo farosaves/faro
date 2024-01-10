@@ -3,39 +3,40 @@
 	export let data;
 	import { onMount } from 'svelte';
 	import { getSession } from '$lib/utils';
-	import Snippet from '$lib/Snippet.svelte';
+	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
-	import type { Snippets } from '$lib/dbtypes.js';
+	import type { Notes } from '$lib/dbtypes.js';
 	let { supabase } = data;
 	let session: Session;
 	$: ss = { supabase, session };
-	async function getSnippets() {
-		const { data, error } = await supabase.from('snippets').select().eq('user_id', session.user.id);
-		error && console.log('getSnippets error', error);
+	async function getNotes() {
+		const { data, error } = await supabase.from('notes').select().eq('user_id', session.user.id);
+		error && console.log('getNotes error', error);
 		return data ?? [];
 	}
-	let snippets: Snippets[] = [];
+	let notes: Notes[] = [];
 
-	const onSnippetInsert = (payload: { new: Snippets }) => {
+	const onNoteInsert = (payload: { new: Notes }) => {
 		console.log(payload.new);
-		snippets = [...snippets, payload.new];
+		notes = [...notes, payload.new];
 		showing_contents = [...showing_contents, false];
 	};
 
 	onMount(async () => {
+		console.log(chrome.cast);
 		session = (await getSession(supabase)) || redirect(300, DOMAIN); // omg I'm starting to love typescript
-		snippets = await getSnippets();
+		notes = await getNotes();
 		supabase
-			.channel('snippets')
+			.channel('notes')
 			.on(
 				'postgres_changes',
 				{
 					event: 'INSERT',
 					schema: 'public',
-					table: 'snippets',
+					table: 'notes',
 					filter: `user_id=eq.${session.user.id}`
 				},
-				onSnippetInsert
+				onNoteInsert
 			)
 			.subscribe();
 	});
@@ -43,7 +44,7 @@
 
 	const DOMAIN = 'http://localhost:5173';
 
-	let showing_contents = snippets.map((_) => false);
+	let showing_contents = notes.map((_) => false);
 	let fun = () => {
 		showing_contents = showing_contents.map((_) => false);
 	};
@@ -55,20 +56,17 @@
 		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
 </script>
 
-{email}<br />
-<!-- {snippets.map((v) => v.created_at.toString()).join('\n')} -->
+{email}WOO<br />
 <div class="max-w-xs mx-auto space-y-4">
-	<!-- <Snippet {data} {text} bind:showing_content={showing_contents[1]} {fun} /> -->
-	{#each snippets as snippet_data, i}
-		<Snippet {ss} {snippet_data} bind:showing_content={showing_contents[i]} {fun} />
+	{#each notes as note_data, i}
+		<Note {ss} {note_data} bind:showing_content={showing_contents[i]} {fun} />
 	{/each}
 
 	<div class=" form-widget">
 		<input class="text-xl" bind:value={website_title} />
 		<input class="resize-y" bind:value={text} />
-		<!-- <button on:click={process_snippet}>Replicate test</button> -->
-		<button class="btn-primary btn" on:click={async () => console.log(await getSnippets())}
-			>Get snippets</button
+		<button class="btn-primary btn" on:click={async () => console.log(await getNotes())}
+			>Get notes</button
 		>
 	</div>
 </div>

@@ -7,13 +7,14 @@ export function makeCloze(selectedText: string, contextText: string) {
 	};
 }
 
-export function makeSnippet(selectedText: string, contextText: string) {
+export function makeQuote(selectedText: string, contextText: string) {
 	if (!is4Cloze(selectedText)) {
 		return selectedText;
 	}
-    const regex = /([^\.]|\.\d|\d\.)+/  // anything but dots unless the dot is adj to a digit
-	// now close case
+
+    const regex_post = /^([^\.!\?]|\.\d|\d\.|\.[^\.]\.)+/u // from the start 
+    const regex_pre = /([^\.\?]|\.\d|\d\.|\.[^\.]\.)+$/u  // from the end
 	let [pre, post] = contextText.split(selectedText)
-	return (pre.split("").reverse().join("").match(regex)![0].split("").reverse().join("") + selectedText + post.match(regex)![0]).trim() + "."
+	return (pre.match(regex_pre)![0] + selectedText + post.match(regex_post)![0]).trim() + "."
 	// return contextText.slice(pre, contextText.length-post)
 }

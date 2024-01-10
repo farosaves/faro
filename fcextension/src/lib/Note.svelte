@@ -4,12 +4,12 @@
 	import type { SupabaseClient } from '$lib/first';
 	import { onMount } from 'svelte';
 	import type { MouseEventHandler } from 'svelte/elements';
-	import type { CardContents, Snippets } from './dbtypes';
+	import type { CardContents, Notes } from './dbtypes';
 	let qas_accepted: boolean[] = [];
 	let qas_rejected: boolean[] = [];
 
 	export let ss: { supabase: SupabaseClient; session: Session };
-	export let snippet_data: Snippets;
+	export let note_data: Notes;
 	let session = ss.session;
 	let supabase = ss.supabase;
 	let qas: CardContents[] = [];
@@ -17,7 +17,7 @@
 		const { data } = await supabase
 			.from('card_contents')
 			.select()
-			.eq('snippet_id', snippet_data.id)
+			.eq('note_id', note_data.id)
 			.eq('is_rejected', false);
 		console.log(data);
 		qas = data || [];
@@ -51,7 +51,7 @@
 <div class="collapse bg-base-200">
 	<input type="checkbox" bind:checked={showing_content} on:click={fun} />
 	<div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">
-		{snippet_data.snippet_text}
+		{note_data.quote}
 	</div>
 	<div class="collapse-content">
 		<ul class="flex flex-col">

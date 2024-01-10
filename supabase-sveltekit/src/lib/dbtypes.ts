@@ -111,6 +111,39 @@ export interface Database {
 				};
 				Relationships: [];
 			};
+			notes: {
+				Row: {
+					created_at: string;
+					id: number;
+					origin_website: string | null;
+					predicted_topic: string | null;
+					quote: string;
+					tag: string[];
+					user_id: string;
+					website_title: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: number;
+					origin_website?: string | null;
+					predicted_topic?: string | null;
+					quote: string;
+					tag?: string[];
+					user_id?: string;
+					website_title?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: number;
+					origin_website?: string | null;
+					predicted_topic?: string | null;
+					quote?: string;
+					tag?: string[];
+					user_id?: string;
+					website_title?: string | null;
+				};
+				Relationships: [];
+			};
 			profiles: {
 				Row: {
 					avatar_url: string | null;
@@ -145,39 +178,6 @@ export interface Database {
 						referencedColumns: ['id'];
 					}
 				];
-			};
-			snippets: {
-				Row: {
-					created_at: string;
-					id: number;
-					origin_website: string | null;
-					predicted_topic: string | null;
-					snippet_text: string;
-					tag: string[] | null;
-					user_id: string;
-					website_title: string | null;
-				};
-				Insert: {
-					created_at?: string;
-					id?: number;
-					origin_website?: string | null;
-					predicted_topic?: string | null;
-					snippet_text: string;
-					tag?: string[] | null;
-					user_id?: string;
-					website_title?: string | null;
-				};
-				Update: {
-					created_at?: string;
-					id?: number;
-					origin_website?: string | null;
-					predicted_topic?: string | null;
-					snippet_text?: string;
-					tag?: string[] | null;
-					user_id?: string;
-					website_title?: string | null;
-				};
-				Relationships: [];
 			};
 		};
 		Views: {
@@ -283,10 +283,10 @@ export type Countries = Database['public']['Tables']['countries']['Row'];
 export type InsertCountries = Database['public']['Tables']['countries']['Insert'];
 export type UpdateCountries = Database['public']['Tables']['countries']['Update'];
 
+export type Notes = Database['public']['Tables']['notes']['Row'];
+export type InsertNotes = Database['public']['Tables']['notes']['Insert'];
+export type UpdateNotes = Database['public']['Tables']['notes']['Update'];
+
 export type Profiles = Database['public']['Tables']['profiles']['Row'];
 export type InsertProfiles = Database['public']['Tables']['profiles']['Insert'];
 export type UpdateProfiles = Database['public']['Tables']['profiles']['Update'];
-
-export type Snippets = Database['public']['Tables']['snippets']['Row'];
-export type InsertSnippets = Database['public']['Tables']['snippets']['Insert'];
-export type UpdateSnippets = Database['public']['Tables']['snippets']['Update'];

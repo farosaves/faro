@@ -72,9 +72,9 @@
 
 {data.session?.user.email}
 {card_ids.join(' ')}
-<div class="col-6 form-widget">
-	<input class="text-xl" bind:value={website_title} />
-	<input class="resize" bind:value={text} />
+<div class="flex flex-col space-y-4 w-96">
+	<input class="text-xl input input-bordered" bind:value={website_title} />
+	<input class="resize input input-bordered" bind:value={text} />
 
 	<div class="overflow-x-auto">
 		<table class="table">
@@ -95,10 +95,10 @@
 						<td>{answer}</td>
 						<td class="flex flex-col">
 							{#if !qas_accepted[index] && !qas_rejected[index]}
-								<button class="btn w-full" style="color:green" on:click={accept(index)}>
+								<button class="btn w-full btn-neutral" style="color:green" on:click={accept(index)}>
 									Accept</button
 								>
-								<button class="btn w-full" style="color:red" on:click={reject(index)}>
+								<button class="btn w-full btn-neutral" style="color:red" on:click={reject(index)}>
 									Reject</button
 								>
 							{:else}
