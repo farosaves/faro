@@ -1,8 +1,7 @@
 import type { SupabaseClient } from '$lib/first';
-import { logIfError, ts } from '$lib/util.js';
+import { logIfError } from '$lib/util.js';
 import { error, json } from '@sveltejs/kit';
-import { FSRS, Card } from 'fsrs.js';
-import { is2short, makeCloze, makeQuote as makeQuote } from './fun';
+import { makeQuote } from './fun';
 
 
 export async function POST({ request, locals }) {
