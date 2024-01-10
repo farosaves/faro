@@ -1,5 +1,9 @@
 <script>
 	const DOMAIN = 'http://localhost:5173';
+	export let data;
+	let { supabase } = data;
+	$: ({ supabase } = data);
+
 	let n_cards = 2;
 	let qas = [
 		['Kto ty jestes? ', 'Polak maly'],
@@ -13,15 +17,12 @@
 	let text =
 		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
 
-	export let data;
-	let session = data.session;
-	let supabase = data.supabase;
 	let snippet_id = undefined;
 
 	async function callapi() {
 		const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
 			method: 'POST',
-			body: JSON.stringify({ n_cards, text, website_title, link, session }),
+			body: JSON.stringify({ n_cards, text, website_title, link }),
 			headers: {
 				'content-type': 'application/json'
 			}
@@ -69,11 +70,11 @@
 <p class="text-2xl">tailwind test ( works fine)</p>
 <button class="btn btn-primary">daisy test</button> -->
 
-{(data.session?.user.email, snippet_id)}
+{data.session?.user.email}
 {card_ids.join(' ')}
-<div class="col-6 form-widget">
-	<input class="text-xl" bind:value={website_title} />
-	<input class="resize" bind:value={text} />
+<div class="flex flex-col space-y-4 w-96">
+	<input class="text-xl input input-bordered" bind:value={website_title} />
+	<input class="resize input input-bordered" bind:value={text} />
 
 	<div class="overflow-x-auto">
 		<table class="table">
@@ -94,10 +95,10 @@
 						<td>{answer}</td>
 						<td class="flex flex-col">
 							{#if !qas_accepted[index] && !qas_rejected[index]}
-								<button class="btn w-full" style="color:green" on:click={accept(index)}>
+								<button class="btn w-full btn-neutral" style="color:green" on:click={accept(index)}>
 									Accept</button
 								>
-								<button class="btn w-full" style="color:red" on:click={reject(index)}>
+								<button class="btn w-full btn-neutral" style="color:red" on:click={reject(index)}>
 									Reject</button
 								>
 							{:else}
@@ -118,4 +119,15 @@
 
 	<!-- <span class="text-center">{res}</span> -->
 	<button on:click={callapi}>Replicate test</button>
+	<button
+		on:click={async () => {
+			await fetch(`${DOMAIN}/api/my-email`, {
+				method: 'POST',
+				body: JSON.stringify({ n_cards }),
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+		}}>ayy</button
+	>
 </div>

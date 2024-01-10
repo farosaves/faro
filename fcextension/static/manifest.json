@@ -1,31 +1,38 @@
 {
-  "manifest_version": 3,
-  "name": "Flashcardize",
-  "version": "0.2",
-  "icons": {
-    "16": "./icons/icon16.png",
-    "48": "./icons/icon48.png",
-    "128": "./icons/icon128.png"
-  },
-  "description": "Easily create flashcards while browsing",
-  "action": {
-    "default_popup": "index.html",
-    "default_icon": "./icons/icon48.png"
-  },
-  "background": {
-    "service_worker": "background.js"
-  },
+	"manifest_version": 3,
+	"name": "Flashcardize",
+	"version": "0.2",
+	"icons": {
+		"16": "./icons/icon16.png",
+		"48": "./icons/icon48.png",
+		"128": "./icons/icon128.png"
+	},
+	"description": "Easily create flashcards while browsing",
+	"action": {
+		"default_popup": "index.html",
+		"default_icon": "./icons/icon48.png"
+	},
+	"background": {
+		"service_worker": "background.js"
+	},
 
-  "host_permissions": ["<all_urls>"],
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
-
-  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs",  "sidePanel"],
-  "side_panel": {
-    "default_path": "sidepanel.html"
-  }
+	"host_permissions": ["<all_urls>"],
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["content.js"]
+		}
+	],
+	"permissions": [
+		"activeTab",
+		"scripting",
+		"storage",
+		"contextMenus",
+		"tabs",
+		"sidePanel",
+		"cookies"
+	],
+	"side_panel": {
+		"default_path": "sidepanel.html"
+	}
 }
