@@ -31,3 +31,6 @@ test('another nasty', () => {
 		"Several chick flicks have been patterned after the story of Cinderella and other fairy tales (e.g. A Cinderella Story, Ever After and Pretty Woman), or even Shakespeare in the case of She's the Man and 10 Things I Hate About You."
 	);
 });
+test('oh boy', () => {
+	expect(makeQuote('6kB', 'HotKeys.js is an input capture library with some very special features, it is easy to pick up and use, has a reasonable footprint (~6kB) (gzipped: 2.8kB), and has no dependencies.')).toBe("HotKeys.js is an input capture library with some very special features, it is easy to pick up and use, has a reasonable footprint (~6kB) (gzipped: 2.8kB), and has no dependencies.")
+})
