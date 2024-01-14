@@ -19,6 +19,11 @@ import 'chrome';
 //   }
 // }
 console.log('hello');
+
+// chrome.commands.onCommand.addListener((command) => {
+// 	console.log(`Command: ${command}`);
+// });
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
 		const { website_title, website_url } = request;

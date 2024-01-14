@@ -29,7 +29,7 @@ function updateContextMenu(loggedIn) {
 	const title = loggedIn ? 'User is logged in' : 'User is not logged in';
 	chrome.contextMenus.update('loginStatus', { title: title });
 }
-
+// TODO: sort this out
 // chrome.webNavigation.onCompleted.addListener((details) =>
 // 	chrome.runtime.sendMessage({ action: 'update_curr_url' })
 // );

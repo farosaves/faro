@@ -13,7 +13,8 @@
 		"default_icon": "./icons/icon48.png"
 	},
 	"background": {
-		"service_worker": "background.js"
+		"service_worker": "background.js",
+		"type": "module"
 	},
 
 	"host_permissions": ["<all_urls>"],
@@ -30,8 +31,15 @@
 		"contextMenus",
 		"tabs",
 		"sidePanel",
-		"cookies"
+		"cookies",
+		"commands"
 	],
+	"commands": {
+		"activate": {
+			"suggested_key": "Alt+D",
+			"description": "Whatever"
+		}
+	},
 	"side_panel": {
 		"default_path": "sidepanel.html"
 	}
