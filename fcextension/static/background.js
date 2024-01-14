@@ -29,10 +29,16 @@ function updateContextMenu(loggedIn) {
 	const title = loggedIn ? 'User is logged in' : 'User is not logged in';
 	chrome.contextMenus.update('loginStatus', { title: title });
 }
+
+// chrome.webNavigation.onCompleted.addListener((details) =>
+// 	chrome.runtime.sendMessage({ action: 'update_curr_url' })
+// );
+
 async function onCMclick(info, tab) {
 	if (info.menuItemId === 'loginStatus') {
 		chrome.sidePanel.open({ tabId: tab.id });
 		console.log('url', await chrome.tabs.query({ active: true, currentWindow: true }));
+		chrome.runtime.sendMessage({ action: 'update_curr_url' });
 		await chrome.tabs.sendMessage(tab.id, {
 			action: 'getHighlightedText',
 			website_title: tab.title,
@@ -41,28 +47,6 @@ async function onCMclick(info, tab) {
 	}
 }
 
-async function onCmClick(info, tab) {
-	chrome.sidePanel.open({ tabId: tab.id });
-	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
-	await chrome.scripting.executeScript({
-		target: { tabId: tab.id },
-		function: (DOMAIN, website_title, website_url) => {
-			let selectedText = getSelection().toString();
-			let contextText = getSelection().anchorNode.textContent;
-			fetch(`${DOMAIN}/api/upload`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					selectedText,
-					contextText,
-					website_title,
-					website_url
-				})
-			});
-		},
-		args: [DOMAIN, tab.title, tab.url]
-	});
-}
 chrome.contextMenus.onClicked.addListener(onCMclick);
 
 // This function checks the user's login status.
