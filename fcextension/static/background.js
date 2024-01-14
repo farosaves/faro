@@ -25,6 +25,19 @@ chrome.runtime.onInstalled.addListener(() => {
 	});
 });
 
+async function activate(tab) {
+	chrome.sidePanel.open({ tabId: tab.id });
+	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+	chrome.tabs.sendMessage(tab.id, {
+		action: 'getHighlightedText',
+		website_title: tab.title,
+		website_url: tab.url
+	});
+}
+// this makes it *not close* - it opens from the function above
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+chrome.action.onClicked.addListener(activate);
+
 function updateContextMenu(loggedIn) {
 	const title = loggedIn ? 'User is logged in' : 'User is not logged in';
 	chrome.contextMenus.update('loginStatus', { title: title });
@@ -36,14 +49,7 @@ function updateContextMenu(loggedIn) {
 
 async function onCMclick(info, tab) {
 	if (info.menuItemId === 'loginStatus') {
-		chrome.sidePanel.open({ tabId: tab.id });
-		console.log('url', await chrome.tabs.query({ active: true, currentWindow: true }));
-		chrome.runtime.sendMessage({ action: 'update_curr_url' });
-		await chrome.tabs.sendMessage(tab.id, {
-			action: 'getHighlightedText',
-			website_title: tab.title,
-			website_url: tab.url
-		});
+		activate(tab);
 	}
 }
 

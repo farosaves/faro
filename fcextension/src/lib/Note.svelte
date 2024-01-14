@@ -46,12 +46,16 @@
 	}
 	export let showing_content: boolean;
 	export let fun: MouseEventHandler<any>;
+	let replacer = (capture: string) => `<b class="text-yellow-400">` + capture + `</b>`;
+	let text = note_data.highlights
+		? note_data.quote.replaceAll(note_data.highlights[0], replacer)
+		: note_data.quote;
 </script>
 
 <div class="collapse bg-base-200">
 	<input type="checkbox" bind:checked={showing_content} on:click={fun} />
 	<div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">
-		{note_data.quote}
+		{@html text}
 	</div>
 	<div class="collapse-content">
 		<ul class="flex flex-col">
@@ -63,6 +67,7 @@
 						<div class="flex flex-row">
 							<!-- all of this stuff is just soo crazy, like there should just be a bin button, and mby a big undo button if worried about accidental deletions
 							but making new ones is easy so even that is not an issue -->
+
 							{#if !qas_accepted[index] && !qas_rejected[index] && !previously_accepted}
 								<button class="btn w-auto" style="color:green" on:click={accept(index)}>
 									Accept</button

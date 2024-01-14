@@ -14,7 +14,7 @@
 			.from('notes')
 			.select()
 			.eq('user_id', session.user.id)
-			.eq('origin_website', curr_url);
+			.eq('source_id', curr_source_id);
 		error && console.log('getNotes error', error);
 		return data ?? [];
 	}
@@ -25,10 +25,23 @@
 		notes = [...notes, payload.new];
 		showing_contents = [...showing_contents, false];
 	};
-	let curr_url = 'pending...';
+	let curr_source_id: number = -1;
+	let hostname = (s: string) => new URL(s).hostname;
 	async function updateActive() {
 		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-		if (tab.url) curr_url = tab.url;
+		if (!tab.url || !tab.title) return;
+		let domain = hostname(tab.url);
+		const { data, error } = await supabase
+			.from('sources')
+			.select('id')
+			.eq('domain', domain)
+			.eq('title', tab.title)
+			.maybeSingle();
+		if (!data) {
+			console.log('source not there yet probably', error);
+			return;
+		}
+		curr_source_id = data?.id;
 		notes = await getNotes();
 	}
 
@@ -37,6 +50,7 @@
 		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			if (request.action == 'update_curr_url') updateActive();
 		});
+
 		session = (await getSession(supabase)) || redirect(300, DOMAIN); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
@@ -56,17 +70,18 @@
 	$: email = session ? session.user.email : 'none@none';
 
 	const DOMAIN = 'http://localhost:5173';
-
 	let showing_contents = notes.map((_) => false);
 	let fun = () => {
 		showing_contents = showing_contents.map((_) => false);
 	};
 </script>
 
-{email}<br />{curr_url}
+{email}<br />{curr_source_id}
 <div class="max-w-xs mx-auto space-y-4">
 	{#each notes as note_data, i}
 		<Note {ss} {note_data} bind:showing_content={showing_contents[i]} {fun} />
+	{:else}
+		If you just installed the extension, you need to reload the page.
 	{/each}
 
 	<!-- <div class=" form-widget">
@@ -76,4 +91,5 @@
 			>Get notes</button
 		>
 	</div> -->
+	<textarea class="w-full"> pepe... </textarea>
 </div>

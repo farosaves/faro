@@ -11,7 +11,7 @@ export interface Database {
 					id: number;
 					is_accepted: boolean;
 					is_rejected: boolean;
-					snippet_id: number | null;
+					note_id: number | null;
 				};
 				Insert: {
 					back?: string | null;
@@ -20,7 +20,7 @@ export interface Database {
 					id?: number;
 					is_accepted?: boolean;
 					is_rejected?: boolean;
-					snippet_id?: number | null;
+					note_id?: number | null;
 				};
 				Update: {
 					back?: string | null;
@@ -29,7 +29,7 @@ export interface Database {
 					id?: number;
 					is_accepted?: boolean;
 					is_rejected?: boolean;
-					snippet_id?: number | null;
+					note_id?: number | null;
 				};
 				Relationships: [];
 			};
@@ -114,35 +114,50 @@ export interface Database {
 			notes: {
 				Row: {
 					created_at: string;
+					highlights: string[] | null;
 					id: number;
-					origin_website: string | null;
 					predicted_topic: string | null;
 					quote: string;
-					tag: string[];
+					source_id: number;
+					tags: string[] | null;
 					user_id: string;
-					website_title: string | null;
 				};
 				Insert: {
 					created_at?: string;
+					highlights?: string[] | null;
 					id?: number;
-					origin_website?: string | null;
 					predicted_topic?: string | null;
 					quote: string;
-					tag?: string[];
+					source_id: number;
+					tags?: string[] | null;
 					user_id?: string;
-					website_title?: string | null;
 				};
 				Update: {
 					created_at?: string;
+					highlights?: string[] | null;
 					id?: number;
-					origin_website?: string | null;
 					predicted_topic?: string | null;
 					quote?: string;
-					tag?: string[];
+					source_id?: number;
+					tags?: string[] | null;
 					user_id?: string;
-					website_title?: string | null;
 				};
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: 'notes_source_id_fkey';
+						columns: ['source_id'];
+						isOneToOne: false;
+						referencedRelation: 'sources';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'notes_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
 			};
 			profiles: {
 				Row: {
@@ -178,6 +193,33 @@ export interface Database {
 						referencedColumns: ['id'];
 					}
 				];
+			};
+			sources: {
+				Row: {
+					created_at: string;
+					DOI: string | null;
+					domain: string | null;
+					id: number;
+					title: string | null;
+					url: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					DOI?: string | null;
+					domain?: string | null;
+					id?: number;
+					title?: string | null;
+					url?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					DOI?: string | null;
+					domain?: string | null;
+					id?: number;
+					title?: string | null;
+					url?: string | null;
+				};
+				Relationships: [];
 			};
 		};
 		Views: {
@@ -290,3 +332,7 @@ export type UpdateNotes = Database['public']['Tables']['notes']['Update'];
 export type Profiles = Database['public']['Tables']['profiles']['Row'];
 export type InsertProfiles = Database['public']['Tables']['profiles']['Insert'];
 export type UpdateProfiles = Database['public']['Tables']['profiles']['Update'];
+
+export type Sources = Database['public']['Tables']['sources']['Row'];
+export type InsertSources = Database['public']['Tables']['sources']['Insert'];
+export type UpdateSources = Database['public']['Tables']['sources']['Update'];

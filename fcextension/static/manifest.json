@@ -9,7 +9,6 @@
 	},
 	"description": "Easily create flashcards while browsing",
 	"action": {
-		"default_popup": "index.html",
 		"default_icon": "./icons/icon48.png"
 	},
 	"background": {
@@ -35,7 +34,7 @@
 		"commands"
 	],
 	"commands": {
-		"activate": {
+		"_execute_action": {
 			"suggested_key": "Alt+D",
 			"description": "Whatever"
 		}
