@@ -5,8 +5,8 @@
  */
 const DOMAIN = 'http://localhost:5173';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Session } from '@supabase/gotrue-js';
-import type { Database } from '$lib/dbtypes';
+import { filter } from 'fp-ts/Array';
+import { pipe } from 'fp-ts/function';
 
 export let getSession = async (supabase: SupabaseClient) => {
 	let resp = await fetch(`${DOMAIN}/api/my-email`, {
@@ -26,3 +26,11 @@ export let getSession = async (supabase: SupabaseClient) => {
 	} = await supabase.auth.getSession();
 	return session;
 };
+
+export let delete_by_id = (id: number) => filter((v: { id: number }) => v.id !== id);
+
+export function logIfError<T extends { error: any }>(r: T): T {
+	const { error } = r;
+	error && console.log('error from logIfError util function\n', error);
+	return r;
+}

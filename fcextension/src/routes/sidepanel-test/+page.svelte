@@ -2,7 +2,7 @@
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { getSession } from '$lib/utils';
+	import { delete_by_id, getSession, logIfError } from '$lib/utils';
 	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
@@ -59,13 +59,23 @@
 	let fun = () => {
 		showing_contents = showing_contents.map((_) => false);
 	};
+	let deleteit = (note_id: number) => async () => {
+		let { error } = await supabase.from('notes').delete().eq('id', note_id).then(logIfError);
+		if (error) return;
+		notes = delete_by_id(note_id)(notes);
+	};
 </script>
 
 {email}<br />{curr_source_id}
 {notes.length}
 <div class="max-w-xs mx-auto space-y-4">
 	{#each notes as note_data, i}
-		<Note {ss} {note_data} bind:showing_content={showing_contents[i]} {fun} />
+		<Note
+			{note_data}
+			bind:showing_content={showing_contents[i]}
+			{fun}
+			deleteit={deleteit(note_data.id)}
+		/>
 	{:else}
 		If you just installed the extension, you need to reload the page.
 	{/each}

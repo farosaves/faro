@@ -39,6 +39,7 @@
 	"dependencies": {
 		"@supabase/ssr": "^0.0.10",
 		"chrome-types": "^0.1.247",
+		"fp-ts": "^2.16.2",
 		"supabase": "^1.127.4",
 		"sveltekit-adapter-chrome-extension": "github:asjir/sveltekit-adapter-chrome-extension"
 	}
