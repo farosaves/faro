@@ -47,7 +47,7 @@
 	export let showing_content: boolean;
 	export let fun: MouseEventHandler<any>;
 	let replacer = (capture: string) => `<b class="text-yellow-400">` + capture + `</b>`;
-	let text = note_data.highlights
+	$: text = note_data.highlights
 		? note_data.quote.replaceAll(note_data.highlights[0], replacer)
 		: note_data.quote;
 </script>
@@ -57,16 +57,17 @@
 	<div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">
 		{@html text}
 	</div>
-	<div class="collapse-content">
-		<ul class="flex flex-col">
+	<div class="collapse-content flex content-center">
+		<button class="btn btn-xs w-full" style="color: red;">DELETE</button>
+		<!-- <ul class="flex flex-col">
 			{#each qas.entries() as [index, { front, back, is_accepted: previously_accepted }]}
 				<li class="flex flex-row">
 					<button class="btn">{index + 1}. </button>
 					<div class="flex flex-col">
 						<span>{front}</span><span>{back}</span>
 						<div class="flex flex-row">
-							<!-- all of this stuff is just soo crazy, like there should just be a bin button, and mby a big undo button if worried about accidental deletions
-							but making new ones is easy so even that is not an issue -->
+							all of this stuff is just soo crazy, like there should just be a bin button, and mby a big undo button if worried about accidental deletions
+							but making new ones is easy so even that is not an issue
 
 							{#if !qas_accepted[index] && !qas_rejected[index] && !previously_accepted}
 								<button class="btn w-auto" style="color:green" on:click={accept(index)}>
@@ -88,49 +89,6 @@
 					</div>
 				</li>
 			{/each}
-		</ul>
+		</ul> -->
 	</div>
 </div>
-<!-- 
-<span
-  class="block p-4 my-2 bg-blue-500 text-white hover:bg-blue-600 rounded-md"
-  on:click={() => {
-    showing_cards = !showing_cards;
-  }}>{text}</span
->
-{#if showing_cards}
-  <div class="overflow-x-auto">
-    <table class="table">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Question</th>
-          <th>Answer</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each qas.entries() as [index, [question, answer]]}
-          <tr>
-            <th>{index + 1}</th>
-            <td>{question}</td>
-            <td>{answer}</td>
-            <td class="flex flex-col">
-              {#if !qas_accepted[index] && !qas_rejected[index]}
-                <button class="btn w-full" style="color:green" on:click={accept(index)}> Accept</button>
-                <button class="btn w-full" style="color:red" on:click={reject(index)}> Reject</button>
-              {:else}
-                <button
-                  class="btn w-full"
-                  style="color:{qas_accepted[index] ? 'green' : 'red'}"
-                  on:click={accept_reject_undo(index)}
-                >
-                  {qas_accepted[index] ? "Accepted" : "Rejected"}<br />(undo)</button
-                >
-              {/if}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-{/if} -->

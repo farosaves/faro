@@ -29,30 +29,12 @@
 	let curr_source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
 	async function updateActive() {
-		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-		if (!tab.url || !tab.title) return;
-		let domain = hostname(tab.url);
-		const { data, error } = await supabase
-			.from('sources')
-			.select('id')
-			.eq('domain', domain)
-			.eq('title', tab.title)
-			.maybeSingle();
-		if (!data) {
-			console.log('source not there yet probably', error);
-			curr_source_id = -1;
-			notes = await getNotes();
-			return;
-		}
-		curr_source_id = data?.id;
+		curr_source_id = 4;
 		notes = await getNotes();
 	}
 
 	onMount(async () => {
 		updateActive();
-		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-			if (request.action == 'update_curr_url') updateActive();
-		});
 
 		session = (await getSession(supabase)) || redirect(300, DOMAIN); // omg I'm starting to love typescript
 		notes = await getNotes();

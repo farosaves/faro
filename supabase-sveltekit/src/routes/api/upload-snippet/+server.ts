@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '$lib/first';
 import { logIfError } from '$lib/util.js';
 import { error, json } from '@sveltejs/kit';
-import { makeQuote } from './fun';
+import { is2short, makeQuote } from './fun';
 
 let hostname = (s: string) => new URL(s).hostname;
 
@@ -29,11 +29,8 @@ export async function POST({ request, locals }) {
 			.then(logIfError);
 		source_id = data!.id;
 	}
-
-	await supabase
-		.from('notes')
-		.insert({ quote, source_id, highlights: [selectedText] })
-		.then(logIfError);
+	let highlights = is2short(selectedText) ? [selectedText] : [];
+	await supabase.from('notes').insert({ quote, source_id, highlights }).then(logIfError);
 
 	return json({});
 }
