@@ -2,50 +2,13 @@
 	const DOMAIN = 'http://localhost:5173';
 	import type { Session } from '@supabase/gotrue-js';
 	import type { SupabaseClient } from '$lib/first';
-	import { onMount } from 'svelte';
 	import type { MouseEventHandler } from 'svelte/elements';
-	import type { CardContents, Notes } from './dbtypes';
-	let qas_accepted: boolean[] = [];
-	let qas_rejected: boolean[] = [];
+	import type { Notes } from './dbtypes';
 
-	export let ss: { supabase: SupabaseClient; session: Session };
 	export let note_data: Notes;
-	let session = ss.session;
-	let supabase = ss.supabase;
-	let qas: CardContents[] = [];
-	async function qasinit() {
-		const { data } = await supabase
-			.from('card_contents')
-			.select()
-			.eq('note_id', note_data.id)
-			.eq('is_rejected', false);
-		console.log(data);
-		qas = data || [];
-		qas_accepted = qas.map((v) => v.is_accepted);
-		qas_rejected = qas.map((v) => v.is_rejected);
-	}
-	onMount(qasinit);
-	function decide(n: number, is_accepted: boolean, is_rejected: boolean) {
-		return async () => {
-			const ret = await supabase
-				.from('card_contents')
-				.update({ is_accepted, is_rejected })
-				.eq('id', qas[n].id);
-			qas_rejected[n] = is_rejected;
-			qas_accepted[n] = is_accepted;
-		};
-	}
-	function reject(n: number) {
-		return decide(n, false, true);
-	}
-	function accept(n: number) {
-		return decide(n, true, false);
-	}
-	function accept_reject_undo(n: number) {
-		return decide(n, false, false);
-	}
 	export let showing_content: boolean;
 	export let fun: MouseEventHandler<any>;
+	export let deleteit: MouseEventHandler<any>;
 	let replacer = (capture: string) => `<b class="text-yellow-400">` + capture + `</b>`;
 	$: text = note_data.highlights
 		? note_data.quote.replaceAll(note_data.highlights[0], replacer)
@@ -58,7 +21,7 @@
 		{@html text}
 	</div>
 	<div class="collapse-content flex content-center">
-		<button class="btn btn-xs w-full" style="color: red;">DELETE</button>
+		<button class="btn btn-xs w-full" style="color: red;" on:click={deleteit}>DELETE</button>
 		<!-- <ul class="flex flex-col">
 			{#each qas.entries() as [index, { front, back, is_accepted: previously_accepted }]}
 				<li class="flex flex-row">
