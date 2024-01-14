@@ -10,6 +10,7 @@ export async function POST({ request, locals }) {
 	const supabase: SupabaseClient = locals.supabase; // here this loads defined tables properly
 	// console.log((await locals.getSession())?.user.email)
 	const quote = makeQuote(selectedText,contextText);
+	if (contextText.split(" ").length < 2) return json({});
 	const { data } = await supabase
 		.from("notes")
 		.insert({ quote, origin_website: website_url, website_title })

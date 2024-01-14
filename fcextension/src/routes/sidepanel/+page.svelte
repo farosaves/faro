@@ -10,7 +10,11 @@
 	let session: Session;
 	$: ss = { supabase, session };
 	async function getNotes() {
-		const { data, error } = await supabase.from('notes').select().eq('user_id', session.user.id);
+		const { data, error } = await supabase
+			.from('notes')
+			.select()
+			.eq('user_id', session.user.id)
+			.eq('origin_website', curr_url);
 		error && console.log('getNotes error', error);
 		return data ?? [];
 	}
@@ -21,9 +25,18 @@
 		notes = [...notes, payload.new];
 		showing_contents = [...showing_contents, false];
 	};
+	let curr_url = 'pending...';
+	async function updateActive() {
+		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+		if (tab.url) curr_url = tab.url;
+		notes = await getNotes();
+	}
 
 	onMount(async () => {
-		console.log(chrome.cast);
+		updateActive();
+		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+			if (request.action == 'update_curr_url') updateActive();
+		});
 		session = (await getSession(supabase)) || redirect(300, DOMAIN); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
@@ -35,7 +48,7 @@
 					schema: 'public',
 					table: 'notes',
 					filter: `user_id=eq.${session.user.id}`
-				},
+				}, // at least url should be the same so no need to filter
 				onNoteInsert
 			)
 			.subscribe();
@@ -48,25 +61,19 @@
 	let fun = () => {
 		showing_contents = showing_contents.map((_) => false);
 	};
-
-	let website_title = 'Chick flick';
-	let link = 'https://en.wikipedia.org/wiki/Chick_flick';
-
-	let text =
-		'Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.';
 </script>
 
-{email}WOO<br />
+{email}<br />{curr_url}
 <div class="max-w-xs mx-auto space-y-4">
 	{#each notes as note_data, i}
 		<Note {ss} {note_data} bind:showing_content={showing_contents[i]} {fun} />
 	{/each}
 
-	<div class=" form-widget">
+	<!-- <div class=" form-widget">
 		<input class="text-xl" bind:value={website_title} />
 		<input class="resize-y" bind:value={text} />
 		<button class="btn-primary btn" on:click={async () => console.log(await getNotes())}
 			>Get notes</button
 		>
-	</div>
+	</div> -->
 </div>
