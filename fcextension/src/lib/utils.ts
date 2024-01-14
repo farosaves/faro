@@ -18,10 +18,7 @@ export let getSession = async (supabase: SupabaseClient) => {
 		}
 	});
 	const { access_token, refresh_token } = await resp.json();
-	// log
-	console.log(access_token);
-    console.log(refresh_token);
-    // set session
+	// set session
 	await supabase.auth.setSession({ access_token, refresh_token });
 
 	const {
@@ -29,5 +26,3 @@ export let getSession = async (supabase: SupabaseClient) => {
 	} = await supabase.auth.getSession();
 	return session;
 };
-// export let zip = (x:Array<any>, y:Array<any>) =>
-//     Array.from(Array(Math.max(x.length, y.length)), (_, i) => [x[i], y[i]]);
