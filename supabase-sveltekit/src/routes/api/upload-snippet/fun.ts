@@ -4,9 +4,10 @@ export function makeQuote(selectedText: string, contextText: string) {
 	if (!is2short(selectedText)) {
 		return selectedText;
 	}
-    const regex_post = /^([^\.!\?]|\.\d|\d\.|\.[^\.]\.|\w\.\w)+/u // from the start 
-    const regex_pre = /([^\.\?]|\.\d|\d\.|\.[^\.]\.|\w\.\w)+$/u  // from the end
-	let [pre, post] = contextText.split(selectedText)
-	return (pre.match(regex_pre)![0] + selectedText + post.match(regex_post)![0]).trim() + "."
+	const regex_post = /^([^\.!\?]|\.\d|\d\.|\.[^\.]\.|\w\.\w)+/u; // from the start
+	const regex_pre = /([^\.\?]|\.\d|\d\.|\.[^\.]\.|\w\.\w)+$/u; // from the end
+	let [pre, post] = contextText.split(selectedText);
+	let f = (v: RegExpMatchArray | null) => (v && v[0]) || '';
+	return (f(pre.match(regex_pre)) + selectedText + f(post.match(regex_post))).trim() + '.';
 	// return contextText.slice(pre, contextText.length-post)
 }

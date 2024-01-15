@@ -5,8 +5,7 @@
  */
 const DOMAIN = 'http://localhost:5173';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { filter } from 'fp-ts/Array';
-import { pipe } from 'fp-ts/function';
+import { array as A } from 'fp-ts';
 
 export let getSession = async (supabase: SupabaseClient) => {
 	let resp = await fetch(`${DOMAIN}/api/my-email`, {
@@ -27,7 +26,7 @@ export let getSession = async (supabase: SupabaseClient) => {
 	return session;
 };
 
-export let delete_by_id = (id: number) => filter((v: { id: number }) => v.id !== id);
+export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id);
 
 export function logIfError<T extends { error: any }>(r: T): T {
 	const { error } = r;
