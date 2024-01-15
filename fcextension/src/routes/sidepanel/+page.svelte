@@ -6,7 +6,10 @@
 	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
-	import { scratches } from '$lib/stores.js';
+	// import { scratches } from '$lib/stores.js';
+	// import { get } from 'svelte/store';
+	// let curr_domain_title = 'pl.wikipedia.org;Kalanchoe';
+
 	let { supabase } = data;
 	let session: Session;
 	async function getNotes() {
@@ -20,7 +23,6 @@
 		return data ?? [];
 	}
 	let notes: Notes[] = [];
-	// $: console.log('notes', notes);
 	const onNoteInsert = (payload: { new: Notes }) => {
 		console.log(payload.new);
 		notes = [...notes, payload.new];
@@ -30,13 +32,19 @@
 	let hostname = (s: string) => new URL(s).hostname;
 	async function updateActive() {
 		try {
-			let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+			await chrome.tabs.query({ active: true, currentWindow: true });
 		} catch {
 			console.log('dev?');
 			curr_source_id = 4;
+			return;
 		}
+		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		if (!tab.url || !tab.title) return;
 		let domain = hostname(tab.url);
+		// curr_domain_title = [domain, tab.title].join(';');
+		// if (!(curr_domain_title in Object.keys(get(scratches))))
+		// 	scratches.update((t) => (t[curr_domain_title] = ''));
+
 		const { data, error } = await supabase
 			.from('sources')
 			.select('id')
@@ -91,11 +99,8 @@
 		if (error) return;
 		notes = delete_by_id(note_id)(notes);
 	};
-
-	$: scratched = $scratches;
 </script>
 
-{$scratches['pl.wikipedia.org'].Kalanchoe + 'aa'}<br />
 {email}<br />{curr_source_id}
 {notes.length}
 <div class="max-w-xs mx-auto space-y-4">
@@ -110,16 +115,10 @@
 		If you just installed the extension, you need to reload the page.
 	{/each}
 
-	<!-- <div class=" form-widget">
-		<input class="text-xl" bind:value={website_title} />
-		<input class="resize-y" bind:value={text} />
-		<button class="btn-primary btn" on:click={async () => console.log(await getNotes())}
-			>Get notes</button
-		>
-	</div> -->
-	<textarea
+	<!-- <textarea
 		placeholder="scratchy scratch scratch"
 		class="w-full"
-		bind:value={scratched['pl.wikipedia.org'].Kalanchoe}
+		bind:value={$scratches[curr_domain_title]}
 	/>
+	<button on:click={() => console.log(get(scratches))}> pls</button> -->
 </div>
