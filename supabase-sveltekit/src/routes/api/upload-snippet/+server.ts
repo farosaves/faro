@@ -29,9 +29,11 @@ export async function POST({ request, locals }) {
 			.then(logIfError);
 		source_id = data!.id;
 	}
-	// TODO: add extra context here
 	let highlights = is2short(selectedText) ? [selectedText] : [];
-	await supabase.from('notes').insert({ quote, source_id, highlights }).then(logIfError);
+	await supabase
+		.from('notes')
+		.insert({ quote, source_id, highlights, context: contextText })
+		.then(logIfError);
 
 	return json({});
 }
