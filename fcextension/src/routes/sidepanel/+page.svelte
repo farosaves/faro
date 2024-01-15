@@ -6,6 +6,7 @@
 	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
+	import { scratches } from '$lib/stores.js';
 	let { supabase } = data;
 	let session: Session;
 	async function getNotes() {
@@ -28,7 +29,12 @@
 	let curr_source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
 	async function updateActive() {
-		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+		try {
+			let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+		} catch {
+			console.log('dev?');
+			curr_source_id = 4;
+		}
 		if (!tab.url || !tab.title) return;
 		let domain = hostname(tab.url);
 		const { data, error } = await supabase
@@ -49,9 +55,13 @@
 
 	onMount(async () => {
 		updateActive();
-		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-			if (request.action == 'update_curr_url') updateActive();
-		});
+		try {
+			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+				if (request.action == 'update_curr_url') updateActive();
+			});
+		} catch {
+			console.log('dev?');
+		}
 
 		session = (await getSession(supabase)) || redirect(300, DOMAIN); // omg I'm starting to love typescript
 		notes = await getNotes();
@@ -81,8 +91,11 @@
 		if (error) return;
 		notes = delete_by_id(note_id)(notes);
 	};
+
+	$: scratched = $scratches;
 </script>
 
+{$scratches['pl.wikipedia.org'].Kalanchoe + 'aa'}<br />
 {email}<br />{curr_source_id}
 {notes.length}
 <div class="max-w-xs mx-auto space-y-4">
@@ -104,5 +117,9 @@
 			>Get notes</button
 		>
 	</div> -->
-	<textarea class="w-full"> pepe... </textarea>
+	<textarea
+		placeholder="scratchy scratch scratch"
+		class="w-full"
+		bind:value={scratched['pl.wikipedia.org'].Kalanchoe}
+	/>
 </div>

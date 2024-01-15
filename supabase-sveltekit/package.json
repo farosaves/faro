@@ -43,6 +43,7 @@
 		"@supabase/supabase-js": "^2.39.1",
 		"daisyui": "^4.4.24",
 		"fsrs.js": "^1.2.0",
-		"replicate": "^0.25.2"
+		"replicate": "^0.25.2",
+		"svelte-formula": "^0.12.0"
 	}
 }
