@@ -6,9 +6,9 @@
 	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
-	// import { scratches } from '$lib/stores.js';
-	// import { get } from 'svelte/store';
-	// let curr_domain_title = 'pl.wikipedia.org;Kalanchoe';
+	import { scratches } from '$lib/stores.js';
+	import { get } from 'svelte/store';
+	let curr_domain_title = 'pl.wikipedia.org;Kalanchoe';
 
 	let { supabase } = data;
 	let session: Session;
@@ -35,7 +35,7 @@
 			await chrome.tabs.query({ active: true, currentWindow: true });
 		} catch {
 			console.log('dev?');
-			curr_source_id = 4;
+			curr_source_id = 15;
 			return;
 		}
 		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -91,13 +91,14 @@
 
 	const DOMAIN = 'http://localhost:5173';
 	let showing_contents = notes.map((_) => false);
-	let fun = () => {
+	let close_all_notes = () => {
 		showing_contents = showing_contents.map((_) => false);
 	};
 	let deleteit = (note_id: number) => async () => {
 		let { error } = await supabase.from('notes').delete().eq('id', note_id).then(logIfError);
 		if (error) return;
 		notes = delete_by_id(note_id)(notes);
+		close_all_notes();
 	};
 </script>
 
@@ -108,7 +109,7 @@
 		<Note
 			{note_data}
 			bind:showing_content={showing_contents[i]}
-			{fun}
+			fun={close_all_notes}
 			deleteit={deleteit(note_data.id)}
 		/>
 	{:else}
@@ -119,6 +120,6 @@
 		placeholder="scratchy scratch scratch"
 		class="w-full"
 		bind:value={$scratches[curr_domain_title]}
-	/>
-	<button on:click={() => console.log(get(scratches))}> pls</button> -->
+	/> -->
+	<button on:click={() => console.log(get(scratches))}> pls</button>
 </div>

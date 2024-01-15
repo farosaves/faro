@@ -15,10 +15,16 @@
 
 <div class="collapse bg-base-200">
 	<input type="checkbox" bind:checked={showing_content} on:click={fun} />
-	<div class="collapse-title text-center" style="font-size: 0.95rem; padding: 0.5rem">
-		{@html text}
-	</div>
-	<div class="collapse-content flex content-center">
+	<div class="collapse-content" style="grid-row-start: 2;">
 		<button class="btn btn-xs w-full" style="color: red;" on:click={deleteit}>DELETE</button>
 	</div>
+	<div
+		class="collapse-title text-center"
+		style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1"
+	>
+		{@html text}
+	</div>
+	<!-- <div class="collapse-content" style="font-size: 0.95rem; padding: 0.5rem; grid-row-start:3">
+		<button class="btn btn-xs w-full" style="color: red;" on:click={deleteit}>DELETE</button>
+	</div> -->
 </div>
