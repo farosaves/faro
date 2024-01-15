@@ -1,7 +1,5 @@
 <script lang="ts">
 	const DOMAIN = 'http://localhost:5173';
-	import type { Session } from '@supabase/gotrue-js';
-	import type { SupabaseClient } from '$lib/first';
 	import type { MouseEventHandler } from 'svelte/elements';
 	import type { Notes } from './dbtypes';
 
