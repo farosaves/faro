@@ -6,7 +6,7 @@
 	export let showing_content: boolean;
 	export let fun: MouseEventHandler<any>;
 	export let deleteit: MouseEventHandler<any>;
-	let replacer = (capture: string) => `<b class="text-yellow-400">` + capture + `</b>`;
+	let replacer = (capture: string) => `<b class="text-yellow-200">` + capture + `</b>`;
 	$: text = note_data.highlights
 		? note_data.quote.replaceAll(note_data.highlights[0], replacer)
 		: note_data.quote;

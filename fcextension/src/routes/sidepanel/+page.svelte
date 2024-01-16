@@ -103,11 +103,8 @@
 	};
 </script>
 
-{email}<br />{curr_source_id}
-{notes.length}<br />
-<i class=" text-xl">{curr_title}</i>
-
 <div class="max-w-xs mx-auto space-y-4">
+	<div class=" text-xl text-center w-full italic">{curr_title}</div>
 	{#each notes as note_data, i}
 		<Note
 			{note_data}
