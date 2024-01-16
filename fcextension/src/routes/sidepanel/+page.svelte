@@ -9,7 +9,7 @@
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
 	import { PUBLIC_PI_IP } from '$env/static/public';
-	let curr_domain_title = 'pl.wikipedia.org;Kalanchoe';
+	let curr_title = 'Kalanchoe';
 
 	let { supabase } = data;
 	let session: Session;
@@ -41,6 +41,7 @@
 		}
 		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		if (!tab.url || !tab.title) return;
+		curr_title = tab.title;
 		let domain = hostname(tab.url);
 		// curr_domain_title = [domain, tab.title].join(';');
 		// if (!(curr_domain_title in Object.keys(get(scratches))))
@@ -103,7 +104,9 @@
 </script>
 
 {email}<br />{curr_source_id}
-{notes.length}
+{notes.length}<br />
+<i class=" text-xl">{curr_title}</i>
+
 <div class="max-w-xs mx-auto space-y-4">
 	{#each notes as note_data, i}
 		<Note

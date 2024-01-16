@@ -1,4 +1,5 @@
-export let is2short = (selectedText: string) => selectedText.split(' ').length < 4;
+export let is2short = (selectedText: string) =>
+	selectedText.split(' ').filter((s) => s.length > 3).length < 4;
 
 export function makeQuote(selectedText: string, contextText: string) {
 	if (!is2short(selectedText)) {
