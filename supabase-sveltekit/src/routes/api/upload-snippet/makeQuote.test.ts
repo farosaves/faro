@@ -51,3 +51,13 @@ test('oh yeah', () => {
 		'), El niño y la garza (en Hispanoamérica), El chico y la garza (en España), es una película de animación de 2023 escrita y dirigida por Hayao Miyazaki, con producción de animación de Studio Ghibli.'
 	);
 });
+test('quotey', () => {
+	expect(
+		makeQuote(
+			'Chrome Extension',
+			'You can get the ExtensionInstallType of a Chrome Extension which will be one of &quot;admin&quot;, &quot;development&quot;, &quot;normal&quot;, &quot;sideload&quot;, or &quot;other.&quot;'
+		)
+	).toBe(
+		'You can get the ExtensionInstallType of a Chrome Extension which will be one of &quot;admin&quot;, &quot;development&quot;, &quot;normal&quot;, &quot;sideload&quot;, or &quot;other.'
+	);
+});

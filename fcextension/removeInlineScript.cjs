@@ -2,6 +2,8 @@
 const glob = require('tiny-glob');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+console.log(process.env.PUBLIC_PI_IP);
 
 function hash(value) {
 	let hash = 5381;
@@ -54,7 +56,10 @@ async function commentFirstLine(directory) {
 		.filter((file) => file == 'background.js' || file == 'content.js')
 		.map((file) => path.join(directory, file))
 		.forEach((file) => {
-			let script = fs.readFileSync(file).toString();
+			let script = fs
+				.readFileSync(file)
+				.toString()
+				.replace('http://78.10.223.2:13723', process.env.PUBLIC_PI_IP);
 			fs.writeFileSync(file, ['//', script].join(''));
 		});
 }

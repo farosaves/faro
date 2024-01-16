@@ -1,5 +1,4 @@
 <script>
-	const DOMAIN = 'http://localhost:5173';
 	export let data;
 	let { supabase } = data;
 	$: ({ supabase } = data);
@@ -20,7 +19,7 @@
 	let snippet_id = undefined;
 
 	async function callapi() {
-		const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
+		const response = await fetch(`/api/make-flashcard`, {
 			method: 'POST',
 			body: JSON.stringify({ n_cards, text, website_title, link }),
 			headers: {
@@ -121,7 +120,7 @@
 	<button on:click={callapi}>Replicate test</button>
 	<button
 		on:click={async () => {
-			await fetch(`${DOMAIN}/api/my-email`, {
+			await fetch(`/api/my-email`, {
 				method: 'POST',
 				body: JSON.stringify({ n_cards }),
 				headers: {

@@ -3,7 +3,7 @@ export async function GET({ locals }) {
 
 	const headers = {
 		'Content-Type': 'application/json',
-		'Access-Control-Allow-Origin': 'http://localhost:5173',
+		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Credentials': 'true'
 	};
 
