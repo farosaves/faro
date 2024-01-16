@@ -3,12 +3,12 @@
  * of calling `const { data: { session } } = await supabase.auth.getSession()`
  * you just call this `await getSession()`
  */
-const DOMAIN = 'http://localhost:5173';
+import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { array as A } from 'fp-ts';
 
 export let getSession = async (supabase: SupabaseClient) => {
-	let resp = await fetch(`${DOMAIN}/api/my-email`, {
+	let resp = await fetch(`${PUBLIC_PI_IP}/api/my-email`, {
 		// TODO: rename endpoint
 		method: 'POST',
 		credentials: 'include',

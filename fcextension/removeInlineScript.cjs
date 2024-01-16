@@ -54,7 +54,7 @@ async function commentFirstLine(directory) {
 		.filter((file) => file == 'background.js' || file == 'content.js')
 		.map((file) => path.join(directory, file))
 		.forEach((file) => {
-			let script = fs.readFileSync(file);
+			let script = fs.readFileSync(file).toString();
 			fs.writeFileSync(file, ['//', script].join(''));
 		});
 }

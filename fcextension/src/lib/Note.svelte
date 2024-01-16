@@ -1,5 +1,4 @@
 <script lang="ts">
-	const DOMAIN = 'http://localhost:5173';
 	import type { MouseEventHandler } from 'svelte/elements';
 	import type { Notes } from './dbtypes';
 

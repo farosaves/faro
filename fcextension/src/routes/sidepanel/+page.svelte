@@ -8,6 +8,7 @@
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
+	import { PUBLIC_PI_IP } from '$env/static/public';
 	let curr_domain_title = 'pl.wikipedia.org;Kalanchoe';
 
 	let { supabase } = data;
@@ -71,7 +72,7 @@
 			console.log('dev?');
 		}
 
-		session = (await getSession(supabase)) || redirect(300, DOMAIN); // omg I'm starting to love typescript
+		session = (await getSession(supabase)) || redirect(300, PUBLIC_PI_IP); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
 			.channel('notes')
@@ -89,7 +90,6 @@
 	});
 	$: email = session ? session.user.email : 'none@none';
 
-	const DOMAIN = 'http://localhost:5173';
 	let showing_contents = notes.map((_) => false);
 	let close_all_notes = () => {
 		showing_contents = showing_contents.map((_) => false);
