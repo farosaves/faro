@@ -1,7 +1,7 @@
 import 'chrome';
+const DOMAIN = 'http://78.10.223.2:13723'; // Replace with your domain
 
 function uploadSelected(request, sender, sendResponse) {
-	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
 	if (request.action === 'uploadText') {
 		const { selectedText, contextText, website_title, website_url } = request;
 		fetch(`${DOMAIN}/api/upload-snippet`, {
@@ -57,8 +57,6 @@ chrome.contextMenus.onClicked.addListener(onCMclick);
 
 // This function checks the user's login status.
 async function checkLoginStatus() {
-	const DOMAIN = 'http://localhost:5173'; // Replace with your domain
-
 	try {
 		const response = await fetch(`${DOMAIN}/api/check-login`, {
 			method: 'GET',
