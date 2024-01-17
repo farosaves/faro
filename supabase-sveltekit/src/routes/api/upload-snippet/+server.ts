@@ -9,7 +9,6 @@ export async function POST({ request, locals }) {
 	const { selectedText, contextText, website_url, website_title } = await request.json();
 	console.log('uploaded:', { selectedText, contextText });
 	const supabase: SupabaseClient = locals.supabase; // here this loads defined tables properly
-	// console.log((await locals.getSession())?.user.email)
 	const quote = makeQuote(selectedText, contextText);
 	if (contextText.split(' ').length < 2 || selectedText.length < 2) return json({});
 	const { data } = await supabase
