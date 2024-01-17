@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { trpc } from '$lib/trpc-client.js';
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
@@ -62,8 +64,9 @@
 		curr_source_id = data?.id;
 		notes = await getNotes();
 	}
-
+	let n = 0;
 	onMount(async () => {
+		n = await trpc($page).funsum.query([1, 2, 3, 4, 5, 6]);
 		updateActive();
 		try {
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -104,7 +107,7 @@
 </script>
 
 <div class="max-w-xs mx-auto space-y-4">
-	<div class=" text-xl text-center w-full italic">{curr_title}</div>
+	<div class=" text-xl text-center w-full italic">{curr_title} {n}</div>
 	{#each notes as note_data, i}
 		<Note
 			{note_data}
