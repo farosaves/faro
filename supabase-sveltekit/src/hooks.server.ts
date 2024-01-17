@@ -37,10 +37,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	};
 
 	let response;
-	const url = '/trpc';
+	const trpc_url = '/trpc';
 	if (event.request.method === 'OPTIONS')
 		response = new Response(JSON.stringify({}), { status: 200 });
-	else if (event.url.pathname.startsWith(url + '/')) {
+	else if (event.url.pathname.startsWith(trpc_url + '/')) {
 		const request = event.request as Request & {
 			headers: Dict<string | string[]>;
 		};
@@ -55,7 +55,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const httpResponse = await resolveHTTPResponse({
 			router,
 			req,
-			path: event.url.pathname.substring(url.length + 1),
+			path: event.url.pathname.substring(trpc_url.length + 1),
 			createContext: async () => createContext?.(event)
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		});
