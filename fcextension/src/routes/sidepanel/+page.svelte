@@ -76,7 +76,9 @@
 			console.log('dev?');
 		}
 
-		session = (await getSession(supabase)) || redirect(300, PUBLIC_PI_IP); // omg I'm starting to love typescript
+		session =
+			(await getSession(supabase, await trpc($page).my_email.query())) ||
+			redirect(300, PUBLIC_PI_IP); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
 			.channel('notes')

@@ -16,7 +16,16 @@ export const router = t.router({
 			input,
 			A.reduce(0, (a, b) => a + b)
 		)
-	)
+	),
+	my_email: t.procedure.query(async ({ ctx: { locals } }) => {
+		let sess = await locals.getSession();
+		if (sess) {
+			const { user, access_token, refresh_token } = sess;
+			let email = user.email;
+			return { email, access_token, refresh_token };
+		}
+		return {};
+	})
 });
 
 export type Router = typeof router;

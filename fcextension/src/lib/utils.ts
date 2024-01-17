@@ -7,16 +7,8 @@ import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { array as A } from 'fp-ts';
 
-export let getSession = async (supabase: SupabaseClient) => {
-	let resp = await fetch(`${PUBLIC_PI_IP}/api/my-email`, {
-		// TODO: rename endpoint
-		method: 'POST',
-		credentials: 'include',
-		headers: {
-			Accept: 'application/json'
-		}
-	});
-	const { access_token, refresh_token } = await resp.json();
+export let getSession = async (supabase: SupabaseClient, tokens) => {
+	const { access_token, refresh_token } = tokens;
 	// set session
 	await supabase.auth.setSession({ access_token, refresh_token });
 
