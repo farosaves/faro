@@ -3,11 +3,11 @@ const DOMAIN = 'http://78.10.223.2:13723'; // Replace with your domain
 
 function uploadSelected(request, sender, sendResponse) {
 	if (request.action === 'uploadText') {
-		const { selectedText, contextText, website_title, website_url } = request;
+		const { selectedText, contextTexts, website_title, website_url } = request;
 		fetch(`${DOMAIN}/api/upload-snippet`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ selectedText, contextText, website_title, website_url })
+			body: JSON.stringify({ selectedText, contextTexts, website_title, website_url })
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))

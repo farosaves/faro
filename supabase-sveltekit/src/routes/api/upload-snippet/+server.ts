@@ -1,16 +1,16 @@
 import type { SupabaseClient } from '$lib/first';
 import { logIfError } from '$lib/util.js';
 import { error, json } from '@sveltejs/kit';
-import { is2short, makeQuote } from './fun';
+import { makeQCH } from './fun';
 
 let hostname = (s: string) => new URL(s).hostname;
 
 export async function POST({ request, locals }) {
-	const { selectedText, contextText, website_url, website_title } = await request.json();
-	console.log('uploaded:', { selectedText, contextText });
+	const { selectedText, contextTexts, website_url, website_title } = await request.json();
 	const supabase: SupabaseClient = locals.supabase; // here this loads defined tables properly
-	const quote = makeQuote(selectedText, contextText);
-	if (contextText.split(' ').length < 2 || selectedText.length < 2) return json({});
+	console.log('uploaded:', { selectedText, contextTexts });
+	const { quote, highlights, context } = makeQCH(selectedText, contextTexts);
+	// if (contextTexts.split(' ').length < 2 || selectedText.length < 2) return json({});
 	const { data } = await supabase
 		.from('sources')
 		.select('id')
@@ -28,11 +28,7 @@ export async function POST({ request, locals }) {
 			.then(logIfError);
 		source_id = data!.id;
 	}
-	let highlights = is2short(selectedText) ? [selectedText] : [];
-	await supabase
-		.from('notes')
-		.insert({ quote, source_id, highlights, context: contextText })
-		.then(logIfError);
+	await supabase.from('notes').insert({ quote, source_id, highlights, context }).then(logIfError);
 
 	return json({});
 }
