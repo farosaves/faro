@@ -15,21 +15,19 @@ let iou = (s1: string) => (s2: string) =>
 export function makeQCH(selectedText: string, contextTexts: string[]) {
 	const regex_cit = /\[\d{1,2}\]/gu;
 	selectedText = selectedText.replaceAll('&quot;', '"').replaceAll(regex_cit, '');
-	const context = firstValid(contextTexts)!;
+	const context = firstValid(contextTexts) ?? contextTexts[0];
 	const highlights = !longEnough(selectedText) ? [selectedText] : [];
 	let quote: string;
 	if (longEnough(selectedText)) quote = selectedText;
 	else {
-		let potential_quotes = split(context.replaceAll(regex_cit, ''))
+		const key = split(selectedText)
 			.map((x) => x.raw)
-			.filter((x) => x.includes(selectedText))
-			.toSorted(iou(contextTexts[0]));
-		potential_quotes = // this is a hacky fallback..
-			potential_quotes ||
-			split(context.replaceAll(regex_cit, ''))
-				.map((x) => x.raw)
-				.toSorted(iou(selectedText));
-		quote = potential_quotes.findLast(() => true)!;
+			.toSorted((x) => -x.length)[0];
+		quote = split(context.replaceAll(regex_cit, ''))
+			.map((x) => x.raw)
+			.filter((x) => x.includes(key))
+			.toSorted(iou(contextTexts[0]))
+			.findLast(() => true)!;
 	}
 	return { quote, highlights, context };
 }
