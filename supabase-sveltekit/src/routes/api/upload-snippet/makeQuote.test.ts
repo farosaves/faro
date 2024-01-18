@@ -67,7 +67,10 @@ let uploaded = {
 };
 
 test('correct sentence', () => {
-	expect(makeQCH(uploaded.selectedText, uploaded.contextTexts).quote).toBe(
-		"Following Alexander's death in 323 BC, his general Ptolemy Lagides took possession of Egypt and brought Alexander's body to Egypt with him."
-	);
+	expect(makeQCH(uploaded.selectedText, uploaded.contextTexts)).toStrictEqual({
+		quote:
+			"Following Alexander's death in 323 BC, his general Ptolemy Lagides took possession of Egypt and brought Alexander's body to Egypt with him.",
+		highlights: [uploaded.selectedText],
+		context: uploaded.contextTexts[1]
+	});
 });

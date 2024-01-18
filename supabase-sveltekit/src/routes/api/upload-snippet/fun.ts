@@ -16,13 +16,13 @@ export function makeQCH(selectedText: string, contextTexts: string[]) {
 	const regex_cit = /\[\d{1,2}\]/gu;
 	selectedText = selectedText.replaceAll('&quot;', '"').replaceAll(regex_cit, '');
 	const context = firstValid(contextTexts) ?? contextTexts[0];
-	const highlights = !longEnough(selectedText) ? [selectedText] : [];
+	const key = split(selectedText)
+		.map((x) => x.raw)
+		.toSorted((x) => -x.length)[0];
+	const highlights = !longEnough(selectedText) ? [key] : [];
 	let quote: string;
 	if (longEnough(selectedText)) quote = selectedText;
 	else {
-		const key = split(selectedText)
-			.map((x) => x.raw)
-			.toSorted((x) => -x.length)[0];
 		quote = split(context.replaceAll(regex_cit, ''))
 			.map((x) => x.raw)
 			.filter((x) => x.includes(key))
