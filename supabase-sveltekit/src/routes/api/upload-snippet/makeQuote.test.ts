@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { makeQuote } from './fun';
+import { makeQCH, makeQuote } from './fun';
 
 test('normal', () => {
 	expect(
@@ -59,5 +59,19 @@ test('quotey', () => {
 		)
 	).toBe(
 		'You can get the ExtensionInstallType of a Chrome Extension which will be one of &quot;admin&quot;, &quot;development&quot;, &quot;normal&quot;, &quot;sideload&quot;, or &quot;other.'
+	);
+});
+
+let uploaded = {
+	selectedText: "Alexander's",
+	contextTexts: [
+		" took possession of Egypt and brought Alexander's body to Egypt with him.",
+		`After Alexander's departure, his viceroy Cleomenes continued the expansion. The architect Dinocrates of Rhodes designed the city, using a Hippodamian grid plan. Following Alexander's death in 323 BC, his general Ptolemy Lagides took possession of Egypt and brought Alexander's body to Egypt with him.[12] Ptolemy at first ruled from the old Egyptian capital of Memphis. In 322/321 BC he had Cleomenes executed. Finally, in 305 BC, Ptolemy declared himself Pharaoh as Ptolemy I Soter ("Savior") and moved his capital to Alexandria.\n`
+	]
+};
+
+test('correct sentence', () => {
+	expect(makeQCH(uploaded.selectedText, uploaded.contextTexts).quote).toBe(
+		"Following Alexander's death in 323 BC, his general Ptolemy Lagides took possession of Egypt and brought Alexander's body to Egypt with him."
 	);
 });
