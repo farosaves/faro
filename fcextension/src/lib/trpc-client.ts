@@ -1,5 +1,5 @@
 // lib/trpc/client.ts
-import { PUBLIC_PI_IP } from '$env/static/public';
+import { API_ADDRESS } from './utils';
 import type { Router } from '../../../supabase-sveltekit/src/lib/trpc/router';
 import { httpBatchLink } from '@trpc/client';
 import { createTRPCClient, type TRPCClientInit } from 'trpc-sveltekit';
@@ -10,10 +10,10 @@ export function trpc(init?: TRPCClientInit) {
 	const isBrowser = typeof window !== 'undefined';
 	if (isBrowser && browserClient) return browserClient;
 	const client = createTRPCClient<Router>({
-		init,
+		init, //@ts-ignore
 		links: [
 			httpBatchLink({
-				url: PUBLIC_PI_IP + '/trpc' // this works even though warns
+				url: API_ADDRESS + '/trpc' // this works even though warns
 			})
 		]
 	});
