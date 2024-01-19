@@ -4,13 +4,13 @@
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { delete_by_id, getSession, logIfError } from '$lib/utils';
+	import { API_ADDRESS, delete_by_id, getSession, logIfError } from '$lib/utils';
 	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
-	import { PUBLIC_PI_IP } from '$env/static/public';
+
 	let curr_title = 'Kalanchoe';
 
 	let { supabase } = data;
@@ -69,16 +69,18 @@
 		n = await trpc($page).funsum.query([1, 2, 3, 4, 5, 6]);
 		updateActive();
 		try {
+			chrome.webNavigation.onCompleted.addListener(() => updateActive());
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				if (request.action == 'update_curr_url') updateActive();
 			});
 		} catch {
 			console.log('dev?');
 		}
-
-		session =
-			(await getSession(supabase, await trpc($page).my_email.query())) ||
-			redirect(300, PUBLIC_PI_IP); // omg I'm starting to love typescript
+		let atokens = await trpc($page).my_email.query();
+		// access_token = access_token || redirect(300, API_ADDRESS);
+		// refresh_token = refresh_token || redirect(300, API_ADDRESS);
+		atokens || window.open(API_ADDRESS);
+		session = (await getSession(supabase, atokens)) || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
 			.channel('notes')

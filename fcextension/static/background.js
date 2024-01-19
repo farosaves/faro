@@ -1,5 +1,5 @@
 import 'chrome';
-const DOMAIN = 'http://78.10.223.2:13723'; // Replace with your domain
+const DOMAIN = 'http://78.10.223.2:13723'.replace(/\/$/, ''); // Replace with your domain
 
 function uploadSelected(request, sender, sendResponse) {
 	if (request.action === 'uploadText') {
@@ -43,10 +43,6 @@ function updateContextMenu(loggedIn) {
 	chrome.contextMenus.update('loginStatus', { title: title });
 }
 // TODO: sort this out
-// chrome.webNavigation.onCompleted.addListener((details) =>
-// 	chrome.runtime.sendMessage({ action: 'update_curr_url' })
-// );
-
 async function onCMclick(info, tab) {
 	if (info.menuItemId === 'loginStatus') {
 		activate(tab);
