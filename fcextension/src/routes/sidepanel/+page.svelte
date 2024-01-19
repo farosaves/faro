@@ -11,11 +11,12 @@
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
 	import { _getNotes } from './util.js';
-	let getNotes = () => _getNotes(supabase, curr_source_id, session.user.id);
+	let getNotes = () => _getNotes(supabase, curr_source_id, user_id);
 	let curr_title = 'Kalanchoe';
 
 	let { supabase } = data;
-	let session: Session;
+	let session: Session | undefined;
+	$: user_id = session?.user.id || '';
 	let notes: Notes[] = [];
 	const onNoteInsert = (payload: { new: Notes }) => {
 		notes = [...notes, payload.new];
@@ -72,7 +73,7 @@
 		}
 		let atokens = await trpc($page).my_email.query();
 		atokens || window.open(API_ADDRESS);
-		session = (await getSession(supabase, atokens)) || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
+		session = (await getSession(supabase, atokens)) || undefined; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
 			.channel('notes')
@@ -82,7 +83,7 @@
 					event: 'INSERT',
 					schema: 'public',
 					table: 'notes',
-					filter: `user_id=eq.${session.user.id}`
+					filter: `user_id=eq.${user_id}`
 				}, // at least url should be the same so no need to filter
 				onNoteInsert
 			)
@@ -99,6 +100,24 @@
 		close_all_notes();
 	};
 </script>
+
+{#if !user_id}
+	<div role="alert" class="alert alert-error">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="stroke-current shrink-0 h-6 w-6"
+			fill="none"
+			viewBox="0 0 24 24"
+			><path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+			/></svg
+		>
+		<span>Not logged in! <a href={API_ADDRESS} target="_blank">click here</a></span>
+	</div>
+{/if}
 
 <div class="max-w-xs mx-auto space-y-4">
 	<div class=" text-xl text-center w-full italic">{curr_title} {n}</div>
