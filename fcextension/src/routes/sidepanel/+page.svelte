@@ -10,29 +10,20 @@
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
-
+	import { _getNotes } from './util.js';
+	let getNotes = () => _getNotes(supabase, curr_source_id, session.user.id);
 	let curr_title = 'Kalanchoe';
 
 	let { supabase } = data;
 	let session: Session;
-	async function getNotes() {
-		const { data, error } = await supabase
-			.from('notes')
-			.select()
-			.eq('source_id', curr_source_id)
-			.eq('user_id', session.user.id);
-		error && console.log('getNotes error', error);
-		console.log(data);
-		return data ?? [];
-	}
 	let notes: Notes[] = [];
 	const onNoteInsert = (payload: { new: Notes }) => {
-		console.log(payload.new);
 		notes = [...notes, payload.new];
 		showing_contents = [...showing_contents, false];
 	};
 	let curr_source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
+	let curr_domain_title = '';
 	async function updateActive() {
 		try {
 			await chrome.tabs.query({ active: true, currentWindow: true });
@@ -45,9 +36,12 @@
 		if (!tab.url || !tab.title) return;
 		curr_title = tab.title;
 		let domain = hostname(tab.url);
-		// curr_domain_title = [domain, tab.title].join(';');
-		// if (!(curr_domain_title in Object.keys(get(scratches))))
-		// 	scratches.update((t) => (t[curr_domain_title] = ''));
+		curr_domain_title = [domain, tab.title].join(';');
+		if (!(curr_domain_title in $scratches))
+			scratches.update((t) => {
+				t[curr_domain_title] = '';
+				return t;
+			});
 
 		const { data, error } = await supabase
 			.from('sources')
@@ -58,18 +52,18 @@
 		if (!data) {
 			console.log('source not there yet probably', error);
 			curr_source_id = -1;
-			notes = await getNotes();
+			notes = [];
 			return;
 		}
 		curr_source_id = data?.id;
 		notes = await getNotes();
+		console.log('scratches', $scratches);
 	}
 	let n = 0;
 	onMount(async () => {
 		n = await trpc($page).funsum.query([1, 2, 3, 4, 5, 6]);
 		updateActive();
 		try {
-			chrome.webNavigation.onCompleted.addListener(() => updateActive());
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				if (request.action == 'update_curr_url') updateActive();
 			});
@@ -77,8 +71,6 @@
 			console.log('dev?');
 		}
 		let atokens = await trpc($page).my_email.query();
-		// access_token = access_token || redirect(300, API_ADDRESS);
-		// refresh_token = refresh_token || redirect(300, API_ADDRESS);
 		atokens || window.open(API_ADDRESS);
 		session = (await getSession(supabase, atokens)) || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
 		notes = await getNotes();
@@ -96,8 +88,6 @@
 			)
 			.subscribe();
 	});
-	$: email = session ? session.user.email : 'none@none';
-
 	let showing_contents = notes.map((_) => false);
 	let close_all_notes = () => {
 		showing_contents = showing_contents.map((_) => false);
@@ -123,10 +113,10 @@
 		If you just installed the extension, you need to reload the page.
 	{/each}
 
-	<!-- <textarea
+	<textarea
 		placeholder="scratchy scratch scratch"
 		class="w-full"
 		bind:value={$scratches[curr_domain_title]}
-	/> -->
+	/>
 	<button on:click={() => console.log(get(scratches))}> pls</button>
 </div>

@@ -1,6 +1,14 @@
 import 'chrome';
 const DOMAIN = 'http://78.10.223.2:13723'.replace(/\/$/, ''); // Replace with your domain
 
+chrome.webNavigation.onCompleted.addListener(() => {
+	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+});
+
+chrome.tabs.onActivated.addListener(() => {
+	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+});
+
 function uploadSelected(request, sender, sendResponse) {
 	if (request.action === 'uploadText') {
 		const { selectedText, contextTexts, website_title, website_url } = request;
@@ -106,3 +114,4 @@ startPollingLoginStatus(10 * 60 * 1000);
 // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 // 	chrome.tabs.sendMessage(tabs[0].id, { action: 'getHighlightedText' });
 // });
+console.log('loaded all background');

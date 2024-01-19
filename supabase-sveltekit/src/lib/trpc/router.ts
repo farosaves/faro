@@ -6,6 +6,8 @@ import { pipe } from 'fp-ts/lib/function';
 
 export const t = initTRPC.context<Context>().create();
 
+// unfortunately to have type inference in the extension you need to do it manually
+const tokens = z.object({ access_token: z.string(), refresh_token: z.string() });
 export const router = t.router({
 	greeting: t.procedure.query(async () => {
 		return `Hello tRPC v10 @ ${new Date().toLocaleTimeString()}`;
@@ -17,14 +19,13 @@ export const router = t.router({
 			A.reduce(0, (a, b) => a + b)
 		)
 	),
-	my_email: t.procedure.query(async ({ ctx: { locals } }) => {
+	my_email: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
 		let sess = await locals.getSession();
 		if (sess) {
-			const { user, access_token, refresh_token } = sess;
-			let email = user.email;
-			return { email, access_token, refresh_token };
+			const { access_token, refresh_token } = sess;
+			return { access_token, refresh_token };
 		}
-		return {};
+		return;
 	})
 });
 
