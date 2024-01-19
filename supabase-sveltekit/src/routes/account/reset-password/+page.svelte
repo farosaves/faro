@@ -32,6 +32,7 @@
 	onMount(async () => {
 		s = await trpc($page).greeting.query();
 		n = await trpc($page).funsum.query([1, 2, 3]);
+		let aa = await trpc($page).my_email.query();
 	});
 </script>
 

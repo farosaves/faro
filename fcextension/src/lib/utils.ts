@@ -9,7 +9,9 @@ import { array as A } from 'fp-ts';
 
 export let API_ADDRESS = PUBLIC_PI_IP.replace(/\/$/, '');
 
-export let getSession = async (supabase: SupabaseClient, tokens) => {
+export type ATokens = { access_token: string; refresh_token: string } | undefined;
+export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
+	if (!tokens) return;
 	const { access_token, refresh_token } = tokens;
 	// set session
 	await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError);
