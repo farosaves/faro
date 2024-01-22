@@ -6,17 +6,15 @@
 	import { onMount } from 'svelte';
 	import { API_ADDRESS, delete_by_id, getSession, logIfError } from '$lib/utils';
 	import Note from '$lib/Note.svelte';
-	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
 	import { _getNotes } from './util.js';
-	let getNotes = () => _getNotes(supabase, curr_source_id, user_id);
+	let getNotes = () => _getNotes(supabase, curr_source_id, session?.user.id);
 	let curr_title = 'Kalanchoe';
 
 	let { supabase } = data;
-	let session: Session | undefined;
-	$: user_id = session?.user.id || '';
+	let session: Session;
 	let notes: Notes[] = [];
 	const onNoteInsert = (payload: { new: Notes }) => {
 		notes = [...notes, payload.new];
@@ -60,9 +58,8 @@
 		notes = await getNotes();
 		console.log('scratches', $scratches);
 	}
-	let n = 0;
+	let logged_in = true;
 	onMount(async () => {
-		n = await trpc($page).funsum.query([1, 2, 3, 4, 5, 6]);
 		updateActive();
 		try {
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -73,7 +70,8 @@
 		}
 		let atokens = await trpc($page).my_email.query();
 		atokens || window.open(API_ADDRESS);
-		session = (await getSession(supabase, atokens)) || undefined; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
+		session = (await getSession(supabase, atokens))!; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
+		logged_in = !!session;
 		notes = await getNotes();
 		supabase
 			.channel('notes')
@@ -83,7 +81,7 @@
 					event: 'INSERT',
 					schema: 'public',
 					table: 'notes',
-					filter: `user_id=eq.${user_id}`
+					filter: `user_id=eq.${session?.user.id}`
 				}, // at least url should be the same so no need to filter
 				onNoteInsert
 			)
@@ -101,7 +99,7 @@
 	};
 </script>
 
-{#if !user_id}
+{#if !logged_in}
 	<div role="alert" class="alert alert-error">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +118,7 @@
 {/if}
 
 <div class="max-w-xs mx-auto space-y-4">
-	<div class=" text-xl text-center w-full italic">{curr_title} {n}</div>
+	<div class=" text-xl text-center w-full italic">{curr_title}</div>
 	{#each notes as note_data, i}
 		<Note
 			{note_data}
