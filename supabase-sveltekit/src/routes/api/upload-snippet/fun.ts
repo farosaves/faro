@@ -1,15 +1,33 @@
-export let is2short = (selectedText: string) => selectedText.split(' ').length < 4;
+import { array as A, option as O } from 'fp-ts';
+import { flow } from 'fp-ts/lib/function';
+import { split } from 'sentence-splitter';
 
-export function makeQuote(selectedText: string, contextText: string) {
-	if (!is2short(selectedText)) {
-		return selectedText;
+let tooLong = (s: string) => split(s).filter((s) => s.raw.length > 4).length > 10;
+let longEnough = (s: string) => split(s).filter((s) => s.raw.length > 4).length > 1;
+let isValidQuote = (s: string) => longEnough(s) && !tooLong(s);
+let firstValid = flow(A.findLast(isValidQuote), O.toUndefined); // TODO: this can make problems
+let iou = (s1: string) => (s2: string) =>
+	new Set(...s1.split(' ').filter((x) => new Set(...s2.split(' ')).has(x))).size /
+	new Set([...s1.split(' '), ...s2.split(' ')]).size;
+// let a = Set(s1), b= Set(s2); length(a ∪ b)/length(a ∩ b) end in julia for comparison lol
+
+// Quote Context Highlights
+export function makeQCH(selectedText: string, contextTexts: string[]) {
+	const regex_cit = /\[\d{1,2}\]/gu;
+	selectedText = selectedText.replaceAll('&quot;', '"').replaceAll(regex_cit, '');
+	const context = firstValid(contextTexts) ?? contextTexts[0];
+	const key = split(selectedText)
+		.map((x) => x.raw)
+		.toSorted((x) => -x.length)[0];
+	const highlights = !longEnough(selectedText) ? [key] : [];
+	let quote: string;
+	if (longEnough(selectedText)) quote = selectedText;
+	else {
+		quote = split(context.replaceAll(regex_cit, ''))
+			.map((x) => x.raw)
+			.filter((x) => x.includes(key))
+			.toSorted(iou(contextTexts[0]))
+			.findLast(() => true)!;
 	}
-	const regex_cit = /\[\d{1,2}\]/u;
-	const regex_post = /^([^\.!\?]|\.\d|\d\.|\.[^\.]\.|\w\.\w)+/u; // from the start
-	const regex_pre = /([^\.\?]|\.\d|\d\.|\.[^\.]\.|\w\.\w)+$/u; // from the end
-	let [pre, ...posts] = contextText.replace(regex_cit, '').split(selectedText);
-	let post = posts.join(selectedText);
-	let f = (v: RegExpMatchArray | null) => (v && v[0]) || '';
-	return (f(pre.match(regex_pre)) + selectedText + f(post.match(regex_post))).trim() + '.';
-	// return contextText.slice(pre, contextText.length-post)
+	return { quote, highlights, context };
 }

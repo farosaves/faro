@@ -1,5 +1,5 @@
 <script>
-	import { PUBLIC_PI_IP } from '$env/static/public';
+	import { API_ADDRESS } from '$lib/utils';
 	import { onMount } from 'svelte';
 	let isLoggedIn = false;
 	let loginStatusMessage = 'Please click login below to continue.';
@@ -11,7 +11,7 @@
 		if (typeof window === 'undefined') return;
 
 		try {
-			const response = await fetch(`${PUBLIC_PI_IP}/api/check-login`, {
+			const response = await fetch(`${API_ADDRESS}/api/check-login`, {
 				method: 'GET',
 				credentials: 'include',
 				headers: {
@@ -29,7 +29,7 @@
 		}
 
 		try {
-			const response = await fetch(`${PUBLIC_PI_IP}/api/check-login`, {
+			const response = await fetch(`${API_ADDRESS}/api/check-login`, {
 				method: 'GET',
 				credentials: 'include',
 				headers: {
@@ -78,7 +78,7 @@
 	</div>
 
 	<div id="loginButtonContainer" class="max-w-sm p-4 mx-auto">
-		<a href={`${PUBLIC_PI_IP}`} target="_blank" class="w-full btn btn-primary">Log in</a>
+		<a href={`${API_ADDRESS}`} target="_blank" class="w-full btn btn-primary">Log in</a>
 	</div>
 {:else}
 	<div id="flashcardContent" class="max-w-sm p-4 mx-auto">

@@ -1,36 +1,30 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { trpc } from '$lib/trpc-client.js';
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { delete_by_id, getSession, logIfError } from '$lib/utils';
+	import { API_ADDRESS, delete_by_id, getSession, logIfError } from '$lib/utils';
 	import Note from '$lib/Note.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
-	import { PUBLIC_PI_IP } from '$env/static/public';
-	let curr_domain_title = 'pl.wikipedia.org;Kalanchoe';
+	import { _getNotes } from './util.js';
+	let getNotes = () => _getNotes(supabase, curr_source_id, user_id);
+	let curr_title = 'Kalanchoe';
 
 	let { supabase } = data;
-	let session: Session;
-	async function getNotes() {
-		const { data, error } = await supabase
-			.from('notes')
-			.select()
-			.eq('source_id', curr_source_id)
-			.eq('user_id', session.user.id);
-		error && console.log('getNotes error', error);
-		console.log(data);
-		return data ?? [];
-	}
+	let session: Session | undefined;
+	$: user_id = session?.user.id || '';
 	let notes: Notes[] = [];
 	const onNoteInsert = (payload: { new: Notes }) => {
-		console.log(payload.new);
 		notes = [...notes, payload.new];
 		showing_contents = [...showing_contents, false];
 	};
 	let curr_source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
+	let curr_domain_title = '';
 	async function updateActive() {
 		try {
 			await chrome.tabs.query({ active: true, currentWindow: true });
@@ -41,10 +35,14 @@
 		}
 		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		if (!tab.url || !tab.title) return;
+		curr_title = tab.title;
 		let domain = hostname(tab.url);
-		// curr_domain_title = [domain, tab.title].join(';');
-		// if (!(curr_domain_title in Object.keys(get(scratches))))
-		// 	scratches.update((t) => (t[curr_domain_title] = ''));
+		curr_domain_title = [domain, tab.title].join(';');
+		if (!(curr_domain_title in $scratches))
+			scratches.update((t) => {
+				t[curr_domain_title] = '';
+				return t;
+			});
 
 		const { data, error } = await supabase
 			.from('sources')
@@ -55,14 +53,16 @@
 		if (!data) {
 			console.log('source not there yet probably', error);
 			curr_source_id = -1;
-			notes = await getNotes();
+			notes = [];
 			return;
 		}
 		curr_source_id = data?.id;
 		notes = await getNotes();
+		console.log('scratches', $scratches);
 	}
-
+	let n = 0;
 	onMount(async () => {
+		n = await trpc($page).funsum.query([1, 2, 3, 4, 5, 6]);
 		updateActive();
 		try {
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -71,8 +71,9 @@
 		} catch {
 			console.log('dev?');
 		}
-
-		session = (await getSession(supabase)) || redirect(300, PUBLIC_PI_IP); // omg I'm starting to love typescript
+		let atokens = await trpc($page).my_email.query();
+		atokens || window.open(API_ADDRESS);
+		session = (await getSession(supabase, atokens)) || undefined; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
 		notes = await getNotes();
 		supabase
 			.channel('notes')
@@ -82,14 +83,12 @@
 					event: 'INSERT',
 					schema: 'public',
 					table: 'notes',
-					filter: `user_id=eq.${session.user.id}`
+					filter: `user_id=eq.${user_id}`
 				}, // at least url should be the same so no need to filter
 				onNoteInsert
 			)
 			.subscribe();
 	});
-	$: email = session ? session.user.email : 'none@none';
-
 	let showing_contents = notes.map((_) => false);
 	let close_all_notes = () => {
 		showing_contents = showing_contents.map((_) => false);
@@ -102,9 +101,26 @@
 	};
 </script>
 
-{email}<br />{curr_source_id}
-{notes.length}
+{#if !user_id}
+	<div role="alert" class="alert alert-error">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="stroke-current shrink-0 h-6 w-6"
+			fill="none"
+			viewBox="0 0 24 24"
+			><path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+			/></svg
+		>
+		<span>Not logged in! <a href={API_ADDRESS} target="_blank">click here</a></span>
+	</div>
+{/if}
+
 <div class="max-w-xs mx-auto space-y-4">
+	<div class=" text-xl text-center w-full italic">{curr_title} {n}</div>
 	{#each notes as note_data, i}
 		<Note
 			{note_data}
@@ -116,10 +132,10 @@
 		If you just installed the extension, you need to reload the page.
 	{/each}
 
-	<!-- <textarea
+	<textarea
 		placeholder="scratchy scratch scratch"
 		class="w-full"
 		bind:value={$scratches[curr_domain_title]}
-	/> -->
+	/>
 	<button on:click={() => console.log(get(scratches))}> pls</button>
 </div>

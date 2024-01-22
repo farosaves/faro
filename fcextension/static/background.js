@@ -1,13 +1,21 @@
 import 'chrome';
-const DOMAIN = 'http://78.10.223.2:13723'; // Replace with your domain
+const DOMAIN = 'http://78.10.223.2:13723'.replace(/\/$/, ''); // Replace with your domain
+
+chrome.webNavigation.onCompleted.addListener(() => {
+	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+});
+
+chrome.tabs.onActivated.addListener(() => {
+	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+});
 
 function uploadSelected(request, sender, sendResponse) {
 	if (request.action === 'uploadText') {
-		const { selectedText, contextText, website_title, website_url } = request;
+		const { selectedText, contextTexts, website_title, website_url } = request;
 		fetch(`${DOMAIN}/api/upload-snippet`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ selectedText, contextText, website_title, website_url })
+			body: JSON.stringify({ selectedText, contextTexts, website_title, website_url })
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))
@@ -43,10 +51,6 @@ function updateContextMenu(loggedIn) {
 	chrome.contextMenus.update('loginStatus', { title: title });
 }
 // TODO: sort this out
-// chrome.webNavigation.onCompleted.addListener((details) =>
-// 	chrome.runtime.sendMessage({ action: 'update_curr_url' })
-// );
-
 async function onCMclick(info, tab) {
 	if (info.menuItemId === 'loginStatus') {
 		activate(tab);
@@ -110,3 +114,4 @@ startPollingLoginStatus(10 * 60 * 1000);
 // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 // 	chrome.tabs.sendMessage(tabs[0].id, { action: 'getHighlightedText' });
 // });
+console.log('loaded all background');
