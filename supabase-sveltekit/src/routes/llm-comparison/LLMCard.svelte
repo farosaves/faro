@@ -15,8 +15,16 @@
 		<p>{bottomText}</p>
 
 		<div class="mt-4">
-			<label class="mb-2">Response rating</label>
-			<input type="range" min="0" max="100" value="25" class="range" step="25" />
+			<label for="responseRating" class="mb-2">Response rating</label>
+			<input
+				type="range"
+				id="responseRating"
+				min="0"
+				max="100"
+				value="25"
+				class="range"
+				step="25"
+			/>
 
 			<div class="w-full flex justify-between text-xs px-2">
 				<span>|</span>

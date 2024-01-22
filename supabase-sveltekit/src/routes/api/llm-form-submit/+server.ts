@@ -1,10 +1,11 @@
-import { OPENAI_SECRET_KEY } from '$env/static/private';
+import { OPENAI_SECRET_KEY, REPLICATE_API_TOKEN } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import OpenAI from 'openai';
+
 import Replicate from 'replicate';
 
 const replicate = new Replicate({
-	auth: process.env.REPLICATE_API_TOKEN
+	auth: REPLICATE_API_TOKEN
 });
 
 const openai = new OpenAI({ apiKey: OPENAI_SECRET_KEY });
@@ -30,21 +31,34 @@ async function getOpenAICompletion(model, systemPrompt, inputText) {
 	return completion.choices[0].message.content;
 }
 
+async function getLLAMAResponse(model, systemPrompt, inputText) {
+	// Call to Replicate API
+	const output = await replicate.run(model, {
+		input: {
+			prompt: inputText,
+			system_prompt: systemPrompt
+			// additional parameters as required
+		}
+	});
+	// Process and return the response
+	return output.join('');
+}
+
 export async function POST({ request, locals }) {
 	let sess = await locals.getSession();
 	if (sess) {
 		const data = await request.json();
 		const inputText = data.text;
-		const completionGPT3 = await getOpenAICompletion('gpt-3.5-turbo-1106', systemPrompt, inputText);
-		const completionGPT4 = await getOpenAICompletion('gpt-4-1106-preview', systemPrompt, inputText);
-
+		const model = data.model;
+		const completion = await getOpenAICompletion(model, systemPrompt, inputText);
 		return json({
 			status: 200,
 			body: {
-				gpt3Response: completionGPT3,
-				gpt4Response: completionGPT4
+				completion: completion
 			}
 		});
+	} else {
+		console.log('User not logged in');
+		return json({});
 	}
-	return json({});
 }
