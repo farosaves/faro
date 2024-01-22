@@ -4,6 +4,7 @@ import { split } from 'sentence-splitter';
 
 let tooLong = (s: string) => split(s).filter((s) => s.raw.length > 4).length > 10;
 let longEnough = (s: string) => split(s).filter((s) => s.raw.length > 4).length > 1;
+let good4cloze = (s: string) => s.split(" ").length < 6
 let isValidQuote = (s: string) => longEnough(s) && !tooLong(s);
 let firstValid = flow(A.findLast(isValidQuote), O.toUndefined); // TODO: this can make problems
 let iou = (s1: string) => (s2: string) =>
@@ -19,9 +20,9 @@ export function makeQCH(selectedText: string, contextTexts: string[]) {
 	const key = split(selectedText)
 		.map((x) => x.raw)
 		.toSorted((x) => -x.length)[0];
-	const highlights = !longEnough(selectedText) ? [key] : [];
+	const highlights = good4cloze(selectedText) ? [key] : [];
 	let quote: string;
-	if (longEnough(selectedText)) quote = selectedText;
+	if (!good4cloze(selectedText)) quote = selectedText;
 	else {
 		quote = split(context.replaceAll(regex_cit, ''))
 			.map((x) => x.raw)

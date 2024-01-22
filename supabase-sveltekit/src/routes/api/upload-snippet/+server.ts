@@ -28,7 +28,7 @@ export async function POST({ request, locals }) {
 			.then(logIfError);
 		source_id = data!.id;
 	}
+	if (!quote) return json({});
 	await supabase.from('notes').insert({ quote, source_id, highlights, context }).then(logIfError);
-
 	return json({});
 }
