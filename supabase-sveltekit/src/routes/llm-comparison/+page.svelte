@@ -13,25 +13,41 @@
 	 */
 	let gpt4Response = null;
 
+	/**
+	 * @param {string} model
+	 * @param {string} inputText
+	 */
+	async function sendGPTRequest(model, inputText) {
+		try {
+			const response = await fetch('/api/llm-form-submit', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ text: inputText, model })
+			});
+
+			if (response.ok) {
+				const result = await response.json();
+				return JSON.parse(result.body.completion);
+			} else {
+				console.error(`Failed to get ${model} response:`, await response.json());
+			}
+		} catch (error) {
+			console.error('Error during fetch:', error);
+		}
+	}
+
 	async function sendData() {
 		isLoading = true;
-		const response = await fetch('/api/llm-form-submit', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ text: inputText })
+
+		sendGPTRequest('gpt-3.5-turbo-1106', inputText).then((completion) => {
+			gpt3Response = completion;
+			isLoading = isLoading && !gpt4Response;
 		});
 
-		if (response.ok) {
-			const result = await response.json();
-			console.log(result);
-			gpt3Response = JSON.parse(result.body.gpt3Response);
-			gpt4Response = JSON.parse(result.body.gpt4Response);
-			isLoading = false;
-		} else {
-			console.error('Failed to submit:', await response.json());
-		}
+		sendGPTRequest('gpt-4-1106-preview', inputText).then((completion) => {
+			gpt4Response = completion;
+			isLoading = isLoading && !gpt3Response;
+		});
 	}
 </script>
 
