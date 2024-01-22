@@ -31,7 +31,8 @@
 		"tabs",
 		"sidePanel",
 		"cookies",
-		"commands"
+		"commands",
+		"webNavigation"
 	],
 	"commands": {
 		"_execute_action": {
