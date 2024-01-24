@@ -4,12 +4,13 @@
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { API_ADDRESS, delete_by_id, getSession, logIfError } from '$lib/utils';
+	import { API_ADDRESS, getSession, goto } from '$lib/utils';
 	import Note from '$lib/shared/Note.svelte';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
 	import { _getNotes } from './util.js';
+	import { delete_by_id, logIfError } from '$lib/shared/utils.js';
 	let getNotes = () => _getNotes(supabase, curr_source_id, session?.user.id);
 	let curr_title = 'Kalanchoe';
 
@@ -91,6 +92,11 @@
 	let close_all_notes = () => {
 		showing_contents = showing_contents.map((_) => false);
 	};
+	let fun = (i: number) => () => {
+		close_all_notes();
+		let uuid = notes[i].snippet_uuid;
+		if (uuid) goto(uuid);
+	};
 	let deleteit = (note_id: number) => async () => {
 		let { error } = await supabase.from('notes').delete().eq('id', note_id).then(logIfError);
 		if (error) return;
@@ -123,7 +129,7 @@
 		<Note
 			{note_data}
 			bind:showing_content={showing_contents[i]}
-			fun={close_all_notes}
+			fun={fun(i)}
 			deleteit={deleteit(note_data.id)}
 		/>
 	{:else}

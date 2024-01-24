@@ -1,8 +1,6 @@
-import { Card } from 'fsrs.js';
+import { array as A } from 'fp-ts';
 
-export function ts(card: Card) {
-    return {...card, due: card.due.toString(), last_review: card.last_review.toString()}
-}
+export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id);
 
 export function logIfError<T extends { error: any }>(r: T): T {
 	const { error } = r;
