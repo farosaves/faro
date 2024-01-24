@@ -10,11 +10,11 @@ chrome.tabs.onActivated.addListener(() => {
 });
 
 function uploadSelected(request, sender, sendResponse) {
-	const { selectedText, contextTexts, website_title, website_url } = request;
+	const { selectedText, contextTexts, website_title, website_url, uuid } = request;
 	fetch(`${DOMAIN}/api/upload-snippet`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ selectedText, contextTexts, website_title, website_url })
+		body: JSON.stringify({ selectedText, contextTexts, website_title, website_url, uuid })
 	})
 		.then((response) => response.json())
 		.then((data) => console.log(data))
@@ -23,14 +23,18 @@ function uploadSelected(request, sender, sendResponse) {
 
 function onMessage(request, sender, sendResponse) {
 	if (request.action === 'uploadText') {
-		uploadSelected(request, sender, sendResponse)
+		uploadSelected(request, sender, sendResponse);
 	} else if (request.action === 'loadDeps') {
 		chrome.scripting.executeScript({
 			target: { tabId: sender.tab.id },
-			files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"]
-	})
-
-}}
+			files: [
+				'rangy/rangy-core.min.js',
+				'rangy/rangy-classapplier.min.js',
+				'rangy/rangy-highlighter.min.js'
+			]
+		});
+	}
+}
 chrome.runtime.onMessage.addListener(onMessage);
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -42,13 +46,23 @@ chrome.runtime.onInstalled.addListener(() => {
 	});
 });
 
+function getUuid() {
+	try {
+		return crypto.randomUUID();
+	} catch {
+		console.log('uuid fallback, nonsecure context?');
+		return Math.floor(Math.random() * 1_000_000).toString();
+	}
+}
+
 async function activate(tab) {
 	chrome.sidePanel.open({ tabId: tab.id });
 	chrome.runtime.sendMessage({ action: 'update_curr_url' });
 	chrome.tabs.sendMessage(tab.id, {
 		action: 'getHighlightedText',
 		website_title: tab.title,
-		website_url: tab.url
+		website_url: tab.url,
+		uuid: getUuid()
 	});
 }
 // this makes it *not close* - it opens from the function above
