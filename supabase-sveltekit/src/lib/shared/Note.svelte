@@ -12,7 +12,7 @@
 		: note_data.quote;
 </script>
 
-<div class="collapse bg-base-200">
+<div class="collapse bg-base-200 basis-64">
 	<input type="checkbox" bind:checked={showing_content} on:click={fun} />
 	<div class="collapse-content" style="grid-row-start: 2;">
 		<button class="btn btn-xs w-full" style="color: red;" on:click={deleteit}>DELETE</button>
