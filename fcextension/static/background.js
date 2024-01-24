@@ -57,7 +57,8 @@ function getUuid() {
 
 async function activate(tab) {
 	chrome.sidePanel.open({ tabId: tab.id });
-	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+	try {await chrome.runtime.sendMessage({ action: 'update_curr_url' });}
+	catch {console.log("did not find the thing")} // TODO: we may want to skip the text capture - first click open only
 	chrome.tabs.sendMessage(tab.id, {
 		action: 'getHighlightedText',
 		website_title: tab.title,
