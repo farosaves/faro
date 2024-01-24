@@ -10,19 +10,28 @@ chrome.tabs.onActivated.addListener(() => {
 });
 
 function uploadSelected(request, sender, sendResponse) {
-	if (request.action === 'uploadText') {
-		const { selectedText, contextTexts, website_title, website_url } = request;
-		fetch(`${DOMAIN}/api/upload-snippet`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ selectedText, contextTexts, website_title, website_url })
-		})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error('Error:', error));
-	}
+	const { selectedText, contextTexts, website_title, website_url } = request;
+	fetch(`${DOMAIN}/api/upload-snippet`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ selectedText, contextTexts, website_title, website_url })
+	})
+		.then((response) => response.json())
+		.then((data) => console.log(data))
+		.catch((error) => console.error('Error:', error));
 }
-chrome.runtime.onMessage.addListener(uploadSelected);
+
+function onMessage(request, sender, sendResponse) {
+	if (request.action === 'uploadText') {
+		uploadSelected(request, sender, sendResponse)
+	} else if (request.action === 'loadDeps') {
+		chrome.scripting.executeScript({
+			target: { tabId: sender.tab.id },
+			files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"]
+	})
+
+}}
+chrome.runtime.onMessage.addListener(onMessage);
 
 chrome.runtime.onInstalled.addListener(() => {
 	chrome.contextMenus.create({
