@@ -5,7 +5,7 @@
 	export let data;
 	import { onMount } from 'svelte';
 	import { API_ADDRESS, delete_by_id, getSession, logIfError } from '$lib/utils';
-	import Note from '$lib/Note.svelte';
+	import Note from '$lib/shared/Note.svelte';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';

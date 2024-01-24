@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { MouseEventHandler } from 'svelte/elements';
-	import type { Notes } from './dbtypes';
+	import type { Notes } from '../dbtypes';
 
 	export let note_data: Notes;
 	export let showing_content: boolean;

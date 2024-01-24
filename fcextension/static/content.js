@@ -30,6 +30,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		const selectedText = window.getSelection().toString();
 		const nodeText = window.getSelection().anchorNode.textContent;
 		console.log({ selectedText, nodeText });
+		console.log(rangy.createRange())
 		const contextTexts = walkup(window.getSelection().anchorNode);
 		wrapSelectedText("hehehe")
 		chrome.runtime.sendMessage({
@@ -50,3 +51,5 @@ function sendHighlightedText() {
 		chrome.runtime.sendMessage({ error: 'No text selected.' });
 	}
 }
+
+chrome.runtime.sendMessage({action: "loadDeps"})
