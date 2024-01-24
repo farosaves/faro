@@ -4,13 +4,12 @@
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { API_ADDRESS, getSession, goto } from '$lib/utils';
-	import Note from '$lib/shared/Note.svelte';
+	import { API_ADDRESS, getSession } from '$lib/utils';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores.js';
 	import { get } from 'svelte/store';
 	import { _getNotes } from './util.js';
-	import { delete_by_id, logIfError } from '$lib/shared/utils.js';
+	import NotePanel from '$lib/shared/NotePanel.svelte';
 	let getNotes = () => _getNotes(supabase, curr_source_id, session?.user.id);
 	let curr_title = 'Kalanchoe';
 
@@ -19,7 +18,6 @@
 	let notes: Notes[] = [];
 	const onNoteInsert = (payload: { new: Notes }) => {
 		notes = [...notes, payload.new];
-		showing_contents = [...showing_contents, false];
 	};
 	let curr_source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
@@ -88,21 +86,6 @@
 			)
 			.subscribe();
 	});
-	let showing_contents = notes.map((_) => false);
-	let close_all_notes = () => {
-		showing_contents = showing_contents.map((_) => false);
-	};
-	let fun = (i: number) => () => {
-		close_all_notes();
-		let uuid = notes[i].snippet_uuid;
-		if (uuid) goto(uuid);
-	};
-	let deleteit = (note_id: number) => async () => {
-		let { error } = await supabase.from('notes').delete().eq('id', note_id).then(logIfError);
-		if (error) return;
-		notes = delete_by_id(note_id)(notes);
-		close_all_notes();
-	};
 </script>
 
 {#if !logged_in}
@@ -125,16 +108,7 @@
 
 <div class="max-w-xs mx-auto space-y-4">
 	<div class=" text-xl text-center w-full italic">{curr_title}</div>
-	{#each notes as note_data, i}
-		<Note
-			{note_data}
-			bind:showing_content={showing_contents[i]}
-			fun={fun(i)}
-			deleteit={deleteit(note_data.id)}
-		/>
-	{:else}
-		If you just installed the extension, you need to reload the page.
-	{/each}
+	<NotePanel {notes} {supabase} />
 
 	<textarea
 		placeholder="scratchy scratch scratch"

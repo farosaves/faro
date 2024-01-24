@@ -22,7 +22,7 @@ export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
 	return session;
 };
 
-export async function goto(uuid: string) {
+export async function gotoSnippet(uuid: string) {
 	console.log("going to..", uuid)
 	const tab = (await chrome.tabs.query({active: true, currentWindow: true}))[0]
 	chrome.tabs.sendMessage(tab.id!, {action: "goto", uuid})
