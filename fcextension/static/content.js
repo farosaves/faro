@@ -1,16 +1,6 @@
 import 'chrome';
 // import rangy from 'rangy'
 console.log('hello');
-function wrapSelectedText(uuid) {
-	var selection = window.getSelection().getRangeAt(0);
-	var selectedText = selection.extractContents();
-	var span = document.createElement('u');
-	span.tabIndex = -1;
-	span.appendChild(selectedText);
-	span.id = uuid;
-	selection.insertNode(span);
-	span.focus();
-}
 const applierOptions = {
 	elementProperties: {
 		style: { textDecoration: 'underline', textDecorationStyle: 'dotted' },
@@ -20,8 +10,10 @@ const applierOptions = {
 function wrapSelectedText(uuid) {
 	const hl = rangy.createHighlighter();
 	const app = rangy.createClassApplier(uuid, applierOptions);
+	const selection = rangy.getSelection()
 	hl.addClassApplier(app);
-	hl.highlightSelection(uuid);
+	hl.highlightSelection(uuid, {selection});
+	return hl.serialize(selection)
 }
 let gotoText = (uuid) => document.getElementsByClassName(uuid).item(0).focus();
 
@@ -45,7 +37,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log({ selectedText, nodeText });
 		console.log(rangy.createRange());
 		const contextTexts = walkup(window.getSelection().anchorNode);
-		wrapSelectedText(uuid);
+		const serialised = wrapSelectedText(uuid);
+		console.log(serialised)
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
