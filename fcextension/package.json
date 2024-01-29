@@ -45,6 +45,7 @@
 		"chrome-types": "^0.1.247",
 		"fp-ts": "^2.16.2",
 		"svelte-persisted-store": "^0.9.0",
+		"svelte-tags-input": "^6.0.0",
 		"sveltekit-adapter-chrome-extension": "github:asjir/sveltekit-adapter-chrome-extension",
 		"trpc-sveltekit": "^3.5.22"
 	}

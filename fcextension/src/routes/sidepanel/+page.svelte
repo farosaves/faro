@@ -6,20 +6,18 @@
 	import { onMount } from 'svelte';
 	import { API_ADDRESS, getSession } from '$lib/utils';
 	import type { Notes } from '$lib/dbtypes.js';
-	import { scratches } from '$lib/stores.js';
+	import { scratches } from '$lib/stores';
+	import { NoteSync } from '$lib/note-sync.js';
 	import { get } from 'svelte/store';
-	import { _getNotes } from './util.js';
-	import NotePanel from '$lib/shared/NotePanel.svelte';
-	let getNotes = () => _getNotes(supabase, curr_source_id, session?.user.id);
+	import NotePanel from '$lib/components/NotePanel.svelte';
 	let curr_title = 'Kalanchoe';
-
 	let { supabase } = data;
 	let session: Session;
-	let notes: Notes[] = [];
+	let note_sync: NoteSync = new NoteSync(supabase, null);
 	const onNoteInsert = (payload: { new: Notes }) => {
-		notes = [...notes, payload.new];
+		// note_sync = [...note_sync, payload.new];
 	};
-	let curr_source_id: number = -1;
+	let source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
 	async function updateActive() {
@@ -27,11 +25,11 @@
 			await chrome.tabs.query({ active: true, currentWindow: true });
 		} catch {
 			console.log('dev?');
-			curr_source_id = 15;
+			source_id = 15;
 			return;
 		}
 		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-		if (!tab.url || !tab.title) return;
+		if (!tab.url || !tab.title || !tab.id) return;
 		curr_title = tab.title;
 		let domain = hostname(tab.url);
 		curr_domain_title = [domain, tab.title].join(';');
@@ -49,17 +47,18 @@
 			.maybeSingle();
 		if (!data) {
 			console.log('source not there yet probably', error);
-			curr_source_id = -1;
-			notes = [];
+			source_id = -1;
+			// note_sync = [];
 			return;
 		}
-		curr_source_id = data?.id;
-		notes = await getNotes();
+		source_id = data?.id;
+		await note_sync.update_one_page(source_id);
+		note_sync.getHighlight(source_id, tab.id);
+		// note_sync = await getNotesAndHighlight(tab.id);
 		console.log('scratches', $scratches);
 	}
 	let logged_in = true;
 	onMount(async () => {
-		updateActive();
 		try {
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				if (request.action == 'update_curr_url') updateActive();
@@ -70,21 +69,10 @@
 		let atokens = await trpc($page).my_email.query();
 		atokens || window.open(API_ADDRESS);
 		session = (await getSession(supabase, atokens))!; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
+		note_sync.user_id = session.user.id;
 		logged_in = !!session;
-		notes = await getNotes();
-		supabase
-			.channel('notes')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'notes',
-					filter: `user_id=eq.${session?.user.id}`
-				}, // at least url should be the same so no need to filter
-				onNoteInsert
-			)
-			.subscribe();
+		updateActive();
+		note_sync.sub();
 	});
 </script>
 
@@ -108,7 +96,7 @@
 
 <div class="max-w-xs mx-auto space-y-4">
 	<div class=" text-xl text-center w-full italic">{curr_title}</div>
-	<NotePanel {notes} {supabase} />
+	<NotePanel {note_sync} {supabase} {source_id} />
 
 	<textarea
 		placeholder="scratchy scratch scratch"
