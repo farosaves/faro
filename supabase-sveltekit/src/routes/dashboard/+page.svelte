@@ -42,7 +42,7 @@
 	{#each note_groups as [title, note_group], i}
 		<div class="border-2 text-center">
 			<span class="text-lg text-wrap">{title}</span>
-			<div class="flex flex-row flex-wrap">
+			<div class="flex flex-row flex-wrap overflow-auto">
 				{#each note_group as note, j}
 					<Note
 						note_data={note}

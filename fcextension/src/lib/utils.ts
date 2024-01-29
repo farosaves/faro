@@ -27,3 +27,14 @@ export async function gotoSnippet(uuid: string) {
 	const tab = (await chrome.tabs.query({active: true, currentWindow: true}))[0]
 	chrome.tabs.sendMessage(tab.id!, {action: "goto", uuid})
 }
+
+export async function getNotes(supabase: SupabaseClient, source_id: number, user_id: string) {
+	const { data, error } = await supabase
+		.from('notes')
+		.select()
+		.eq('source_id', source_id)
+		.eq('user_id', user_id).order("created_at");
+	error && console.log('getNotes error', error);
+	console.log(data);
+	return data ?? null;
+}

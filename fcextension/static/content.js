@@ -10,11 +10,24 @@ const applierOptions = {
 function wrapSelectedText(uuid) {
 	const hl = rangy.createHighlighter();
 	const app = rangy.createClassApplier(uuid, applierOptions);
-	const selection = rangy.getSelection()
+	const selection = rangy.getSelection();
 	hl.addClassApplier(app);
-	hl.highlightSelection(uuid, {selection});
-	return hl.serialize(selection)
+	hl.highlightSelection(uuid, { selection });
+	const ser = hl.serialize(selection);
+	console.log(ser);
+	return ser;
 }
+
+let batchDeserialize = (uss) =>
+	uss.forEach(([uuid, serialized]) => {
+		if (!serialized) return;
+		console.log('deserializeing', uuid, serialized);
+		const hl = rangy.createHighlighter();
+		const app = rangy.createClassApplier(uuid, applierOptions);
+		hl.addClassApplier(app);
+		hl.deserialize(serialized);
+	});
+
 let gotoText = (uuid) => document.getElementsByClassName(uuid).item(0).focus();
 
 // now we also need node text - to make sure that if highlight was from a different node in the paragraph we capture the correct one
@@ -23,11 +36,13 @@ let node2context = (node) =>
 		? node.textContent
 		: node2context(node.parentElement);
 
-let isParagraph = (node) =>
-	node.textContent.split(/[\.\?!]/u).filter((s) => s.length > 4).length > 2; // at least 3 sentences
+let isParagraph = (node, n=2) =>
+	node.textContent.split(/[\.\?!]/u).filter((s) => s.length > 4).length > n; // at least 3 sentences
 
 let walkup = (node) =>
 	isParagraph(node) ? [node.textContent] : [node.textContent, ...walkup(node.parentElement)];
+
+let walkup2 = (node) => isParagraph(node, n=4) ? node : walkup2(node.parentElement)
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
@@ -37,8 +52,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log({ selectedText, nodeText });
 		console.log(rangy.createRange());
 		const contextTexts = walkup(window.getSelection().anchorNode);
-		const serialised = wrapSelectedText(uuid);
-		console.log(serialised)
+		const serialized = wrapSelectedText(uuid);
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
@@ -46,12 +60,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			contextTexts,
 			website_title,
 			website_url,
-			uuid
+			uuid,
+			serialized
 		});
 	}
-	if (request.action === "goto")
-		gotoText(request.uuid)
-	
+	if (request.action === 'goto') gotoText(request.uuid);
+	if (request.action === 'deserialize') batchDeserialize(request.uss);
 });
 
 function sendHighlightedText() {
@@ -63,4 +77,4 @@ function sendHighlightedText() {
 	}
 }
 
-chrome.runtime.sendMessage({ action: 'loadDeps'});
+chrome.runtime.sendMessage({ action: 'loadDeps' });

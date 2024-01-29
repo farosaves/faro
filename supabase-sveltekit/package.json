@@ -50,6 +50,7 @@
 		"replicate": "^0.25.2",
 		"sentence-splitter": "^5.0.0",
 		"svelte-formula": "^0.12.0",
+		"svelte-tags-input": "^6.0.0",
 		"trpc": "^0.11.3",
 		"trpc-sveltekit": "^3.5.22",
 		"zod": "^3.22.4"

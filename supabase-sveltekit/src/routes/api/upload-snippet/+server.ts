@@ -6,11 +6,11 @@ import { makeQCH } from './fun';
 let hostname = (s: string) => new URL(s).hostname;
 
 export async function POST({ request, locals }) {
-	const { selectedText, contextTexts, website_url, website_title, uuid } = await request.json();
+	const { selectedText, contextTexts, website_url, website_title, uuid, serialized } =
+		await request.json();
 	const supabase: SupabaseClient = locals.supabase; // here this loads defined tables properly
 	console.log('uploaded:', { selectedText, contextTexts });
 	const { quote, highlights, context } = makeQCH(selectedText, contextTexts);
-	// if (contextTexts.split(' ').length < 2 || selectedText.length < 2) return json({});
 	const { data } = await supabase
 		.from('sources')
 		.select('id')
@@ -29,6 +29,11 @@ export async function POST({ request, locals }) {
 		source_id = data!.id;
 	}
 	if (!quote) return json({});
-	await supabase.from('notes').insert({ quote, source_id, highlights, context, snippet_uuid: uuid }).then(logIfError);
+	console.log(serialized, quote)
+	
+	await supabase
+		.from('notes')
+		.insert({ quote, source_id, highlights, context, snippet_uuid: uuid, serialized_highlight: serialized})
+		.then(logIfError);
 	return json({});
 }

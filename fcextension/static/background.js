@@ -10,11 +10,18 @@ chrome.tabs.onActivated.addListener(() => {
 });
 
 function uploadSelected(request, sender, sendResponse) {
-	const { selectedText, contextTexts, website_title, website_url, uuid } = request;
+	const { selectedText, contextTexts, website_title, website_url, uuid, serialized } = request;
 	fetch(`${DOMAIN}/api/upload-snippet`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ selectedText, contextTexts, website_title, website_url, uuid })
+		body: JSON.stringify({
+			selectedText,
+			contextTexts,
+			website_title,
+			website_url,
+			uuid,
+			serialized
+		})
 	})
 		.then((response) => response.json())
 		.then((data) => console.log(data))
@@ -57,8 +64,11 @@ function getUuid() {
 
 async function activate(tab) {
 	chrome.sidePanel.open({ tabId: tab.id });
-	try {await chrome.runtime.sendMessage({ action: 'update_curr_url' });}
-	catch {console.log("did not find the thing")} // TODO: we may want to skip the text capture - first click open only
+	try {
+		await chrome.runtime.sendMessage({ action: 'update_curr_url' });
+	} catch {
+		console.log('did not find the thing');
+	} // TODO: we may want to skip the text capture - first click open only
 	chrome.tabs.sendMessage(tab.id, {
 		action: 'getHighlightedText',
 		website_title: tab.title,
