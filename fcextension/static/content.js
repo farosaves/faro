@@ -8,11 +8,12 @@ const applierOptions = {
 	}
 };
 function wrapSelectedText(uuid) {
+	const classname = '_' + uuid
 	const hl = rangy.createHighlighter();
-	const app = rangy.createClassApplier(uuid, applierOptions);
+	const app = rangy.createClassApplier(classname, applierOptions);
 	const selection = rangy.getSelection();
 	hl.addClassApplier(app);
-	hl.highlightSelection(uuid, { selection });
+	hl.highlightSelection(classname, { selection });
 	const ser = hl.serialize(selection);
 	console.log(ser);
 	return ser;
@@ -23,12 +24,12 @@ let batchDeserialize = (uss) =>
 		if (!serialized) return;
 		console.log('deserializeing', uuid, serialized);
 		const hl = rangy.createHighlighter();
-		const app = rangy.createClassApplier(uuid, applierOptions);
+		const app = rangy.createClassApplier('_' + uuid, applierOptions);
 		hl.addClassApplier(app);
 		hl.deserialize(serialized);
 	});
 
-let gotoText = (uuid) => document.getElementsByClassName(uuid).item(0).focus();
+let gotoText = (uuid) => document.getElementsByClassName('_' + uuid).item(0).focus();
 
 // now we also need node text - to make sure that if highlight was from a different node in the paragraph we capture the correct one
 let node2context = (node) =>
@@ -48,16 +49,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
 		const { website_title, website_url, uuid } = request;
 		const selectedText = window.getSelection().toString();
-		const nodeText = window.getSelection().anchorNode.textContent;
-		console.log({ selectedText, nodeText });
+		console.log( selectedText, window.getSelection().anchorNode.textContent );
 		console.log(rangy.createRange());
-		const contextTexts = walkup(window.getSelection().anchorNode);
 		const serialized = wrapSelectedText(uuid);
+		const html = walkup2(window.getSelection().anchorNode).innerHTML;
+		console.log(html)
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
 			selectedText,
-			contextTexts,
+			html,
 			website_title,
 			website_url,
 			uuid,
