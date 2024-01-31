@@ -6,11 +6,11 @@ import { makeQCH } from './fun';
 let hostname = (s: string) => new URL(s).hostname;
 
 export async function POST({ request, locals }) {
-	const { selectedText, contextTexts, website_url, website_title, uuid, serialized } =
+	const { selectedText, html, website_url, website_title, uuid, serialized } =
 		await request.json();
 	const supabase: SupabaseClient = locals.supabase; // here this loads defined tables properly
-	console.log('uploaded:', { selectedText, contextTexts });
-	const { quote, highlights, context } = makeQCH(selectedText, contextTexts);
+	console.log('uploaded:', { selectedText, html });
+	const { quote, highlights, context } = makeQCH(selectedText, html, uuid);
 	const { data } = await supabase
 		.from('sources')
 		.select('id')

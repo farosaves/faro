@@ -10,13 +10,13 @@ chrome.tabs.onActivated.addListener(() => {
 });
 
 function uploadSelected(request, sender, sendResponse) {
-	const { selectedText, contextTexts, website_title, website_url, uuid, serialized } = request;
+	const { selectedText, html, website_title, website_url, uuid, serialized } = request;
 	fetch(`${DOMAIN}/api/upload-snippet`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
 			selectedText,
-			contextTexts,
+			html,
 			website_title,
 			website_url,
 			uuid,
