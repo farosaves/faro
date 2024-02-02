@@ -13,8 +13,8 @@ let iou = (s1: string) => (s2: string) =>
 // let a = Set(s1), b= Set(s2); length(a ∪ b)/length(a ∩ b) end in julia for comparison lol
 
 // Quote Context Highlights
-export function makeQCH(selectedText: string, html: string, uuid: string) {
-	fetch('http://localhost:2227/make-qch', {
+export async function makeQCH(selectedText: string, html: string, uuid: string) {
+	const {q, c, h, error} = await (await fetch('http://localhost:2227/make-qch', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
@@ -22,8 +22,9 @@ export function makeQCH(selectedText: string, html: string, uuid: string) {
 			html,
 			uuid
 		})
-	});
-	return {}
+	})).json();
+	error && console.log(error)
+	return {quote: q, context: c, highlights: h}
 	// const regex_cit = /\[\d{1,2}\]/gu;
 	// selectedText = selectedText.replaceAll('&quot;', '"').replaceAll(regex_cit, '');
 	// const context = firstValid(contextTexts) ?? contextTexts[0];

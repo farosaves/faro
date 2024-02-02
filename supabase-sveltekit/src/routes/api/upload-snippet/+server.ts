@@ -10,7 +10,7 @@ export async function POST({ request, locals }) {
 		await request.json();
 	const supabase: SupabaseClient = locals.supabase; // here this loads defined tables properly
 	console.log('uploaded:', { selectedText, html });
-	const { quote, highlights, context } = makeQCH(selectedText, html, uuid);
+	const { quote, highlights, context } = await makeQCH(selectedText, html, uuid);
 	const { data } = await supabase
 		.from('sources')
 		.select('id')
