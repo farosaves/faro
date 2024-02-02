@@ -8,7 +8,7 @@ const applierOptions = {
 	}
 };
 function wrapSelectedText(uuid) {
-	const classname = '_' + uuid
+	const classname = '_' + uuid;
 	const hl = rangy.createHighlighter();
 	const app = rangy.createClassApplier(classname, applierOptions);
 	const selection = rangy.getSelection();
@@ -29,7 +29,11 @@ let batchDeserialize = (uss) =>
 		hl.deserialize(serialized);
 	});
 
-let gotoText = (uuid) => document.getElementsByClassName('_' + uuid).item(0).focus();
+let gotoText = (uuid) =>
+	document
+		.getElementsByClassName('_' + uuid)
+		.item(0)
+		.focus();
 
 // now we also need node text - to make sure that if highlight was from a different node in the paragraph we capture the correct one
 let node2context = (node) =>
@@ -37,23 +41,24 @@ let node2context = (node) =>
 		? node.textContent
 		: node2context(node.parentElement);
 
-let isParagraph = (node, n=2) =>
+let isParagraph = (node, n = 2) =>
 	node.textContent.split(/[\.\?!]/u).filter((s) => s.length > 4).length > n; // at least 3 sentences
 
 let walkup = (node) =>
 	isParagraph(node) ? [node.textContent] : [node.textContent, ...walkup(node.parentElement)];
 
-let walkup2 = (node) => isParagraph(node, n=4) ? node : walkup2(node.parentElement)
+let walkup2 = (node) => (isParagraph(node, 4) ? node : walkup2(node.parentElement));
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'getHighlightedText') {
 		const { website_title, website_url, uuid } = request;
 		const selectedText = window.getSelection().toString();
-		console.log( selectedText, window.getSelection().anchorNode.textContent );
+		console.log(selectedText, window.getSelection().anchorNode.textContent);
 		console.log(rangy.createRange());
 		const serialized = wrapSelectedText(uuid);
-		const html = walkup2(window.getSelection().anchorNode).innerHTML;
-		console.log(html)
+		console.log(window.getSelection().anchorNode)
+		let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
+		// html = html || walkup2(window.getSelection().anchorNode).textContent;
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',

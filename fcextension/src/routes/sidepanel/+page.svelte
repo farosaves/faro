@@ -58,6 +58,9 @@
 		console.log('scratches', $scratches);
 	}
 	let logged_in = true;
+	setTimeout(() => {
+		logged_in = !!session;
+	}, 2000);
 	onMount(async () => {
 		try {
 			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

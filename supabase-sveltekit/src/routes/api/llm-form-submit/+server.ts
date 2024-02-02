@@ -1,4 +1,5 @@
-import { OPENAI_SECRET_KEY, REPLICATE_API_TOKEN } from '$env/static/private';
+// import { OPENAI_SECRET_KEY, REPLICATE_API_TOKEN } from '$env/static/private';
+import { REPLICATE_API_TOKEN } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import OpenAI from 'openai';
 
@@ -8,7 +9,7 @@ const replicate = new Replicate({
 	auth: REPLICATE_API_TOKEN
 });
 
-const openai = new OpenAI({ apiKey: OPENAI_SECRET_KEY });
+// const openai = new OpenAI({ apiKey: OPENAI_SECRET_KEY });
 
 const systemPrompt = `You are a helpful assistant designed to output json responses.
 Users will provide you with a string.
@@ -18,18 +19,18 @@ One contains the answer, so to speak, the other should be the input rewritten as
 I don't want you to create an image, but use an LLM to create text.
 Your answer should contain two fields: 1. Question. 2. Answer.`;
 
-async function getOpenAICompletion(model, systemPrompt, inputText) {
-	const completion = await openai.chat.completions.create({
-		messages: [
-			{ role: 'system', content: systemPrompt },
-			{ role: 'user', content: `Here is the input: """${inputText}"""` }
-		],
-		model: model,
-		response_format: { type: 'json_object' }
-	});
+// async function getOpenAICompletion(model, systemPrompt, inputText) {
+// 	const completion = await openai.chat.completions.create({
+// 		messages: [
+// 			{ role: 'system', content: systemPrompt },
+// 			{ role: 'user', content: `Here is the input: """${inputText}"""` }
+// 		],
+// 		model: model,
+// 		response_format: { type: 'json_object' }
+// 	});
 
-	return completion.choices[0].message.content;
-}
+// 	return completion.choices[0].message.content;
+// }
 
 async function getLLAMAResponse(model, systemPrompt, inputText) {
 	// Call to Replicate API
@@ -50,11 +51,11 @@ export async function POST({ request, locals }) {
 		const data = await request.json();
 		const inputText = data.text;
 		const model = data.model;
-		const completion = await getOpenAICompletion(model, systemPrompt, inputText);
+		// const completion = await getOpenAICompletion(model, systemPrompt, inputText);
 		return json({
 			status: 200,
 			body: {
-				completion: completion
+				completion: "incomplete;)"
 			}
 		});
 	} else {

@@ -1,5 +1,5 @@
 using HTTP, Oxygen, Revise
-cd("oxygen")
+cd(@__DIR__)
 include("routes.jl")
 __revise_mode__ = :eval
 Revise.track("routes.jl")
@@ -30,7 +30,6 @@ function ReviseHandler(handle)
     end
 end
 
-run(; port=2227, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async))
-run()
 
-t = Gumbo.text
+run(; port=2227, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
+run()
