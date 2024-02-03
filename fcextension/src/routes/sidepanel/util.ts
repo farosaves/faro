@@ -1,1 +1,1 @@
-import type { SupabaseClient } from '$lib/first';
+import type { SupabaseClient } from '$lib/shared/first';

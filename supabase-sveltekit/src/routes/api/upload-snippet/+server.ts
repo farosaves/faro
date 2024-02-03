@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '$lib/first';
+import type { SupabaseClient } from '$lib/shared/first';
 import { logIfError } from '$lib/shared/utils.js';
 import { error, json } from '@sveltejs/kit';
 import { makeQCH } from './fun';

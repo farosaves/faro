@@ -1,5 +1,5 @@
 import { persisted } from 'svelte-persisted-store';
-import type { SupabaseClient } from './first';
+import type { SupabaseClient } from './shared/first';
 import type { Notes } from './dbtypes';
 import { logIfError } from './shared/utils';
 import { derived, type Writable } from 'svelte/store';

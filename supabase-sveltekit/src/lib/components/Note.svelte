@@ -11,9 +11,9 @@
 		close_all_notes(e);
 	};
 	import _Note from '$lib/shared/_Note.svelte';
-	import { gotoSnippet } from '$lib/utils';
+	// import { gotoSnippet } from '$lib/utils';
 	import type { MouseEventHandler } from 'svelte/elements';
-	let goto_function = () => gotoSnippet(note_data.snippet_uuid!);
+	let goto_function: MouseEventHandler<any>; // = () => gotoSnippet(note_data.snippet_uuid!);
 </script>
 
 <Note {note_data} bind:showing_content {close_all_notes} {ondelete} {goto_function} />

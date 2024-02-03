@@ -7,7 +7,7 @@
 	import { API_ADDRESS, getSession } from '$lib/utils';
 	import type { Notes } from '$lib/dbtypes.js';
 	import { scratches } from '$lib/stores';
-	import { NoteSync } from '$lib/note-sync.js';
+	import { NoteSync } from '$lib/shared/note-sync.js';
 	import { get } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
 	let curr_title = 'Kalanchoe';
@@ -20,6 +20,14 @@
 	let source_id: number = -1;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
+
+	function getHighlight(source_id: number, tab_id: number) {
+		chrome.tabs.sendMessage(tab_id, {
+			action: 'deserialize',
+			uss: get(note_sync.notestore)[source_id].map((n) => [n.snippet_uuid, n.serialized_highlight])
+		});
+	}
+
 	async function updateActive() {
 		try {
 			await chrome.tabs.query({ active: true, currentWindow: true });
@@ -53,7 +61,7 @@
 		}
 		source_id = data?.id;
 		await note_sync.update_one_page(source_id);
-		note_sync.getHighlight(source_id, tab.id);
+		getHighlight(source_id, tab.id);
 		// note_sync = await getNotesAndHighlight(tab.id);
 		console.log('scratches', $scratches);
 	}
@@ -99,7 +107,7 @@
 
 <div class="max-w-xs mx-auto space-y-4">
 	<div class=" text-xl text-center w-full italic">{curr_title}</div>
-	<NotePanel {note_sync} {supabase} {source_id} />
+	<NotePanel {note_sync} {source_id} />
 
 	<textarea
 		placeholder="scratchy scratch scratch"
