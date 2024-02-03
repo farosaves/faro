@@ -16,4 +16,6 @@
 	let goto_function: MouseEventHandler<any>; // = () => gotoSnippet(note_data.snippet_uuid!);
 </script>
 
-<Note {note_data} bind:showing_content {close_all_notes} {ondelete} {goto_function} />
+<div class=" max-w-64 min-w-64">
+	<Note {note_data} bind:showing_content {close_all_notes} {ondelete} {goto_function} />
+</div>

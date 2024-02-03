@@ -3,7 +3,6 @@ import { array as A } from 'fp-ts';
 import type { Option } from 'fp-ts/lib/Option';
 import { option as O } from 'fp-ts';
 import { identity, pipe } from 'fp-ts/lib/function';
-import type { Notes } from '$lib/dbtypes';
 
 export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id);
 
