@@ -53,7 +53,7 @@ export class NoteSync {
 		if (newnotes !== null)
 			this.notestore.update((s) => {
 				let grouped = groupnotes(newnotes);
-				grouped.forEach(([x, notes]) => (s[notes[1].source_id] = notes));
+				grouped.forEach(([x, notes]) => (s[notes[0].source_id] = notes));
 				return s;
 			});
 	}
@@ -62,7 +62,7 @@ export class NoteSync {
 		return derived(this.notestore, (kvs) =>
 			pipe(
 				Object.entries(kvs),  // @ts-ignore
-				A.map(([k, v]) => [v[1].sources.title, v]),
+				A.map(([k, v]) => [v[0].sources.title, v]),
 				R.fromEntries<Notess>,
 				R.toArray<string, Notess>
 			)

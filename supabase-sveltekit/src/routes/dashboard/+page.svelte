@@ -5,7 +5,7 @@
 	export let data;
 	$: ({ session, supabase } = data);
 
-	let showing_contents: boolean[][] = [];
+	let showing_contents: boolean[][];
 	let note_sync: NoteSync = new NoteSync(supabase, undefined);
 	let note_groups = note_sync.get_groups();
 	onMount(async () => {
@@ -16,8 +16,9 @@
 	});
 
 	let close_all_notes = () => {
-		showing_contents = $note_groups.map((note_group) => note_group.map((_) => false));
+		showing_contents = $note_groups.map(([t, note_group]) => note_group.map((_) => false));
 	};
+	close_all_notes();
 </script>
 
 {session?.user.email}
