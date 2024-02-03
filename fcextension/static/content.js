@@ -25,7 +25,9 @@ let batchDeserialize = (uss) =>
 		console.log('deserializeing', uuid, serialized);
 		const hl = rangy.createHighlighter();
 		const app = rangy.createClassApplier('_' + uuid, applierOptions);
+		const legacyapp = rangy.createClassApplier(uuid, applierOptions);
 		hl.addClassApplier(app);
+		hl.addClassApplier(legacyapp);
 		hl.deserialize(serialized);
 	});
 

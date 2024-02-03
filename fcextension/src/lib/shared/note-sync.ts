@@ -1,8 +1,9 @@
 import { persisted } from 'svelte-persisted-store';
-import type { Notes } from './dbtypes';
+import type { Notes } from '../dbtypes';
 import type { SupabaseClient } from './first';
 import { derived, get, type Writable } from 'svelte/store';
-import { getNotes } from './utils';
+import { getNotes } from '../utils';
+import { delete_by_id, logIfError } from './utils';
 
 const notes: { [id: number]: Notes[] } = {};
 export type NoteDict = typeof notes;
@@ -20,12 +21,6 @@ export class NoteSync {
 	panel(id: number) {
 		return derived(this.notestore, (v) => v[id]);
 	}
-	getHighlight(source_id: number, tab_id: number) {
-		chrome.tabs.sendMessage(tab_id, {
-			action: 'deserialize',
-			uss: get(this.notestore)[source_id].map((n) => [n.snippet_uuid, n.serialized_highlight])
-		});
-	}
 
 	async update_one_page(id: number) {
 		if (!this.user_id) {
@@ -39,6 +34,13 @@ export class NoteSync {
 				return s;
 			});
 	}
+
+	deleteit = (n: Notes) => async () => {
+		let { error } = await this.sb.from('notes').delete().eq('id', n.id).then(logIfError);
+		if (error) return;
+		this.notestore.update(s => {s[n.source_id] = delete_by_id(n.id)(s[n.source_id]); return s})
+	};
+
 
 	sub() {
 		this.sb

@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev && open http://localhost:5173/",
+		"dev": "open http://localhost:5173/& vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -11,7 +11,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/dbtypes.ts -f)",
-		"test": "vitest"
+		"test": "vitest",
+		"diff": "diff -bur ../fcextension/src/lib/shared src/lib/shared"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.1.0",
@@ -50,6 +51,7 @@
 		"replicate": "^0.25.2",
 		"sentence-splitter": "^5.0.0",
 		"svelte-formula": "^0.12.0",
+		"svelte-persisted-store": "^0.9.0",
 		"svelte-tags-input": "^6.0.0",
 		"trpc": "^0.11.3",
 		"trpc-sveltekit": "^3.5.22",
