@@ -47,6 +47,7 @@
 		"daisyui": "^4.4.24",
 		"fp-ts": "^2.16.2",
 		"fsrs.js": "^1.2.0",
+		"fuse.js": "^7.0.0",
 		"openai": "^4.24.7",
 		"replicate": "^0.25.2",
 		"sentence-splitter": "^5.0.0",

@@ -1,16 +1,13 @@
 using StructTypes, Gumbo, Cascadia
 import Sentencize
 
-include("util.jl")
-Revise.track("util.jl")
-
-struct AAA
+struct MakeQCHQuery
     selectedText::String
     html::String
     uuid::String
 end
-saved = Ref{AAA}()
-StructTypes.StructType(::Type{AAA}) = StructTypes.Struct()
+saved = Ref{MakeQCHQuery}()
+StructTypes.StructType(::Type{MakeQCHQuery}) = StructTypes.Struct()
 t = strip ∘ Gumbo.text
 splittags = Set([:p, :h1, :h3, :ul, :div, :details, :h2, :blockquote, :li])
 """Should give all 'sentences' splitting on html tags, but not span, a, etc."""
@@ -52,10 +49,14 @@ goup(e::HTMLElement{:HTML}) = [e]
 goup(v::Vector{}) = [[v]; goup(first(v).parent)]
 goup(e::HTMLElement) = [e; goup(succ(e))]
 
+import Base./
+(f::Function) / (a) = (xs...) -> f(a, xs...)
 using Infiltrator
+onlymatchingnodes(sel) = filter / n -> !isempty(eachmatch(sel, n))
 try2getfullsentences(sel::Selector, e::HTMLElement; sp="_______") = try2getfullsentences(sel, [e]; sp)
 try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
-    let (fm, lm) = (first(eachmatch(sel, first(v))), last(eachmatch(sel, last(v))))
+    let mn = onlymatchingnodes(sel)(v)
+        (fm, lm) = (first(eachmatch(sel, first(mn))), last(eachmatch(sel, last(mn))))
         # we know it's text because wrapping highlight is directly above text!
         _t1 = fm.children[1].text
         fm.children[1].text = sp * _t1
@@ -70,7 +71,7 @@ try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
         join([last(sss(pre)), mid, first(sss(post))], " ")
     end
 
-f(args::AAA) =
+f(args::MakeQCHQuery) =
     let root = parsehtml(args.html).root, sel = Selector("._$(args.uuid)")
         matches = eachmatch(sel, root)
         gen = goup(first(matches))
@@ -87,6 +88,7 @@ f(args::AAA) =
             @info _quote
         end
         if badlen(_quote)
+            @infiltrate
             _quote = try2getfullsentences(sel, contextnode)
             @info _quote
         end
@@ -97,18 +99,13 @@ f(args::AAA) =
         _quote, context, highlights
     end
 
-errh(cb) = f -> req -> try
-    f(req)
-catch e
-    cb(e)
-end
 # Quote Context Highlights
 @post ("/make-qch") function (req)
-    a = json(req, AAA)
+    a = json(req, MakeQCHQuery)
     saved[] = a
     (q, c, h) = f(a)
     (; q, c, h)
-end |> errh(x -> (; error=string(x)))
+end  # |> errh(x -> (; error=string(x)))
 
 get("/latest") do
     html(saved[].html)
@@ -117,4 +114,10 @@ end
 get("/rerun") do
     @info f(saved[])
     html(saved[].html)
+end
+
+errh(cb) = f -> req -> try
+    f(req)
+catch e
+    cb(e)
 end
