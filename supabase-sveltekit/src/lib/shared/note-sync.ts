@@ -67,9 +67,6 @@ export class NoteSync {
 				R.toArray<string, Notess>
 			)
 		);
-		// 	A.map(([s, n]) => [s, n])
-		// ))
-		// Object.entries(kvs).map(([s, ns]) => [ns[1].sources.title, ns]))
 	}
 
 	deleteit = (n: Notes) => async () => {
@@ -79,6 +76,14 @@ export class NoteSync {
 			s[n.source_id] = delete_by_id(n.id)(s[n.source_id]);
 			return s;
 		});
+	};
+
+	tagUpdate = (note: Notes) => (tag: string, tags: string[]) => {
+		this.notestore.update((n) => {
+			n[note.source_id].filter((_note) => _note.id == note.id)[0].tags = tags;
+			return n;
+		});
+		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
 	};
 
 	sub(title: string) {
