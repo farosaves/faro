@@ -1,6 +1,7 @@
 [deps]
 Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
+FixArgs = "5d8a8d4b-09a6-4f10-9cda-cb42fab7536d"
 Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 Infiltrator = "5903a43b-9cc3-4c30-8d17-598619ec4e9b"

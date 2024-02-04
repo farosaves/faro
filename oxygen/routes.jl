@@ -50,8 +50,8 @@ goup(v::Vector{}) = [[v]; goup(first(v).parent)]
 goup(e::HTMLElement) = [e; goup(succ(e))]
 
 import Base./
-(f::Function) / (a) = (xs...) -> f(a, xs...)
-using Infiltrator
+using Infiltrator, FixArgs
+(f::Function) / (a) = Fix1(f, a)
 onlymatchingnodes(sel) = filter / n -> !isempty(eachmatch(sel, n))
 try2getfullsentences(sel::Selector, e::HTMLElement; sp="_______") = try2getfullsentences(sel, [e]; sp)
 try2getfullsentences(sel::Selector, v::Vector; sp="_______") =

@@ -34,7 +34,7 @@ end
 run(; port=2227, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
 run()
 
-if false∞
+if false
     using PythonCall
     YTTA = pyimport("youtube_transcript_api").YouTubeTranscriptApi
     t = YTTA.get_transcript("GyYME8btMHE")
