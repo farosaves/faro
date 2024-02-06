@@ -9,7 +9,7 @@
 	export let note_sync: NoteSync;
 	export let goto_function: MouseEventHandler<any> | undefined;
 	$: tags = note_data.tags || [];
-	$: all_tags = tags.concat(['hey', 'whoa']);
+	let all_tags = note_sync.alltags();
 	let replacer = (capture: string) => `<b class="text-yellow-200">` + capture + `</b>`;
 	$: text = note_data.highlights
 		? note_data.quote.replaceAll(note_data.highlights[0], replacer)
@@ -28,7 +28,7 @@
 		{@html text}
 	</div>
 	<div class="collapse-content z-40">
-		<Tags bind:tags autoComplete={all_tags} onlyUnique={true} {onTagAdded} {onTagRemoved} />
+		<Tags bind:tags autoComplete={$all_tags} onlyUnique={true} {onTagAdded} {onTagRemoved} />
 		<div class="join w-full">
 			<button class="btn btn-xs join-item grow" on:click={goto_function}>nth</button>
 			<button
