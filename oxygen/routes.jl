@@ -1,5 +1,7 @@
 using StructTypes, Gumbo, Cascadia
 import Sentencize
+include("util.jl")
+Revise.track("util.jl")
 
 struct MakeQCHQuery
     selectedText::String
@@ -8,7 +10,10 @@ struct MakeQCHQuery
 end
 saved = Ref{MakeQCHQuery}()
 StructTypes.StructType(::Type{MakeQCHQuery}) = StructTypes.Struct()
-t = strip ∘ Gumbo.text
+"""wikipedia_quote_delete"""
+wqd = replace // (r"\[\d{1,2}\]" => "")
+"""general text wrangle"""
+t = strip ∘ wqd ∘ replace // ("\n" => " ") ∘ Gumbo.text
 splittags = Set([:p, :h1, :h3, :ul, :div, :details, :h2, :blockquote, :li])
 """Should give all 'sentences' splitting on html tags, but not span, a, etc."""
 divsplit(v::Vector{HTMLNode}) =
@@ -30,7 +35,7 @@ precedingsectiontags(e) =
     I.filter(∈(sectiontags) ∘ _tag, (I.takewhile(!=(e), e.parent.children)))
 
 taketillnextsectiontag(e) =
-    let stop(e2) = e2 != e && tag(e2) ∈ sectiontags
+    let stop(e2) = e2 != e && _tag(e2) ∈ sectiontags
         Iterators.takewhile(!stop, Iterators.dropwhile(!=(e), e.parent.children))
     end
 lastiterate(itr) = foldl((_, y) -> y, itr)
@@ -49,9 +54,12 @@ goup(e::HTMLElement{:HTML}) = [e]
 goup(v::Vector{}) = [[v]; goup(first(v).parent)]
 goup(e::HTMLElement) = [e; goup(succ(e))]
 
-import Base./
-using Infiltrator, FixArgs
-(f::Function) / (a) = Fix1(f, a)
+_join(ts::Vector{<:AbstractString}, with=" ") =
+# we replace: closing (parentheses etc, dots)  - \yogh - could be a param but regexp couldnt be precompiled
+    join(ts, 'ʒ' * with) |>
+    replace // (r"ʒ\s([\p{Pe}\p{Pf}\p{Po}])" => s"\g<1>") |>
+    replace // (r"ʒ(\s)" => s"\g<1>")
+# join(ts, 'ʒ' * with) |> (replace // (r"ʒ\w" => ""))
 onlymatchingnodes(sel) = filter / n -> !isempty(eachmatch(sel, n))
 try2getfullsentences(sel::Selector, e::HTMLElement; sp="_______") = try2getfullsentences(sel, [e]; sp)
 try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
@@ -63,12 +71,12 @@ try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
         _t2 = lm.children[1].text
         lm.children[1].text = _t2 * sp
         @exfiltrate
-        (pre, mid, post) = (split(join(t.(v), " "), sp))
+        (pre, mid, post) = (split(_join(t.(v)), sp))
         h(x) = isempty(x) ? [""] : x
         lm.children[1].text = _t2
         fm.children[1].text = _t1
         sss = h ∘ Sentencize.split_sentence ∘ String
-        join([last(sss(pre)), mid, first(sss(post))], " ")
+        _join([last(sss(pre)), mid, first(sss(post))])
     end
 
 f(args::MakeQCHQuery) =
@@ -77,9 +85,9 @@ f(args::MakeQCHQuery) =
         gen = goup(first(matches))
         contextnode = first(filter(>(2) ∘ length ∘ divsplit, gen))
         potential_quote = contextnode isa Array ? contextnode : contextnode.children
-        context = join(t.(potential_quote), ". ")
+        context = _join(t.(potential_quote), ". ")
         quotenodes = filter(e -> !isempty(eachmatch(sel, e)), potential_quote)
-        _quote = join(t.(quotenodes), " ")
+        _quote = _join(t.(quotenodes))
         # @infiltrate
         badlen(s) = length(split(s)) > 30 || length(split(s)) < 6
         if badlen(_quote)
@@ -88,12 +96,12 @@ f(args::MakeQCHQuery) =
             @info _quote
         end
         if badlen(_quote)
-            @infiltrate
+            # @infiltrate
             _quote = try2getfullsentences(sel, contextnode)
             @info _quote
         end
         is4highlight(s) = length(split(s)) < 6
-        highlight = join(t.(matches))
+        highlight = _join(t.(matches))
         highlights = is4highlight(highlight) ? [highlight] : []
 
         _quote, context, highlights

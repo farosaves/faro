@@ -34,16 +34,16 @@ end
 run(; port=2227, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
 run()
 
-if false
-    using PythonCall
-    YTTA = pyimport("youtube_transcript_api").YouTubeTranscriptApi
-    t = YTTA.get_transcript("GyYME8btMHE")
-    @kwdef struct TranscriptElement{T}
-        text::String
-        start::T
-        duration::T
-    end
-    PythonCall.pyconvert(::Type{NamedTuple}, t) = (; map(kv -> Symbol(first(kv)) => last(kv), collect(pyconvert(Dict, t)))...)
-    pyconvert(NamedTuple, t[0])
-end
-# TranscriptElement(;map(kv -> Symbol(first(kv))=>last(kv), collect(pyconvert(Dict, t[0])))...)
+# if false
+#     using PythonCall
+#     YTTA = pyimport("youtube_transcript_api").YouTubeTranscriptApi
+#     t = YTTA.get_transcript("GyYME8btMHE")
+#     @kwdef struct TranscriptElement{T}
+#         text::String
+#         start::T
+#         duration::T
+#     end
+#     PythonCall.pyconvert(::Type{NamedTuple}, t) = (; map(kv -> Symbol(first(kv)) => last(kv), collect(pyconvert(Dict, t)))...)
+#     pyconvert(NamedTuple, t[0])
+# end
+# # TranscriptElement(;map(kv -> Symbol(first(kv))=>last(kv), collect(pyconvert(Dict, t[0])))...)

@@ -59,7 +59,7 @@
 		<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
 			<!-- Sidebar content here -->
 			<li>
-				<Search bind:search />
+				<Search notes={$note_groups.flatMap(([, v]) => v)} />
 			</li>
 			<li>Sidebar Item 2</li>
 		</ul>
