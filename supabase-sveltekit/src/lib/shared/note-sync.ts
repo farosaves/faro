@@ -66,7 +66,7 @@ export class NoteSync {
 		return derived(this.notestore, (kvs) =>
 			pipe(
 				Object.entries(kvs), // @ts-ignore
-				A.map(([k, v]) => [v[0].sources.title, v]),
+				A.map(([k, v]) => [v[0] ? v[0].sources.title: "never!", v]),
 				R.fromEntries<Notess>,
 				R.toArray<string, Notess>
 			)

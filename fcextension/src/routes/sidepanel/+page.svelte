@@ -83,7 +83,7 @@
 		note_sync.user_id = session.user.id;
 		logged_in = !!session;
 		updateActive();
-		note_sync.sub();
+		note_sync.sub(curr_title);
 	});
 </script>
 

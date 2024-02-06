@@ -19,13 +19,13 @@ export async function getNotes(
 	prevnotes = []
 ): Promise<Notess> {
 	let q = supabase.from('notes').select('*, sources (title)').eq('user_id', user_id);
-	q = pipe(
-		source_id,
-		O.match(
+	q = O.match(
 			() => q,
-			(id) => q.eq('source_id', id)
-		)
-	);
+			(id: number) => q.eq('source_id', id)
+		)(source_id)
+
+	// const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+	// sleep(5000)
 	const { data } = await q;
 	if (data === null) return prevnotes;
 

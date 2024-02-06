@@ -12,6 +12,7 @@ const notes: { [id: number]: Notess } = {};
 export type NoteDict = typeof notes;
 export const notestore = persisted('notestore', notes);
 
+
 export class NoteSync {
 	sb: SupabaseClient;
 	notestore: Writable<{ [id: number]: Notess }>;
@@ -24,6 +25,10 @@ export class NoteSync {
 	panel(id: number) {
 		return derived(this.notestore, (v) => v[id]);
 	}
+	alltags = () =>
+		derived(this.notestore, (v) =>
+			Object.entries(v).flatMap(([_, notess]) => notess.flatMap((n) => n.tags || []))
+		);
 
 	async update_one_page(id: number) {
 		if (!this.user_id) {
@@ -61,24 +66,52 @@ export class NoteSync {
 	get_groups() {
 		return derived(this.notestore, (kvs) =>
 			pipe(
-				Object.entries(kvs),  // @ts-ignore
+				Object.entries(kvs), // @ts-ignore
 				A.map(([k, v]) => [v[0].sources.title, v]),
 				R.fromEntries<Notess>,
 				R.toArray<string, Notess>
 			)
 		);
-		// 	A.map(([s, n]) => [s, n])
-		// ))
-		// Object.entries(kvs).map(([s, ns]) => [ns[1].sources.title, ns]))
 	}
 
-	deleteit = (n: Notes) => async () => {
-		let { error } = await this.sb.from('notes').delete().eq('id', n.id).then(logIfError);
-		if (error) return;
+	addit = async (n: Notes) => {
+		const cache = get(this.notestore)[n.source_id];
+		const title = cache
+			? cache[0].sources.title
+			: (await this.sb.from('sources').select().eq('id', n.source_id).maybeSingle()).data?.title ||
+				'missing Title';
+
+		this.notestore.update((s) => {
+			s[n.source_id] = [...s[n.source_id], { ...n, sources: { title } }];
+			return s;
+		});
+		this.sb.from('notes').insert(n).then(logIfError).then(this._restoreIE(n, cache));
+	};
+
+	deleteit = (n: Notes) => {
+		const cache = get(this.notestore)[n.source_id];
+
 		this.notestore.update((s) => {
 			s[n.source_id] = delete_by_id(n.id)(s[n.source_id]);
 			return s;
 		});
+		this.sb.from('notes').delete().eq('id', n.id).then(logIfError).then(this._restoreIE(n, cache));
+	};
+	// @ts-ignore
+	_restoreIE = (n: Notes, cache: Notess) => (r) =>
+		r.error &&
+		this.notestore.update((s) => {
+			s[n.source_id] = cache;
+			return s;
+		});
+
+	tagUpdate = (note: Notes) => (tag: string, tags: string[]) => {
+		console.log(note.highlights);
+		this.notestore.update((n) => {
+			n[note.source_id].filter((_note) => _note.id == note.id)[0].tags = tags;
+			return n;
+		});
+		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
 	};
 
 	sub(title: string) {
