@@ -29,14 +29,14 @@
 	}
 
 	async function updateActive() {
+		let tab;
 		try {
-			await chrome.tabs.query({ active: true, currentWindow: true });
+			[tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		} catch {
 			console.log('dev?');
 			source_id = 15;
 			return;
 		}
-		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		if (!tab.url || !tab.title || !tab.id) return;
 		curr_title = tab.title;
 		let domain = hostname(tab.url);
@@ -56,13 +56,11 @@
 		if (!data) {
 			console.log('source not there yet probably', error);
 			source_id = -1;
-			// note_sync = [];
 			return;
 		}
 		source_id = data?.id;
 		await note_sync.update_one_page(source_id);
 		getHighlight(source_id, tab.id);
-		// note_sync = await getNotesAndHighlight(tab.id);
 		console.log('scratches', $scratches);
 	}
 	let logged_in = true;
