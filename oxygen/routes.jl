@@ -54,11 +54,17 @@ goup(e::HTMLElement{:HTML}) = [e]
 goup(v::Vector{}) = [[v]; goup(first(v).parent)]
 goup(e::HTMLElement) = [e; goup(succ(e))]
 
-_join(ts::Vector{<:AbstractString}, with=" ") =
+__join(ts::Vector{<:AbstractString}, with=" ") =
 # we replace: closing (parentheses etc, dots)  - \yogh - could be a param but regexp couldnt be precompiled
     join(ts, 'ʒ' * with) |>
     replace // (r"ʒ\s([\p{Pe}\p{Pf}\p{Po}])" => s"\g<1>") |>
     replace // (r"ʒ(\s)" => s"\g<1>")
+_join(ts::Vector{<:AbstractString}, with=" "; extra='ʒ') =
+    let startpunct(s) = !isnothing(match(r"^[\p{Pe}\p{Pf}\p{Po}]", s))
+        condadd(s) = startpunct(s) ? s : with * s
+        (replace // (r"(\p{P})\." => s"\g<1>") ∘ chopprefix // with ∘ join ∘ map)(condadd ∘ strip, ts)
+    end
+
 # join(ts, 'ʒ' * with) |> (replace // (r"ʒ\w" => ""))
 onlymatchingnodes(sel) = filter / n -> !isempty(eachmatch(sel, n))
 try2getfullsentences(sel::Selector, e::HTMLElement; sp="_______") = try2getfullsentences(sel, [e]; sp)
@@ -70,8 +76,9 @@ try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
         fm.children[1].text = sp * _t1
         _t2 = lm.children[1].text
         lm.children[1].text = _t2 * sp
+        sents = _join(divsplit(v), ". ")
         @exfiltrate
-        (pre, mid, post) = (split(_join(t.(v)), sp))
+        (pre, mid, post) = (split(sents, sp))  # _join(t.(v))
         h(x) = isempty(x) ? [""] : x
         lm.children[1].text = _t2
         fm.children[1].text = _t1
@@ -86,6 +93,7 @@ f(args::MakeQCHQuery) =
         contextnode = first(filter(>(2) ∘ length ∘ divsplit, gen))
         potential_quote = contextnode isa Array ? contextnode : contextnode.children
         context = _join(t.(potential_quote), ". ")
+        @infiltrate
         quotenodes = filter(e -> !isempty(eachmatch(sel, e)), potential_quote)
         _quote = _join(t.(quotenodes))
         # @infiltrate

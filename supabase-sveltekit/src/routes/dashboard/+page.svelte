@@ -28,6 +28,7 @@
 		byTitles: boolean;
 		byText: boolean;
 	};
+	let w_rem = 16;
 </script>
 
 {session?.user.email}
@@ -38,7 +39,11 @@
 		<!-- my main here -->
 		<div class="flex flex-row flex-wrap border-2 border-sky-600">
 			{#each $note_groups as [title, note_group], i}
-				<div class="border-2 text-center">
+				<div
+					class="border-2 text-center"
+					style="max-width: {w_rem * note_group.length + 1}rem; 
+				min-width: {w_rem + 1}rem"
+				>
 					<span class="text-lg text-wrap">{title}</span>
 					<div class="flex flex-row flex-wrap overflow-auto">
 						{#each note_group as note, j}
@@ -47,6 +52,7 @@
 								bind:showing_content={showing_contents[i][j]}
 								{close_all_notes}
 								{note_sync}
+								{w_rem}
 							/>
 						{/each}
 					</div>

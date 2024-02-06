@@ -12,12 +12,7 @@
 </script>
 
 {#each $note_store[source_id] as note_data, i}
-	<Note
-		{note_data}
-		bind:showing_content={showing_contents[i]}
-		{close_all_notes}
-		deleteit={note_sync.deleteit(note_data)}
-	/>
+	<Note {note_data} bind:showing_content={showing_contents[i]} {close_all_notes} {note_sync} />
 {:else}
 	If you just installed the extension, you need to reload the page.
 {/each}
