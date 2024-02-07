@@ -6,18 +6,15 @@
 	import { onMount } from 'svelte';
 	import { API_ADDRESS, getSession } from '$lib/utils';
 	import type { Notes } from '$lib/dbtypes.js';
-	import { scratches } from '$lib/stores';
+	import { getSourceId, scratches } from '$lib/stores';
 	import { NoteSync } from '$lib/shared/note-sync.js';
-	import { get } from 'svelte/store';
+	import { get, type Readable } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
 	let curr_title = 'Kalanchoe';
 	let { supabase } = data;
 	let session: Session;
-	let note_sync: NoteSync = new NoteSync(supabase, null);
-	const onNoteInsert = (payload: { new: Notes }) => {
-		// note_sync = [...note_sync, payload.new];
-	};
-	let source_id: number = -1;
+	let note_sync: NoteSync = new NoteSync(supabase, undefined);
+	let source_id: Readable<number>;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
 
@@ -34,7 +31,7 @@
 			[tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		} catch {
 			console.log('dev?');
-			source_id = 15;
+			source_id = await getSourceId(supabase)('a', 'a');
 			return;
 		}
 		if (!tab.url || !tab.title || !tab.id) return;
@@ -46,21 +43,9 @@
 				t[curr_domain_title] = '';
 				return t;
 			});
-
-		const { data, error } = await supabase
-			.from('sources')
-			.select('id')
-			.eq('domain', domain)
-			.eq('title', tab.title)
-			.maybeSingle();
-		if (!data) {
-			console.log('source not there yet probably', error);
-			source_id = -1;
-			return;
-		}
-		source_id = data?.id;
-		await note_sync.update_one_page(source_id);
-		getHighlight(source_id, tab.id);
+		source_id = await getSourceId(supabase)(domain, curr_title);
+		await note_sync.update_one_page($source_id);
+		getHighlight($source_id, tab.id);
 		console.log('scratches', $scratches);
 	}
 	let logged_in = true;
@@ -105,7 +90,7 @@
 
 <div class="max-w-xs mx-auto space-y-4">
 	<div class=" text-xl text-center w-full italic">{curr_title}</div>
-	<NotePanel {note_sync} {source_id} />
+	<NotePanel {note_sync} source_id={$source_id} />
 
 	<textarea
 		placeholder="scratchy scratch scratch"

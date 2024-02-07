@@ -16,7 +16,7 @@ wqd = replace // (r"\[\d{1,2}\]" => "")
 t = strip ∘ wqd ∘ replace // ("\n" => " ") ∘ Gumbo.text
 splittags = Set([:p, :h1, :h3, :ul, :div, :details, :h2, :blockquote, :li])
 """Should give all 'sentences' splitting on html tags, but not span, a, etc."""
-divsplit(v::Vector{HTMLNode}) =
+divsplit(v::Vector{<:HTMLNode}) =
     let f(prev::Vector{T}, node) where {T<:AbstractString} =
             if !(node isa HTMLText) && tag(node) in splittags
                 [prev..., t(node), ""]
@@ -67,8 +67,9 @@ _join(ts::Vector{<:AbstractString}, with=" "; extra='ʒ') =
 
 # join(ts, 'ʒ' * with) |> (replace // (r"ʒ\w" => ""))
 onlymatchingnodes(sel) = filter / n -> !isempty(eachmatch(sel, n))
-try2getfullsentences(sel::Selector, e::HTMLElement; sp="_______") = try2getfullsentences(sel, [e]; sp)
-try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
+# needs to end with n because otherwise interacts with not adding dot and then splitting sentence because of interpunction
+try2getfullsentences(sel::Selector, e::HTMLElement; sp="n_______n") = try2getfullsentences(sel, [e]; sp)
+try2getfullsentences(sel::Selector, v::Vector; sp="n_______n") =
     let mn = onlymatchingnodes(sel)(v)
         (fm, lm) = (first(eachmatch(sel, first(mn))), last(eachmatch(sel, last(mn))))
         # we know it's text because wrapping highlight is directly above text!
@@ -76,8 +77,9 @@ try2getfullsentences(sel::Selector, v::Vector; sp="_______") =
         fm.children[1].text = sp * _t1
         _t2 = lm.children[1].text
         lm.children[1].text = _t2 * sp
-        sents = _join(divsplit(v), ". ")
-        @exfiltrate
+        # HERE i last modified divsplit wasnt broadcast
+        sents = _join(flatten(divsplit.(v)), ". ")
+        @infiltrate
         (pre, mid, post) = (split(sents, sp))  # _join(t.(v))
         h(x) = isempty(x) ? [""] : x
         lm.children[1].text = _t2
