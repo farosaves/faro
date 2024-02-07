@@ -20,7 +20,12 @@
 </script>
 
 <div class="collapse bg-base-200">
-	<input type="checkbox" bind:checked={showing_content} on:click={close_all_notes} />
+	<input
+		type="checkbox"
+		bind:checked={showing_content}
+		on:click={close_all_notes}
+		on:dblclick={goto_function}
+	/>
 	<div
 		class="collapse-title text-center"
 		style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1"
@@ -30,7 +35,7 @@
 	<div class="collapse-content z-40">
 		<Tags bind:tags autoComplete={$all_tags} onlyUnique={true} {onTagAdded} {onTagRemoved} />
 		<div class="join w-full">
-			<button class="btn btn-xs join-item grow" on:click={goto_function}>nth</button>
+			<!-- <button class="btn btn-xs join-item grow" on:click={goto_function}>nth</button> -->
 			<button
 				class="btn btn-xs join-item grow"
 				style="color: red;"

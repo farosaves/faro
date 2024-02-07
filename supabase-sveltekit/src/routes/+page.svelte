@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ThemeSupa, type ViewType } from '@supabase/auth-ui-shared';
 	import { Auth } from '@supabase/auth-ui-svelte';
-	// import Auth from 'supabase-ui-svelte';
 	import '../styles.css';
 	export let data;
 	import Radio from '$lib/Radio.svelte';
