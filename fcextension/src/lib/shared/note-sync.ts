@@ -12,7 +12,6 @@ const notes: { [id: number]: Notess } = {};
 export type NoteDict = typeof notes;
 export const notestore = persisted('notestore', notes);
 
-
 export class NoteSync {
 	sb: SupabaseClient;
 	notestore: Writable<{ [id: number]: Notess }>;
@@ -114,7 +113,7 @@ export class NoteSync {
 		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
 	};
 
-	sub(title: string) {
+	sub = (title: string) => (cb: Function) => {
 		this.sb
 			.channel('notes')
 			.on(
@@ -126,13 +125,15 @@ export class NoteSync {
 					filter: `user_id=eq.${this.user_id}`
 				}, // at least url should be the same so no need to filter
 				(payload: { new: Notes }) => {
+					cb(payload.new)
 					this.notestore.update((n) => {
 						let id = payload.new.source_id;
-						n[id] = [...n[id], { ...payload.new, sources: { title } }];
+						// if (!(id in n)) n[id] = []
+						n[id] = [...(n[id] || []), { ...payload.new, sources: { title } }];
 						return n;
 					});
 				}
 			)
 			.subscribe();
-	}
+	};
 }

@@ -5,8 +5,7 @@
 	export let data;
 	import { onMount } from 'svelte';
 	import { API_ADDRESS, getSession } from '$lib/utils';
-	import type { Notes } from '$lib/dbtypes.js';
-	import { getSourceId, scratches } from '$lib/stores';
+	import { update_sub, getSourceId, scratches } from '$lib/stores';
 	import { NoteSync } from '$lib/shared/note-sync.js';
 	import { get, type Readable } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
@@ -21,7 +20,10 @@
 	function getHighlight(source_id: number, tab_id: number) {
 		chrome.tabs.sendMessage(tab_id, {
 			action: 'deserialize',
-			uss: get(note_sync.notestore)[source_id].map((n) => [n.snippet_uuid, n.serialized_highlight])
+			uss: (get(note_sync.notestore)[source_id] || []).map((n) => [
+				n.snippet_uuid,
+				n.serialized_highlight
+			])
 		});
 	}
 
@@ -60,16 +62,24 @@
 		} catch {
 			console.log('dev?');
 		}
-		let atokens = await trpc($page).my_email.query();
-		atokens || window.open(API_ADDRESS);
-		session = (await getSession(supabase, atokens))!; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
+		let { data } = await supabase.auth.getSession();
+		if (!data.session) {
+			console.log('getting session');
+			let atokens = await trpc($page).my_email.query();
+			atokens || window.open(API_ADDRESS); // TODO: doesnt work iirc
+			session = (await getSession(supabase, atokens))!;
+		} else {
+			session = data.session;
+		}
+		console.log('session is', session);
 		note_sync.user_id = session.user.id;
 		logged_in = !!session;
 		updateActive();
-		note_sync.sub(curr_title);
+		note_sync.sub(curr_title)(update_sub(supabase));
 	});
 </script>
 
+{$source_id}
 {#if !logged_in}
 	<div role="alert" class="alert alert-error">
 		<svg
