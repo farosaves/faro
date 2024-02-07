@@ -7376,6 +7376,7 @@ var server_default = {
       endpoint: "/trpc",
       req: request,
       router,
+      //@ts-expect-error
       createContext
     });
   }

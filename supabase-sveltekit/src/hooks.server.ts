@@ -15,9 +15,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 			cookies: {
 				get: (key) => event.cookies.get(key),
 				set: (key, value, options) => {
+					//@ts-expect-error
 					event.cookies.set(key, value, options);
 				},
 				remove: (key, options) => {
+					//@ts-expect-error
 					event.cookies.delete(key, options);
 				}
 			}
