@@ -5,7 +5,7 @@
 	import '../styles.css';
 	export let data;
 	import Radio from '$lib/Radio.svelte';
-	let view = 'magic_link';
+	let view: ViewType = 'magic_link';
 	let view_options = ['sign_in', 'sign_up', 'magic_link', 'forgotten_password'];
 	let providers = ['github'];
 </script>
