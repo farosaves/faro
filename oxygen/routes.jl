@@ -20,9 +20,9 @@ divsplit(v::Vector{<:HTMLNode}) =
                 [prev..., t(node), ""]
             else
                 (x..., y) = prev
-                [x..., y * t(node)]
+                [x..., y * t(node) * " "]
             end
-        [(Sentencize.split_sentence ∘ String).(filter(!isempty, foldl(f, v; init=[""])))...;]
+        [(Sentencize.split_sentence ∘ String ∘ gtsf ∘ strip).(filter(!isempty, foldl(f, v; init=[""])))...;]
     end
 divsplit(n::HTMLElement) = divsplit(n.children)
 sectiontags = Set([:ul, :h1, :h3, :h2, :details])
@@ -77,7 +77,7 @@ try2getfullsentences(sel::Selector, v::Vector; sp="n_______n") =
         lm.children[1].text = _t2 * sp
         # HERE i last modified divsplit wasnt broadcast
         sents = _join(flatten(divsplit.(v)), ". ")
-        @infiltrate
+        @exfiltrate
         (pre, mid, post) = (split(sents, sp))  # _join(t.(v))
         h(x) = isempty(x) ? [""] : x
         lm.children[1].text = _t2
@@ -93,7 +93,7 @@ f(args::MakeQCHQuery) =
         contextnode = first(filter(>(2) ∘ length ∘ divsplit, gen))
         potential_quote = contextnode isa Array ? contextnode : contextnode.children
         context = _join(t.(potential_quote), ". ")
-        @infiltrate
+        # @infiltrate
         quotenodes = filter(e -> !isempty(eachmatch(sel, e)), potential_quote)
         _quote = _join(t.(quotenodes))
         # @infiltrate
