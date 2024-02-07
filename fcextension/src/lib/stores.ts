@@ -31,7 +31,7 @@ let _update = async (sb: SupabaseClient, domain: string, title: string) => {
 		.maybeSingle();
 	if (!data) {
 		console.log('source not there yet probably', error);
-		return -1;
+		return;
 	}
 	source_ids.update((n) => {
 		n[id] = data.id;
@@ -39,10 +39,25 @@ let _update = async (sb: SupabaseClient, domain: string, title: string) => {
 	});
 };
 
+export let update_sub = (sb: SupabaseClient) => async (nn:Notes) => {
+	const { data, error } = await sb
+		.from('sources')
+		.select('domain, title')
+		.eq('id', nn.source_id)
+		.maybeSingle();
+	if (!data) return
+	const id = [data.domain, data.title].join(';');
+	source_ids.update((n) => {
+		n[id] = nn.source_id;
+		return n;
+	});
+
+}
+
 export let getSourceId = (sb: SupabaseClient) => async (domain: string, title: string) => {
 	const id = [domain, title].join(';');
 	if (!(id in get(source_ids)))
 		source_ids.update(n => {n[id] = -1; return n})
-	_update(sb, domain, title).then(console.log)
+	_update(sb, domain, title).then(() => console.log("updated sid"))
 	return derived(source_ids, (n) => n[id]);
 };

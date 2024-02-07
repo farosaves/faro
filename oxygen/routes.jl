@@ -10,10 +10,8 @@ struct MakeQCHQuery
 end
 saved = Ref{MakeQCHQuery}()
 StructTypes.StructType(::Type{MakeQCHQuery}) = StructTypes.Struct()
-"""wikipedia_quote_delete"""
-wqd = replace // (r"\[\d{1,2}\]" => "")
 """general text wrangle"""
-t = strip ∘ wqd ∘ replace // ("\n" => " ") ∘ Gumbo.text
+t = strip ∘ wqd ∘ replace // ("\n" => " ") ∘ gtsf ∘ Gumbo.text
 splittags = Set([:p, :h1, :h3, :ul, :div, :details, :h2, :blockquote, :li])
 """Should give all 'sentences' splitting on html tags, but not span, a, etc."""
 divsplit(v::Vector{<:HTMLNode}) =
@@ -49,7 +47,7 @@ succ(e::HTMLElement) =
         end
     end
 
-"""returns either a vector of nodes of which prev is member, or a node of which prev is child"""
+"""returns either a vector of nodes of which prev is member, or a node of which prev (/s) is child"""
 goup(e::HTMLElement{:HTML}) = [e]
 goup(v::Vector{}) = [[v]; goup(first(v).parent)]
 goup(e::HTMLElement) = [e; goup(succ(e))]
@@ -117,14 +115,16 @@ f(args::MakeQCHQuery) =
         _quote, context, highlights
     end
 
+import Dates: now
+import Serialization: serialize
 # Quote Context Highlights
 @post ("/make-qch") function (req)
     a = json(req, MakeQCHQuery)
     saved[] = a
+    serialize("saved/$(now()).jls", saved[])
     (q, c, h) = f(a)
     (; q, c, h)
 end  # |> errh(x -> (; error=string(x)))
-
 get("/latest") do
     html(saved[].html)
 end
