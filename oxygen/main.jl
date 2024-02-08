@@ -1,3 +1,5 @@
+using Pkg
+Pkg.instantiate()
 using HTTP, Oxygen, Revise, CodecZlib
 cd(@__DIR__)
 include("routes.jl")
