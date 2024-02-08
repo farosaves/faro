@@ -1,3 +1,5 @@
+using Pkg
+Pkg.instantiate()
 using HTTP, Oxygen, Revise, CodecZlib
 cd(@__DIR__)
 include("routes.jl")
@@ -32,7 +34,7 @@ end
 
 
 
-run(; port=2227, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
+run(; port=13723, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
 run()
 
 # bin = parse.(UInt8, split(saved[].html, ","))
