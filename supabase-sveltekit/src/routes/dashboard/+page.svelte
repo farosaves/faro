@@ -41,8 +41,8 @@
 			{#each $note_groups as [title, note_group], i}
 				<div
 					class="border-2 text-center"
-					style="max-width: {w_rem * note_group.length + 1}rem; 
-				min-width: {w_rem + 1}rem"
+					style="max-width: {(w_rem + 0.15) * note_group.length}rem; 
+				min-width: {w_rem + 0.15}rem"
 				>
 					<span class="text-lg text-wrap">{title}</span>
 					<div class="flex flex-row flex-wrap overflow-auto">

@@ -9,6 +9,7 @@ struct MakeQCHQuery
     uuid::String
 end
 saved = Ref{MakeQCHQuery}()
+saved_pre = Ref{MakeQCHQuery}()
 StructTypes.StructType(::Type{MakeQCHQuery}) = StructTypes.Struct()
 """general text wrangle"""
 t = strip ∘ wqd ∘ replace // ("\n" => " ") ∘ gtsf ∘ Gumbo.text
@@ -76,7 +77,6 @@ try2getfullsentences(sel::Selector, v::Vector; sp="n_______n") =
         _t2 = lm.children[1].text
         lm.children[1].text = _t2 * sp
         # HERE i last modified divsplit wasnt broadcast
-        @exfiltrate
         sents = _join(flatten(divsplit.(v)), ". ")
         (pre, mid, post) = (split(sents, sp))  # _join(t.(v))
         h(x) = isempty(x) ? [""] : x
@@ -96,7 +96,7 @@ f(args::MakeQCHQuery) =
         # @infiltrate
         quotenodes = filter(e -> !isempty(eachmatch(sel, e)), potential_quote)
         _quote = _join(t.(quotenodes))
-        # @infiltrate
+        @exfiltrate
         badlen(s) = length(split(s)) > 30 || length(split(s)) < 6
         if badlen(_quote)
             @info _quote
@@ -120,6 +120,9 @@ import Serialization: serialize
 # Quote Context Highlights
 @post ("/make-qch") function (req)
     a = json(req, MakeQCHQuery)
+    saved_pre[] = a
+    bin = UInt8.(collect(a.html))
+    a = MakeQCHQuery(a.selectedText, String(transcode(GzipDecompressor, bin)), a.uuid)
     saved[] = a
     serialize("saved/$(now()).jls", saved[])
     (q, c, h) = f(a)

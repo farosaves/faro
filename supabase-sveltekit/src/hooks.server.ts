@@ -58,8 +58,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 			router,
 			req,
 			path: event.url.pathname.substring(trpc_url.length + 1),
-			createContext: async () => createContext?.(event)
+			createContext: async () => createContext?.(event),
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			onError: ({ type, path, error }) =>
+				console.error(`Encountered error while trying to process ${type} @ ${path}:`, error)
 		});
 
 		const { status, headers, body } = httpResponse as {

@@ -5,11 +5,14 @@
 	export let data;
 	import { onMount } from 'svelte';
 	import { API_ADDRESS, getSession } from '$lib/utils';
-	import { update_sub, getSourceId, scratches } from '$lib/stores';
+	import { getSourceId, scratches, sub } from '$lib/stores';
 	import { NoteSync } from '$lib/shared/note-sync.js';
 	import { get, type Readable } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
+	import { mock } from './util.js';
+	import Pako from 'pako';
 	let curr_title = 'Kalanchoe';
+	let curr_url = '';
 	let { supabase } = data;
 	let session: Session;
 	let note_sync: NoteSync = new NoteSync(supabase, undefined);
@@ -38,6 +41,7 @@
 		}
 		if (!tab.url || !tab.title || !tab.id) return;
 		curr_title = tab.title;
+		curr_url = tab.url;
 		let domain = hostname(tab.url);
 		curr_domain_title = [domain, tab.title].join(';');
 		if (!(curr_domain_title in $scratches))
@@ -59,13 +63,20 @@
 			chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 				if (request.action == 'update_curr_url') updateActive();
 				if (request.action === 'uploadTextSB') {
+					console.log('uplaodtextsb');
 					const { action, ...rest } = request;
-					const { data } = await trpc($page).upload_snippet.mutate(rest);
-					if (data) {
-						console.log(data.quote);
+
+					rest.html = String.fromCharCode(...Pako.deflate(rest.html));
+
+					const { note_data } = await trpc($page).upload_snippet.mutate(rest);
+					if (note_data) {
+						console.log(note_data.quote);
+						note_sync.notestore.update((n) => {
+							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];
+							return n;
+						});
 					}
 				}
-				if (request.action == 'eager_update') 3; // TODO: here
 			});
 		} catch {
 			console.log('dev?');
@@ -83,7 +94,7 @@
 		note_sync.user_id = session.user.id;
 		logged_in = !!session;
 		updateActive();
-		note_sync.sub(curr_title)(update_sub(supabase));
+		sub(note_sync)(curr_title, curr_url);
 	});
 </script>
 

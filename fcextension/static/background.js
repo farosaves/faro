@@ -25,14 +25,6 @@ async function uploadSelected(request, sender, sendResponse) {
 	request.action = 'uploadTextSB';
 	const smr = () => chrome.runtime.sendMessage(request);
 	tryn(5)(smr)
-	// try {
-	// 	await tryn()
-	// } catch {
-	// 	console.log('ohh');
-	// 	await sleep(1000);
-	// 	await smr();
-	// 	console.log('should be');
-	// }
 }
 // const { selectedText, html, website_title, website_url, uuid, serialized } = request;
 // fetch(`${DOMAIN}/api/upload-snippet`, {
@@ -88,7 +80,7 @@ function getUuid() {
 async function activate(tab) {
 	chrome.sidePanel.open({ tabId: tab.id });
 	try {
-		await chrome.runtime.sendMessage({ action: 'update_curr_url' });
+		await chrome.runtime.sendMessage({ action: 'empty' });
 	} catch {
 		console.log('did not find the thing');
 	} // TODO: we may want to skip the text capture - first click open only

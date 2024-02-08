@@ -31,12 +31,14 @@ let batchDeserialize = (uss) =>
 		hl.deserialize(serialized);
 	});
 
-let gotoText = (uuid) =>
-	document
-		.getElementsByClassName('_' + uuid)
-		.item(0)
-		.focus();
-
+let gotoText = (uuid) => {
+	const elem = document.getElementsByClassName('_' + uuid).item(0);
+	elem.scrollIntoView({block: 'center'});
+	const sc = elem.style.backgroundColor
+	elem.style.backgroundColor = '#fff200'
+	setTimeout(() => {elem.style.backgroundColor = sc}, 1000)
+	
+};
 // now we also need node text - to make sure that if highlight was from a different node in the paragraph we capture the correct one
 let node2context = (node) =>
 	node.textContent.split(/[\.\?!]/u).filter((s) => s.length > 4).length > 1 // at least 2 sentences
@@ -58,9 +60,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log(selectedText, window.getSelection().anchorNode.textContent);
 		console.log(rangy.createRange());
 		const serialized = wrapSelectedText(uuid);
-		console.log(window.getSelection().anchorNode)
+		console.log(window.getSelection().anchorNode);
 		let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
-		// html = html || walkup2(window.getSelection().anchorNode).textContent;
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',

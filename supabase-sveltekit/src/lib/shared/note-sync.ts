@@ -4,7 +4,7 @@ import type { Notes } from '../dbtypes';
 import type { NoteEx, Notess, SupabaseClient } from './first';
 import { derived, get, type Writable } from 'svelte/store';
 import { getNotes, logIfError, partition_by_id } from './utils';
-import { option as O, array as A, record as R, task as T } from 'fp-ts';
+import { option as O, record as R, task as T, array as A } from 'fp-ts';
 import { groupBy } from 'fp-ts/lib/NonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
 
@@ -132,25 +132,4 @@ export class NoteSync {
 		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
 	};
 
-	sub(title: string, url: string) {
-		this.sb
-			.channel('notes')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'notes',
-					filter: `user_id=eq.${this.user_id}`
-				}, // at least url should be the same so no need to filter
-				(payload: { new: Notes }) => {
-					this.notestore.update((n) => {
-						let id = payload.new.source_id;
-						n[id] = [...n[id], { ...payload.new, sources: { title, url } }];
-						return n;
-					});
-				}
-			)
-			.subscribe();
-	}
 }

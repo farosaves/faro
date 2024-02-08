@@ -4,7 +4,6 @@ import z from 'zod';
 import { array as A } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { makeQCH, supa_update, type MockNote } from './api/fun';
-import { json } from '@sveltejs/kit';
 
 export const t = initTRPC.context<Context>().create();
 
@@ -41,7 +40,7 @@ export const router = t.router({
 		const { selectedText, html, website_url, website_title, uuid, serialized } = input;
 		console.log('uploaded:', { selectedText, html });
 		const { quote, highlights, context } = await makeQCH(selectedText, html, uuid);
-		if (!quote) return {data: null};
+		if (!quote) return {note_data: null};
 		const note_data: MockNote = {
 			quote,
 			source_id: -1,
@@ -51,9 +50,11 @@ export const router = t.router({
 			serialized_highlight: serialized,
 			sources: { title: website_title, url: website_url }
 		};
-		// supa_update(locals.supabase, note_data).then(console.log);
-		return { data: note_data };
-	})
+		supa_update(locals.supabase, note_data).then(console.log);
+		return { note_data };
+	}),
+
 });
+
 
 export type Router = typeof router;
