@@ -22,7 +22,7 @@ divsplit(v::Vector{<:HTMLNode}) =
                 (x..., y) = prev
                 [x..., y * t(node) * " "]
             end
-        [(Sentencize.split_sentence ∘ String ∘ gtsf ∘ strip).(filter(!isempty, foldl(f, v; init=[""])))...;]
+        [(Sentencize.split_sentence ∘ String ∘ gtsf ∘ strip).(filter(!isempty, foldl(f, v; init=[""])))...;] .|> identity
     end
 divsplit(n::HTMLElement) = divsplit(n.children)
 sectiontags = Set([:ul, :h1, :h3, :h2, :details])
@@ -76,8 +76,8 @@ try2getfullsentences(sel::Selector, v::Vector; sp="n_______n") =
         _t2 = lm.children[1].text
         lm.children[1].text = _t2 * sp
         # HERE i last modified divsplit wasnt broadcast
-        sents = _join(flatten(divsplit.(v)), ". ")
         @exfiltrate
+        sents = _join(flatten(divsplit.(v)), ". ")
         (pre, mid, post) = (split(sents, sp))  # _join(t.(v))
         h(x) = isempty(x) ? [""] : x
         lm.children[1].text = _t2

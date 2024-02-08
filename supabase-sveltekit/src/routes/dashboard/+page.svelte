@@ -59,6 +59,11 @@
 				</div>
 			{/each}
 		</div>
+		<div class="toast toast-end">
+			<div class="alert alert-info">
+				<button on:click={note_sync.restoredelete}>Deleted. Click to undo</button>
+			</div>
+		</div>
 	</div>
 	<div class="drawer-side">
 		<label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>

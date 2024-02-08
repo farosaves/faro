@@ -56,8 +56,16 @@
 	}, 2000);
 	onMount(async () => {
 		try {
-			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+			chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 				if (request.action == 'update_curr_url') updateActive();
+				if (request.action === 'uploadTextSB') {
+					const { action, ...rest } = request;
+					const { data } = await trpc($page).upload_snippet.mutate(rest);
+					if (data) {
+						console.log(data.quote);
+					}
+				}
+				if (request.action == 'eager_update') 3; // TODO: here
 			});
 		} catch {
 			console.log('dev?');
