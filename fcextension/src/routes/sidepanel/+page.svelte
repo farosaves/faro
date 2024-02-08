@@ -4,38 +4,44 @@
 	import type { Session } from '@supabase/gotrue-js';
 	export let data;
 	import { onMount } from 'svelte';
-	import { API_ADDRESS, delete_by_id, getSession, logIfError } from '$lib/utils';
-	import Note from '$lib/Note.svelte';
-	import { redirect } from '@sveltejs/kit';
-	import type { Notes } from '$lib/dbtypes.js';
-	import { scratches } from '$lib/stores.js';
-	import { get } from 'svelte/store';
-	import { _getNotes } from './util.js';
-	let getNotes = () => _getNotes(supabase, curr_source_id, user_id);
+	import { API_ADDRESS, getSession } from '$lib/utils';
+	import { getSourceId, scratches, sub } from '$lib/stores';
+	import { NoteSync } from '$lib/shared/note-sync.js';
+	import { get, type Readable } from 'svelte/store';
+	import NotePanel from '$lib/components/NotePanel.svelte';
+	import { mock } from './util.js';
+	import Pako from 'pako';
 	let curr_title = 'Kalanchoe';
-
+	let curr_url = '';
 	let { supabase } = data;
-	let session: Session | undefined;
-	$: user_id = session?.user.id || '';
-	let notes: Notes[] = [];
-	const onNoteInsert = (payload: { new: Notes }) => {
-		notes = [...notes, payload.new];
-		showing_contents = [...showing_contents, false];
-	};
-	let curr_source_id: number = -1;
+	let session: Session;
+	let note_sync: NoteSync = new NoteSync(supabase, undefined);
+	let source_id: Readable<number>;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
+
+	function getHighlight(source_id: number, tab_id: number) {
+		chrome.tabs.sendMessage(tab_id, {
+			action: 'deserialize',
+			uss: (get(note_sync.notestore)[source_id] || []).map((n) => [
+				n.snippet_uuid,
+				n.serialized_highlight
+			])
+		});
+	}
+
 	async function updateActive() {
+		let tab;
 		try {
-			await chrome.tabs.query({ active: true, currentWindow: true });
+			[tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		} catch {
 			console.log('dev?');
-			curr_source_id = 15;
+			source_id = await getSourceId(supabase)('a', 'a');
 			return;
 		}
-		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-		if (!tab.url || !tab.title) return;
+		if (!tab.url || !tab.title || !tab.id) return;
 		curr_title = tab.title;
+		curr_url = tab.url;
 		let domain = hostname(tab.url);
 		curr_domain_title = [domain, tab.title].join(';');
 		if (!(curr_domain_title in $scratches))
@@ -43,65 +49,57 @@
 				t[curr_domain_title] = '';
 				return t;
 			});
-
-		const { data, error } = await supabase
-			.from('sources')
-			.select('id')
-			.eq('domain', domain)
-			.eq('title', tab.title)
-			.maybeSingle();
-		if (!data) {
-			console.log('source not there yet probably', error);
-			curr_source_id = -1;
-			notes = [];
-			return;
-		}
-		curr_source_id = data?.id;
-		notes = await getNotes();
+		source_id = await getSourceId(supabase)(domain, curr_title);
+		await note_sync.update_one_page($source_id);
+		getHighlight($source_id, tab.id);
 		console.log('scratches', $scratches);
 	}
-	let n = 0;
+	let logged_in = true;
+	setTimeout(() => {
+		logged_in = !!session;
+	}, 2000);
 	onMount(async () => {
-		n = await trpc($page).funsum.query([1, 2, 3, 4, 5, 6]);
-		updateActive();
 		try {
-			chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+			chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 				if (request.action == 'update_curr_url') updateActive();
+				if (request.action === 'uploadTextSB') {
+					console.log('uplaodtextsb');
+					const { action, ...rest } = request;
+
+					rest.html = String.fromCharCode(...Pako.deflate(rest.html));
+
+					const { note_data } = await trpc($page).upload_snippet.mutate(rest);
+					if (note_data) {
+						console.log(note_data.quote);
+						note_sync.notestore.update((n) => {
+							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];
+							return n;
+						});
+					}
+				}
 			});
 		} catch {
 			console.log('dev?');
 		}
-		let atokens = await trpc($page).my_email.query();
-		atokens || window.open(API_ADDRESS);
-		session = (await getSession(supabase, atokens)) || undefined; // || redirect(300, API_ADDRESS); // omg I'm starting to love typescript
-		notes = await getNotes();
-		supabase
-			.channel('notes')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'notes',
-					filter: `user_id=eq.${user_id}`
-				}, // at least url should be the same so no need to filter
-				onNoteInsert
-			)
-			.subscribe();
+		let { data } = await supabase.auth.getSession();
+		if (!data.session) {
+			console.log('getting session');
+			let atokens = await trpc($page).my_email.query();
+			atokens || window.open(API_ADDRESS); // TODO: doesnt work iirc
+			session = (await getSession(supabase, atokens))!;
+		} else {
+			session = data.session;
+		}
+		console.log('session is', session);
+		note_sync.user_id = session.user.id;
+		logged_in = !!session;
+		updateActive();
+		sub(note_sync)(curr_title, curr_url);
 	});
-	let showing_contents = notes.map((_) => false);
-	let close_all_notes = () => {
-		showing_contents = showing_contents.map((_) => false);
-	};
-	let deleteit = (note_id: number) => async () => {
-		let { error } = await supabase.from('notes').delete().eq('id', note_id).then(logIfError);
-		if (error) return;
-		notes = delete_by_id(note_id)(notes);
-		close_all_notes();
-	};
 </script>
 
-{#if !user_id}
+{$source_id}
+{#if !logged_in}
 	<div role="alert" class="alert alert-error">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -120,17 +118,8 @@
 {/if}
 
 <div class="max-w-xs mx-auto space-y-4">
-	<div class=" text-xl text-center w-full italic">{curr_title} {n}</div>
-	{#each notes as note_data, i}
-		<Note
-			{note_data}
-			bind:showing_content={showing_contents[i]}
-			fun={close_all_notes}
-			deleteit={deleteit(note_data.id)}
-		/>
-	{:else}
-		If you just installed the extension, you need to reload the page.
-	{/each}
+	<div class=" text-xl text-center w-full italic">{curr_title}</div>
+	<NotePanel {note_sync} source_id={$source_id} />
 
 	<textarea
 		placeholder="scratchy scratch scratch"

@@ -29,6 +29,7 @@
 		"postcss": "^8.4.33",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
+		"supabase": "^1.136.2",
 		"svelte": "^4.2.7",
 		"svelte-check": "^3.6.0",
 		"tailwindcss": "^3.4.1",
@@ -40,9 +41,14 @@
 	"dependencies": {
 		"@supabase/ssr": "^0.0.10",
 		"@trpc/client": "^10.45.0",
+		"@types/pako": "^2.0.3",
+		"@types/rangy": "^0.0.38",
 		"chrome-types": "^0.1.247",
 		"fp-ts": "^2.16.2",
-		"supabase": "^1.127.4",
+		"fuse.js": "^7.0.0",
+		"lz-string": "^1.5.0",
+		"pako": "^2.1.0",
+		"superjson": "^2.2.1",
 		"svelte-persisted-store": "^0.9.0",
 		"sveltekit-adapter-chrome-extension": "github:asjir/sveltekit-adapter-chrome-extension",
 		"trpc-sveltekit": "^3.5.22"

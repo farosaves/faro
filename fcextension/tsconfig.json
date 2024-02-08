@@ -12,7 +12,7 @@
 		"moduleResolution": "bundler"
 	},
 	"typeAcquisition": {
-		// "include": ["chrome"]
+		"include": ["@types/rangy"]
 	},
 	
 

@@ -113,34 +113,46 @@ export interface Database {
 			};
 			notes: {
 				Row: {
+					context: string | null;
 					created_at: string;
 					highlights: string[] | null;
 					id: number;
 					predicted_topic: string | null;
 					quote: string;
+					serialized_highlight: string | null;
+					snippet_uuid: string | null;
 					source_id: number;
 					tags: string[] | null;
 					user_id: string;
+					user_note: string | null;
 				};
 				Insert: {
+					context?: string | null;
 					created_at?: string;
 					highlights?: string[] | null;
 					id?: number;
 					predicted_topic?: string | null;
 					quote: string;
+					serialized_highlight?: string | null;
+					snippet_uuid?: string | null;
 					source_id: number;
 					tags?: string[] | null;
 					user_id?: string;
+					user_note?: string | null;
 				};
 				Update: {
+					context?: string | null;
 					created_at?: string;
 					highlights?: string[] | null;
 					id?: number;
 					predicted_topic?: string | null;
 					quote?: string;
+					serialized_highlight?: string | null;
+					snippet_uuid?: string | null;
 					source_id?: number;
 					tags?: string[] | null;
 					user_id?: string;
+					user_note?: string | null;
 				};
 				Relationships: [
 					{

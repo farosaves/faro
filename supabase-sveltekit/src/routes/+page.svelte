@@ -1,12 +1,12 @@
-<script>
-	import { ThemeSupa } from '@supabase/auth-ui-shared';
+<script lang="ts">
+	import { ThemeSupa, type ViewType } from '@supabase/auth-ui-shared';
 	import { Auth } from '@supabase/auth-ui-svelte';
 	import '../styles.css';
 	export let data;
 	import Radio from '$lib/Radio.svelte';
-	// @ts-ignore
-	let view = 'magic_link';
+	let view: ViewType = 'magic_link';
 	let view_options = ['sign_in', 'sign_up', 'magic_link', 'forgotten_password'];
+	let providers = ['github'];
 </script>
 
 <svelte:head>
@@ -22,6 +22,7 @@
 			{view}
 			appearance={{ theme: ThemeSupa, style: { input: 'color: #fff' } }}
 		/>
+		<!-- <Auth supabaseClient={data.supabase} {view} {providers} /> -->
 		<Radio options={view_options} bind:userSelected={view} />
 	</div>
 </div>

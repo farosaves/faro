@@ -1,5 +1,5 @@
-import type { SupabaseClient } from "$lib/first";
-import { ts } from "$lib/util";
+import type { SupabaseClient } from "$lib/shared/first";
+import { ts } from "$root/src/lib/utils";
 import { Card, FSRS } from "fsrs.js";
 
 export function makeCloze(selectedText: string, contextText: string) {
