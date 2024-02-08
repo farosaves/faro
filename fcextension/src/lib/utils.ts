@@ -5,7 +5,7 @@
  */
 import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { array as A } from 'fp-ts';
+import { logIfError } from './shared/utils';
 
 export let API_ADDRESS = PUBLIC_PI_IP.replace(/\/$/, '');
 
@@ -22,10 +22,19 @@ export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
 	return session;
 };
 
-export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id);
+export async function gotoSnippet(uuid: string) {
+	console.log("going to..", uuid)
+	const tab = (await chrome.tabs.query({active: true, currentWindow: true}))[0]
+	chrome.tabs.sendMessage(tab.id!, {action: "goto", uuid})
+}
 
-export function logIfError<T extends { error: any }>(r: T): T {
-	const { error } = r;
-	error && console.log('error from logIfError util function\n', error);
-	return r;
+export async function getNotes(supabase: SupabaseClient, source_id: number, user_id: string) {
+	const { data, error } = await supabase
+		.from('notes')
+		.select()
+		.eq('source_id', source_id)
+		.eq('user_id', user_id).order("created_at");
+	error && console.log('getNotes error', error);
+	console.log(data);
+	return data ?? null;
 }

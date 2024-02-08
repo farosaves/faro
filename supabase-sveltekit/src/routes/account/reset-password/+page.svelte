@@ -1,16 +1,14 @@
 <script lang="ts">
 	export let data;
 	$: user_email = data.session?.user.email;
-	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { formula } from 'svelte-formula';
-	import { logIfError } from '$lib/util.js';
+	import { logIfError } from '$lib/shared/utils.js';
 	import { redirect } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
-	import { trpc } from '$lib/trpc/client.js';
 
 	const { form, formValidity, isFormValid, submitValues, touched, validity } = formula({
 		formValidators: {
+			// @ts-ignore
 			passwordsMatch: (values: { password: string; passwordMatch: string }) =>
 				values.password === values.passwordMatch ? null : 'Your passwords must match'
 		}
@@ -21,23 +19,13 @@
 
 	function onSubmit() {
 		const { password } = get(submitValues);
-		// @ts-ignore
 		data.supabase.auth
+			// @ts-ignore
 			.updateUser({ password })
 			.then(logIfError)
 			.then(() => redirect(300, '/account'));
 	}
-	let s = 'greet';
-	let n = 0;
-	onMount(async () => {
-		s = await trpc($page).greeting.query();
-		n = await trpc($page).funsum.query([1, 2, 3]);
-		let aa = await trpc($page).my_email.query();
-	});
 </script>
-
-{s}
-{n}
 
 <div class="">
 	<div>
