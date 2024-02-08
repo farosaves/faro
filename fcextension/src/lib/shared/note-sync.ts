@@ -1,25 +1,30 @@
 // @ts-ignore
 import { persisted } from 'svelte-persisted-store';
 import type { Notes } from '../dbtypes';
-import type { Notess, SupabaseClient } from './first';
+import type { NoteEx, Notess, SupabaseClient } from './first';
 import { derived, get, type Writable } from 'svelte/store';
-import { delete_by_id, getNotes, logIfError } from './utils';
-import { option as O, array as A, record as R } from 'fp-ts';
+import { getNotes, logIfError, partition_by_id } from './utils';
+import { option as O, record as R, task as T, array as A } from 'fp-ts';
 import { groupBy } from 'fp-ts/lib/NonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
 
 const notes: { [id: number]: Notess } = {};
 export type NoteDict = typeof notes;
 export const notestore = persisted('notestore', notes);
+const _note_del_queue: Notess = [];
+const note_del_queue = persisted('note_del_queue', _note_del_queue);
 
 export class NoteSync {
 	sb: SupabaseClient;
 	notestore: Writable<{ [id: number]: Notess }>;
 	user_id: string | undefined;
+	note_del_queue: Writable<Notess>;
+
 	constructor(sb: SupabaseClient, user_id: string | undefined) {
 		this.sb = sb;
 		this.notestore = notestore;
 		this.user_id = user_id;
+		this.note_del_queue = note_del_queue;
 	}
 	panel(id: number) {
 		return derived(this.notestore, (v) => v[id]);
@@ -66,32 +71,46 @@ export class NoteSync {
 		return derived(this.notestore, (kvs) =>
 			pipe(
 				Object.entries(kvs), // @ts-ignore
-				A.map(([k, v]) => [v[0].sources.title, v]),
+				A.map(([k, v]) => [v[0] ? v[0].sources.title : 'never!', v]),
 				R.fromEntries<Notess>,
 				R.toArray<string, Notess>
 			)
 		);
 	}
 
-	addit = async (n: Notes) => {
+	addit = async (n: NoteEx) => {
 		const cache = get(this.notestore)[n.source_id];
-		const title = cache
-			? cache[0].sources.title
-			: (await this.sb.from('sources').select().eq('id', n.source_id).maybeSingle()).data?.title ||
-				'missing Title';
+		let { title, url } = cache[0]
+			? cache[0].sources
+			: (await this.sb.from('sources').select().eq('id', n.source_id).maybeSingle()).data || {};
+		title = title || 'title missing';
+		url = url || '';
 
 		this.notestore.update((s) => {
-			s[n.source_id] = [...s[n.source_id], { ...n, sources: { title } }];
+			s[n.source_id] = [...s[n.source_id], { ...n, sources: { title, url } }];
 			return s;
 		});
-		this.sb.from('notes').insert(n).then(logIfError).then(this._restoreIE(n, cache));
+		const {sources, ...reNote} = n
+		this.sb.from('notes').insert(reNote).then(logIfError).then(this._restoreIE(n, cache));
 	};
 
+	restoredelete = () => {
+		this.note_del_queue.update((ns) => {
+			let [r, ...rs] = ns;
+			if (!r) return ns; // noop
+			this.addit(r);
+			return rs;
+		});
+	};
+
+	savedelete = (n: NoteEx) => this.note_del_queue.update((ns) => [n, ...ns]);
 	deleteit = (n: Notes) => {
 		const cache = get(this.notestore)[n.source_id];
 
 		this.notestore.update((s) => {
-			s[n.source_id] = delete_by_id(n.id)(s[n.source_id]);
+			let parts = partition_by_id(n.id)(s[n.source_id]);
+			s[n.source_id] = parts.left;
+			this.savedelete(parts.right[0]);
 			return s;
 		});
 		this.sb.from('notes').delete().eq('id', n.id).then(logIfError).then(this._restoreIE(n, cache));
@@ -113,27 +132,4 @@ export class NoteSync {
 		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
 	};
 
-	sub = (title: string) => (cb: Function) => {
-		this.sb
-			.channel('notes')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'notes',
-					filter: `user_id=eq.${this.user_id}`
-				}, // at least url should be the same so no need to filter
-				(payload: { new: Notes }) => {
-					cb(payload.new)
-					this.notestore.update((n) => {
-						let id = payload.new.source_id;
-						// if (!(id in n)) n[id] = []
-						n[id] = [...(n[id] || []), { ...payload.new, sources: { title } }];
-						return n;
-					});
-				}
-			)
-			.subscribe();
-	};
 }

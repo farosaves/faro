@@ -2,8 +2,9 @@ import type { Notess, SupabaseClient } from '$lib/shared/first';
 import { array as A } from 'fp-ts';
 import type { Option } from 'fp-ts/lib/Option';
 import { option as O } from 'fp-ts';
-import { identity, pipe } from 'fp-ts/lib/function';
+import { flow, identity, pipe } from 'fp-ts/lib/function';
 
+export let partition_by_id = (id:number) => A.partition((v: { id: number }) => v.id == id);
 export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id);
 
 export function logIfError<T extends { error: any }>(r: T): T {
@@ -18,26 +19,36 @@ export async function getNotes(
 	user_id: string,
 	prevnotes = []
 ): Promise<Notess> {
-	let q = supabase.from('notes').select('*, sources (title)').eq('user_id', user_id);
-	q = pipe(
-		source_id,
-		O.match(
+	let q = supabase.from('notes').select('*, sources (title, url)').eq('user_id', user_id);
+	q = O.match(
 			() => q,
-			(id) => q.eq('source_id', id)
-		)
-	);
-	const { data } = await q;
-	if (data === null) return prevnotes;
+			(id: number) => q.eq('source_id', id)
+		)(source_id)
 
+	// const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+	// sleep(5000)
+	const { data } = await q;
+	
+	if (data === null) return prevnotes;
+	let get = (v: typeof data[0], fld: "title" | "url", missing: string) => pipe(
+		v.sources,
+		O.fromNullable,
+		O.chain((v) => O.fromNullable(v[fld])),
+		O.fold(() => missing, identity)
+	)
 	return data.map(
-		(v) =>
-			pipe(
-				v.sources,
-				O.fromNullable,
-				O.chain((v) => O.fromNullable(v.title)),
-				O.fold(() => 'missing Title', identity),
-				(title) => ({ ...v, sources: { title } })
-			)
+		(v) => {
+			const title = get(v, "title", "missing Title")
+			const url = get(v, "url", "")
+			return { ...v, sources: { title, url } }
+		}
+			// pipe(
+			// 	v.sources,
+			// 	O.fromNullable,
+			// 	O.chain(({title}) => O.fromNullable(title)),
+			// 	O.fold(() => 'missing Title', identity),
+			// 	(title) => ({ ...v, sources: { title } })
+			// )
 
 		// const _sources= match(sources)
 		// 	.with(null, () => ({ title: 'missing Title' }))
