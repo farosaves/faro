@@ -66,7 +66,7 @@
 					console.log('uplaodtextsb');
 					const { action, ...rest } = request;
 
-					rest.html = String.fromCharCode(...Pako.deflate(rest.html));
+					rest.packed_context = String.fromCharCode(...Pako.deflate(JSON.stringify(rest.context)));
 
 					const { note_data } = await trpc($page).upload_snippet.mutate(rest);
 					if (note_data) {
@@ -126,5 +126,5 @@
 		class="w-full"
 		bind:value={$scratches[curr_domain_title]}
 	/>
-	<button on:click={() => console.log(get(scratches))}> pls</button>
+	<!-- <button on:click={() => console.log(peccatoribus(2.5))}> pls</button> -->
 </div>

@@ -1,5 +1,5 @@
 import 'chrome';
-const DOMAIN = 'http://farosapp.com'.replace(/\/$/, ''); // Replace with your domain
+const DOMAIN = 'http://78.10.223.2:13723'.replace(/\/$/, ''); // Replace with your domain
 // http://78.10.223.2:13723
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
