@@ -32,12 +32,14 @@ let batchDeserialize = (uss) =>
 	});
 
 let gotoText = (uuid) => {
-	const elem = document.getElementsByClassName('_' + uuid).item(0);
-	elem.scrollIntoView({block: 'center'});
-	const sc = elem.style.backgroundColor
-	elem.style.backgroundColor = '#fff200'
-	setTimeout(() => {elem.style.backgroundColor = sc}, 1000)
-	
+	const elems = Array.from(document.getElementsByClassName('_' + uuid));
+	elems[0].scrollIntoView({block: 'center'});
+	const oldbgcs = elems.map(e => {
+		const sc = e.style.backgroundColor
+		e.style.backgroundColor = '#fff200'
+		return sc
+	})
+	setTimeout(() => elems.map((e, i) => e.style.backgroundColor=oldbgcs[i]), 1000)
 };
 // now we also need node text - to make sure that if highlight was from a different node in the paragraph we capture the correct one
 let node2context = (node) =>
@@ -61,12 +63,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log(rangy.createRange());
 		const serialized = wrapSelectedText(uuid);
 		console.log(window.getSelection().anchorNode);
-		let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
+		const el = walkup2(window.getSelection().anchorNode.parentElement)
+		const context = {html: el.innerHTML, text: el.innerText};
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
 			selectedText,
-			html,
+			context,
 			website_title,
 			website_url,
 			uuid,

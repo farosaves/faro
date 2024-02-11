@@ -11,7 +11,7 @@ export const t = initTRPC.context<Context>().create();
 const tokens = z.object({ access_token: z.string(), refresh_token: z.string() });
 const uploadinput = z.object({
 	selectedText: z.string(),
-	html: z.string(),
+	packed_context: z.string(),
 	website_title: z.string(),
 	website_url: z.string(),
 	uuid: z.string(),
@@ -37,9 +37,9 @@ export const router = t.router({
 		return;
 	}),
 	upload_snippet: t.procedure.input(uploadinput).mutation(async ({ input, ctx: { locals } }) => {
-		const { selectedText, html, website_url, website_title, uuid, serialized } = input;
-		console.log('uploaded:', { selectedText, html });
-		const { quote, highlights, context } = await makeQCH(selectedText, html, uuid);
+		const { selectedText, packed_context, website_url, website_title, uuid, serialized } = input;
+		console.log('uploaded:', { selectedText, website_url });
+		const { quote, highlights, context } = await makeQCH(selectedText, packed_context, uuid);
 		if (!quote) return {note_data: null};
 		const note_data: MockNote = {
 			quote,

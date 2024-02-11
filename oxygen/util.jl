@@ -11,3 +11,9 @@ gtsf = replace // (r"(?<=\w)\s([\p{Pe}\p{Pf}\p{Po}])(?=\s|$)" => s"\g<1>")
 @assert gtsf(". .") == ". ."
 @assert gtsf("h .") == "h."
 @assert gtsf("and \"here\"") == "and \"here\""
+
+errh(cb) = f -> req -> try
+    f(req)
+catch e
+    cb(e)
+end
