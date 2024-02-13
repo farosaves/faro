@@ -6,6 +6,7 @@
 	import * as tok from 'sbd';
 
 	let alltext: string[];
+
 	onMount(async () => {
 		document.getSelection().setBaseAndExtent(p, 0, p, p.childNodes.length);
 		const x = await (await fetch('steg2.html')).text();
@@ -19,6 +20,12 @@
 			.flat();
 
 		console.log(alltext);
+		const myPromise = new Promise<string>((resolve, reject) => {
+			setTimeout(() => {
+				resolve('foo');
+			}, 300);
+		});
+		const aa = await myPromise;
 	});
 
 	let list = [
