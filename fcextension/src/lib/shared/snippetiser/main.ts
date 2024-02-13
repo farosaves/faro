@@ -1,7 +1,7 @@
+import { htmlstr2body } from '$lib/utils';
 import { array as A, option as O, nonEmptyArray as NA, nonEmptyArray as nEA } from 'fp-ts';
 import { identity, pipe } from 'fp-ts/lib/function';
 import * as tok from 'sbd';
-import { JSDOM } from 'jsdom';
 
 type ArrOr1<T> = T[] | T;
 function goUp(cond: (n: Element) => boolean, e: Element): Element {
@@ -88,7 +88,7 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = 'n_______n') {
 				O.match(() => nEA.of(placeholder), identity)
 			);
 
-	const body = new JSDOM(listOrAllChildren(es).map(getContent).join('')).window.document.body;
+	const body = htmlstr2body(listOrAllChildren(es).map(getContent).join(''));
 	const bodyText = body.innerText || body.textContent;
 	if (bodyText === null) return '';
 

@@ -79,7 +79,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 		// const { selectedText, packed_context, website_url, website_title, uuid, serialized } = input;
 		console.log('uploading...:', { selectedText, website_url });
-		const { quote, highlights, context } = makeQCH(document, selectedText, uuid);
+		const { quote, highlights, context } = makeQCH(document, uuid, selectedText);
 		if (!quote) return { note_data: null };
 		const note_data = {
 			quote,

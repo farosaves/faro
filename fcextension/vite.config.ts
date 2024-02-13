@@ -2,6 +2,7 @@ import { crx } from '@crxjs/vite-plugin';
 import { sveltekit } from '@sveltejs/kit/vite';
 import manifest from './manifest.json';
 import { defineConfig } from 'vite';
+import path from 'path';
 
 // const config = defineConfig(({ command, mode, ssrBuild }) => {
 // 	return {
@@ -31,5 +32,8 @@ export default defineConfig(({ command, mode }) => ({
 			]
 		},
 		minify: false
+	},
+	resolve: {
+		alias: {'$lib': path.resolve(__dirname, './src/lib'),}
 	}
 }));

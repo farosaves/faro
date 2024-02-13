@@ -10,7 +10,6 @@ export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !
 export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
 	return (t1, t2) => f(t2) - f(t1)
 }
-// export let desc: (T => number) = f => 1
 
 export function logIfError<T extends { error: any }>(r: T): T {
 	const { error } = r;

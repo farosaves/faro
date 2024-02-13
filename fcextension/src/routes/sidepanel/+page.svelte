@@ -12,6 +12,7 @@
 	import { mock } from './util.js';
 	// import Pako from 'pako';
 	import { supa_update, type MockNote } from './fun.js';
+	import Semaphore from '$lib/shared/semaphore.js';
 	let curr_title = 'Kalanchoe';
 	let curr_url = '';
 	let { supabase } = data;
@@ -20,6 +21,7 @@
 	let source_id: Readable<number>;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
+	let sem = new Semaphore();
 
 	function getHighlight(source_id: number, tab_id: number) {
 		chrome.tabs.sendMessage(tab_id, {
@@ -32,14 +34,7 @@
 	}
 
 	async function updateActive() {
-		let tab;
-		try {
-			[tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-		} catch {
-			console.log('dev?');
-			source_id = await getSourceId(supabase)('a', 'a');
-			return;
-		}
+		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		if (!tab.url || !tab.title || !tab.id) return;
 		curr_title = tab.title;
 		curr_url = tab.url;
@@ -65,8 +60,7 @@
 				if (request.action == 'update_curr_url') updateActive();
 				if (request.action === 'uploadTextSB') {
 					console.log('uplaodtextsb');
-					const { action, note_data } = request as { action: string; note_data: MockNote };
-					// if (!quote) return { note_data: null };
+					const { note_data } = request as { action: string; note_data: MockNote };
 					if (note_data) {
 						supa_update(supabase, note_data).then(console.log);
 
