@@ -48,18 +48,11 @@ export async function getNotes(
 			const url = get(v, 'url', '');
 			return { ...v, sources: { title, url } };
 		}
-		// pipe(
-		// 	v.sources,
-		// 	O.fromNullable,
-		// 	O.chain(({title}) => O.fromNullable(title)),
-		// 	O.fold(() => 'missing Title', identity),
-		// 	(title) => ({ ...v, sources: { title } })
-		// )
-
-		// const _sources= match(sources)
-		// 	.with(null, () => ({ title: 'missing Title' }))
-		// 	.with({ title: null }, () => ({ title: 'missing Title' }))
-		// 	.with({ title: P.select() }, (title) => ({ title }))
-		// 	.exhaustive();
 	);
 }
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const logaftersleep = (ms: number, msg: string) => async () => {
+	await sleep(ms);
+	console.log(msg);
+};
