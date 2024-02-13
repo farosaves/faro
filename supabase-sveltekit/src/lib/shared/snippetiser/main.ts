@@ -8,7 +8,7 @@ type ArrOr1<T> = T[] | T;
 function goUp(cond: (n: Element) => boolean, e: Element): Element {
 	return cond(e.parentElement!) ? e.parentElement! : goUp(cond, e.parentElement!);
 }
-const sectiontags = new Set(['ul', 'h1', 'h3', 'h2', 'details'].map((x) => x.toUpperCase()));
+const sectiontags = new Set(['ul', 'h1', 'h3', 'h2', 'details', 'tr'].map((x) => x.toUpperCase()));
 
 const splittags = new Set(
 	['ul', 'h1', 'h3', 'h2', 'details', 'p', 'li', 'blockquote'].map((x) => x.toUpperCase())
@@ -64,16 +64,8 @@ const generateUp = (e: O.Option<ArrOr1<Element>>): ArrOr1<Element>[] =>
 			(e) => [e, ...generateUp(succ(e))]
 		)
 	);
-// let itOrFirst = <T>(e: T | T[]) => (Array.isArray(e) ? e[0] : e);
-// let mapOrApply =
-// 	<T, U>(f: (t: T) => U) =>
-// 	(e: T | T[]) =>
-// 		Array.isArray(e) ? e.map(f) : f(e);
-// let listOrWrap = <T>(e: T | T[]) => (Array.isArray(e) ? e : [e]);
-// let listOrChildren = (e: ArrOr1<Element>) => (Array.isArray(e) ? e : Array.from(e.children));
-let listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.from(e.childNodes));
+let listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e)) ? e : Array.from(e.childNodes);
 
-// let sentences = (html: string) => tok.sentences(html, { sanitize: true, html_boundaries: true });
 function match(uuid: string) {
 	let _match = (uuid: string) => (e: Element) =>
 		new Set(e.classList).has('_' + uuid) ? [e] : Array.from(e.getElementsByClassName('_' + uuid));
@@ -98,8 +90,8 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = 'n_______n') {
 			);
 
 	const body = new JSDOM(listOrAllChildren(es).map(getContent).join('')).window.document.body;
-	const bodyText = body.innerText || body.textContent
-	if (bodyText === null) return ""
+	const bodyText = body.innerText || body.textContent;
+	if (bodyText === null) return '';
 
 	const matching = A.filter(hasMatch(uuid))(Array.from(body.children));
 
@@ -120,30 +112,34 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = 'n_______n') {
 	// instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
 	// and then likewise .........suffix .......right...
 	function getShortestXfix(p: string, pre: boolean, n = 1) {
-		const rev = pre ? (x: string[]) => x : (x: string[]) => x.toReversed()
+		const rev = pre ? (x: string[]) => x : (x: string[]) => x.toReversed();
 		const prefix = rev(rev(p.split(' ')).slice(0, n)).join(' ');
+		const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+		
 		// @ts-ignore
-		const nmatch = Array.from(bodyText.matchAll(RegExp(prefix, "g"))).length;
+		const nmatch = Array.from(bodyText.matchAll(RegExp(escapeRegExp(prefix), 'g'))).length;
 		switch (nmatch) {
 			case 1:
 				return O.some(prefix);
 			case 0:
-				return O.none
-			default:  // more matches - too short
-				return getShortestXfix(p, pre, n+1)
+				return O.none;
+			default: // more matches - too short
+				return getShortestXfix(p, pre, n + 1);
 		}
 	}
-	const potResult = [last(h(tok.sentences(left))), g(mid), g(first(h(tok.sentences(right))))].join("")
-	const pre_short = getShortestXfix(potResult, true)
-	const post_short = getShortestXfix(potResult, false)
-	if (O.isNone(pre_short) || O.isNone(post_short))
-		return potResult  // this most likely means our sentence appears twice in the text..
-	let text = bodyText
-	text = pre_short.value + text.split(pre_short.value)[1]
-	text = text.split(post_short.value)[0] + post_short.value
-	return text
+	const potResult = [last(h(tok.sentences(left))), g(mid), g(first(h(tok.sentences(right))))].join(
+		''
+	);
+	const pre_short = getShortestXfix(potResult, true);
+	const post_short = getShortestXfix(potResult, false);
+	if (O.isNone(pre_short) || O.isNone(post_short)) return potResult; // this most likely means our sentence appears twice in the text..
+	let text = bodyText;
+	text = pre_short.value + text.split(pre_short.value)[1];
+	text = text.split(post_short.value)[0] + post_short.value;
+	return text;
 }
-export function f(d: Document, uuid: string, selectedText: string) {
+const wrapOrPass = <T>(e: ArrOr1<T>) => Array.isArray(e) ? e : [e]
+export function makeQCH(d: Document, uuid: string, selectedText: string) {
 	const matches = Array.from(d.getElementsByClassName('_' + uuid));
 	const root = goUp(
 		(e) => e.getElementsByClassName('_' + uuid).length == matches.length,
@@ -153,18 +149,33 @@ export function f(d: Document, uuid: string, selectedText: string) {
 	const contextNodeOpt = A.findFirst<ArrOr1<Element>>((e) => divSplit(e).length > 2)(gen);
 	if (O.isNone(contextNodeOpt)) throw error('QCH empty page?');
 	const contextNode = contextNodeOpt.value;
+	// console.log(wrapOrPass(contextNode)[0].children[0])
 	const potentialQuote = listOrAllChildren(contextNode);
 	const context = divSplit(potentialQuote).join('. ');
 
 	const is4highlight = (t: string) => t.split(' ').length < 6;
 	if (!is4highlight(selectedText)) return { quote: selectedText, context, highlights: [] };
 	const highlights = [selectedText];
+
+	// console.log(divSplit(potentialQuote))
+	// console.log(potentialQuote.map(x => x.textContent))
+	// console.log(potentialQuote.map(x=>x.textContent))
 	const quoteNodes = A.filter(hasMatch(uuid))(potentialQuote);
+	// console.log(d.body.outerHTML)
+	// console.log(wrapOrPass(contextNode).map(x=>x.outerHTML))
+	// console.log(quoteNodes.map(x => x.outerHTML))
+	// console.log(divSplit(quoteNodes))
+	const tag = (e: Element) => e.tagName || "not"
+	// console.log(tag(quoteNodes[0]))
+
 	let quote = getFullSentences(quoteNodes, uuid);
 
 	const tooShort = (s: string) => s.split(' ').length < 6;
 	if (tooShort(quote)) quote = getFullSentences(contextNode, uuid);
-
+	if (quote.length > 1000) quote = selectedText
+	// wikipedia src delete
+	
+	quote = quote.replaceAll(/\[\d{1,2}\]/g, "").replaceAll(/\n+/g, " ")
 	return { quote, context, highlights };
 	// _quote = try2getfullsentences(sel, quotenodes)
 }

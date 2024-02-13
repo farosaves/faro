@@ -94,9 +94,9 @@ function derived(stores2, fn, initial_value) {
     };
   });
 }
-const base = globalThis.__sveltekit_v54856?.base ?? "";
-const assets = globalThis.__sveltekit_v54856?.assets ?? base;
-const version = "1707755743382";
+const base = globalThis.__sveltekit_13o77yz?.base ?? "";
+const assets = globalThis.__sveltekit_13o77yz?.assets ?? base;
+const version = "1707831945937";
 const SNAPSHOT_KEY = "sveltekit:snapshot";
 const SCROLL_KEY = "sveltekit:scroll";
 const STATES_KEY = "sveltekit:states";

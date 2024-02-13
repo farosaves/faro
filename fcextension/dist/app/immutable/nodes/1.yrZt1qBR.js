@@ -1,6 +1,6 @@
 import { s as safe_not_equal, n as noop, e as component_subscribe } from "../chunks/scheduler.9_m0mCEV.js";
 import { S as SvelteComponent, i as init, g as element, m as text, s as space, h as claim_element, j as children, n as claim_text, f as detach, c as claim_space, a as insert_hydration, x as append_hydration, o as set_data } from "../chunks/index.Iyl_OSSJ.js";
-import { p as page } from "../chunks/stores.fMIk4gAR.js";
+import { p as page } from "../chunks/stores.6krd_iQa.js";
 function create_fragment(ctx) {
   let h1;
   let t0_value = (
