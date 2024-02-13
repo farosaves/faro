@@ -3,7 +3,6 @@ import { logIfError } from '$lib/shared/utils';
 import { json } from '@sveltejs/kit';
 import { array as A, option as O } from 'fp-ts';
 import { flow } from 'fp-ts/lib/function';
-import { split } from 'sentence-splitter';
 
 let hostname = (s: string) => new URL(s).hostname;
 
@@ -17,7 +16,6 @@ export type MockNote = {
 	sources: { title: string; url: string };
 };
 
-
 // let tooLong = (s: string) => split(s).filter((s) => s.raw.length > 4).length > 10;
 // let longEnough = (s: string) => split(s).filter((s) => s.raw.length > 4).length > 1;
 // let good4cloze = (s: string) => s.split(' ').length < 6;
@@ -29,22 +27,26 @@ export type MockNote = {
 // let a = Set(s1), b= Set(s2); length(a ∪ b)/length(a ∩ b) end in julia for comparison lol
 
 // Quote Context Highlights
-export async function makeQCH(selectedText: string, html: string, uuid: string) {
-	const {q, c, h, error} = await (await fetch('http://localhost:2227/make-qch', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			selectedText,
-			html,
-			uuid
+export async function makeQCH(selectedText: string, context: string, uuid: string) {
+	// const julia_api_url = "http://78.10.223.2:13723"
+	const julia_api_url = 'http://localhost:2227';
+	const { q, c, h, error } = await (
+		await fetch(`${julia_api_url}/make-qch`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				selectedText,
+				context,
+				uuid
+			})
 		})
-	})).json();
-	error && console.log(error)
-	return {quote: q, context: c, highlights: h}
+	).json();
+	error && console.log(error);
+	return { quote: q, context: c, highlights: h };
 }
 
 export async function supa_update(supabase: SupabaseClient, n: MockNote) {
-	let {sources, ...note} = n
+	let { sources, ...note } = n;
 	const { data } = await supabase
 		.from('sources')
 		.select('id')
@@ -62,5 +64,5 @@ export async function supa_update(supabase: SupabaseClient, n: MockNote) {
 		note.source_id = data!.id;
 	}
 	await supabase.from('notes').insert(note).then(logIfError);
-	return json("hey")
+	return json('hey');
 }

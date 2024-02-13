@@ -11,7 +11,13 @@
 		"strict": true,
 		"moduleResolution": "bundler",
 		"composite": true,
+		"outDir": "out",	
 	},
+	"ts-node": {
+		"esm": true,
+		"experimentalSpecifierResolution": "node",
+	}
+	
 	// "references": [{"path": "../shared"}]
 	// "include": ["../shared/*"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

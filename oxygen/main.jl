@@ -32,10 +32,9 @@ function ReviseHandler(handle)
     end
 end
 
-
-
-run(; port=13723, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
+run(; port=2227, async=true) = (!isdefined(Main, :s) || !isopen(Main.s)) && (Main.s = serve(middleware=[CorsHandler, ReviseHandler]; port, async, catch_errors=false))
 run()
+
 
 # bin = parse.(UInt8, split(saved[].html, ","))
 # if false
@@ -51,3 +50,13 @@ run()
 #     pyconvert(NamedTuple, t[0])
 # end
 # # TranscriptElement(;map(kv -> Symbol(first(kv))=>last(kv), collect(pyconvert(Dict, t[0])))...)
+struct MakeQCHQuery
+    selectedText::String
+    html::String
+    uuid::String
+end
+using Serialization
+a = deserialize("saved/2024-02-11T20:04:52.473.jls")
+a = deserialize("manual_saved/lynch.jls")
+JSON3.write("ex_case.json", a)
+## write some to json here as test cases

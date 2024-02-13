@@ -1,5 +1,4 @@
-import 'chrome';
-const DOMAIN = 'http://farosapp.com'.replace(/\/$/, ''); // Replace with your domain
+const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, ''); // Replace with your domain
 // http://78.10.223.2:13723
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
