@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '$lib/shared/first';
-import { logIfError } from '$lib/shared/utils';
+import Semaphore from '$lib/shared/semaphore';
+import { logIfError, sleep } from '$lib/shared/utils';
 import { json } from '@sveltejs/kit';
 
 let hostname = (s: string) => new URL(s).hostname;
@@ -14,7 +15,7 @@ export type MockNote = {
 	sources: { title: string; url: string };
 };
 
-export async function supa_update(supabase: SupabaseClient, n: MockNote) {
+export const supa_update = (schlep=0) => async (supabase: SupabaseClient, n: MockNote) => {
 	let { sources, ...note } = n;
 	const { data } = await supabase
 		.from('sources')
@@ -33,5 +34,6 @@ export async function supa_update(supabase: SupabaseClient, n: MockNote) {
 		note.source_id = data!.id;
 	}
 	await supabase.from('notes').insert(note).then(logIfError);
+	await sleep(schlep)  // time for sb to update
 	return json('hey');
 }

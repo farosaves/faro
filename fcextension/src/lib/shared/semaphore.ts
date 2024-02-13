@@ -1,19 +1,21 @@
-type QueueElement<U, T> = {
-    resolve: (value: T | PromiseLike<T>) => void,
+type QueueElement = {
+    resolve: (value: any) => void,
     reject: (reason?: any) => void,
-    fnToCall: (...args: U[]) => Promise<T>
-    args: U[]
+    fnToCall: (...args: any[]) => Promise<any>
+    args: any[]
 }
-export default class Semaphore<U,T>{
-    requestQueue: QueueElement<U,T>[];
+type PReturnType<T> = T extends (...args: any[]) => Promise<infer R> ? R : any;
+type ArgType<T> = T extends (...args: infer R) => any ? R : any;
+
+export default class Semaphore{
+    requestQueue: QueueElement[];
     running: boolean;
     
     constructor() {
         this.requestQueue = [];
         this.running = false
     }
-
-    callFunction(fnToCall: (...args: U[]) => Promise<T>, ...args: U[]): Promise<T> {
+    callFunction<F extends (...args: any[]) => Promise<any>>(fnToCall: F, ...args: ArgType<F>): Promise<PReturnType<F>> {
         return new Promise((resolve, reject) => {
             this.requestQueue.push({
                 resolve,

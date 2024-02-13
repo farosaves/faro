@@ -13,6 +13,7 @@
 	// import Pako from 'pako';
 	import { supa_update, type MockNote } from './fun.js';
 	import Semaphore from '$lib/shared/semaphore.js';
+	import { log } from 'console';
 	let curr_title = 'Kalanchoe';
 	let curr_url = '';
 	let { supabase } = data;
@@ -21,7 +22,6 @@
 	let source_id: Readable<number>;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
-	let sem = new Semaphore();
 
 	function getHighlight(source_id: number, tab_id: number) {
 		chrome.tabs.sendMessage(tab_id, {
@@ -62,9 +62,10 @@
 					console.log('uplaodtextsb');
 					const { note_data } = request as { action: string; note_data: MockNote };
 					if (note_data) {
-						supa_update(supabase, note_data).then(console.log);
-
-						console.log(note_data.quote);
+						note_sync.sem
+							.callFunction(supa_update(), supabase, note_data)
+							.then((v) => console.log(v, get(note_sync.notestore)[$source_id]));
+						// optimistic update!
 						note_sync.notestore.update((n) => {
 							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];
 							return n;

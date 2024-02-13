@@ -4,9 +4,10 @@ import type { Notes } from '../dbtypes';
 import type { NoteEx, Notess, SupabaseClient } from './first';
 import { derived, get, type Writable } from 'svelte/store';
 import { desc, getNotes, logIfError, partition_by_id } from './utils';
-import { option as O, record as R, task as T, array as A} from 'fp-ts';
+import { option as O, record as R, task as T, array as A } from 'fp-ts';
 import { groupBy } from 'fp-ts/lib/NonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
+import Semaphore from './semaphore';
 
 const notes: { [id: number]: Notess } = {};
 export type NoteDict = typeof notes;
@@ -19,12 +20,14 @@ export class NoteSync {
 	notestore: Writable<{ [id: number]: Notess }>;
 	user_id: string | undefined;
 	note_del_queue: Writable<Notess>;
+	sem: Semaphore;
 
 	constructor(sb: SupabaseClient, user_id: string | undefined) {
 		this.sb = sb;
 		this.notestore = notestore;
 		this.user_id = user_id;
 		this.note_del_queue = note_del_queue;
+		this.sem = new Semaphore();
 	}
 	panel(id: number) {
 		return derived(this.notestore, (v) => v[id]);
@@ -39,7 +42,7 @@ export class NoteSync {
 			console.log('no user in NoteSync');
 			return;
 		}
-		const newnotes = await getNotes(this.sb, O.some(id), this.user_id);
+		const newnotes = await this.sem.callFunction(getNotes, this.sb, O.some(id), this.user_id);
 		if (newnotes !== null)
 			this.notestore.update((s) => {
 				s[id] = newnotes;
@@ -52,7 +55,7 @@ export class NoteSync {
 			console.log('no user in NoteSync');
 			return;
 		}
-		const newnotes = await getNotes(this.sb, O.none, this.user_id);
+		const newnotes = await this.sem.callFunction(getNotes, this.sb, O.none, this.user_id);
 		let groupnotes = (notes: Notess) =>
 			pipe(
 				notes,
@@ -84,7 +87,11 @@ export class NoteSync {
 		const cache = get(this.notestore)[n.source_id];
 		let { title, url } = cache[0]
 			? cache[0].sources
-			: (await this.sb.from('sources').select().eq('id', n.source_id).maybeSingle()).data || {};
+			: (
+					await this.sem.callFunction(
+						async () => await this.sb.from('sources').select().eq('id', n.source_id).maybeSingle()
+					)
+				).data || {};
 		title = title || 'title missing';
 		url = url || '';
 
@@ -93,7 +100,10 @@ export class NoteSync {
 			return s;
 		});
 		const { sources, ...reNote } = n;
-		this.sb.from('notes').insert(reNote).then(logIfError).then(this._restoreIE(n, cache));
+		this.sem.callFunction(
+			async () =>
+				await this.sb.from('notes').insert(reNote).then(logIfError).then(this._restoreIE(n, cache))
+		);
 	};
 
 	restoredelete = () => {
