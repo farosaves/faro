@@ -69,7 +69,7 @@ export class NoteSync {
 
 	get_groups() {
 		const latestts = (nss: Notess) =>
-			nss.map((n) => Date.parse(n.created_at)).reduce((l, r) => Math.max(l, r));
+			nss.map((n) => Date.parse(n.created_at)).reduce((l, r) => Math.max(l, r), 0);
 		return derived(this.notestore, (kvs) =>
 			pipe(
 				Object.entries(kvs), // @ts-ignore
