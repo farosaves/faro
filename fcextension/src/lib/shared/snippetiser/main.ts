@@ -2,7 +2,6 @@ import { array as A, option as O, nonEmptyArray as NA, nonEmptyArray as nEA } fr
 import { identity, pipe } from 'fp-ts/lib/function';
 import * as tok from 'sbd';
 import { JSDOM } from 'jsdom';
-import { error } from 'fp-ts/lib/Console';
 
 type ArrOr1<T> = T[] | T;
 function goUp(cond: (n: Element) => boolean, e: Element): Element {
@@ -147,7 +146,7 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
 	);
 	const gen = generateUp(O.fromNullable(root));
 	const contextNodeOpt = A.findFirst<ArrOr1<Element>>((e) => divSplit(e).length > 2)(gen);
-	if (O.isNone(contextNodeOpt)) throw error('QCH empty page?');
+	if (O.isNone(contextNodeOpt)) throw Error;
 	const contextNode = contextNodeOpt.value;
 	// console.log(wrapOrPass(contextNode)[0].children[0])
 	const potentialQuote = listOrAllChildren(contextNode);
