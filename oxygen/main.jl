@@ -55,6 +55,8 @@ struct MakeQCHQuery
     html::String
     uuid::String
 end
-a = deserialize("saved/2024-02-08T14:11:57.306.jls")
-
+using Serialization
+a = deserialize("saved/2024-02-11T20:04:52.473.jls")
+a = deserialize("manual_saved/lynch.jls")
+JSON3.write("ex_case.json", a)
 ## write some to json here as test cases

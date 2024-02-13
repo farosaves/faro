@@ -3,7 +3,6 @@ import { logIfError } from '$lib/shared/utils';
 import { json } from '@sveltejs/kit';
 import { array as A, option as O } from 'fp-ts';
 import { flow } from 'fp-ts/lib/function';
-import { split } from 'sentence-splitter';
 
 let hostname = (s: string) => new URL(s).hostname;
 

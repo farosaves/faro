@@ -1,6 +1,10 @@
-import 'chrome';
+// import 'chrome';
 // import rangy from 'rangy'
+// import {createHighlighter} from "@rangy/highlighter"
+// import {createClassApplier} from "@rangy/classapplier"
 console.log('hello');
+chrome.runtime.sendMessage({ action: 'loadDeps' });
+
 const applierOptions = {
 	elementProperties: {
 		style: { textDecoration: 'underline', textDecorationStyle: 'dotted' },
@@ -8,9 +12,12 @@ const applierOptions = {
 	}
 };
 function wrapSelectedText(uuid) {
+	let createClassApplier = rangy.createClassApplier;
+	let createHighlighter = rangy.createHighlighter;
+
 	const classname = '_' + uuid;
-	const hl = rangy.createHighlighter();
-	const app = rangy.createClassApplier(classname, applierOptions);
+	const hl = createHighlighter();
+	const app = createClassApplier(classname, applierOptions);
 	const selection = rangy.getSelection();
 	hl.addClassApplier(app);
 	hl.highlightSelection(classname, { selection });
@@ -21,25 +28,26 @@ function wrapSelectedText(uuid) {
 
 let batchDeserialize = (uss) =>
 	uss.forEach(([uuid, serialized]) => {
+		let createClassApplier = rangy.createClassApplier;
+		let createHighlighter = rangy.createHighlighter;	
 		if (!serialized) return;
 		console.log('deserializeing', uuid, serialized);
-		const hl = rangy.createHighlighter();
-		const app = rangy.createClassApplier('_' + uuid, applierOptions);
-		const legacyapp = rangy.createClassApplier(uuid, applierOptions);
+		const hl = createHighlighter();
+		const app = createClassApplier('_' + uuid, applierOptions);
+		const legacyapp = createClassApplier(uuid, applierOptions);
 		hl.addClassApplier(app);
 		hl.addClassApplier(legacyapp);
 		hl.deserialize(serialized);
 	});
 
 let gotoText = (uuid) => {
-	const elems = Array.from(document.getElementsByClassName('_' + uuid));
-	elems[0].scrollIntoView({block: 'center'});
-	const oldbgcs = elems.map(e => {
-		const sc = e.style.backgroundColor
-		e.style.backgroundColor = '#fff200'
-		return sc
-	})
-	setTimeout(() => elems.map((e, i) => e.style.backgroundColor=oldbgcs[i]), 1000)
+	const elem = document.getElementsByClassName('_' + uuid).item(0);
+	elem.scrollIntoView({ block: 'center' });
+	const sc = elem.style.backgroundColor;
+	elem.style.backgroundColor = '#fff200';
+	setTimeout(() => {
+		elem.style.backgroundColor = sc;
+	}, 1000);
 };
 // now we also need node text - to make sure that if highlight was from a different node in the paragraph we capture the correct one
 let node2context = (node) =>
@@ -63,13 +71,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log(rangy.createRange());
 		const serialized = wrapSelectedText(uuid);
 		console.log(window.getSelection().anchorNode);
-		const el = walkup2(window.getSelection().anchorNode.parentElement)
-		const context = {html: el.innerHTML, text: el.innerText};
+		let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
 		gotoText(uuid);
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
 			selectedText,
-			context,
+			html,
 			website_title,
 			website_url,
 			uuid,
@@ -88,5 +95,3 @@ function sendHighlightedText() {
 		chrome.runtime.sendMessage({ error: 'No text selected.' });
 	}
 }
-
-chrome.runtime.sendMessage({ action: 'loadDeps' });

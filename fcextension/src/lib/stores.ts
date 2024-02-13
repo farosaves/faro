@@ -18,8 +18,11 @@ class SBWriteStore<T> {
 	}
 	
 }
+const _scratches: { [id: string | symbol]: string } = {
+	'pl.wikipedia.org;Kalanchoe': ""
+};
 
-export const scratches = persisted('scratches', new Map<string, string>());
+export const scratches = persisted('scratches', _scratches);
 
 const __source_ids: { [id: string | symbol]: number } = {
 	'pl.wikipedia.org;Kalanchoe': 15

@@ -3,11 +3,11 @@
  * of calling `const { data: { session } } = await supabase.auth.getSession()`
  * you just call this `await getSession()`
  */
-import { PUBLIC_PI_IP } from '$env/static/public';
+// import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { logIfError } from './shared/utils';
 
-export let API_ADDRESS = PUBLIC_PI_IP.replace(/\/$/, '');
+export let API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, '');
 
 export type ATokens = { access_token: string; refresh_token: string } | undefined;
 export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
