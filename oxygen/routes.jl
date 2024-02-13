@@ -99,6 +99,7 @@ f(args::UnpackedQCHQuery) =
         gen = goup(first(matches))
         contextnode = first(filter(>(2) ∘ length ∘ divsplit, gen))
         potential_quote = contextnode isa Array ? contextnode : contextnode.children
+        @infiltrate
         context = _join(divsplit(potential_quote), ". ")
 
         is4highlight(s) = length(split(s)) < 6

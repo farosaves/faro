@@ -65,7 +65,7 @@
 				if (request.action === 'uploadTextSB') {
 					console.log('uplaodtextsb');
 					const { action, ...rest } = request;
-
+					rest.context = { html: rest.html, text: rest.html };
 					rest.packed_context = String.fromCharCode(...Pako.deflate(JSON.stringify(rest.context)));
 
 					const { note_data } = await trpc($page).upload_snippet.mutate(rest);

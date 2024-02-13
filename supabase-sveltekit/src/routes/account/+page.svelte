@@ -2,7 +2,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
 
 	export let data;
 	export let form;
@@ -31,29 +30,7 @@
 			update();
 		};
 	};
-	// import LibLoader from '$lib/components/LibLoader.svelte';
-	// // import u from 'main.wasm';
-	// function onLoaded() {
-	// 	// myExternalLib.doStuff();
-	// 	console.log('loaded?');
-	// }
-	let ff: Function;
-	onMount(async () => {
-		const jsexports = {};
-		const fetchPromise = fetch('main.wasm');
-		const { instance } = await WebAssembly.instantiateStreaming(fetchPromise, jsexports);
-		// @ts-ignore
-		ff = instance.exports.peccatoribus;
-	});
 </script>
-
-<button
-	class="btn"
-	on:click={() => {
-		console.log(ff(2));
-	}}>eee</button
->;
-<!-- <LibLoader url="main.wasm" on:loaded={onLoaded} /> -->
 
 <div class="flex items-center justify-center min-h-screen p-4 bg-neutral text-neutral-content">
 	<div class="w-full max-w-xl p-10 card bg-base-300">

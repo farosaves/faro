@@ -1,0 +1,1 @@
+{"status":404,"statusText":"Not Found","headers":{},"body":"{\"code\":\"42P01\",\"details\":null,\"hint\":null,\"message\":\"relation \\\"public.snippets\\\" does not exist\"}"}
