@@ -44,7 +44,6 @@
 	"type": "module",
 	"dependencies": {
 		"@crxjs/vite-plugin": "^2.0.0-beta.23",
-		"@rangy/classapplier": "^2.1.0",
 		"@supabase/ssr": "^0.0.10",
 		"@trpc/client": "^10.45.0",
 		"@types/jsdom": "^21.1.6",

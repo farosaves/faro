@@ -1,7 +1,4 @@
 // import 'chrome';
-// import rangy from 'rangy'
-// import {createHighlighter} from "@rangy/highlighter"
-// import {createClassApplier} from "@rangy/classapplier"
 // import { makeQCH } from "../ lib/shared/snippetiser/main";
 import { makeQCH } from '../src/lib/shared/snippetiser/main';
 
