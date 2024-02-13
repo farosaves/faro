@@ -1,6 +1,6 @@
 
 				{
-					const __sveltekit_v54856 = {
+					const __sveltekit_13o77yz = {
 						base: new URL(".", location).pathname.slice(0, -1),
 						env: null
 					};
@@ -10,8 +10,8 @@
 					const data = [null,null];
 
 					Promise.all([
-						import("./app/immutable/entry/start.ISLIv5N9.js"),
-						import("./app/immutable/entry/app.37sq_fIn.js")
+						import("./app/immutable/entry/start.re3C49x4.js"),
+						import("./app/immutable/entry/app.6qk_gZAB.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 3],

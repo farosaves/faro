@@ -1,4 +1,4 @@
-import { d as stores } from "./singletons.iJVCNPft.js";
+import { d as stores } from "./singletons.ePAq-CdN.js";
 const getStores = () => {
   const stores$1 = stores;
   return {

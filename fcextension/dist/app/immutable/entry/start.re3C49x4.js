@@ -1,5 +1,5 @@
 import { o as onMount, t as tick } from "../chunks/scheduler.9_m0mCEV.js";
-import { S as SCROLL_KEY, a as STATES_KEY, b as SNAPSHOT_KEY, H as HISTORY_INDEX, N as NAVIGATION_INDEX, r as resolve_url, o as origin, P as PAGE_URL_KEY, f as find_anchor, g as get_link_info, c as get_router_options, i as is_external_url, s as scroll_state, d as stores, e as base, h as PRELOAD_PRIORITIES, j as init } from "../chunks/singletons.iJVCNPft.js";
+import { S as SCROLL_KEY, a as STATES_KEY, b as SNAPSHOT_KEY, H as HISTORY_INDEX, N as NAVIGATION_INDEX, r as resolve_url, o as origin, P as PAGE_URL_KEY, f as find_anchor, g as get_link_info, c as get_router_options, i as is_external_url, s as scroll_state, d as stores, e as base, h as PRELOAD_PRIORITIES, j as init } from "../chunks/singletons.ePAq-CdN.js";
 new URL("sveltekit-internal://");
 function normalize_path(path, trailing_slash) {
   if (path === "/" || trailing_slash === "ignore")
