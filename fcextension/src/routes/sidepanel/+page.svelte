@@ -10,7 +10,10 @@
 	import { get, type Readable } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
 	import { mock } from './util.js';
-	import Pako from 'pako';
+	// import Pako from 'pako';
+	import { supa_update, type MockNote } from './fun.js';
+	import Semaphore from '$lib/shared/semaphore.js';
+	import { log } from 'console';
 	let curr_title = 'Kalanchoe';
 	let curr_url = '';
 	let { supabase } = data;
@@ -31,14 +34,7 @@
 	}
 
 	async function updateActive() {
-		let tab;
-		try {
-			[tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-		} catch {
-			console.log('dev?');
-			source_id = await getSourceId(supabase)('a', 'a');
-			return;
-		}
+		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 		if (!tab.url || !tab.title || !tab.id) return;
 		curr_title = tab.title;
 		curr_url = tab.url;
@@ -64,13 +60,12 @@
 				if (request.action == 'update_curr_url') updateActive();
 				if (request.action === 'uploadTextSB') {
 					console.log('uplaodtextsb');
-					const { action, ...rest } = request;
-
-					rest.html = String.fromCharCode(...Pako.deflate(rest.html));
-
-					const { note_data } = await trpc($page).upload_snippet.mutate(rest);
+					const { note_data } = request as { action: string; note_data: MockNote };
 					if (note_data) {
-						console.log(note_data.quote);
+						note_sync.sem
+							.callFunction(supa_update(), supabase, note_data)
+							.then((v) => console.log(v, get(note_sync.notestore)[$source_id]));
+						// optimistic update!
 						note_sync.notestore.update((n) => {
 							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];
 							return n;
@@ -126,5 +121,5 @@
 		class="w-full"
 		bind:value={$scratches[curr_domain_title]}
 	/>
-	<button on:click={() => console.log(get(scratches))}> pls</button>
+	<!-- <button on:click={() => console.log(peccatoribus(2.5))}> pls</button> -->
 </div>

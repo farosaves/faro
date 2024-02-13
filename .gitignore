@@ -7,3 +7,5 @@
 */.CondaPkg
 */.wrangler
 **/*.jls
+*/another_one
+**/dist

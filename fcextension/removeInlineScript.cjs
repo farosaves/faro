@@ -53,7 +53,7 @@ async function commentFirstLine(directory) {
 		filesOnly: true
 	});
 	files = files
-		.filter((file) => file == 'background.js' || file == 'content.js')
+		.filter((file) => file.startsWith('background') || file.startsWith('content.js'))
 		.map((file) => path.join(directory, file))
 		.forEach((file) => {
 			let script = fs

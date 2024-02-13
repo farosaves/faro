@@ -3,8 +3,8 @@ import { persisted } from 'svelte-persisted-store';
 import type { Notes } from '../dbtypes';
 import type { NoteEx, Notess, SupabaseClient } from './first';
 import { derived, get, type Writable } from 'svelte/store';
-import { getNotes, logIfError, partition_by_id } from './utils';
-import { option as O, record as R, task as T, array as A } from 'fp-ts';
+import { desc, getNotes, logIfError, partition_by_id } from './utils';
+import { option as O, record as R, task as T, array as A} from 'fp-ts';
 import { groupBy } from 'fp-ts/lib/NonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
 
@@ -68,13 +68,15 @@ export class NoteSync {
 	}
 
 	get_groups() {
+		const latestts = (nss: Notess) =>
+			nss.map((n) => Date.parse(n.created_at)).reduce((l, r) => Math.max(l, r));
 		return derived(this.notestore, (kvs) =>
 			pipe(
 				Object.entries(kvs), // @ts-ignore
 				A.map(([k, v]) => [v[0] ? v[0].sources.title : 'never!', v]),
 				R.fromEntries<Notess>,
 				R.toArray<string, Notess>
-			)
+			).toSorted(desc(([st1, nss1]) => latestts(nss1)))
 		);
 	}
 
@@ -90,7 +92,7 @@ export class NoteSync {
 			s[n.source_id] = [...s[n.source_id], { ...n, sources: { title, url } }];
 			return s;
 		});
-		const {sources, ...reNote} = n
+		const { sources, ...reNote } = n;
 		this.sb.from('notes').insert(reNote).then(logIfError).then(this._restoreIE(n, cache));
 	};
 
@@ -131,5 +133,4 @@ export class NoteSync {
 		});
 		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
 	};
-
 }

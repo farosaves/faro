@@ -1,5 +1,4 @@
 // lib/trpc/client.ts
-import pako from "pako"
 import { API_ADDRESS } from './utils';
 import type { Router } from '../../../supabase-sveltekit/src/lib/trpc/router';
 import { httpBatchLink } from '@trpc/client';

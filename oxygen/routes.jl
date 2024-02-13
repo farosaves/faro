@@ -1,18 +1,25 @@
-using StructTypes, Gumbo, Cascadia
+using StructTypes, Gumbo, Cascadia, JSON3
 import Sentencize
 include("util.jl")
 Revise.track("util.jl")
 
-struct MakeQCHQuery
+struct PackedQCHQuery
     selectedText::String
-    html::String
+    context::String
     uuid::String
 end
-saved = Ref{MakeQCHQuery}()
-saved_pre = Ref{MakeQCHQuery}()
-StructTypes.StructType(::Type{MakeQCHQuery}) = StructTypes.Struct()
+saved_pre = Ref{PackedQCHQuery}()
+struct UnpackedQCHQuery
+    selectedText::String
+    html::String
+    text::String
+    uuid::String
+end
+saved = Ref{UnpackedQCHQuery}()
+StructTypes.StructType(::Type{PackedQCHQuery}) = StructTypes.Struct()
 """general text wrangle"""
 t = strip ∘ wqd ∘ replace // ("\n" => " ") ∘ gtsf ∘ Gumbo.text
+sss = Sentencize.split_sentence ∘ String #∘ replace // (r"(\W\w)\." => s"\g<1>…")
 splittags = Set([:p, :h1, :h3, :ul, :div, :details, :h2, :blockquote, :li])
 """Should give all 'sentences' splitting on html tags, but not span, a, etc."""
 divsplit(v::Vector{<:HTMLNode}) =
@@ -23,7 +30,7 @@ divsplit(v::Vector{<:HTMLNode}) =
                 (x..., y) = prev
                 [x..., y * t(node) * " "]
             end
-        [(Sentencize.split_sentence ∘ String ∘ gtsf ∘ strip).(filter(!isempty, foldl(f, v; init=[""])))...;] .|> identity
+        [(sss ∘ gtsf ∘ strip).(filter(!isempty, foldl(f, v; init=[""])))...;] .|> identity
     end
 divsplit(n::HTMLElement) = divsplit(n.children)
 sectiontags = Set([:ul, :h1, :h3, :h2, :details])
@@ -40,7 +47,7 @@ taketillnextsectiontag(e) =
 lastiterate(itr) = foldl((_, y) -> y, itr)
 succ(e::HTMLElement) =
     let st = precedingsectiontags(e)
-        if e ∈ sectiontags || isempty(st)
+        if tag(e) ∈ sectiontags || isempty(st)
             e.parent
         else
             pseudop = lastiterate(st)
@@ -50,7 +57,7 @@ succ(e::HTMLElement) =
 
 """returns either a vector of nodes of which prev is member, or a node of which prev (/s) is child"""
 goup(e::HTMLElement{:HTML}) = [e]
-goup(v::Vector{}) = [[v]; goup(first(v).parent)]
+goup(v::Vector{<:Any}) = [[v]; goup(first(v).parent)]
 goup(e::HTMLElement) = [e; goup(succ(e))]
 
 __join(ts::Vector{<:AbstractString}, with=" ") =
@@ -76,42 +83,45 @@ try2getfullsentences(sel::Selector, v::Vector; sp="n_______n") =
         fm.children[1].text = sp * _t1
         _t2 = lm.children[1].text
         lm.children[1].text = _t2 * sp
-        # HERE i last modified divsplit wasnt broadcast
+        # HERE i last modified divsplit wasnt broadcast and no flatten
         sents = _join(flatten(divsplit.(v)), ". ")
         (pre, mid, post) = (split(sents, sp))  # _join(t.(v))
-        h(x) = isempty(x) ? [""] : x
         lm.children[1].text = _t2
         fm.children[1].text = _t1
-        sss = h ∘ Sentencize.split_sentence ∘ String
-        _join([last(sss(pre)), mid, first(sss(post))])
+        h(x) = isempty(x) ? [""] : x
+        _sss = h ∘ sss
+        _join([last(_sss(pre)), mid, first(_sss(post))])
     end
 
-f(args::MakeQCHQuery) =
+f(args::UnpackedQCHQuery) =
     let root = parsehtml(args.html).root, sel = Selector("._$(args.uuid)")
         matches = eachmatch(sel, root)
         gen = goup(first(matches))
         contextnode = first(filter(>(2) ∘ length ∘ divsplit, gen))
         potential_quote = contextnode isa Array ? contextnode : contextnode.children
-        context = _join(t.(potential_quote), ". ")
-        # @infiltrate
+        @infiltrate
+        context = _join(divsplit(potential_quote), ". ")
+
+        is4highlight(s) = length(split(s)) < 6
+        highlight = _join(t.(matches))
+        if !is4highlight(highlight)
+            highlights = []
+            return highlight, context, highlights
+        end
+        highlights = [highlight]
+
         quotenodes = filter(e -> !isempty(eachmatch(sel, e)), potential_quote)
-        _quote = _join(t.(quotenodes))
-        @exfiltrate
+        # _quote = _join(divsplit(quotenodes))
+
+        @infiltrate
+        _quote = try2getfullsentences(sel, quotenodes)
         badlen(s) = length(split(s)) > 30 || length(split(s)) < 6
         if badlen(_quote)
-            @info _quote
-            _quote = try2getfullsentences(sel, quotenodes)
-            @info _quote
-        end
-        if badlen(_quote)
             # @infiltrate
+            @info _quote
             _quote = try2getfullsentences(sel, contextnode)
             @info _quote
         end
-        is4highlight(s) = length(split(s)) < 6
-        highlight = _join(t.(matches))
-        highlights = is4highlight(highlight) ? [highlight] : []
-
         _quote, context, highlights
     end
 
@@ -119,26 +129,12 @@ import Dates: now
 import Serialization: serialize
 # Quote Context Highlights
 @post ("/make-qch") function (req)
-    a = json(req, MakeQCHQuery)
+    a = json(req, PackedQCHQuery)
     saved_pre[] = a
-    bin = UInt8.(collect(a.html))
-    a = MakeQCHQuery(a.selectedText, String(transcode(GzipDecompressor, bin)), a.uuid)
+    ((_, reqhtml), (_, reqtext)) = JSON3.read(String(transcode(GzipDecompressor, UInt8.(collect(a.context)))))
+    a = UnpackedQCHQuery(a.selectedText, reqhtml, reqtext, a.uuid)
     saved[] = a
     serialize("saved/$(now()).jls", saved[])
     (q, c, h) = f(a)
     (; q, c, h)
-end  # |> errh(x -> (; error=string(x)))
-get("/latest") do
-    html(saved[].html)
-end
-
-get("/rerun") do
-    @info f(saved[])
-    html(saved[].html)
-end
-
-errh(cb) = f -> req -> try
-    f(req)
-catch e
-    cb(e)
 end
