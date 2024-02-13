@@ -5,7 +5,7 @@
     "src": "../../../../../@crx/manifest"
   },
   "content.ts-loader.js": {
-    "file": "assets/content.ts-loader-RVG14ud0.js",
+    "file": "assets/content.ts-loader-bo7mLrd_.js",
     "src": "content.ts-loader.js"
   },
   "src/background.js": {
@@ -14,7 +14,7 @@
     "src": "src/background.js"
   },
   "src/content.ts": {
-    "file": "assets/content.ts-ftpyQhdW.js",
+    "file": "assets/content.ts-cx4HZt-E.js",
     "isEntry": true,
     "src": "src/content.ts"
   }
