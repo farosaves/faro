@@ -10,7 +10,8 @@
 	import { get, type Readable } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
 	import { mock } from './util.js';
-	import Pako from 'pako';
+	// import Pako from 'pako';
+	import { supa_update, type MockNote } from './fun.js';
 	let curr_title = 'Kalanchoe';
 	let curr_url = '';
 	let { supabase } = data;
@@ -64,12 +65,11 @@
 				if (request.action == 'update_curr_url') updateActive();
 				if (request.action === 'uploadTextSB') {
 					console.log('uplaodtextsb');
-					const { action, ...rest } = request;
-					rest.context = { html: rest.html, text: rest.html };
-					rest.packed_context = String.fromCharCode(...Pako.deflate(JSON.stringify(rest.context)));
-
-					const { note_data } = await trpc($page).upload_snippet.mutate(rest);
+					const { action, note_data } = request as { action: string; note_data: MockNote };
+					// if (!quote) return { note_data: null };
 					if (note_data) {
+						supa_update(supabase, note_data).then(console.log);
+
 						console.log(note_data.quote);
 						note_sync.notestore.update((n) => {
 							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];

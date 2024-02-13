@@ -2,6 +2,9 @@
 // import rangy from 'rangy'
 // import {createHighlighter} from "@rangy/highlighter"
 // import {createClassApplier} from "@rangy/classapplier"
+// import { makeQCH } from "../ lib/shared/snippetiser/main";
+import { makeQCH } from '../src/lib/shared/snippetiser/main';
+
 console.log('hello');
 chrome.runtime.sendMessage({ action: 'loadDeps' });
 
@@ -29,7 +32,7 @@ function wrapSelectedText(uuid) {
 let batchDeserialize = (uss) =>
 	uss.forEach(([uuid, serialized]) => {
 		let createClassApplier = rangy.createClassApplier;
-		let createHighlighter = rangy.createHighlighter;	
+		let createHighlighter = rangy.createHighlighter;
 		if (!serialized) return;
 		console.log('deserializeing', uuid, serialized);
 		const hl = createHighlighter();
@@ -71,16 +74,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log(rangy.createRange());
 		const serialized = wrapSelectedText(uuid);
 		console.log(window.getSelection().anchorNode);
-		let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
+		// let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
 		gotoText(uuid);
+
+		// const { selectedText, packed_context, website_url, website_title, uuid, serialized } = input;
+		console.log('uploading...:', { selectedText, website_url });
+		const { quote, highlights, context } = makeQCH(document, selectedText, uuid);
+		if (!quote) return { note_data: null };
+		const note_data = {
+			quote,
+			source_id: -1,
+			highlights,
+			context,
+			snippet_uuid: uuid,
+			serialized_highlight: serialized,
+			sources: { title: website_title, url: website_url }
+		};
+		// supa_update(locals.supabase, note_data).then(console.log);
+		// return { note_data };
+		// }),
+
 		chrome.runtime.sendMessage({
 			action: 'uploadText',
-			selectedText,
-			html,
-			website_title,
-			website_url,
-			uuid,
-			serialized
+			note_data
 		});
 	}
 	if (request.action === 'goto') gotoText(request.uuid);
