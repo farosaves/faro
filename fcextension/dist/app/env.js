@@ -1,1 +1,0 @@
-export const env={"PUBLIC_SUPABASE_URL":"https://hspfduumtusknleyjeoi.supabase.co","PUBLIC_SUPABASE_ANON_KEY":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzcGZkdXVtdHVza25sZXlqZW9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDM4NDkzOTYsImV4cCI6MjAxOTQyNTM5Nn0._zzgDhByfX7TnvQNC3pzF-zgsg1zCNvVCbV5Vo29xZw"}
