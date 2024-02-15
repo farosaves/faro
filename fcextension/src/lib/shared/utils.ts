@@ -31,7 +31,7 @@ export async function getNotes(
 	)(source_id);
 
 	let sem = new Semaphore();
-	let x = await sem.callFunction(async () => await q)
+	let x = await sem.use(async () => await q)
 	const { data } = await q;
 
 	if (data === null) return prevnotes;

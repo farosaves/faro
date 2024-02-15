@@ -3,16 +3,17 @@ import { persisted } from 'svelte-persisted-store';
 import type { Notes } from '../dbtypes';
 import type { NoteEx, Notess, SupabaseClient } from './first';
 import { derived, get, type Writable } from 'svelte/store';
-import { desc, getNotes, logIfError, partition_by_id } from './utils';
-import { option as O, record as R, task as T, array as A} from 'fp-ts';
+import { desc, filterSort, getNotes, logIfError, partition_by_id } from './utils';
+import { option as O, record as R, task as T, array as A } from 'fp-ts';
 import { groupBy } from 'fp-ts/lib/NonEmptyArray';
-import { pipe } from 'fp-ts/lib/function';
+import { flow, pipe } from 'fp-ts/lib/function';
 
 const notes: { [id: number]: Notess } = {};
 export type NoteDict = typeof notes;
 export const notestore = persisted('notestore', notes);
 const _note_del_queue: Notess = [];
 const note_del_queue = persisted('note_del_queue', _note_del_queue);
+
 
 export class NoteSync {
 	sb: SupabaseClient;
@@ -59,24 +60,27 @@ export class NoteSync {
 				groupBy((n) => n.source_id.toString()),
 				R.toArray
 			);
+		console.log(newnotes);
 		if (newnotes !== null)
 			this.notestore.update((s) => {
+				const new_s: typeof s = {};
 				let grouped = groupnotes(newnotes);
-				grouped.forEach(([x, notes]) => (s[notes[0].source_id] = notes));
-				return s;
+				grouped.forEach(([x, notes]) => (new_s[notes[0].source_id] = notes));
+				return new_s;
 			});
 	}
 
-	get_groups() {
-		const latestts = (nss: Notess) =>
-			nss.map((n) => Date.parse(n.created_at)).reduce((l, r) => Math.max(l, r), 0);
+	get_groups(transform: (x: NoteEx) => NoteEx & {priority : number}) {
+		// by default sort by date created
+		// const aggFun = flow(A.map(tran), A.reduce(0, Math.max))
 		return derived(this.notestore, (kvs) =>
 			pipe(
 				Object.entries(kvs), // @ts-ignore
-				A.map(([k, v]) => [v[0] ? v[0].sources.title : 'never!', v]),
-				R.fromEntries<Notess>,
-				R.toArray<string, Notess>
-			).toSorted(desc(([st1, nss1]) => latestts(nss1)))
+				A.map(([k, v]) => [v[0] ? v[0].sources.title : 'never!', transform(v) ]),
+				R.fromEntries<(NoteEx & {priority : number})[]>,
+				R.toArray<string, (NoteEx & {priority : number})[]>,
+				filterSort(([st, nss]) => pipe(nss, A.map(x=>x.priority), A.reduce(0, Math.max)))
+			)//.toSorted(desc())
 		);
 	}
 

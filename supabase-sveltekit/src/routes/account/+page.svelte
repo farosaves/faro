@@ -32,6 +32,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Faros - Your Account</title>
+</svelte:head>
+
 <div class="flex items-center justify-center min-h-screen p-4 bg-neutral text-neutral-content">
 	<div class="w-full max-w-xl p-10 card bg-base-300">
 		<form

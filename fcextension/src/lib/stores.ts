@@ -1,8 +1,8 @@
 import { persisted } from 'svelte-persisted-store';
 import type { SupabaseClient } from './shared/first';
 import type { Notes } from './dbtypes';
-import { derived, get, type Subscriber, type Updater, type Writable } from 'svelte/store';
-import type { NoteSync } from './shared/note-sync';
+import { derived, get, type Writable } from 'svelte/store';
+import type { NoteSync } from '$lib/shared/note-sync';
 
 // First param `preferences` is the local storage key.
 // Second param is the initial value.

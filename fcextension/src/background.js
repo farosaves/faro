@@ -3,11 +3,11 @@ const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, ''); // Replace with yo
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 chrome.webNavigation.onCompleted.addListener(() => {
-	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+	chrome.runtime.sendMessage({ action: 'update_curr_url' }).catch(e => console.log(e))
 });
 
 chrome.tabs.onActivated.addListener(() => {
-	chrome.runtime.sendMessage({ action: 'update_curr_url' });
+	chrome.runtime.sendMessage({ action: 'update_curr_url' }).catch(e => console.log(e))
 });
 
 const tryn =
@@ -111,7 +111,7 @@ chrome.contextMenus.onClicked.addListener(onCMclick);
 // This function checks the user's login status.
 async function checkLoginStatus() {
 	try {
-		const response = await fetch(`${DOMAIN}/api/check-login`, {
+		const response = await fetch(`${DOMAIN}/account/check-login`, {
 			method: 'GET',
 			credentials: 'include' // Important for cookies
 		});

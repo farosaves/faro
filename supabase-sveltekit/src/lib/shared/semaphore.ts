@@ -43,3 +43,18 @@ export default class Semaphore{
         }
     }
 }
+
+// Usage:
+
+// const sleepNprint = async (s: string, n: number) => {
+//     await new Promise((r) => setTimeout(r, n))
+//     console.log(s)
+// }
+// (async () => {
+//     const sem = new Semaphore()
+//     sem.use(async () => sleepNprint("second", 1000))
+//     sem.use(async () => console.log("third"))
+//     sem.use(async () => console.log("first"))
+// })()
+
+// prints 'first', waits 1 second, then 'second', and 'third' immediately after
