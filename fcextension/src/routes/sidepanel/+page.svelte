@@ -63,7 +63,7 @@
 					const { note_data } = request as { action: string; note_data: MockNote };
 					if (note_data) {
 						note_sync.sem
-							.callFunction(supa_update(), supabase, note_data)
+							.use(supa_update(), supabase, note_data)
 							.then((v) => console.log(v, get(note_sync.notestore)[$source_id]));
 						// optimistic update!
 						note_sync.notestore.update((n) => {

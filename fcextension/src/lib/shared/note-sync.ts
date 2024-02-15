@@ -42,7 +42,7 @@ export class NoteSync {
 			console.log('no user in NoteSync');
 			return;
 		}
-		const newnotes = await this.sem.callFunction(getNotes, this.sb, O.some(id), this.user_id);
+		const newnotes = await this.sem.use(getNotes, this.sb, O.some(id), this.user_id);
 		if (newnotes !== null)
 			this.notestore.update((s) => {
 				s[id] = newnotes;
@@ -55,7 +55,7 @@ export class NoteSync {
 			console.log('no user in NoteSync');
 			return;
 		}
-		const newnotes = await this.sem.callFunction(getNotes, this.sb, O.none, this.user_id);
+		const newnotes = await this.sem.use(getNotes, this.sb, O.none, this.user_id);
 		let groupnotes = (notes: Notess) =>
 			pipe(
 				notes,
@@ -88,7 +88,7 @@ export class NoteSync {
 		let { title, url } = cache[0]
 			? cache[0].sources
 			: (
-					await this.sem.callFunction(
+					await this.sem.use(
 						async () => await this.sb.from('sources').select().eq('id', n.source_id).maybeSingle()
 					)
 				).data || {};
@@ -100,7 +100,7 @@ export class NoteSync {
 			return s;
 		});
 		const { sources, ...reNote } = n;
-		this.sem.callFunction(
+		this.sem.use(
 			async () =>
 				await this.sb.from('notes').insert(reNote).then(logIfError).then(this._restoreIE(n, cache))
 		);
@@ -125,7 +125,9 @@ export class NoteSync {
 			this.savedelete(parts.right[0]);
 			return s;
 		});
-		this.sb.from('notes').delete().eq('id', n.id).then(logIfError).then(this._restoreIE(n, cache));
+		this.sem.use(async () =>
+			this.sb.from('notes').delete().eq('id', n.id).then(logIfError).then(this._restoreIE(n, cache))
+		);
 	};
 	// @ts-ignore
 	_restoreIE = (n: Notes, cache: Notess) => (r) =>
@@ -141,6 +143,8 @@ export class NoteSync {
 			n[note.source_id].filter((_note) => _note.id == note.id)[0].tags = tags;
 			return n;
 		});
-		this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError);
+		this.sem.use(async () =>
+			this.sb.from('notes').update({ tags }).eq('id', note.id).then(logIfError)
+		);
 	};
 }
