@@ -4,14 +4,21 @@
   import { NoteSync } from "$lib/shared/note-sync.js";
   import Search from "$lib/components/Search.svelte";
   import { sub } from "$lib/stores.js";
+  import type { NoteEx } from "$lib/shared/first.js";
+  import TagFilter from "$lib/components/TagFilter.svelte";
+  import { identity, flow } from "fp-ts/lib/function";
   export let data;
   $: ({ session, supabase } = data);
 
   let showing_contents: boolean[][];
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
-  let note_groups = note_sync.get_groups((n) => {
+  let filterSortFun = (n: NoteEx) => {
     return { ...n, priority: Date.parse(n.created_at) };
-  });
+  };
+  let tagFilter: (
+    n: NoteEx & { priority: number },
+  ) => NoteEx & { priority: number } = identity;
+  let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   onMount(async () => {
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;
@@ -77,9 +84,9 @@
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
       <!-- Sidebar content here -->
       <li>
-        <Search notes={$note_groups.flatMap(([, v]) => v)} />
+        <Search bind:filterSortFun notes={$note_groups.flatMap(([, v]) => v)} />
       </li>
-      <li>Sidebar Item 2</li>
+      <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li>
     </ul>
   </div>
 </div>

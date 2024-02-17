@@ -23,16 +23,18 @@
   $: res && res.length && console.log(fuzzysort.highlight(res[0])); //, "<b>", "</b>"));
   // console.log(fuzzysort.highlight(res[0], "<b>", "</b>"));
   // TODO: refactor as a store
-  export let filterSortFun: (n: NoteEx) => number;
+  export let filterSortFun: (n: NoteEx) => NoteEx & { priority: number };
   if (res && res.length) {
     filterSortFun = (n) => {
+      let priority: number;
       if (res && res.length)
-        return pipe(
+        priority = pipe(
           Array.from(res),
           A.findFirstMap((r) => (r.obj.id == n.id ? O.some(r.score) : O.none)),
           O.match(() => 0, identity),
         );
-      else return Date.parse(n.created_at);
+      else priority = Date.parse(n.created_at);
+      return { ...n, priority };
     };
   }
 </script>
