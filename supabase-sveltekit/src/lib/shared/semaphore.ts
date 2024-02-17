@@ -5,7 +5,7 @@ type QueueElement = {
     args: any[]
 }
 type PReturnType<T> = T extends (...args: any[]) => Promise<infer R> ? R : any;
-type ArgType<T> = T extends (...args: infer R) => any ? R : any;
+export type ArgType<T> = T extends (...args: infer R) => any ? R : any;
 
 export default class Semaphore{
     requestQueue: QueueElement[];
