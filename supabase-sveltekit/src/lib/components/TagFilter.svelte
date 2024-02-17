@@ -1,7 +1,8 @@
 <script lang="ts">
   import Tags from "$lib/shared/Tags.svelte";
   import type { NoteEx } from "$lib/shared/first";
-  import { identity } from "fp-ts/lib/function";
+  import { array as A } from "fp-ts";
+  import { identity, pipe } from "fp-ts/lib/function";
   import type { Readable } from "svelte/store";
   let tags: string[] = [];
   export let all_tags: Readable<string[]>;
@@ -13,7 +14,11 @@
     tagFilter = (n) => {
       return {
         ...n,
-        priority: n.tags?.map((s) => tagSet.has(s)).reduce((x, y) => x || y)
+        priority: pipe(
+          n.tags || [],
+          A.map((s) => tagSet.has(s)),
+          A.reduce(false, (x, y) => x || y),
+        )
           ? n.priority
           : 0,
       };
@@ -24,6 +29,7 @@
 <Tags
   bind:tags
   autoComplete={$all_tags}
+  minChars="0"
   onlyUnique={true}
   onlyAutocomplete={true}
   placeholder="Tags to filter with" />
