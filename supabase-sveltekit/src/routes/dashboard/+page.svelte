@@ -20,6 +20,7 @@
     n: NoteEx & { priority: number },
   ) => NoteEx & { priority: number } = identity;
   let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
+  $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   onMount(async () => {
     console.log(session);
     session || redirect(302, "login");
@@ -44,11 +45,13 @@
   // 	byText: boolean;
   // };
   let w_rem = 16;
+  let all_notes = note_sync.notestore;
+  $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
 </script>
 
-<label for="my-drawer" class="btn btn-primary drawer-button hidden">
+<label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
-<div class="drawer">
+<div class="drawer md:drawer-open">
   <!-- md:drawer-open -->
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content">
@@ -87,9 +90,10 @@
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
       <!-- Sidebar content here -->
       <li>
-        <Search bind:filterSortFun notes={$note_groups.flatMap(([, v]) => v)} />
+        <Search bind:filterSortFun notes={flat_notes} />
       </li>
       <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li>
+      <!-- <li><button class="btn">'Aa'</button></li> -->
     </ul>
   </div>
 </div>
