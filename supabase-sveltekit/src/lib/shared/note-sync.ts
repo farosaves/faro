@@ -78,8 +78,9 @@ export class NoteSync {
 				Object.entries(kvs), // @ts-ignore
 				A.map(([k, v]) => [v[0] ? v[0].sources.title : 'never!', transform(v) ]),
 				R.fromEntries<(NoteEx & {priority : number})[]>,
+				// R.filter(m => m.length>0),
 				R.toArray<string, (NoteEx & {priority : number})[]>,
-				filterSort(([st, nss]) => pipe(nss, A.map(x=>x.priority), A.reduce(0, Math.max)))
+				// filterSort(([st, nss]) => pipe(nss, A.map(x=>x.priority), A.reduce(0, Math.max)))
 			)//.toSorted(desc())
 		);
 	}

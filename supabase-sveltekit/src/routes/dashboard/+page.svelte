@@ -7,6 +7,7 @@
   import type { NoteEx } from "$lib/shared/first.js";
   import TagFilter from "$lib/components/TagFilter.svelte";
   import { identity, flow } from "fp-ts/lib/function";
+  import { redirect } from "@sveltejs/kit";
   export let data;
   $: ({ session, supabase } = data);
 
@@ -20,6 +21,8 @@
   ) => NoteEx & { priority: number } = identity;
   let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   onMount(async () => {
+    console.log(session);
+    session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;
     sub(note_sync);
