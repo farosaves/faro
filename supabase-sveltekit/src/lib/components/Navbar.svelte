@@ -23,7 +23,7 @@
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-lg">
       <li><a href="dashboard">Dashboard</a></li>
-      <li><a href="upload">Upload</a></li>
+      <!-- <li><a href="upload">Upload</a></li> -->
       <li><a href="account">Account</a></li>
     </ul>
   </div>
