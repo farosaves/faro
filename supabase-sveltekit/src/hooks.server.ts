@@ -71,20 +71,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 			filterSerializedResponseHeaders(name) {
 				return name === 'content-range';
 			},
-			transformPageChunk: async ({html}) => {
-				// This section will modify the HTML 
-				// before being returned to the client
-				let currentTheme = event.cookies.get("theme");
-		  
-				// Make sure the cookie was found, if not, set it to dark
-				if(!currentTheme) {
-				  currentTheme = "dark"; 
-				  event.cookies.set("theme", currentTheme, {path: "/"})
-				}
-				return html.replace(`data-theme=""`, `data-theme="${currentTheme}"`);
-
-			  }
-		  
 		});
 
 	// console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174

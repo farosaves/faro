@@ -33,7 +33,7 @@ export const supa_update = (schlep=0) => async (supabase: SupabaseClient, n: Moc
 			.then(logIfError);
 		note.source_id = data!.id;
 	}
-	await supabase.from('notes').insert(note).then(logIfError);
+	const {data: newNote} = await supabase.from('notes').insert(note).select().maybeSingle();
 	await sleep(schlep)  // time for sb to update
-	return json('hey');
+	return newNote
 }

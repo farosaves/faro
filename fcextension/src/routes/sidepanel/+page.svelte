@@ -64,7 +64,8 @@
 					if (note_data) {
 						note_sync.sem
 							.use(supa_update(), supabase, note_data)
-							.then((v) => console.log(v, get(note_sync.notestore)[$source_id]));
+							.then((v) => v && trpc($page).note2card.mutate({ note_id: v.id }));
+						// .then((v) => console.log(v, get(note_sync.notestore)[$source_id]));
 						// optimistic update!
 						note_sync.notestore.update((n) => {
 							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];
