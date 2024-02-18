@@ -25,7 +25,6 @@
   let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   onMount(async () => {
-    console.log(session);
     session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;

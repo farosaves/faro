@@ -13,6 +13,7 @@ export let delete_by_id = (id: number) =>
 export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
   return (t1, t2) => f(t2) - f(t1);
 }
+export const asc = <T>(f: (t: T) => number) => (t1: T, t2: T) => f(t1) - f(t2)
 
 export function logIfError<T extends { error: any }>(r: T): T {
   const { error } = r;

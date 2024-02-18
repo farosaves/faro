@@ -4,7 +4,6 @@ import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/publi
 
 import { createBrowserClient, isBrowser, parse } from '@supabase/ssr';
 import type { Database } from '$lib/dbtypes';
-// /** @type {import('./$types').Pa} */
 export const load = async ({ fetch, data, depends }) => {
 	depends('supabase:auth');
 
@@ -23,7 +22,6 @@ export const load = async ({ fetch, data, depends }) => {
 			}
 		}
 	});
-	let a = await supabase.from('snippets').select('*');
 
 	const {
 		data: { session }
