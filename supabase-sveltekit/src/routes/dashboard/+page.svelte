@@ -8,8 +8,11 @@
   import TagFilter from "$lib/components/TagFilter.svelte";
   import { identity, flow } from "fp-ts/lib/function";
   import { redirect } from "@sveltejs/kit";
+  import LoginPrompt from "$lib/components/LoginPrompt.svelte";
+  import { option as O } from "fp-ts";
   export let data;
   $: ({ session, supabase } = data);
+  $: sessOpt = O.fromNullable(session);
 
   let showing_contents: boolean[][];
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
@@ -38,17 +41,12 @@
   let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : []);
   close_all_notes();
 
-  // let search: {
-  // 	query: string;
-  // 	byTags: boolean;
-  // 	byTitles: boolean;
-  // 	byText: boolean;
-  // };
   let w_rem = 16;
   let all_notes = note_sync.notestore;
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
 </script>
 
+<LoginPrompt session={sessOpt} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
 <div class="drawer md:drawer-open">
@@ -88,12 +86,10 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
-      <!-- Sidebar content here -->
       <li>
         <Search bind:filterSortFun notes={flat_notes} />
       </li>
       <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li>
-      <!-- <li><button class="btn">'Aa'</button></li> -->
     </ul>
   </div>
 </div>
