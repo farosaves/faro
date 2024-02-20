@@ -1,4 +1,4 @@
-export const ssr = false;
+// export const ssr = false;
 // export const prerender = false;
 // handle the session and the supabase object on the client-side.
 

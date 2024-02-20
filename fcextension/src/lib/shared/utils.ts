@@ -2,7 +2,7 @@ import type { Notess, SupabaseClient } from "$lib/shared/first";
 import { array as A } from "fp-ts";
 import type { Option } from "fp-ts/lib/Option";
 import { option as O } from "fp-ts";
-import { flow, identity, pipe } from "fp-ts/lib/function";
+import { identity, pipe } from "fp-ts/lib/function";
 
 export let partition_by_id = (id: number) =>
   A.partition((v: { id: number }) => v.id == id);
@@ -22,6 +22,8 @@ export function logIfError<T extends { error: any }>(r: T): T {
   error && console.log("error from logIfError util function\n", error);
   return r;
 }
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // sort descendingly but for negative scores filter out
 export const filterSort =
@@ -44,8 +46,6 @@ export async function getNotes(
     (id: number) => q.eq("source_id", id),
   )(source_id);
 
-  // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  // sleep(5000)
   const { data } = await q;
 
   if (data === null) return prevnotes;
