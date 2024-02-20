@@ -15,8 +15,8 @@
 		? note_data.quote.replaceAll(note_data.highlights[0], replacer)
 		: note_data.quote;
 
-	const onTagAdded = note_sync.tagUpdate(note_data);
-	const onTagRemoved = note_sync.tagUpdate(note_data);
+	$: onTagAdded = note_sync.tagUpdate(note_data);
+	$: onTagRemoved = note_sync.tagUpdate(note_data);
 </script>
 
 <div class="collapse bg-base-200">

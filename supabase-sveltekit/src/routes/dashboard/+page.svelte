@@ -8,8 +8,11 @@
   import TagFilter from "$lib/components/TagFilter.svelte";
   import { identity, flow } from "fp-ts/lib/function";
   import { redirect } from "@sveltejs/kit";
+  import LoginPrompt from "$lib/components/LoginPrompt.svelte";
+  import { option as O } from "fp-ts";
   export let data;
   $: ({ session, supabase } = data);
+  $: sessOpt = O.fromNullable(session);
 
   let showing_contents: boolean[][];
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
@@ -22,7 +25,6 @@
   let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
   onMount(async () => {
-    console.log(session);
     session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;
@@ -38,17 +40,12 @@
   let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : []);
   close_all_notes();
 
-  // let search: {
-  // 	query: string;
-  // 	byTags: boolean;
-  // 	byTitles: boolean;
-  // 	byText: boolean;
-  // };
   let w_rem = 16;
   let all_notes = note_sync.notestore;
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
 </script>
 
+<LoginPrompt session={sessOpt} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
 <div class="drawer md:drawer-open">
@@ -56,10 +53,10 @@
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content">
     <!-- my main here -->
-    <div class="flex flex-row flex-wrap border-2 border-sky-600">
+    <div class="flex flex-row flex-wrap">
       {#each $note_groups as [title, note_group], i}
         <div
-          class="border-2 text-center"
+          class="border-2 text-center border-primary"
           style="max-width: {(w_rem + 0.15) * note_group.length}rem; 
 				min-width: {w_rem + 0.15}rem">
           <span class="text-lg text-wrap">{title}</span>
@@ -88,12 +85,10 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
-      <!-- Sidebar content here -->
       <li>
         <Search bind:filterSortFun notes={flat_notes} />
       </li>
       <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li>
-      <!-- <li><button class="btn">'Aa'</button></li> -->
     </ul>
   </div>
 </div>

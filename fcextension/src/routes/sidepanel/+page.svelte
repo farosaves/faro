@@ -10,10 +10,7 @@
 	import { get, type Readable } from 'svelte/store';
 	import NotePanel from '$lib/components/NotePanel.svelte';
 	import { mock } from './util.js';
-	// import Pako from 'pako';
 	import { supa_update, type MockNote } from './fun.js';
-	import Semaphore from '$lib/shared/semaphore.js';
-	import { log } from 'console';
 	let curr_title = 'Kalanchoe';
 	let curr_url = '';
 	let { supabase } = data;
@@ -22,15 +19,18 @@
 	let source_id: Readable<number>;
 	let hostname = (s: string) => new URL(s).hostname;
 	let curr_domain_title = '';
+	$: T = trpc($page);
 
 	function getHighlight(source_id: number, tab_id: number) {
-		chrome.tabs.sendMessage(tab_id, {
-			action: 'deserialize',
-			uss: (get(note_sync.notestore)[source_id] || []).map((n) => [
-				n.snippet_uuid,
-				n.serialized_highlight
-			])
-		});
+		chrome.tabs
+			.sendMessage(tab_id, {
+				action: 'deserialize',
+				uss: (get(note_sync.notestore)[source_id] || []).map((n) => [
+					n.snippet_uuid,
+					n.serialized_highlight
+				])
+			})
+			.catch((e) => console.log('probably not refreshed page', e));
 	}
 
 	async function updateActive() {
@@ -64,7 +64,7 @@
 					if (note_data) {
 						note_sync.sem
 							.use(supa_update(), supabase, note_data)
-							.then((v) => console.log(v, get(note_sync.notestore)[$source_id]));
+							.then((v) => v && T.note2card.mutate({ note_id: v.id }));
 						// optimistic update!
 						note_sync.notestore.update((n) => {
 							n[$source_id] = [...(n[$source_id] || []), { ...note_data, ...mock }];
@@ -77,9 +77,10 @@
 			console.log('dev?');
 		}
 		let { data } = await supabase.auth.getSession();
+		let atokens = await T.my_email.query();
+		console.log('atokens', atokens);
 		if (!data.session) {
 			console.log('getting session');
-			let atokens = await trpc($page).my_email.query();
 			atokens || window.open(API_ADDRESS); // TODO: doesnt work iirc
 			session = (await getSession(supabase, atokens))!;
 		} else {
