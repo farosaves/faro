@@ -10,6 +10,7 @@
   import { redirect } from "@sveltejs/kit";
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
+  import { handlePayload } from "$lib/utils.js";
   export let data;
   $: ({ session, supabase } = data);
   $: sessOpt = O.fromNullable(session);
@@ -28,7 +29,8 @@
     session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;
-    sub(note_sync);
+    // sub(note_sync);
+    note_sync.sub(handlePayload(note_sync));
     note_sync.update_all_pages();
   });
 
