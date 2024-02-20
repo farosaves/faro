@@ -99,6 +99,8 @@ export class NoteSync {
           R.fromEntries<(NoteEx & { priority: number })[]>,
           R.filter((m) => m.length > 0),
           R.toArray<string, (NoteEx & { priority: number })[]>,
+          // prettier-ignore
+          A.map(([st, nss]) => [st, nss.filter((n) => n.priority > 0)] as [string, (NoteEx & { priority: number })[]]),
           filterSort(([st, nss]) =>
             pipe(
               nss,
