@@ -1,4 +1,4 @@
-import { htmlstr2body } from '$lib/utils';
+import { htmlstr2body } from '$lib/test_utils';
 import { array as A, option as O, nonEmptyArray as NA, nonEmptyArray as nEA } from 'fp-ts';
 import { identity, pipe } from 'fp-ts/lib/function';
 import * as tok from 'sbd';

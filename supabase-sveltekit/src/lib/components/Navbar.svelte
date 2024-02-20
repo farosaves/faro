@@ -1,30 +1,22 @@
 <script lang="ts">
   const themes = ["light", "dark", "retro", "cyberpunk", "aqua", "night"];
-  // import { writable } from "svelte/store";
-  // let selectedTheme = "light";
-  // document.
   import { onMount } from "svelte";
-  // onMount(() =>
-  //   document.documentElement.setAttribute("data-theme", selectedTheme),
-  // );
   import { themeChange } from "theme-change";
 
-  // NOTE: the element that is using one of the theme attributes must be in the DOM on mount
   onMount(() => {
     themeChange(false);
-    // 👆 false parameter is required for svelte
   });
 </script>
 
-<div class="navbar">
+<div class="navbar z-10 relative">
   <div class="navbar-start">
     <a class="btn btn-ghost text-xl" href="/">Faros</a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-lg">
       <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/notes/pinned">Pinned</a></li>
-      <li><a href="/notes/queue">Queue</a></li>
+      <!-- <li><a href="/notes/pinned">Pinned</a></li>
+      <li><a href="/notes/queue">Queue</a></li> -->
       <!-- <li><a href="upload">Upload</a></li> -->
       <li><a href="/account">Account</a></li>
     </ul>
