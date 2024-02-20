@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { writeFileSync } from 'fs';
+// import { writeFileSync } from 'fs';
 
  
 export const actions = {
@@ -18,6 +18,6 @@ export const actions = {
  
     const { fileToUpload } = formData as { fileToUpload: File };
 
-    writeFileSync(`static/${fileToUpload.name}`, Buffer.from(await fileToUpload.arrayBuffer()));
+    // writeFileSync(`static/${fileToUpload.name}`, Buffer.from(await fileToUpload.arrayBuffer()));
   }
 };
