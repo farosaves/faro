@@ -3,7 +3,7 @@ import { persisted } from "svelte-persisted-store";
 import type { Notes } from "../dbtypes";
 import type { NoteEx, Notess, SupabaseClient } from "./first";
 import { derived, get, type Writable } from "svelte/store";
-import { desc, getNotes, logIfError, partition_by_id } from "./utils";
+import { filterSort, getNotes, logIfError, partition_by_id } from "./utils";
 import { option as O, record as R, string as S, array as A } from "fp-ts";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { pipe } from "fp-ts/lib/function";
@@ -34,9 +34,11 @@ export class NoteSync {
   }
   alltags = () =>
     derived(this.notestore, (v) =>
-      A.uniq(S.Eq)(Object.entries(v).flatMap(([_, notess]) =>
-        notess.flatMap((n) => n.tags || []),
-      ),)
+      A.uniq(S.Eq)(
+        Object.entries(v).flatMap(([_, notess]) =>
+          notess.flatMap((n) => n.tags || []),
+        ),
+      ),
     );
 
   async update_one_page(id: number) {
@@ -82,16 +84,29 @@ export class NoteSync {
       });
   }
 
-  get_groups() {
-    const latestts = (nss: Notess) =>
-      A.reduce(0, Math.max)(nss.map((n) => Date.parse(n.created_at))); //.reduce((l, r) => Math.max(l, r));
-    return derived(this.notestore, (kvs) =>
-      pipe(
-        Object.entries(kvs), // @ts-ignore
-        A.map(([k, v]) => [v[0] ? v[0].sources.title : "never!", v]),
-        R.fromEntries<Notess>,
-        R.toArray<string, Notess>,
-      ).toSorted(desc(([st1, nss1]) => latestts(nss1))),
+  get_groups(transform: (x: NoteEx) => NoteEx & { priority: number }) {
+    // by default sort by date created
+    // const aggFun = flow(A.map(tran), A.reduce(0, Math.max))
+    return derived(
+      this.notestore,
+      (kvs) =>
+        pipe(
+          Object.entries(kvs), // @ts-ignore
+          A.map(([k, v]) => [
+            v[0] ? v[0].sources.title : "never!",
+            v.map(transform),
+          ]),
+          R.fromEntries<(NoteEx & { priority: number })[]>,
+          R.filter((m) => m.length > 0),
+          R.toArray<string, (NoteEx & { priority: number })[]>,
+          filterSort(([st, nss]) =>
+            pipe(
+              nss,
+              A.map((x) => x.priority),
+              A.reduce(0, Math.max),
+            ),
+          ),
+        ), //.toSorted(desc())
     );
   }
 
@@ -172,5 +187,34 @@ export class NoteSync {
     this.sem.use(async () =>
       this.sb.from("notes").update({ tags }).eq("id", note.id).then(logIfError),
     );
+  };
+
+  sub = (handlePayload: (payload: { new: Notes }) => void) => {
+    this.sb
+      .channel("notes")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notes",
+          filter: `user_id=eq.${this.user_id}`,
+        }, // at least url should be the same so no need to filter
+        handlePayload,
+      )
+      .subscribe();
+    this.sb
+      .channel("notes")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notes",
+          filter: `user_id=eq.${this.user_id}`,
+        }, // at least url should be the same so no need to filter
+        handlePayload,
+      )
+      .subscribe();
   };
 }
