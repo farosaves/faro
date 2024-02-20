@@ -1,3 +1,4 @@
+export const ssr = false;
 // export const prerender = false;
 // handle the session and the supabase object on the client-side.
 
@@ -47,6 +48,5 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 	const {
 		data: { session }
 	} = await supabase.auth.getSession();
-	// console.log(session)
 	return { supabase, session };
 };

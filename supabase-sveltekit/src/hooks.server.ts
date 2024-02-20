@@ -66,11 +66,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		};
 
 		response = new Response(body, { status, headers });
-	} else
+	} else  // DEFAULT
 		response = await resolve(event, {
 			filterSerializedResponseHeaders(name) {
 				return name === 'content-range';
-			}
+			},
 		});
 
 	// console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174
