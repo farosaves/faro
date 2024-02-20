@@ -55,6 +55,7 @@
     logged_in = !!session;
   }, 2000);
   onMount(async () => {
+    note_sync.update_all_pages();
     try {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
