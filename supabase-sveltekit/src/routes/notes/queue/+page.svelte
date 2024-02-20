@@ -67,7 +67,7 @@
 
   let nextIntervals = (card: Cards) => {
     const mins = [1, 3, 9]; // days
-
+    card.state;
     // const lastInterval = new Date().getDate() - new Date(Date.parse(card.last_review)).get
   };
 </script>
