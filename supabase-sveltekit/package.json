@@ -12,7 +12,8 @@
 		"format": "prettier --write .",
 		"update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/dbtypes.ts -f)",
 		"test": "vitest",
-		"diff": "diff -bur ../fcextension/src/lib/shared src/lib/shared"
+		"diff": "diff --color -bur ../fcextension/src/lib/shared src/lib/shared",
+		"dirsync": "dirsync ../fcextension/src/lib/shared src/lib/shared -s"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.1.0",

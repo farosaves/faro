@@ -82,18 +82,18 @@
           if (currentTag) e.preventDefault();
 
           /* switch (input.keyCode) {
-                    case 9:
-                        // TAB add first element on the autoComplete list
-                        if (autoComplete && document.getElementById(matchsID)) {                        
-                            addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
-                        } else {
-                            addTag(currentTag);
-                        }                    
-                        break;
-                    default:
-                        addTag(currentTag);
-                        break;
-                    } */
+					  case 9:
+						  // TAB add first element on the autoComplete list
+						  if (autoComplete && document.getElementById(matchsID)) {                        
+							  addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
+						  } else {
+							  addTag(currentTag);
+						  }                    
+						  break;
+					  default:
+						  addTag(currentTag);
+						  break;
+					  } */
 
           /*
            * Fix https://github.com/agustinl/svelte-tags-input/issues/87
@@ -515,8 +515,8 @@
   }
 
   /*.svelte-tags-input-tag:hover {
-        background: #CCC;
-    }*/
+		  background: #CCC;
+	  }*/
 
   .svelte-tags-input-tag-remove {
     cursor: pointer;
