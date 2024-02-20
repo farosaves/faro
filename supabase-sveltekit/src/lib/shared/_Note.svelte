@@ -20,7 +20,7 @@
   $: onTagRemoved = note_sync.tagUpdate(note_data);
 </script>
 
-<div class="collapse bg-base-200">
+<div class="collapse bg-base-200 border-primary border-2">
   <input
     type="checkbox"
     bind:checked={showing_content}

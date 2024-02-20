@@ -10,6 +10,7 @@
   import { redirect } from "@sveltejs/kit";
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
+  import { handlePayload } from "$lib/utils.js";
   export let data;
   $: ({ session, supabase } = data);
   $: sessOpt = O.fromNullable(session);
@@ -28,7 +29,8 @@
     session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;
-    sub(note_sync);
+    // sub(note_sync);
+    note_sync.sub(handlePayload(note_sync));
     note_sync.update_all_pages();
   });
 
@@ -49,14 +51,13 @@
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
 <div class="drawer md:drawer-open">
-  <!-- md:drawer-open -->
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content">
+  <div class="drawer-content z-0">
     <!-- my main here -->
     <div class="flex flex-row flex-wrap">
       {#each $note_groups as [title, note_group], i}
         <div
-          class="border-2 text-center border-primary"
+          class="border-2 text-center border-secondary rounded-lg"
           style="max-width: {(w_rem + 0.15) * note_group.length}rem; 
 				min-width: {w_rem + 0.15}rem">
           <span class="text-lg text-wrap">{title}</span>
@@ -81,7 +82,7 @@
       </div>
     </div>
   </div>
-  <div class="drawer-side">
+  <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
