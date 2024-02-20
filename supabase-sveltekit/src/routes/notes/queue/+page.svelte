@@ -15,6 +15,10 @@
   const note_sync = new NoteSync(supabase, undefined);
   import { derived, get, type Readable } from "svelte/store";
   import { flow, pipe } from "fp-ts/lib/function.js";
+  import * as fd from "date-fns/fp";
+
+  import LoginPrompt from "$lib/components/LoginPrompt.svelte";
+  import { day, fromDay } from "./util.js";
 
   let pending: { note: NoteEx; card: Cards }[] = [];
   $: {
@@ -47,6 +51,7 @@
         )
         .eq("user_id", user_id.value)
         .lte("due", new Date().toUTCString());
+      console.log(data);
       // data = data?.filter((n) => !!n.notes);
       pending_cards = data?.filter(
         (n) => !!n.card_contents?.note_id,
@@ -55,14 +60,19 @@
         asc((x) => new Date(x.due).getMilliseconds()),
       );
     }
+    console.log(new Date());
+    console.log(pipe(Date.now(), day(), fromDay()));
+    console.log(pipe(Date.now(), fd.setHours(4), day()));
   });
 
   let nextIntervals = (card: Cards) => {
     const mins = [1, 3, 9]; // days
+
     // const lastInterval = new Date().getDate() - new Date(Date.parse(card.last_review)).get
   };
 </script>
 
+<LoginPrompt session={O.fromNullable(session)} />
 {#each pending as { note, card }}
   <div class="flex flex-col items-center">
     <div class="w-min flex flex-col items-center">
@@ -71,9 +81,8 @@
         showing_content={true}
         close_all_notes={() => {}}
         {note_sync} />
-      <div class="flex">
+      <div class="flex w-full">
         <button class="btn flex-1" style="color: red">Pin</button>
-
         <button class="btn flex-1" style="color: white"></button>
         <button class="btn flex-1" style="color: green"></button>
         <button class="btn flex-1" style="color: blue"></button>
