@@ -56,7 +56,7 @@
     <div class="flex flex-row flex-wrap">
       {#each $note_groups as [title, note_group], i}
         <div
-          class="border-2 text-center border-primary"
+          class="border-2 text-center border-secondary rounded-lg"
           style="max-width: {(w_rem + 0.15) * note_group.length}rem; 
 				min-width: {w_rem + 0.15}rem">
           <span class="text-lg text-wrap">{title}</span>

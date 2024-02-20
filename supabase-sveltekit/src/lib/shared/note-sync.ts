@@ -4,7 +4,7 @@ import type { Notes } from "../dbtypes";
 import type { NoteEx, Notess, SupabaseClient } from "./first";
 import { derived, get, type Writable } from "svelte/store";
 import { desc, getNotes, logIfError, partition_by_id } from "./utils";
-import { option as O, record as R, task as T, array as A } from "fp-ts";
+import { option as O, record as R, string as S, array as A } from "fp-ts";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { pipe } from "fp-ts/lib/function";
 import Semaphore from "./semaphore";
@@ -34,9 +34,9 @@ export class NoteSync {
   }
   alltags = () =>
     derived(this.notestore, (v) =>
-      Object.entries(v).flatMap(([_, notess]) =>
+      A.uniq(S.Eq)(Object.entries(v).flatMap(([_, notess]) =>
         notess.flatMap((n) => n.tags || []),
-      ),
+      ),)
     );
 
   async update_one_page(id: number) {
@@ -84,7 +84,7 @@ export class NoteSync {
 
   get_groups() {
     const latestts = (nss: Notess) =>
-      nss.map((n) => Date.parse(n.created_at)).reduce((l, r) => Math.max(l, r));
+      A.reduce(0, Math.max)(nss.map((n) => Date.parse(n.created_at))); //.reduce((l, r) => Math.max(l, r));
     return derived(this.notestore, (kvs) =>
       pipe(
         Object.entries(kvs), // @ts-ignore
