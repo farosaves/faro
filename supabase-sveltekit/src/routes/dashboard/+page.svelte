@@ -51,9 +51,8 @@
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
 <div class="drawer md:drawer-open">
-  <!-- md:drawer-open -->
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content">
+  <div class="drawer-content z-0">
     <!-- my main here -->
     <div class="flex flex-row flex-wrap">
       {#each $note_groups as [title, note_group], i}
@@ -83,7 +82,7 @@
       </div>
     </div>
   </div>
-  <div class="drawer-side">
+  <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"
     ></label>
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
