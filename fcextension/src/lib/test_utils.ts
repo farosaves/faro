@@ -1,0 +1,1 @@
+export const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body

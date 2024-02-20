@@ -3,16 +3,11 @@ import { persisted } from "svelte-persisted-store";
 import type { Notes } from "../dbtypes";
 import type { NoteEx, Notess, SupabaseClient } from "./first";
 import { derived, get, type Writable } from "svelte/store";
-import {
-  desc,
-  filterSort,
-  getNotes,
-  logIfError,
-  partition_by_id,
-} from "./utils";
-import { option as O, record as R, task as T, array as A, string as S } from "fp-ts";
+import { desc, getNotes, logIfError, partition_by_id } from "./utils";
+import { option as O, record as R, task as T, array as A } from "fp-ts";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { flow, pipe } from "fp-ts/lib/function";
+import { pipe } from "fp-ts/lib/function";
+import Semaphore from "./semaphore";
 
 const notes: { [id: number]: Notess } = {};
 export type NoteDict = typeof notes;
@@ -25,35 +20,36 @@ export class NoteSync {
   notestore: Writable<{ [id: number]: Notess }>;
   user_id: string | undefined;
   note_del_queue: Writable<Notess>;
+  sem: Semaphore;
 
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb;
     this.notestore = notestore;
     this.user_id = user_id;
     this.note_del_queue = note_del_queue;
+    this.sem = new Semaphore();
   }
   panel(id: number) {
     return derived(this.notestore, (v) => v[id]);
   }
-
   alltags = () =>
     derived(this.notestore, (v) =>
-      pipe(
-        Object.entries(v),
-        A.flatMap(([_, notess]) => notess.flatMap((n) => n.tags || [])),
-		A.uniq(S.Eq)
+      Object.entries(v).flatMap(([_, notess]) =>
+        notess.flatMap((n) => n.tags || []),
       ),
     );
-  //   Object.entries(v).flatMap(([_, notess]) =>
-  //     notess.flatMap((n) => n.tags || []),
-  //   ),
 
   async update_one_page(id: number) {
     if (!this.user_id) {
       console.log("no user in NoteSync");
       return;
     }
-    const newnotes = await getNotes(this.sb, O.some(id), this.user_id);
+    const newnotes = await this.sem.use(
+      getNotes,
+      this.sb,
+      O.some(id),
+      this.user_id,
+    );
     if (newnotes !== null)
       this.notestore.update((s) => {
         s[id] = newnotes;
@@ -66,46 +62,36 @@ export class NoteSync {
       console.log("no user in NoteSync");
       return;
     }
-    const newnotes = await getNotes(this.sb, O.none, this.user_id);
+    const newnotes = await this.sem.use(
+      getNotes,
+      this.sb,
+      O.none,
+      this.user_id,
+    );
     let groupnotes = (notes: Notess) =>
       pipe(
         notes,
         groupBy((n) => n.source_id.toString()),
         R.toArray,
       );
-    console.log(newnotes);
     if (newnotes !== null)
       this.notestore.update((s) => {
-        const new_s: typeof s = {};
         let grouped = groupnotes(newnotes);
-        grouped.forEach(([x, notes]) => (new_s[notes[0].source_id] = notes));
-        return new_s;
+        grouped.forEach(([x, notes]) => (s[notes[0].source_id] = notes));
+        return s;
       });
   }
 
-  get_groups(transform: (x: NoteEx) => NoteEx & { priority: number }) {
-    // by default sort by date created
-    // const aggFun = flow(A.map(tran), A.reduce(0, Math.max))
-    return derived(
-      this.notestore,
-      (kvs) =>
-        pipe(
-          Object.entries(kvs), // @ts-ignore
-          A.map(([k, v]) => [
-            v[0] ? v[0].sources.title : "never!",
-            v.map(transform),
-          ]),
-          R.fromEntries<(NoteEx & { priority: number })[]>,
-          R.filter((m) => m.length > 0),
-          R.toArray<string, (NoteEx & { priority: number })[]>,
-          filterSort(([st, nss]) =>
-            pipe(
-              nss,
-              A.map((x) => x.priority),
-              A.reduce(0, Math.max),
-            ),
-          ),
-        ), //.toSorted(desc())
+  get_groups() {
+    const latestts = (nss: Notess) =>
+      nss.map((n) => Date.parse(n.created_at)).reduce((l, r) => Math.max(l, r));
+    return derived(this.notestore, (kvs) =>
+      pipe(
+        Object.entries(kvs), // @ts-ignore
+        A.map(([k, v]) => [v[0] ? v[0].sources.title : "never!", v]),
+        R.fromEntries<Notess>,
+        R.toArray<string, Notess>,
+      ).toSorted(desc(([st1, nss1]) => latestts(nss1))),
     );
   }
 
@@ -114,11 +100,14 @@ export class NoteSync {
     let { title, url } = cache[0]
       ? cache[0].sources
       : (
-          await this.sb
-            .from("sources")
-            .select()
-            .eq("id", n.source_id)
-            .maybeSingle()
+          await this.sem.use(
+            async () =>
+              await this.sb
+                .from("sources")
+                .select()
+                .eq("id", n.source_id)
+                .maybeSingle(),
+          )
         ).data || {};
     title = title || "title missing";
     url = url || "";
@@ -128,11 +117,14 @@ export class NoteSync {
       return s;
     });
     const { sources, ...reNote } = n;
-    this.sb
-      .from("notes")
-      .insert(reNote)
-      .then(logIfError)
-      .then(this._restoreIE(n, cache));
+    this.sem.use(
+      async () =>
+        await this.sb
+          .from("notes")
+          .insert(reNote)
+          .then(logIfError)
+          .then(this._restoreIE(n, cache)),
+    );
   };
 
   restoredelete = () => {
@@ -154,12 +146,14 @@ export class NoteSync {
       this.savedelete(parts.right[0]);
       return s;
     });
-    this.sb
-      .from("notes")
-      .delete()
-      .eq("id", n.id)
-      .then(logIfError)
-      .then(this._restoreIE(n, cache));
+    this.sem.use(async () =>
+      this.sb
+        .from("notes")
+        .delete()
+        .eq("id", n.id)
+        .then(logIfError)
+        .then(this._restoreIE(n, cache)),
+    );
   };
   // @ts-ignore
   _restoreIE = (n: Notes, cache: Notess) => (r) =>
@@ -175,6 +169,8 @@ export class NoteSync {
       n[note.source_id].filter((_note) => _note.id == note.id)[0].tags = tags;
       return n;
     });
-    this.sb.from("notes").update({ tags }).eq("id", note.id).then(logIfError);
+    this.sem.use(async () =>
+      this.sb.from("notes").update({ tags }).eq("id", note.id).then(logIfError),
+    );
   };
 }

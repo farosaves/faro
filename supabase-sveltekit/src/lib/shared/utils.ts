@@ -1,9 +1,8 @@
 import type { Notess, SupabaseClient } from "$lib/shared/first";
-import { array as A, number as N } from "fp-ts";
+import { array as A } from "fp-ts";
 import type { Option } from "fp-ts/lib/Option";
 import { option as O } from "fp-ts";
 import { flow, identity, pipe } from "fp-ts/lib/function";
-import { contramap } from "fp-ts/lib/pipeable";
 
 export let partition_by_id = (id: number) =>
   A.partition((v: { id: number }) => v.id == id);
@@ -13,7 +12,10 @@ export let delete_by_id = (id: number) =>
 export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
   return (t1, t2) => f(t2) - f(t1);
 }
-export const asc = <T>(f: (t: T) => number) => (t1: T, t2: T) => f(t1) - f(t2)
+export const asc =
+  <T>(f: (t: T) => number) =>
+  (t1: T, t2: T) =>
+    f(t1) - f(t2);
 
 export function logIfError<T extends { error: any }>(r: T): T {
   const { error } = r;
@@ -23,7 +25,9 @@ export function logIfError<T extends { error: any }>(r: T): T {
 
 // sort descendingly but for negative scores filter out
 export const filterSort =
-  <T>(f: (x: T) => number) => (xs: T[]) => xs.filter(x => f(x) > 0).toSorted(desc(f))
+  <T>(f: (x: T) => number) =>
+  (xs: T[]) =>
+    xs.filter((x) => f(x) > 0).toSorted(desc(f));
 
 export async function getNotes(
   supabase: SupabaseClient,
