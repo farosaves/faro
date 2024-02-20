@@ -22,13 +22,6 @@ export const router = t.router({
   greeting: t.procedure.query(async () => {
     return `Hello tRPC v10 @ ${new Date().toLocaleTimeString()}`;
   }),
-
-  funsum: t.procedure.input(z.array(z.number())).query(async ({ input }) =>
-    pipe(
-      input,
-      A.reduce(0, (a, b) => a + b),
-    ),
-  ),
   my_email: t.procedure
     .output(z.optional(tokens))
     .query(async ({ ctx: { locals } }) => {
