@@ -205,18 +205,18 @@ export class NoteSync {
         handlePayload,
       )
       .subscribe();
-    this.sb
-      .channel("notes")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "notes",
-          filter: `user_id=eq.${this.user_id}`,
-        }, // at least url should be the same so no need to filter
-        handlePayload,
-      )
-      .subscribe();
+//     this.sb
+//       .channel("notes")
+//       .on(
+//         "postgres_changes",
+//         {
+//           event: "UPDATE",
+//           schema: "public",
+//           table: "notes",
+//           filter: `user_id=eq.${this.user_id}`,
+//         }, // at least url should be the same so no need to filter
+//         handlePayload,
+//       )
+//       .subscribe();
   };
 }
