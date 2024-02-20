@@ -54,6 +54,7 @@
 		"@types/sbd": "^1.0.5",
 		"@xenova/transformers": "^2.15.0",
 		"daisyui": "^4.4.24",
+		"date-fns": "^3.3.1",
 		"fp-ts": "^2.16.2",
 		"fsrs.js": "^1.2.0",
 		"fuse.js": "^7.0.0",
