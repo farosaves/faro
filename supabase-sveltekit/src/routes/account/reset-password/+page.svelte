@@ -5,6 +5,7 @@
   import { formula } from "svelte-formula";
   import { logIfError } from "$lib/shared/utils.js";
   import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
 
   const { form, formValidity, isFormValid, submitValues, touched, validity } =
     formula({
@@ -32,6 +33,12 @@
       .then(logIfError)
       .then(() => goto("/account"));
   }
+
+  //   onMount(() =>    data.supabase.auth.onAuthStateChange((event, _session) => {
+  //       if (_session?.expires_at !== session?.expires_at) {
+  //         invalidate("supabase:auth");
+  //       }
+  // )
 </script>
 
 <div class="">

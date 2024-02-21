@@ -3,9 +3,19 @@
   import { Auth } from "@supabase/auth-ui-svelte";
   export let data;
   import Radio from "$lib/Radio.svelte";
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   let view: ViewType = "magic_link";
   let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"];
   let providers = ["github"];
+  onMount(() =>
+    data.supabase.auth.onAuthStateChange((event) => {
+      if (event == "SIGNED_IN")
+        setTimeout(() => {
+          goto("/account");
+        }, 50);
+    }),
+  );
 </script>
 
 <svelte:head>
