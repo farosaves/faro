@@ -52,4 +52,11 @@ test('aa 7', async () => {
 		"Body fat 38 35 10,555.6 9,722.2 Metabolism in human body (22% efficiency)"
 	);
 });
+test('aa 8', async () => {
+	const r = await l( '/input6.json')
+	expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
+		"Persian has features of agglutination, making use of prefixes and suffixes attached to the stems of verbs and nouns, thus making it a synthetic language rather than an analytic one."
+	);
+});
+
 
