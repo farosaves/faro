@@ -19,11 +19,11 @@ export const load = async ({ locals: { supabase, getSession } }) => {
 export const actions = {
 	update: async ({ request, locals: { supabase, getSession } }) => {
 		const formData = await request.formData();
+		console.log(formData)
 		const fullName = formData.get('fullName') as string;
 		const username = formData.get('username') as string;
 		const website = formData.get('website') as string;
 		const avatarUrl = formData.get('avatarUrl') as string;
-
 		const session = await getSession();
 
 		const { error } = await supabase.from('profiles').upsert({
@@ -34,7 +34,6 @@ export const actions = {
 			avatar_url: avatarUrl,
 			updated_at: new Date()
 		});
-
 		if (error) {
 			return fail(500, {
 				fullName,

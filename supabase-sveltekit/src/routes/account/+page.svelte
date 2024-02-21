@@ -54,14 +54,14 @@
           disabled />
       </label>
 
-      <label class="input-group">
+      <!-- <label class="input-group">
         <span>Full Name</span>
         <input
           type="text"
           name="fullName"
           class="w-full input input-bordered"
           value={form?.fullName ?? fullName} />
-      </label>
+      </label> -->
 
       <label class="input-group">
         <span>Username</span>
@@ -72,14 +72,14 @@
           value={form?.username ?? username} />
       </label>
 
-      <label class="input-group">
+      <!-- <label class="input-group">
         <span>Website</span>
         <input
           type="url"
           name="website"
           class="w-full input input-bordered"
           value={form?.website ?? website} />
-      </label>
+      </label> -->
 
       <button type="submit" class="w-full btn btn-primary" disabled={loading}>
         {loading ? "Loading..." : "Update"}
