@@ -12,9 +12,15 @@
   let all_tags = note_sync.alltags();
   let replacer = (capture: string) =>
     `<b class="text-yellow-200">` + capture + `</b>`;
+  let escapeHTML = (text: string) => {
+    var div = document.createElement("div");
+    div.innerText = text;
+    return div.innerHTML;
+  };
+
   $: text = note_data.highlights
-    ? note_data.quote.replaceAll(note_data.highlights[0], replacer)
-    : note_data.quote;
+    ? escapeHTML(note_data.quote).replaceAll(note_data.highlights[0], replacer)
+    : escapeHTML(note_data.quote);
 
   $: onTagAdded = note_sync.tagUpdate(note_data);
   $: onTagRemoved = note_sync.tagUpdate(note_data);

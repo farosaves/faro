@@ -11,21 +11,15 @@
   $: ({ supabase, session } = data);
 
   onMount(() => {
-    const { data } = supabase.auth.onAuthStateChange((event, _session) => {
+    supabase.auth.onAuthStateChange((event, _session) => {
       if (_session?.expires_at !== session?.expires_at) {
         invalidate("supabase:auth");
       }
-      if (event == "SIGNED_IN")
-        setTimeout(() => {
-          goto("/account");
-        }, 50);
-      else if (event === "SIGNED_OUT")
+      if (event === "SIGNED_OUT")
         setTimeout(() => {
           goto("/");
         }, 50);
     });
-
-    return () => data.subscription.unsubscribe();
   });
 </script>
 

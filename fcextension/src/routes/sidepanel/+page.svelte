@@ -11,6 +11,7 @@
   import NotePanel from "$lib/components/NotePanel.svelte";
   import { mock } from "./util.js";
   import { supa_update, type MockNote } from "./fun.js";
+  let login_url = API_ADDRESS + "/login";
   let curr_title = "Kalanchoe";
   let curr_url = "";
   let { supabase } = data;
@@ -21,7 +22,9 @@
   let curr_domain_title = "";
   $: T = trpc($page);
 
+  let needToRefreshPage = false;
   function getHighlight(source_id: number, tab_id: number) {
+    needToRefreshPage = false;
     chrome.tabs
       .sendMessage(tab_id, {
         action: "deserialize",
@@ -30,7 +33,10 @@
           n.serialized_highlight,
         ]),
       })
-      .catch((e) => console.log("probably not refreshed page", e));
+      .catch((e) => {
+        console.log("probably not refreshed page", e);
+        needToRefreshPage = true;
+      });
   }
 
   async function updateActive() {
@@ -53,8 +59,12 @@
   let logged_in = true;
   setTimeout(() => {
     logged_in = !!session;
-  }, 2000);
+  }, 1000);
   onMount(async () => {
+    supabase.auth.onAuthStateChange((event) => {
+      if (event == "SIGNED_IN") logged_in = true;
+    });
+
     note_sync.update_all_pages();
     try {
       chrome.runtime.onMessage.addListener(
@@ -90,7 +100,7 @@
     console.log("atokens", atokens);
     if (!data.session) {
       console.log("getting session");
-      atokens || window.open(API_ADDRESS); // TODO: doesnt work iirc
+      atokens || window.open(login_url); // TODO: doesnt work iirc
       session = (await getSession(supabase, atokens))!;
     } else {
       session = data.session;
@@ -103,22 +113,26 @@
   });
 </script>
 
+{#if needToRefreshPage}
+  <div role="alert" class="alert alert-error">
+    <div class="flex flex-row">
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span
+        >If you just installed (or reloaded) the extension you need to refresh
+        the page.</span>
+    </div>
+  </div>
+{/if}
+
 {$source_id}
+{session}
 {#if !logged_in}
   <div role="alert" class="alert alert-error">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="stroke-current shrink-0 h-6 w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      ><path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <!-- prettier-ignore -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
     <span
-      >Not logged in! <a href={API_ADDRESS} target="_blank">click here</a
-      ></span>
+      >Not logged in! <a href={login_url} target="_blank">click here</a></span>
   </div>
 {/if}
 
