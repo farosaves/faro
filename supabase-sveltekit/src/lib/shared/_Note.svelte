@@ -36,10 +36,10 @@
   };
   onMount(
     () =>
-      "scrollOnMount" in note_data &&
-      note_data["scrollOnMount"] &&
+      "highlightOnMount" in note_data &&
+      note_data["highlightOnMount"] &&
       highlightMe() &&
-      (note_data["scrollOnMount"] = false),
+      (note_data["highlightOnMount"] = false),
   );
 </script>
 

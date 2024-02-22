@@ -132,8 +132,8 @@ export class NoteSync {
     url = url || "";
 
     this.notestore.update((s) => {
-      let scrollOnMount = true
-      s[n.source_id] = [...safeGet(s)(n.source_id), { ...n, sources: { title, url }, scrollOnMount } as NoteEx];
+      let highlightOnMount = true
+      s[n.source_id] = [...safeGet(s)(n.source_id), { ...n, sources: { title, url }, highlightOnMount } as NoteEx];
       return s;
     });
     const { sources, ...reNote } = n;
