@@ -34,7 +34,7 @@ const source_ids = persisted("source_ids", _source_ids);
 export const handlePayload =
   (note_sync: NoteSync) =>
   (title: string, url: string) =>
-  (payload: { new: Notes }) => {
+  (payload: { new: Notes | object }) => {
     let update_source_ids = (sb: SupabaseClient) => async (nn: Notes) => {
       const { data, error } = await sb
         .from("sources")
@@ -48,18 +48,19 @@ export const handlePayload =
         return n;
       });
     };
-
-    const nn = payload.new;
-    console.log("received new", nn.quote);
-    update_source_ids(note_sync.sb)(nn);
-    note_sync.notestore.update((n) => {
-      let id = nn.source_id;
-      n[id] = n[id] || []; // ensure filter possible
-      // get rid of optimistic insert
-      n[id] = n[id].filter((n) => n.snippet_uuid !== nn.snippet_uuid);
-      n[id] = [...n[id], { ...nn, sources: { title, url } }];
-      return n;
-    });
+    if ("id" in payload.new) {
+      const nn = payload.new;
+      console.log("received new", nn.quote);
+      update_source_ids(note_sync.sb)(nn);
+      note_sync.notestore.update((n) => {
+        let id = nn.source_id;
+        n[id] = n[id] || []; // ensure filter possible
+        // get rid of optimistic insert
+        n[id] = n[id].filter((n) => n.snippet_uuid !== nn.snippet_uuid);
+        n[id] = [...n[id], { ...nn, sources: { title, url } }];
+        return n;
+      });
+    }
   };
 
 export let getSourceId =

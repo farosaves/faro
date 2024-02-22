@@ -17,7 +17,6 @@
     bind:showing_content={showing_contents[i]}
     {close_all_notes}
     {note_sync} />
-
-  <!-- {:else}
-	If you just installed the extension, you need to reload the page. -->
+{:else}
+  No notes yet...
 {/each}

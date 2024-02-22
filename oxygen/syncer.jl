@@ -36,6 +36,7 @@ handler(src, tgt) = ev ->  # :BetterFileWatching.Created
 first2second = @async watch_folder(handler(f1, f2), f1)
 second2first = @async watch_folder(handler(f2, f1), f2)
 
+println("ctrl+C to turn off")
 try
     wait()
 catch
