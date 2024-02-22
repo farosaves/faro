@@ -31,6 +31,9 @@ const _source_ids = new Proxy(__source_ids, {
 });
 const source_ids = persisted("source_ids", _source_ids);
 
+const hostname = (s: string) => new URL(s).hostname;
+export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
+
 export const handlePayload =
   (note_sync: NoteSync) =>
   (title: string, url: string) =>
@@ -60,17 +63,19 @@ export const handlePayload =
         n[id] = [...n[id], { ...nn, sources: { title, url } }];
         return n;
       });
+    } else {  // delete
+      note_sync.update_one_page(get(source_ids)[domain_title(url, title)])
     }
   };
 
 export let getSourceId =
-  (sb: SupabaseClient) => async (domain: string, title: string) => {
-    let query = async (sb: SupabaseClient, domain: string, title: string) => {
-      const id = [domain, title].join(";");
+  (sb: SupabaseClient) => async (url: string, title: string) => {
+    let query = async (sb: SupabaseClient, url: string, title: string) => {
+      const id = domain_title(url, title)
       const { data, error } = await sb
         .from("sources")
         .select("id")
-        .eq("domain", domain)
+        .eq("domain", hostname(url))
         .eq("title", title)
         .maybeSingle();
       if (!data) {
@@ -83,12 +88,12 @@ export let getSourceId =
       });
     };
 
-    const id = [domain, title].join(";");
+    const id = domain_title(url, title)
     if (!(id in get(source_ids)))
       source_ids.update((n) => {
         n[id] = -1;
         return n;
       });
-    query(sb, domain, title).then(() => console.log("updated sid"));
+    query(sb, url, title).then(() => console.log("updated sid"));
     return derived(source_ids, (n) => n[id]);
   };
