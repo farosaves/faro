@@ -3,6 +3,7 @@ import { array as A, option as O, nonEmptyArray as NA, nonEmptyArray as nEA } fr
 import { identity, pipe } from 'fp-ts/lib/function';
 import * as tok from 'sbd';
 
+
 type ArrOr1<T> = T[] | T;
 function goUp(cond: (n: Element) => boolean, e: Element): Element {
 	return cond(e.parentElement!) ? e.parentElement! : goUp(cond, e.parentElement!);
@@ -168,13 +169,14 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
 	// console.log(tag(quoteNodes[0]))
 
 	let quote = getFullSentences(quoteNodes, uuid);
+	quote = quote.replaceAll(/\[\d{1,2}\]/g, "").replaceAll(/\n+/g, " ").trim()
 
 	const tooShort = (s: string) => s.split(' ').length < 6;
 	if (tooShort(quote)) quote = getFullSentences(contextNode, uuid);
 	if (quote.length > 1000) quote = selectedText
 	// wikipedia src delete
 	
-	quote = quote.replaceAll(/\[\d{1,2}\]/g, "").replaceAll(/\n+/g, " ")
+	quote = quote.replaceAll(/\[\d{1,2}\]/g, "").replaceAll(/\n+/g, " ").trim()
 	return { quote, context, highlights };
 	// _quote = try2getfullsentences(sel, quotenodes)
 }

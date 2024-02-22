@@ -11,17 +11,16 @@ export function ts(card: Card) {
   };
 }
 
-export const handlePayload = (note_sync: NoteSync) => (payload: { new: Notes }) => {
-  const nn = payload.new;
-  note_sync.notestore.update((n) => {
-    let id = nn.source_id;
-    n[id] = n[id] || []; // ensure filter possible
-    // get rid of optimistic insert
-    // left is filtered
-    let parts = partition_by_id(nn.id)(n[id]);
-    if (parts.right.length > 0)
-      n[id] = [...parts.left, { ...nn, sources: parts.right[0].sources }];
-    return n;
-    // n[id] = n[id].filter((n) => n.snippet_uuid !== nn.snippet_uuid);
-  });
+export const handlePayload = (note_sync: NoteSync) => (payload: {new: Notes | object}) => {
+  if ("id" in payload.new) {
+    const nn = payload.new;
+    note_sync.notestore.update((n) => {
+      let id = nn.source_id;
+      n[id] = n[id] || []; // ensure filter possible
+      // left is filtered ie NOT matching id
+      let parts = partition_by_id(nn.id)(n[id]);
+      n[id] = [...parts.left, { ...nn, sources: n[id][0].sources }];
+      return n;
+    });
+  } else note_sync.update_all_pages();
 };
