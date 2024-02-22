@@ -76,11 +76,13 @@ export class NoteSync {
         groupBy((n) => n.source_id.toString()),
         R.toArray,
       );
+      console.log("newnotes", newnotes)
     if (newnotes !== null)
       this.notestore.update((s) => {
+        let sn = {} as typeof s
         let grouped = groupnotes(newnotes);
-        grouped.forEach(([x, notes]) => (s[notes[0].source_id] = notes));
-        return s;
+        grouped.forEach(([x, notes]) => (sn[notes[0].source_id] = notes));
+        return sn;
       });
   }
 
@@ -191,13 +193,13 @@ export class NoteSync {
     );
   };
 
-  sub = (handlePayload: (payload: { new: Notes }) => void) => {
+  sub = (handlePayload: (payload: { new: Notes | object }) => void) => {
     this.sb
       .channel("notes")
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "notes",
           filter: `user_id=eq.${this.user_id}`,
@@ -205,18 +207,5 @@ export class NoteSync {
         handlePayload,
       )
       .subscribe();
-//     this.sb
-//       .channel("notes")
-//       .on(
-//         "postgres_changes",
-//         {
-//           event: "UPDATE",
-//           schema: "public",
-//           table: "notes",
-//           filter: `user_id=eq.${this.user_id}`,
-//         }, // at least url should be the same so no need to filter
-//         handlePayload,
-//       )
-//       .subscribe();
   };
 }

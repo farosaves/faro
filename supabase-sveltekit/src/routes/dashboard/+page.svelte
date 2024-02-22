@@ -3,7 +3,6 @@
   import Note from "$lib/components/Note.svelte";
   import { NoteSync } from "$lib/shared/note-sync.js";
   import Search from "$lib/components/Search.svelte";
-  import { sub } from "$lib/stores.js";
   import type { NoteEx } from "$lib/shared/first.js";
   import TagFilter from "$lib/components/TagFilter.svelte";
   import { identity, flow } from "fp-ts/lib/function";
@@ -30,7 +29,19 @@
     note_sync.user_id = session?.user.id;
     note_sync.sb = supabase;
     // sub(note_sync);
-    note_sync.sub(handlePayload(note_sync));
+    note_sync.sb
+      .channel("notes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notes",
+          filter: `user_id=eq.${note_sync.user_id}`,
+        }, // at least url should be the same so no need to filter
+        handlePayload(note_sync),
+      )
+      .subscribe();
     note_sync.update_all_pages();
   });
 
@@ -48,6 +59,7 @@
 </script>
 
 <LoginPrompt session={sessOpt} />
+{Object.entries($all_notes).flatMap(([a, b]) => b).length}
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
 <div class="drawer md:drawer-open">
