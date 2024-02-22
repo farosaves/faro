@@ -10,6 +10,7 @@
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
   import { handlePayload } from "$lib/utils.js";
+  import { get } from "svelte/store";
   export let data;
   $: ({ session, supabase } = data);
   $: sessOpt = O.fromNullable(session);
@@ -56,6 +57,7 @@
   let w_rem = 16;
   let all_notes = note_sync.notestore;
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
+  const note_del_queue = note_sync.note_del_queue;
 </script>
 
 <LoginPrompt session={sessOpt} />
@@ -87,10 +89,11 @@
         </div>
       {/each}
     </div>
-    <div class="toast toast-end">
+    <!-- class:hidden={get(note_sync.note_del_queue).length == 0}> -->
+    <div class="toast toast-end z-10">
+      <!-- {$note_del_queue.length} -->
       <div class="alert alert-info">
-        <button on:click={note_sync.restoredelete}
-          >Deleted. Click to undo</button>
+        <button on:click={note_sync.restoredelete}>Undo last delete.</button>
       </div>
     </div>
   </div>

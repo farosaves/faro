@@ -4,6 +4,13 @@ import type { Option } from "fp-ts/lib/Option";
 import { option as O } from "fp-ts";
 import { identity, pipe } from "fp-ts/lib/function";
 
+export let safeGet =
+  <T extends string | number | symbol, U>(record: {
+    [id in T]: U[];
+  }) =>
+  (idx: T) =>
+    idx in record ? record[idx] : ([] as U[]);
+
 export let partition_by_id = (id: number) =>
   A.partition((v: { id: number }) => v.id == id);
 export let delete_by_id = (id: number) =>
