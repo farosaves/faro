@@ -419,6 +419,7 @@
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
+  <!-- style="z-index: 40; position: relative"> -->
   <div class="svelte-tags-input-matchs-parent">
     <ul id="{id}_matchs" class="svelte-tags-input-matchs">
       {#each arrelementsmatch as element, index}
