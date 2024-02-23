@@ -3,6 +3,7 @@ import type { Notes } from "./dbtypes";
 import { fillInTitleUrl, partition_by_id } from "./shared/utils";
 import type { NoteSync } from "./shared/note-sync";
 import { get } from "svelte/store";
+import type { NoteEx } from "./shared/first";
 
 export function ts(card: Card) {
   return {
@@ -11,6 +12,10 @@ export function ts(card: Card) {
     last_review: card.last_review.toUTCString(),
   };
 }
+
+export type NoteFilter = (
+  n: NoteEx & { priority: number },
+) => NoteEx & { priority: number };
 
 export const handlePayload = (note_sync: NoteSync) => async (payload: {new: Notes | object}) => {
   if ("id" in payload.new) {

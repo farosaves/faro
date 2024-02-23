@@ -3,6 +3,7 @@ import type { SupabaseClient } from "./shared/first";
 import type { Notes } from "./dbtypes";
 import { derived, get, type Writable } from "svelte/store";
 import type { NoteSync } from "$lib/shared/note-sync";
+import { domain_title, hostname } from "./shared/utils";
 
 // First param `preferences` is the local storage key.
 // Second param is the initial value.
@@ -31,8 +32,6 @@ const _source_ids = new Proxy(__source_ids, {
 });
 const source_ids = persisted("source_ids", _source_ids);
 
-const hostname = (s: string) => new URL(s).hostname;
-export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
 
 export const handlePayload =
   (note_sync: NoteSync) =>
