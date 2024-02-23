@@ -71,7 +71,7 @@
       <button
         class="btn btn-xs join-item grow"
         style="color: red;"
-        on:click={(e) => {
+        on:click={() => {
           note_sync.deleteit(note_data);
           close_all_notes();
         }}>DELETE</button>
