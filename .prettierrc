@@ -1,2 +1,12 @@
 bracketSameLine: true
+semi: false
+singleQuote: false
+svelteSortOrder: styles-scripts-markup
+svelteStrictMode: false
+plugins:
+  - svelte
+overrides:
+  - files: "*.svelte"
+    options:
+      parser: "svelte"
 

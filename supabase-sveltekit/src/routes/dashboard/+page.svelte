@@ -5,11 +5,12 @@
   import Search from "$lib/components/Search.svelte";
   import type { NoteEx } from "$lib/shared/first.js";
   import TagFilter from "$lib/components/TagFilter.svelte";
+  import DomainFilter from "$lib/components/DomainFilter.svelte";
   import { identity, flow } from "fp-ts/lib/function";
   import { redirect } from "@sveltejs/kit";
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
-  import { handlePayload } from "$lib/utils.js";
+  import { handlePayload, type NoteFilter } from "$lib/utils.js";
   export let data;
   $: ({ session, supabase } = data);
   $: sessOpt = O.fromNullable(session);
@@ -19,11 +20,14 @@
   let filterSortFun = (n: NoteEx) => {
     return { ...n, priority: Date.parse(n.created_at) };
   };
-  let tagFilter: (
-    n: NoteEx & { priority: number },
-  ) => NoteEx & { priority: number } = identity;
-  let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
-  $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
+  let tagFilter: NoteFilter = identity;
+  let domainFilter: NoteFilter = identity;
+  let note_groups = note_sync.get_groups(
+    flow(filterSortFun, tagFilter, domainFilter),
+  );
+  $: note_groups = note_sync.get_groups(
+    flow(filterSortFun, tagFilter, domainFilter),
+  );
   onMount(async () => {
     session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
@@ -50,8 +54,8 @@
       note_group.map((_) => false),
     );
   };
-  let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : []);
   close_all_notes();
+  let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : []);
 
   let w_rem = 16;
   let all_notes = note_sync.notestore;
@@ -87,10 +91,11 @@
         </div>
       {/each}
     </div>
-    <div class="toast toast-end">
+    <!-- class:hidden={get(note_sync.note_del_queue).length == 0}> -->
+    <div class="toast toast-end z-10">
+      <!-- {$note_del_queue.length} -->
       <div class="alert alert-info">
-        <button on:click={note_sync.restoredelete}
-          >Deleted. Click to undo</button>
+        <button on:click={note_sync.restoredelete}>Undo last delete.</button>
       </div>
     </div>
   </div>
@@ -102,6 +107,7 @@
         <Search bind:filterSortFun notes={flat_notes} />
       </li>
       <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li>
+      <li><DomainFilter {note_sync} bind:domainFilter /></li>
     </ul>
   </div>
 </div>

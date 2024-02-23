@@ -11,7 +11,7 @@
   };
 </script>
 
-{#each $note_store[source_id] as note_data, i}
+{#each $note_store[source_id] || [] as note_data, i}
   <Note
     {note_data}
     bind:showing_content={showing_contents[i]}
