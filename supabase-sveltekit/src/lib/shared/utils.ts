@@ -2,7 +2,7 @@ import type { Notess, SupabaseClient } from "$lib/shared/first";
 import { array as A } from "fp-ts";
 import type { Option } from "fp-ts/lib/Option";
 import { option as O } from "fp-ts";
-import { identity, pipe } from "fp-ts/lib/function";
+import { flow, identity, pipe } from "fp-ts/lib/function";
 
 export let safeGet =
   <T extends string | number | symbol, U>(record: {
@@ -10,6 +10,8 @@ export let safeGet =
   }) =>
   (idx: T) =>
     idx in record ? record[idx] : ([] as U[]);
+
+export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
 export let partition_by_id = (id: number) =>
   A.partition((v: { id: number }) => v.id == id);
@@ -31,6 +33,8 @@ export function logIfError<T extends { error: any }>(r: T): T {
 }
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export const hostname = (s: string) => new URL(s).hostname;
+export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
 
 // sort descendingly but for negative scores filter out
 export const filterSort =

@@ -13,8 +13,7 @@
   let this_element: Element;
   $: tags = note_data.tags || [];
   let all_tags = note_sync.alltags();
-  let replacer = (capture: string) =>
-    `<b class="text-yellow-200">` + capture + `</b>`;
+  let replacer = (capture: string) => `<b class="">` + capture + `</b>`; //text-yellow-100
   let escapeHTML = (text: string) => {
     var div = document.createElement("div");
     div.innerText = text;

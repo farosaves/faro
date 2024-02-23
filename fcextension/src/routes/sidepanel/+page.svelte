@@ -5,17 +5,13 @@
   export let data;
   import { onMount } from "svelte";
   import { API_ADDRESS, getSession } from "$lib/utils";
-  import {
-    getSourceId,
-    scratches,
-    handlePayload,
-    domain_title,
-  } from "$lib/stores";
+  import { getSourceId, scratches, handlePayload } from "$lib/stores";
   import { NoteSync } from "$lib/shared/note-sync.js";
   import { get, type Readable } from "svelte/store";
   import NotePanel from "$lib/components/NotePanel.svelte";
   import { mock } from "./util.js";
   import { supa_update, type MockNote } from "./fun.js";
+  import { domain_title } from "$lib/shared/utils.js";
   let login_url = API_ADDRESS + "/login";
   let curr_title = "Kalanchoe";
   let curr_url = "";
