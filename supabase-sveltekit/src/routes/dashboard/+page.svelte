@@ -10,7 +10,6 @@
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
   import { handlePayload } from "$lib/utils.js";
-  import { get } from "svelte/store";
   export let data;
   $: ({ session, supabase } = data);
   $: sessOpt = O.fromNullable(session);
@@ -51,8 +50,8 @@
       note_group.map((_) => false),
     );
   };
-  let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : []);
   close_all_notes();
+  let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : []);
 
   let w_rem = 16;
   let all_notes = note_sync.notestore;
