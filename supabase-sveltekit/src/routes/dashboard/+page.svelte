@@ -22,8 +22,12 @@
   };
   let tagFilter: NoteFilter = identity;
   let domainFilter: NoteFilter = identity;
-  let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
-  $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter));
+  let note_groups = note_sync.get_groups(
+    flow(filterSortFun, tagFilter, domainFilter),
+  );
+  $: note_groups = note_sync.get_groups(
+    flow(filterSortFun, tagFilter, domainFilter),
+  );
   onMount(async () => {
     session || redirect(302, "login");
     note_sync.user_id = session?.user.id;
@@ -56,7 +60,6 @@
   let w_rem = 16;
   let all_notes = note_sync.notestore;
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
-  const note_del_queue = note_sync.note_del_queue;
 </script>
 
 <LoginPrompt session={sessOpt} />
