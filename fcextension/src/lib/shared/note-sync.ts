@@ -3,7 +3,7 @@ import { persisted } from "svelte-persisted-store";
 import type { Notes } from "../dbtypes";
 import type { NoteEx, Notess, SupabaseClient } from "./first";
 import { derived, get, type Writable } from "svelte/store";
-import { filterSort, getNotes, logIfError, partition_by_id } from "./utils";
+import { filterSort, getNotes, logIfError, partition_by_id, safeGet } from "./utils";
 import { option as O, record as R, string as S, array as A } from "fp-ts";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { pipe } from "fp-ts/lib/function";
@@ -115,7 +115,7 @@ export class NoteSync {
   }
 
   addit = async (n: NoteEx) => {
-    const cache = get(this.notestore)[n.source_id];
+    const cache = safeGet(get(this.notestore))(n.source_id);
     let { title, url } = cache[0]
       ? cache[0].sources
       : (
@@ -132,7 +132,8 @@ export class NoteSync {
     url = url || "";
 
     this.notestore.update((s) => {
-      s[n.source_id] = [...s[n.source_id], { ...n, sources: { title, url } }];
+      let highlightOnMount = true
+      s[n.source_id] = [...safeGet(s)(n.source_id), { ...n, sources: { title, url }, highlightOnMount } as NoteEx];
       return s;
     });
     const { sources, ...reNote } = n;
@@ -157,7 +158,7 @@ export class NoteSync {
 
   savedelete = (n: NoteEx) => this.note_del_queue.update((ns) => [n, ...ns]);
   deleteit = (n: Notes) => {
-    const cache = get(this.notestore)[n.source_id];
+    const cache = safeGet(get(this.notestore))(n.source_id);
 
     this.notestore.update((s) => {
       let parts = partition_by_id(n.id)(s[n.source_id]);

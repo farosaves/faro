@@ -11,6 +11,7 @@
   import NotePanel from "$lib/components/NotePanel.svelte";
   import { mock } from "./util.js";
   import { supa_update, type MockNote } from "./fun.js";
+  import { domain_title } from "$lib/shared/utils.js";
   let login_url = API_ADDRESS + "/login";
   let curr_title = "Kalanchoe";
   let curr_url = "";
@@ -18,7 +19,6 @@
   let session: Session;
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
   let source_id: Readable<number>;
-  let hostname = (s: string) => new URL(s).hostname;
   let curr_domain_title = "";
   $: T = trpc($page);
 
@@ -44,14 +44,13 @@
     if (!tab.url || !tab.title || !tab.id) return;
     curr_title = tab.title;
     curr_url = tab.url;
-    let domain = hostname(tab.url);
-    curr_domain_title = [domain, tab.title].join(";");
+    curr_domain_title = domain_title(tab.url, curr_title);
     if (!(curr_domain_title in $scratches))
       scratches.update((t) => {
         t[curr_domain_title] = "";
         return t;
       });
-    source_id = await getSourceId(supabase)(domain, curr_title);
+    source_id = await getSourceId(supabase)(curr_url, curr_title);
     await note_sync.update_one_page($source_id);
     getHighlight($source_id, tab.id);
     console.log("scratches", $scratches);

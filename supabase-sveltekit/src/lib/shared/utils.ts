@@ -2,7 +2,16 @@ import type { Notess, SupabaseClient } from "$lib/shared/first";
 import { array as A } from "fp-ts";
 import type { Option } from "fp-ts/lib/Option";
 import { option as O } from "fp-ts";
-import { identity, pipe } from "fp-ts/lib/function";
+import { flow, identity, pipe } from "fp-ts/lib/function";
+
+export let safeGet =
+  <T extends string | number | symbol, U>(record: {
+    [id in T]: U[];
+  }) =>
+  (idx: T) =>
+    idx in record ? record[idx] : ([] as U[]);
+
+export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
 export let partition_by_id = (id: number) =>
   A.partition((v: { id: number }) => v.id == id);
@@ -24,12 +33,31 @@ export function logIfError<T extends { error: any }>(r: T): T {
 }
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export const hostname = (s: string) => new URL(s).hostname;
+export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
 
 // sort descendingly but for negative scores filter out
 export const filterSort =
   <T>(f: (x: T) => number) =>
   (xs: T[]) =>
     xs.filter((x) => f(x) > 0).toSorted(desc(f));
+
+export const fillInTitleUrl = (v: {
+  sources: {
+    title: string | null;
+    url: string | null;
+  } | null;
+}) => {
+  let _get = (u: typeof v, fld: "title" | "url", missing: string) =>
+    pipe(
+      u,
+      O.fromNullable,
+      O.chain((v) => O.fromNullable(v.sources)),
+      O.chain((v) => O.fromNullable(v[fld])),
+      O.fold(() => missing, identity),
+    );
+  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") };
+};
 
 export async function getNotes(
   supabase: SupabaseClient,
@@ -49,16 +77,7 @@ export async function getNotes(
   const { data } = await q;
 
   if (data === null) return prevnotes;
-  let _get = (v: (typeof data)[0], fld: "title" | "url", missing: string) =>
-    pipe(
-      v.sources,
-      O.fromNullable,
-      O.chain((v) => O.fromNullable(v[fld])),
-      O.fold(() => missing, identity),
-    );
   return data.map((v) => {
-    const title = _get(v, "title", "missing Title");
-    const url = _get(v, "url", "");
-    return { ...v, sources: { title, url } };
+    return { ...v, sources: fillInTitleUrl(v) };
   });
 }
