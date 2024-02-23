@@ -1,7 +1,8 @@
 import { Card } from "fsrs.js";
 import type { Notes } from "./dbtypes";
-import { partition_by_id } from "./shared/utils";
+import { fillInTitleUrl, partition_by_id } from "./shared/utils";
 import type { NoteSync } from "./shared/note-sync";
+import { get } from "svelte/store";
 
 export function ts(card: Card) {
   return {
@@ -11,15 +12,17 @@ export function ts(card: Card) {
   };
 }
 
-export const handlePayload = (note_sync: NoteSync) => (payload: {new: Notes | object}) => {
+export const handlePayload = (note_sync: NoteSync) => async (payload: {new: Notes | object}) => {
   if ("id" in payload.new) {
     const nn = payload.new;
+    const id = nn.source_id;
+    const n = get(note_sync.notestore)
+    const sources = n[id] ? n[id][0].sources : fillInTitleUrl({sources: (await note_sync.sb.from("sources").select("title, url").eq("id", id).maybeSingle()).data})
     note_sync.notestore.update((n) => {
-      let id = nn.source_id;
       n[id] = n[id] || []; // ensure filter possible
-      // left is filtered ie NOT matching id
+      // left is filtered so NOT matching id
       let parts = partition_by_id(nn.id)(n[id]);
-      n[id] = [...parts.left, { ...nn, sources: n[id][0].sources }];
+      n[id] = [...parts.left, { ...nn, sources}];
       return n;
     });
   } else note_sync.update_all_pages();
