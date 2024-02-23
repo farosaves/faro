@@ -17,7 +17,6 @@
 <!-- svelte-ignore ts(2353) -->
 <div
   tabindex="-1"
-  bind:this={tagDiv}
   class="border-t border-primary"
   use:clickOutside
   on:click_outside={() => (open = false)}>
