@@ -38,6 +38,23 @@ export const filterSort =
   (xs: T[]) =>
     xs.filter((x) => f(x) > 0).toSorted(desc(f));
 
+export const fillInTitleUrl = (v: {
+  sources: {
+    title: string | null;
+    url: string | null;
+  } | null;
+}) => {
+  let _get = (u: typeof v, fld: "title" | "url", missing: string) =>
+    pipe(
+      u,
+      O.fromNullable,
+      O.chain((v) => O.fromNullable(v.sources)),
+      O.chain((v) => O.fromNullable(v[fld])),
+      O.fold(() => missing, identity),
+    );
+  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") };
+};
+
 export async function getNotes(
   supabase: SupabaseClient,
   source_id: Option<number>,
@@ -56,16 +73,7 @@ export async function getNotes(
   const { data } = await q;
 
   if (data === null) return prevnotes;
-  let _get = (v: (typeof data)[0], fld: "title" | "url", missing: string) =>
-    pipe(
-      v.sources,
-      O.fromNullable,
-      O.chain((v) => O.fromNullable(v[fld])),
-      O.fold(() => missing, identity),
-    );
   return data.map((v) => {
-    const title = _get(v, "title", "missing Title");
-    const url = _get(v, "url", "");
-    return { ...v, sources: { title, url } };
+    return { ...v, sources: fillInTitleUrl(v) };
   });
 }
