@@ -9,8 +9,7 @@
     nonEmptyArray as NA,
   } from "fp-ts";
   import { flow, pipe } from "fp-ts/lib/function";
-  import type { Option } from "fp-ts/lib/Option";
-  import { desc, hostname, mapSome } from "$lib/shared/utils";
+  import { desc, hostname } from "$lib/shared/utils";
   export let note_sync: NoteSync;
   export let domainFilter: NoteFilter;
   const notestore = note_sync.notestore;
@@ -18,17 +17,9 @@
   const domains = derived(notestore, (x) =>
     pipe(
       Object.values(x),
-      mapSome((xs) =>
-        pipe(
-          xs,
-          A.last,
-          O.map((x) => {
-            return { domain: hostname(x.sources.url), num: xs.length };
-          }),
-        ),
-      ),
-      NA.groupBy((x) => x.domain),
-      R.map(NA.reduce(0, (x, y) => x + y.num)),
+      // prettier-ignore
+      NA.groupBy(a => pipe(a, A.last, O.match(() => "", x => hostname(x.sources.url)))),
+      R.map(NA.reduce(0, (x, y) => x + y.length)),
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),
   );
