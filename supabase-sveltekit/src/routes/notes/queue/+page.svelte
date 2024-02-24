@@ -47,14 +47,10 @@
       note_sync.user_id = user_id.value;
       let { data } = await supabase
         .from("cards")
-        .select(
-          "*, card_contents (note_id, front, back)", //", notes (*), sources (title, url)",
-        )
+        .select("*, card_contents (note_id, front, back)")
         .eq("user_id", user_id.value)
         .in("state", [State.Learning, State.Review])
-        .lte("due", new Date().toUTCString());
-      // console.log(data);
-      // data = data?.filter((n) => !!n.notes);
+        .lte("due", fromDay()(day()(Date.now())));
       pending_cards = data?.filter(
         (n) => !!n.card_contents?.note_id,
       ) as CardsNIds;
@@ -62,10 +58,8 @@
         asc((x) => new Date(x.due).getTime()),
       );
     }
-    console.log(new Date());
-    console.log(pipe(Date.now(), day(), fromDay()));
-    console.log(pipe(Date.now(), fd.setHours(4), day()));
   });
+  $: pending_cards = pending_cards.filter((x) => true); // here filter by not yet due
 </script>
 
 <LoginPrompt session={O.fromNullable(session)} />
