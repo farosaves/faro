@@ -19,6 +19,7 @@
 
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { day, fromDay } from "./util.js";
+  import { State } from "fsrs.js";
 
   let pending: { note: NoteEx; card: Cards }[] = [];
   $: {
@@ -50,26 +51,21 @@
           "*, card_contents (note_id, front, back)", //", notes (*), sources (title, url)",
         )
         .eq("user_id", user_id.value)
+        .in("state", [State.Learning, State.Review])
         .lte("due", new Date().toUTCString());
-      console.log(data);
+      // console.log(data);
       // data = data?.filter((n) => !!n.notes);
       pending_cards = data?.filter(
         (n) => !!n.card_contents?.note_id,
       ) as CardsNIds;
       pending_cards = pending_cards.toSorted(
-        asc((x) => new Date(x.due).getMilliseconds()),
+        asc((x) => new Date(x.due).getTime()),
       );
     }
     console.log(new Date());
     console.log(pipe(Date.now(), day(), fromDay()));
     console.log(pipe(Date.now(), fd.setHours(4), day()));
   });
-
-  let nextIntervals = (card: Cards) => {
-    const mins = [1, 3, 9]; // days
-    card.state;
-    // const lastInterval = new Date().getDate() - new Date(Date.parse(card.last_review)).get
-  };
 </script>
 
 <LoginPrompt session={O.fromNullable(session)} />
