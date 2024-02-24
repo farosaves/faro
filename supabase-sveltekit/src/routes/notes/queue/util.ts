@@ -3,6 +3,8 @@ import { startOfDay, parse, format } from "date-fns"
 import * as fd from "date-fns/fp"
 import type { Cards } from "$lib/dbtypes"
 import { State } from "fsrs.js"
+import type { SupabaseClient } from "$lib/shared/first"
+import { logIfError } from "$lib/shared/utils"
 const fstr = "yyyy-MM-dd"
 export const day = (hr = 5) => flow(fd.subHours(hr), fd.format(fstr))
 export const fromDay =
@@ -32,9 +34,18 @@ export const schedule = (card: Cards, n: number) => {
     state: State.Review,
   }
 }
-export const dequeue = (card: Cards) => {return {
-  ...card, state: State.New
-}}
-export const enqueue = (card: Cards) => {return {
-  ...card, state: State.Learning
-}}
+export const dequeue = (card: Cards) => {
+  return {
+    ...card,
+    state: State.New,
+  }
+}
+export const enqueue = (card: Cards) => {
+  return {
+    ...card,
+    state: State.Learning,
+  }
+}
+
+export const updateCard = (sb: SupabaseClient) => (card: Cards) =>
+  sb.from("cards").update(card).then(logIfError)
