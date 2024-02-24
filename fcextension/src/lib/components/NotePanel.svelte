@@ -9,6 +9,7 @@
   let close_all_notes = () => {
     showing_contents = showing_contents.map((_) => false);
   };
+  $: console.log($note_store[source_id], source_id);
 </script>
 
 {#each $note_store[source_id] || [] as note_data, i}

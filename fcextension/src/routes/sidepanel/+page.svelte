@@ -50,7 +50,9 @@
         t[curr_domain_title] = "";
         return t;
       });
+    console.log("getting source id...");
     source_id = await getSourceId(supabase)(curr_url, curr_title);
+    console.log($source_id);
     await note_sync.update_one_page($source_id);
     getHighlight($source_id, tab.id);
     console.log("scratches", $scratches);
@@ -60,11 +62,10 @@
     logged_in = !!session;
   }, 1000);
   onMount(async () => {
-    supabase.auth.onAuthStateChange((event) => {
-      if (event == "SIGNED_IN") logged_in = true;
-    });
+    // supabase.auth.onAuthStateChange((event) => {
+    //   if (event == "SIGNED_IN") logged_in = true;
+    // }); this doesnt work... because client is different
 
-    note_sync.update_all_pages();
     try {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
@@ -76,9 +77,6 @@
               note_data: MockNote;
             };
             if (note_data) {
-              note_sync.sem
-                .use(supa_update(), supabase, note_data)
-                .then((v) => v && T.note2card.mutate({ note_id: v.id }));
               // optimistic update!
               note_sync.notestore.update((n) => {
                 n[$source_id] = [
@@ -87,6 +85,9 @@
                 ];
                 return n;
               });
+              note_sync.sem
+                .use(supa_update(500), supabase, note_data) // also needed to block half second here so sb can update
+                .then((v) => v && T.note2card.mutate({ note_id: v.id }));
             }
           }
         },
