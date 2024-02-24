@@ -25,6 +25,7 @@ export const nextIntervals = (card: Cards) => {
   return mults.map((m) => Math.floor(m * lastInterval))
 }
 
+// TODO: make schedule, dequeue, enqueue mutating AND mutating supabase
 export const schedule = (card: Cards, n: number) => {
   const now = Date.now()
   return {
