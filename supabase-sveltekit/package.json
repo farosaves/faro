@@ -76,6 +76,7 @@
 		"theme-change": "^2.5.0",
 		"trpc": "^0.11.3",
 		"trpc-sveltekit": "^3.5.22",
+		"ts-pattern": "^5.0.8",
 		"ts-semaphore": "^1.0.0",
 		"zod": "^3.22.4"
 	}
