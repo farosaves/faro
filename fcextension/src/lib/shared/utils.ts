@@ -3,13 +3,21 @@ import { array as A } from "fp-ts";
 import type { Option } from "fp-ts/lib/Option";
 import { option as O } from "fp-ts";
 import { flow, identity, pipe } from "fp-ts/lib/function";
+import { writable } from "svelte/store";
+import type { Session } from "@supabase/supabase-js";
+
+let _sess: O.Option<Session> = O.none
+export const sessStore = writable(_sess)
+
 
 export let safeGet =
-  <T extends string | number | symbol, U>(record: {
-    [id in T]: U[];
-  }) =>
-  (idx: T) =>
-    idx in record ? record[idx] : ([] as U[]);
+<T extends string | number | symbol, U>(record: {
+  [id in T]: U[];
+}) =>
+(idx: T) =>
+idx in record ? record[idx] : ([] as U[]);
+
+export const unwrap_def = <T>(o: Option<T>, def: T) => pipe(o, O.match(() => def, identity))
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
@@ -65,16 +73,16 @@ export async function getNotes(
   user_id: string,
   prevnotes = [],
 ): Promise<Notess> {
-  let q = supabase
+  let query = supabase
     .from("notes")
     .select("*, sources (title, url)")
     .eq("user_id", user_id);
-  q = O.match(
-    () => q,
-    (id: number) => q.eq("source_id", id),
+  query = O.match(
+    () => query,
+    (id: number) => query.eq("source_id", id),
   )(source_id);
 
-  const { data } = await q;
+  const { data } = await query;
 
   if (data === null) return prevnotes;
   return data.map((v) => {

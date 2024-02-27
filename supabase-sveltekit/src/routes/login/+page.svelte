@@ -9,11 +9,15 @@
   let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"];
   let providers = ["github"];
   onMount(() =>
-    data.supabase.auth.onAuthStateChange((event) => {
-      if (event == "SIGNED_IN")
+    data.supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event == "SIGNED_IN") {
+        console.log(session);
+        data.session = session;
+        // if (sessData.session) data
         setTimeout(() => {
           goto("/account");
         }, 50);
+      }
     }),
   );
 </script>
