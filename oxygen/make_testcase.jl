@@ -1,10 +1,10 @@
 using JSON3
-html = read("oxygen/manual_saved/ved.html", String)
+html = read("oxygen/manual_saved/aa.html", String)
 
-uuid = "78d59343-dc4d-4bb6-90ac-ffbc06cd7a19"
+uuid = "3f7b1a9d-fb8a-4883-b276-9b80bdc0ad17"
 
 html = strip(html, '`')
 
-selectedText = "Composed"
+selectedText = "Flexbox"
 
 JSON3.write("ex_case.json", (; selectedText, html, uuid))

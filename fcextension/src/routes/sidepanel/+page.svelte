@@ -4,14 +4,14 @@
   import type { Session } from "@supabase/gotrue-js";
   export let data;
   import { onMount } from "svelte";
-  import { API_ADDRESS, getSession } from "$lib/utils";
+  import { API_ADDRESS, getSession, mock, type MockNote } from "$lib/utils";
   import { getSourceId, scratches, handlePayload } from "$lib/stores";
   import { NoteSync } from "$lib/shared/note-sync.js";
   import { get, type Readable } from "svelte/store";
   import NotePanel from "$lib/components/NotePanel.svelte";
-  import { mock } from "./util.js";
-  import { supa_update, type MockNote } from "./fun.js";
+  import { supa_update } from "./fun.js";
   import { domain_title } from "$lib/shared/utils.js";
+  import { option } from "fp-ts";
   let login_url = API_ADDRESS + "/login";
   let curr_title = "Kalanchoe";
   let curr_url = "";
@@ -34,7 +34,6 @@
         ]),
       })
       .catch((e) => {
-        console.log("probably not refreshed page", e);
         needToRefreshPage = true;
       });
   }
@@ -53,40 +52,39 @@
     source_id = await getSourceId(supabase)(curr_url, curr_title);
     await note_sync.update_one_page($source_id);
     getHighlight($source_id, tab.id);
-    console.log("scratches", $scratches);
   }
   let logged_in = true;
   setTimeout(() => {
     logged_in = !!session;
   }, 1000);
+  let optimistic: option.Option<MockNote> = option.none;
   onMount(async () => {
-    supabase.auth.onAuthStateChange((event) => {
-      if (event == "SIGNED_IN") logged_in = true;
-    });
+    // supabase.auth.onAuthStateChange((event) => {
+    //   if (event == "SIGNED_IN") logged_in = true;
+    // }); this doesnt work... because client is different
 
-    note_sync.update_all_pages();
     try {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
           if (request.action == "update_curr_url") updateActive();
           if (request.action === "uploadTextSB") {
-            console.log("uplaodtextsb");
             const { note_data } = request as {
               action: string;
               note_data: MockNote;
             };
             if (note_data) {
+              // optimistic update!
+              optimistic = option.some(note_data);
+              // note_sync.notestore.update((n) => {
+              //   n[$source_id] = [
+              //     ...(n[$source_id] || []),
+              //     { ...note_data, ...mock },
+              //   ];
+              //   return n;
+              // });
               note_sync.sem
                 .use(supa_update(), supabase, note_data)
                 .then((v) => v && T.note2card.mutate({ note_id: v.id }));
-              // optimistic update!
-              note_sync.notestore.update((n) => {
-                n[$source_id] = [
-                  ...(n[$source_id] || []),
-                  { ...note_data, ...mock },
-                ];
-                return n;
-              });
             }
           }
         },
@@ -96,7 +94,6 @@
     }
     let { data } = await supabase.auth.getSession();
     let atokens = await T.my_email.query();
-    console.log("atokens", atokens);
     if (!data.session) {
       console.log("getting session");
       atokens || window.open(login_url); // TODO: doesnt work iirc
@@ -107,7 +104,7 @@
     console.log("session is", session);
     note_sync.user_id = session.user.id;
     logged_in = !!session;
-    updateActive();
+    await updateActive();
     note_sync.sub(handlePayload(note_sync)(curr_title, curr_url));
   });
 </script>
@@ -137,7 +134,7 @@
 
 <div class="max-w-xs mx-auto space-y-4">
   <div class=" text-xl text-center w-full italic">{curr_title}</div>
-  <NotePanel {note_sync} source_id={$source_id} />
+  <NotePanel bind:optimistic {note_sync} source_id={$source_id} />
 
   <textarea
     placeholder="scratchy scratch scratch"

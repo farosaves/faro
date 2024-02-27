@@ -27,12 +27,9 @@
     <!-- border-dotted border-gray-500 border-2 -->
     <Auth
       supabaseClient={data.supabase}
-      redirectTo={`${data.url}/auth/callback` +
-        (view == "forgotten_password"
-          ? "?next=%2Faccount%2Freset-password"
-          : "")}
+      redirectTo={`${data.url}/auth/callback?view=${view}`}
       showLinks={false}
-      {view}
+      view={view == "sign_up" ? "magic_link" : view}
       appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
     <!-- <Auth supabaseClient={data.supabase} {view} {providers} /> -->
     <Radio options={view_options} bind:userSelected={view} />
