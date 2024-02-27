@@ -6,15 +6,14 @@
   export let onTagAdded: (...args: [string, string[]]) => void;
   export let onTagRemoved: (...args: [string, string[]]) => void;
   let open = false;
+  let id: string;
   let tagDiv: HTMLElement;
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- on:keydown={(e) => {
     e.key == "Enter" && (open = false);
     console.log(e);
   }}> -->
-<!-- svelte-ignore ts(2353) -->
 <div
   tabindex="-1"
   class="border-t border-primary"
@@ -26,13 +25,13 @@
     class:hidden={open}
     on:click={() => {
       open = true;
-      tagDiv.focus();
+      setTimeout(() => document.getElementById(id)?.focus(), 100); // omg
     }}>
     {#each tags as tag}
       <span>{tag}</span>
     {/each}
   </button>
   <div class:hidden={!open}>
-    <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} />
+    <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id />
   </div>
 </div>
