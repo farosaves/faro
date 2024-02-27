@@ -1,6 +1,8 @@
 // src/routes/auth/callback/+server.ts
 import { redirect } from "@sveltejs/kit"
 import { isAuthApiError } from "@supabase/supabase-js"
+import type { ViewType } from "@supabase/auth-ui-shared"
+import { match, P } from "ts-pattern"
 
 export const GET = async ({ url, locals: { supabase } }) => {
   const code = url.searchParams.get("code")
@@ -17,11 +19,16 @@ export const GET = async ({ url, locals: { supabase } }) => {
       }
     }
   }
-
-  const next = url.searchParams.get("next")
-  if (next) {
-    throw redirect(303, next)
-  }
-
-  throw redirect(303, "/account")
+  const next = url.searchParams.get("next") as ViewType
+  match(next)
+    .with(P.union("forgotten_password", "update_password"), () => {
+      throw redirect(303, "/account/reset-password")
+    })
+    .with("sign_up", () => {
+      throw redirect(303, "/account/reset-password?new")
+    })
+    .with("magic_link", () => {
+      throw redirect(303, "/account")
+    })
+  throw redirect(303, "/dashboard")
 }

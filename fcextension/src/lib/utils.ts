@@ -41,3 +41,21 @@ export async function getNotes(supabase: SupabaseClient, source_id: number, user
 	return data ?? null;
 }
 
+export type MockNote = {
+	quote: string;
+	source_id: number;
+	highlights: string[];
+	context: string;
+	snippet_uuid: string;
+	serialized_highlight: string;
+	sources: { title: string; url: string };
+};
+
+export const mock = {
+    id: -1,
+    predicted_topic: '',
+    created_at: '',
+    tags: [],
+    user_id: '',
+    user_note: ''
+};

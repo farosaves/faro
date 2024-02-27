@@ -1,19 +1,8 @@
 import type { SupabaseClient } from '$lib/shared/first';
-import Semaphore from '$lib/shared/semaphore';
 import { logIfError, sleep } from '$lib/shared/utils';
-import { json } from '@sveltejs/kit';
+import type { MockNote } from '$lib/utils';
 
 let hostname = (s: string) => new URL(s).hostname;
-
-export type MockNote = {
-	quote: string;
-	source_id: number;
-	highlights: string[];
-	context: string;
-	snippet_uuid: string;
-	serialized_highlight: string;
-	sources: { title: string; url: string };
-};
 
 export const supa_update = (schlep=0) => async (supabase: SupabaseClient, n: MockNote) => {
 	let { sources, ...note } = n;

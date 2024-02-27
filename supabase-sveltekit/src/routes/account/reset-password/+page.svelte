@@ -1,11 +1,14 @@
 <script lang="ts">
   export let data;
+
   $: user_email = data.session?.user.email;
   import { get } from "svelte/store";
   import { formula } from "svelte-formula";
   import { logIfError } from "$lib/shared/utils.js";
   import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
+  import { page } from "$app/stores";
+
+  const isNew = $page.url.searchParams.has("beta");
 
   const { form, formValidity, isFormValid, submitValues, touched, validity } =
     formula({
@@ -33,12 +36,6 @@
       .then(logIfError)
       .then(() => goto("/account"));
   }
-
-  //   onMount(() =>    data.supabase.auth.onAuthStateChange((event, _session) => {
-  //       if (_session?.expires_at !== session?.expires_at) {
-  //         invalidate("supabase:auth");
-  //       }
-  // )
 </script>
 
 <div class="">
@@ -73,7 +70,7 @@
     <button
       class="btn btn-primary self-center"
       type="submit"
-      disabled={!$isFormValid}>Reset password</button>
+      disabled={!$isFormValid}>{isNew ? "Set" : "Reset"} your password</button>
   </form>
 </div>
 
