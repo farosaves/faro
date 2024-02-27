@@ -35,7 +35,6 @@
     session || redirect(302, "login");
     note_sync.user_id = O.toNullable(session)?.user.id;
     note_sync.sb = supabase;
-    // sub(note_sync);
     note_sync.sb
       .channel("notes")
       .on(
