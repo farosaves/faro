@@ -4,7 +4,6 @@ using BetterFileWatching
 
 f1 = "supabase-sveltekit/src/lib/shared"
 f2 = "fcextension/src/lib/shared"
-walkdir(f1) |> collect
 
 mvpath(str::String, src::String, tgt::String) =
     let escaped_src = escape_string(src, "\\.+*?^\$[](){}|")
@@ -31,7 +30,6 @@ handler(src, tgt) = ev ->  # :BetterFileWatching.Created
         sleep(0.1)
         unlock(lk)
     end
-# x = watch_folder(handler(f1, f2), f1)
 
 first2second = @async watch_folder(handler(f1, f2), f1)
 second2first = @async watch_folder(handler(f2, f1), f2)

@@ -11,9 +11,12 @@
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
   import { handlePayload, type NoteFilter } from "$lib/utils.js";
+  import { sessStore } from "$lib/shared/utils.js";
   export let data;
-  $: ({ session, supabase } = data);
-  $: sessOpt = O.fromNullable(session);
+  $: ({ session: _session, supabase } = data);
+  $: if (_session) $sessStore = O.some(_session);
+  $: session = $sessStore;
+  // $: sessOpt = O.fromNullable(session);
 
   let showing_contents: boolean[][];
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
@@ -30,7 +33,7 @@
   );
   onMount(async () => {
     session || redirect(302, "login");
-    note_sync.user_id = session?.user.id;
+    note_sync.user_id = O.toNullable(session)?.user.id;
     note_sync.sb = supabase;
     // sub(note_sync);
     note_sync.sb
@@ -62,7 +65,7 @@
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
 </script>
 
-<LoginPrompt session={sessOpt} />
+<LoginPrompt {session} />
 {Object.entries($all_notes).flatMap(([a, b]) => b).length}
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
