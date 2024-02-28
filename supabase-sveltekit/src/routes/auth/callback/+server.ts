@@ -19,8 +19,8 @@ export const GET = async ({ url, locals: { supabase } }) => {
       }
     }
   }
-  const next = url.searchParams.get("next") as ViewType
-  match(next)
+  const view = url.searchParams.get("view") as ViewType
+  match(view)
     .with(P.union("forgotten_password", "update_password"), () => {
       throw redirect(303, "/account/reset-password")
     })
