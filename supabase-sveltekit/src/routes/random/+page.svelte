@@ -12,6 +12,7 @@
     const x = await (await fetch("steg2.html")).text();
 
     let dom = new DOMParser().parseFromString(x, "text/html");
+
     // alltext = dom.body.innerText.replaceAll(/(\s*\n\s*)+/gm, '\n');
     alltext = dom.body.innerText
       .split("\n")
@@ -20,11 +21,6 @@
       .map((s) => tok.sentences(s))
       .flat();
     console.log(alltext);
-    const myPromise = new Promise<string>((resolve, reject) => {
-      setTimeout(() => {
-        resolve("foo");
-      }, 300);
-    });
   });
 
   let list = [
@@ -65,6 +61,7 @@
   // 	console.log(output);
   // };
   let query = "hmm";
+
   let res = "";
   let f = () => {
     const x = fuzzysort.go(query, alltext, { limit: 5 });
@@ -79,7 +76,7 @@
 
 <p id="p">Select me: <i>italic</i> and <b>bold</b></p>
 <input bind:value={query} on:keyup={f} />
-<button class="btn" on:click={f}>aa</button>
+<button class="btn" on:click={() => {}}>aa</button>
 <br />
 {@html res}
 
