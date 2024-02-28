@@ -1,8 +1,6 @@
 import type { SupabaseClient } from '$lib/shared/first';
-import { logIfError, sleep } from '$lib/shared/utils';
+import { hostname, logIfError, sleep } from '$lib/shared/utils';
 import type { MockNote } from '$lib/utils';
-
-let hostname = (s: string) => new URL(s).hostname;
 
 export const supa_update = (schlep=0) => async (supabase: SupabaseClient, n: MockNote) => {
 	let { sources, ...note } = n;
