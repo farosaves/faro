@@ -30,8 +30,6 @@
 		"eslint-plugin-svelte": "^2.35.1",
 		"marklib": "^0.11.0",
 		"postcss": "^8.4.32",
-		"prettier": "^3.2.5",
-		"prettier-plugin-svelte": "^3.2.1",
 		"supabase-ui-svelte": "^0.1.1",
 		"svelte": "^4.2.7",
 		"svelte-check": "^3.6.0",
