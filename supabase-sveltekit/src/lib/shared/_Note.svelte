@@ -3,17 +3,21 @@
   import type { Notes } from "../dbtypes";
   import type { NoteSync } from "./note-sync";
   import { onMount } from "svelte";
-  import { sleep } from "./utils";
+  import { sleep, themeStore } from "./utils";
   import MyTags from "./MyTags.svelte";
   export let note_data: Notes;
   export let showing_content: boolean;
   export let close_all_notes: () => void;
   export let note_sync: NoteSync;
   export let goto_function: MouseEventHandler<any> | undefined;
+
   let this_element: Element;
   $: tags = note_data.tags || [];
   let all_tags = note_sync.alltags();
-  let replacer = (capture: string) => `<b class="">` + capture + `</b>`; //text-yellow-100
+  $: replacer = (capture: string) =>
+    `<b class="${$themeStore == "dark" ? "text-yellow-100" : ""}">` +
+    capture +
+    `</b>`;
   let escapeHTML = (text: string) => {
     var div = document.createElement("div");
     div.innerText = text;

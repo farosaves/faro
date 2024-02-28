@@ -18,12 +18,11 @@ Visiting Paul afterward, she learns he is a writer who has not had anything publ
 ../llama.cpp/server -m ../llama.cpp/models/solar-10.7b-instruct-v1.0.Q5_K_M.gguf -c 8192 -cb -ngl 49
 ../llama.cpp/server -m ../llama.cpp/models/orcamaid-v2-fix-13b-32k.Q5_K_M.gguf -c 8192 -cb -ngl 41
 ../llama.cpp/server -m ../llama.cpp/models/codeninja-1.0-openchat-7b.Q5_K_M.gguf -c 8192 -cb --port 8888
+../llama.cpp/server -m ../llama.cpp/models/magicoder-s-ds-6.7b.Q5_K_M.gguf -c 4096 -cb --port 8888
+../llama.cpp/server -m ../llama.cpp/models/build-info.gguf -c 4096 -cb --port 8888
 
+You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can.
 
-You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can. 
-
-# information captured and organised
-# 
 
 
 
@@ -34,3 +33,14 @@ First identify the topic that the reader is interested in.
 Then for each sentence we want to have a deletion cloze flashcard like this:
 "The World War Two began in year ???. - 1939"
 "Abraham Lincoln was the ??? president of the United States? - 16th"
+
+You are an exceptionally intelligent coding assistant that consistently delivers accurate and reliable responses to user instructions.
+
+@@ Instruction
+{prompt}
+
+@@ Response
+
+
+
+Using fp-ts Either write a function that validates password and passwordConfirmation to be the same.
