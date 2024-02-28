@@ -17,7 +17,7 @@
     optimistic,
     O.chain((mn) =>
       pipe(
-        $note_store[source_id],
+        $note_store[source_id] || [],
         A.findFirst((r) => r.snippet_uuid == mn.snippet_uuid),
         O.match(
           () => O.some(mn),
