@@ -55,6 +55,7 @@ export function logIfError<T extends { error: any }>(r: T): T {
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 export const hostname = (s: string) => s && new URL(s).hostname
+
 export const domain_title = (url: string, title: string) =>
   [hostname(url), title].join(";")
 
