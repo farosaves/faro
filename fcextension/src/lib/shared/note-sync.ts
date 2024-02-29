@@ -3,7 +3,13 @@ import { persisted } from "svelte-persisted-store";
 import type { Notes } from "../dbtypes";
 import type { NoteEx, Notess, SupabaseClient } from "./first";
 import { derived, get, type Writable } from "svelte/store";
-import { filterSort, getNotes, logIfError, partition_by_id, safeGet } from "./utils";
+import {
+  filterSort,
+  getNotes,
+  logIfError,
+  partition_by_id,
+  safeGet,
+} from "./utils";
 import { option as O, record as R, string as S, array as A } from "fp-ts";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { pipe } from "fp-ts/lib/function";
@@ -76,10 +82,10 @@ export class NoteSync {
         groupBy((n) => n.source_id.toString()),
         R.toArray,
       );
-      console.log("newnotes", newnotes)
+    console.log("newnotes", newnotes);
     if (newnotes !== null)
       this.notestore.update((s) => {
-        let sn = {} as typeof s
+        let sn = {} as typeof s;
         let grouped = groupnotes(newnotes);
         grouped.forEach(([x, notes]) => (sn[notes[0].source_id] = notes));
         return sn;
@@ -132,8 +138,11 @@ export class NoteSync {
     url = url || "";
 
     this.notestore.update((s) => {
-      let highlightOnMount = true
-      s[n.source_id] = [...safeGet(s)(n.source_id), { ...n, sources: { title, url }, highlightOnMount } as NoteEx];
+      let highlightOnMount = true;
+      s[n.source_id] = [
+        ...safeGet(s)(n.source_id),
+        { ...n, sources: { title, url }, highlightOnMount } as NoteEx,
+      ];
       return s;
     });
     const { sources, ...reNote } = n;

@@ -18,7 +18,7 @@
   import * as fd from "date-fns/fp";
 
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
-  import { day, fromDay } from "./util.js";
+  import { day, dequeue$, fromDay, nextIntervals, schedule$ } from "./util.js";
   import { State } from "fsrs.js";
 
   let pending: { note: NoteEx; card: Cards }[] = [];
@@ -59,7 +59,12 @@
       );
     }
   });
-  $: pending_cards = pending_cards.filter((x) => true); // here filter by not yet due
+  $: pending_cards = pending_cards.filter(
+    (x) => day()(x.due) <= day()(Date.now()),
+  ); // due today or before
+  const dequeue = (card: Cards) => () => dequeue$(supabase)(card);
+  const schedule = (card: Cards, n: number) => () =>
+    schedule$(supabase)(card, n);
 </script>
 
 <LoginPrompt session={O.fromNullable(session)} />
@@ -72,10 +77,13 @@
         close_all_notes={() => {}}
         {note_sync} />
       <div class="flex w-full">
-        <button class="btn flex-1" style="color: red">Pin</button>
-        <button class="btn flex-1" style="color: white"></button>
-        <button class="btn flex-1" style="color: green"></button>
-        <button class="btn flex-1" style="color: blue"></button>
+        <button class="btn flex-1" on:click={dequeue(card)}> Pin</button>
+        {#each nextIntervals(card) as n}
+          <button class="btn flex-1" on:click={schedule(card, n)}>
+            {n} days</button>
+        {/each}
+        <!-- <button class="btn flex-1" style="color: green"></button>
+        <button class="btn flex-1" style="color: blue"></button> -->
       </div>
     </div>
   </div>
