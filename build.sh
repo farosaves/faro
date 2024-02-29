@@ -1,0 +1,1 @@
+cd fcextension && npm run bz && cd ../supabase-sveltekit && npm run build
