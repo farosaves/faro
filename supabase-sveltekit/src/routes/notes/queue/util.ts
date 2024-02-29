@@ -32,11 +32,11 @@ export const schedule$ = (sb: SupabaseClient) => (card: Cards, n: number) => {
   card.state = State.Review;
   updateCard(sb)(card);
 };
-export const dequeue = (sb: SupabaseClient) => (card: Cards) => {
+export const dequeue$ = (sb: SupabaseClient) => (card: Cards) => {
   card.state = State.New;
   updateCard(sb)(card);
 };
-export const enqueue = (sb: SupabaseClient) => (card: Cards) => {
+export const enqueue$ = (sb: SupabaseClient) => (card: Cards) => {
   card.state = State.Learning;
   updateCard(sb)(card);
 };
