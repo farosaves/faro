@@ -34,10 +34,19 @@ handler(src, tgt) = ev ->  # :BetterFileWatching.Created
 first2second = @async watch_folder(handler(f1, f2), f1)
 second2first = @async watch_folder(handler(f2, f1), f2)
 
+formathandler(ev) =
+    let path = only(ev.paths)
+        isfile(path) && endswith(path, ".ts") && run(`npx prettier --write $path`)
+    end
+formatss = @async watch_folder(formathandler, "supabase-sveltekit/")
+formatfe = @async watch_folder(formathandler, "fcextension/")
+
 println("ctrl+C to turn off")
 try
     wait()
 catch
     schedule(first2second, InterruptException(); error=true)
     schedule(second2first, InterruptException(); error=true)
+    schedule(formatss, InterruptException(); error=true)
+    schedule(formatfe, InterruptException(); error=true)
 end
