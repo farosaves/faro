@@ -26,6 +26,7 @@ const splittags = new Set(
 
 let preSpaceIfNotPunct = (s: string | null) =>
   !s || s.match(/^[\p{Pe}\p{Pf}\p{Po}]/u) ? s : " " + s;
+	
 function divSplit(v: ArrOr1<Node>) {
   let f = (prev: string[], n: Node) => {
     // @ts-expect-error
