@@ -71,7 +71,8 @@
   </div>
   <div class="collapse-content z-40" style="grid-row-start: 2">
     <div class="join w-full">
-      <!-- <button class="btn btn-xs join-item grow" on:click={goto_function}>nth</button> -->
+      <!-- <button class="btn btn-xs join-item grow" on:click={() => {}}>
+        Pin / Unpin</button> -->
       <button
         class="btn btn-xs join-item grow"
         style="color: red;"
