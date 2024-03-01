@@ -1,30 +1,22 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as rangy from "rangy";
-  import { invalidateAll } from "$app/navigation";
-  import { Rangee } from "rangee";
+  import { serialize } from "./util";
 
   let loaded = false;
+
   onMount(() => {
-    const rangee = new Rangee({ document });
-    if (loaded) invalidateAll();
-    console.log(loaded, "mounted");
     loaded = true;
 
     let ran2sel = (rann: Range) => {
       let sel = rangy.getSelection();
-      let ran = rangy.createRange();
-      ran.setStart(rann?.startContainer, rann?.startOffset);
-      ran.setEnd(rann?.endContainer, rann?.endOffset);
+      sel.setSingleRange(rann as RangyRange);
       return sel;
     };
-
     document.body.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         let rann = document.getSelection()?.getRangeAt(0)!;
-        let x = rangee.serializeAtomic(rann);
-        console.log(document.getSelection()?.toString());
-        console.log(ran2sel(rangee.deserializeAtomic(x)[0]).toString());
+        console.log(serialize(rann));
       }
     });
   });
