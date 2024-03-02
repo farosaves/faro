@@ -1,6 +1,5 @@
 <script lang="ts">
   // import { pipeline } from '@xenova/transformers';
-  import Fuse from "fuse.js";
   import { onMount } from "svelte";
   import fuzzysort from "fuzzysort";
   import * as tok from "sbd";
@@ -34,8 +33,6 @@
     includeScore: true,
     shouldSort: true,
   };
-
-  const fuse = new Fuse(list, options);
 
   // Change the pattern
   const pattern = "yoga home";
