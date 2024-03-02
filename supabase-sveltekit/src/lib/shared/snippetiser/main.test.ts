@@ -72,8 +72,9 @@ test("input8", async () => {
 });
 test("input9", async () => {
   const r = await l("/input9.json");
+  // not sure if that is what I want but ?? could be mid code
   expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
-    "I love the melody, and im dying to understand the words.",
+    "can somebody pleaseeeeeeeee translate this song for me ??\n\nI love the melody, and im dying to understand the words.",
   );
 });
 

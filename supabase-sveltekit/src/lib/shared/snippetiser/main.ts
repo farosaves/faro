@@ -116,7 +116,7 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   const sents = divSplit(Array.from(body.childNodes)).join(" ");
   // .replaceAll(/\\n\s*\\n/g, ". ");
   // console.log(divSplit(Array.from(body.childNodes)));
-  const [left, mid, right] = sents.split(sp);
+  const [left, mid, right] = sents.split(sp).map(s=>s.replace(/(\\[nt])+/," "));
   // console.log([left, mid, right]);
   // instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
   // and then likewise .........suffix .......right...
