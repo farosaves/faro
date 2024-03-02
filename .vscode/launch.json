@@ -5,16 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
+            "type": "node-terminal",
+            "name": "Run Script: test",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/supabase-sveltekit/src/lib/shared/snippetiser/main.ts",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+            "command": "npm run test",
+            "cwd": "${workspaceFolder}/supabase-sveltekit"
         },
         {
             "type": "chrome",

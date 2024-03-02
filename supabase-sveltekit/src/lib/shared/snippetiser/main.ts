@@ -1,10 +1,5 @@
 import { htmlstr2body } from "$lib/test_utils";
-import {
-  array as A,
-  option as O,
-  nonEmptyArray as NA,
-  nonEmptyArray as nEA,
-} from "fp-ts";
+import { array as A, option as O, nonEmptyArray as nEA } from "fp-ts";
 import { identity, pipe } from "fp-ts/lib/function";
 import * as tok from "sbd";
 
@@ -24,8 +19,9 @@ const splittags = new Set(
   ),
 );
 
-let preSpaceIfNotPunct = (s: string | null) =>
+let preSpaceIfNotPunct = <T extends string | null>(s: T) =>
   !s || s.match(/^[\p{Pe}\p{Pf}\p{Po}]/u) ? s : " " + s;
+
 function divSplit(v: ArrOr1<Node>) {
   let f = (prev: string[], n: Node) => {
     // @ts-expect-error
@@ -91,10 +87,8 @@ let hasMatch = (uuid: string) => (e: Node) => match(uuid)(e).length > 0;
 
 let last = <T>(a: T[]) => a[a.length - 1];
 let first = <T>(a: T[]) => a[0];
-let getContent = (
-  n: Node, //@ts-expect-error
-) =>
-  "outerHTML" in n ? ((n: Element) => n.outerHTML)(n) : n.textContent || "";
+let getContent = (n: Node) =>
+  "outerHTML" in n ? n.outerHTML : n.textContent || "";
 
 function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   let makeNonempty =
@@ -106,7 +100,7 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
       );
 
   const body = htmlstr2body(listOrAllChildren(es).map(getContent).join(""));
-  const bodyText = body.innerText || body.textContent;
+  const bodyText = body.innerText || body.textContent || "";
   if (bodyText === null) return "";
 
   const matching = A.filter(hasMatch(uuid))(Array.from(body.children));
@@ -120,11 +114,10 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   const _t2 = lm.textContent;
   lm.textContent = _t2 + sp;
   const sents = divSplit(Array.from(body.childNodes)).join(" ");
+  // .replaceAll(/\\n\s*\\n/g, ". ");
   // console.log(divSplit(Array.from(body.childNodes)));
   const [left, mid, right] = sents.split(sp);
   // console.log([left, mid, right]);
-  let g = preSpaceIfNotPunct;
-  const h = makeNonempty("");
   // instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
   // and then likewise .........suffix .......right...
   function getShortestXfix(p: string, pre: boolean, n = 1) {
@@ -146,8 +139,11 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
         return getShortestXfix(p, pre, n + 1);
     }
   }
+  const h = makeNonempty("");
+  let g = preSpaceIfNotPunct;
+  const noEndDot = (s: string) => !/\.$/.test(s.trim());
   const potResult = [
-    last(h(tok.sentences(left))),
+    last(h(tok.sentences(left).filter(noEndDot))),
     g(mid),
     g(first(h(tok.sentences(right)))),
   ].join("");
@@ -159,7 +155,7 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   text = text.split(post_short.value)[0] + post_short.value;
   return text;
 }
-const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
+// const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
 export function makeQCH(d: Document, uuid: string, selectedText: string) {
   const matches = Array.from(d.getElementsByClassName("_" + uuid));
   const root = goUp(
@@ -174,7 +170,11 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
   const contextNode = contextNodeOpt.value;
   // console.log(wrapOrPass(contextNode)[0].children[0])
   const potentialQuote = listOrAllChildren(contextNode);
-  const context = divSplit(potentialQuote).join(". ");
+  const context = divSplit(potentialQuote)
+    .map(preSpaceIfNotPunct)
+    .map((s) => s.replace(/\.$/, ""))
+    .join(".")
+    .trim();
 
   const is4highlight = (t: string) => t.split(" ").length < 6;
   if (!is4highlight(selectedText))
