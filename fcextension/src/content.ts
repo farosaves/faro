@@ -1,6 +1,6 @@
 // import 'chrome';
 // import { makeQCH } from "../ lib/shared/snippetiser/main";
-import { reserialize } from "$lib/shared/serialiser/util";
+import { prepare2deserialize, reserialize } from "$lib/serialiser/util";
 import { makeQCH } from "./lib/shared/snippetiser/main";
 
 console.log("hello");
@@ -41,18 +41,17 @@ function wrapSelectedText(uuid) {
   const app = createClassApplier(classname, applierOptions);
   const ran = document.getSelection()?.getRangeAt(0)!;
   // HERE
+  const rangeText = reserialize(ran)
   const selection = ran2sel(ran)
   
   const hl = createHighlighter();
   hl.addClassApplier(app);
   hl.highlightSelection(classname, { selection });
-  return hl.serialize(selection) + reserialize(ran)
+  return hl.serialize(selection) + rangeText
 }
 
-const oldSerRegex = /^type:textContent/
 let batchDeserialize = (uss) =>
   uss.forEach(([uuid, serialized]) => {
-    if (rangee === undefined) rangee = new Rangee({ document });
     if (!serialized) return;
     let createClassApplier = rangy.createClassApplier;
     let createHighlighter = rangy.createHighlighter;
@@ -60,12 +59,9 @@ let batchDeserialize = (uss) =>
     const hl = createHighlighter();
     const app = createClassApplier("_" + uuid, applierOptions);
     hl.addClassApplier(app);
-    if (oldSerRegex.test(serialized))
-    hl.deserialize(serialized);
-  else {
-    const selection = ran2sel(rangee.deserialize(serialized))
-    hl.highlightSelection("_" + uuid, { selection });
-  }
+    const prepared = prepare2deserialize(document.body.textContent || "", serialized)
+    console.log("prep", prepared)
+    hl.deserialize(prepared);
   });
 
 let gotoText = (uuid) => {
