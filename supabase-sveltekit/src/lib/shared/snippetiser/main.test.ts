@@ -70,6 +70,12 @@ test("input8", async () => {
     "Learn Flexbox with 30 Code Tidbits.",
   );
 });
+test("input9", async () => {
+  const r = await l("/input9.json");
+  expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
+    "I love the melody, and im dying to understand the words.",
+  );
+});
 
 test("context6", async () => {
   const r = await l("/input6.json");
