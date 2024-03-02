@@ -1,10 +1,9 @@
 // import 'chrome';
 // import { makeQCH } from "../ lib/shared/snippetiser/main";
+import { reserialize } from "$lib/shared/serialiser/util";
 import { makeQCH } from "./lib/shared/snippetiser/main";
-import { Rangee } from "rangee";
 
 console.log("hello");
-let rangee: Rangee
 
 const ran2sel = (rann: Range) => {
   let sel = rangy.getSelection();
@@ -34,7 +33,6 @@ const deleteSelection = (uuid, serialized) => {
   app.undoToRange(ran)
 }
 function wrapSelectedText(uuid) {
-  if (rangee === undefined) rangee = new Rangee({ document });
 
   let createClassApplier = rangy.createClassApplier;
   let createHighlighter = rangy.createHighlighter;
@@ -42,13 +40,13 @@ function wrapSelectedText(uuid) {
   const classname = "_" + uuid;
   const app = createClassApplier(classname, applierOptions);
   const ran = document.getSelection()?.getRangeAt(0)!;
-  const ser = rangee.serialize(ran);
+  // HERE
   const selection = ran2sel(ran)
   
   const hl = createHighlighter();
   hl.addClassApplier(app);
   hl.highlightSelection(classname, { selection });
-  return ser;
+  return hl.serialize(selection) + reserialize(ran)
 }
 
 const oldSerRegex = /^type:textContent/

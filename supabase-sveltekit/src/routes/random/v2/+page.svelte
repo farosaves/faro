@@ -1,13 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as rangy from "rangy";
-  import { serialize } from "./util";
+  // import createHighlighter from "./rangy-classapplier.min.js";
 
   let loaded = false;
 
   onMount(() => {
     loaded = true;
-
     let ran2sel = (rann: Range) => {
       let sel = rangy.getSelection();
       sel.setSingleRange(rann as RangyRange);
@@ -16,7 +15,6 @@
     document.body.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         let rann = document.getSelection()?.getRangeAt(0)!;
-        console.log(serialize(rann));
       }
     });
   });
