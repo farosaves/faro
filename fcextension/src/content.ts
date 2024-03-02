@@ -1,8 +1,8 @@
-// import 'chrome';
-// import { makeQCH } from "../ lib/shared/snippetiser/main";
-import { makeQCH } from "../src/lib/shared/snippetiser/main";
 
-console.log("hello");
+import { makeQCH } from "../src/lib/shared/snippetiser/main";
+const DEBUG = import.meta.env.DEBUG || false
+
+if (DEBUG) console.log("hello");
 chrome.runtime.sendMessage({ action: "loadDeps" });
 
 const applierOptions = {
@@ -72,15 +72,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getHighlightedText") {
     const { website_title, website_url, uuid } = request;
     const selectedText = window.getSelection().toString();
-    console.log(selectedText, window.getSelection().anchorNode.textContent);
-    console.log(rangy.createRange());
     const serialized = wrapSelectedText(uuid);
-    console.log(window.getSelection().anchorNode);
-    // let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
     gotoText(uuid);
 
-    // const { selectedText, packed_context, website_url, website_title, uuid, serialized } = input;
-    console.log("uploading...:", { selectedText, website_url });
+    if (DEBUG) console.log("uploading...:", { selectedText, website_url });
     const { quote, highlights, context } = makeQCH(
       document,
       uuid,
@@ -96,9 +91,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       serialized_highlight: serialized,
       sources: { title: website_title, url: website_url },
     };
-    // supa_update(locals.supabase, note_data).then(console.log);
-    // return { note_data };
-    // }),
 
     chrome.runtime.sendMessage({
       action: "uploadText",

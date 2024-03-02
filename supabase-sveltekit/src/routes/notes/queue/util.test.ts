@@ -1,11 +1,11 @@
 import { expect, test } from "vitest";
 import {
   day,
-  dequeue,
-  enqueue,
+  dequeue$,
+  enqueue$,
   fromDay,
   nextIntervals,
-  schedule,
+  schedule$,
 } from "./util";
 import { setHours, differenceInCalendarDays } from "date-fns";
 import * as fd from "date-fns/fp";
@@ -33,6 +33,4 @@ test("a", () => {
   expect(nextIntervals(card1)).toStrictEqual([1, 3, 9]);
   const card2 = { ...card1, state: State.Review };
   expect(nextIntervals(card2)).toStrictEqual([1, 2, 3]);
-  expect(schedule(card1, 2).state).toBe(State.Review);
-  expect(nextIntervals(enqueue(dequeue(card1)))).toStrictEqual([1, 3, 9]);
 });

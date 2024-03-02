@@ -1,4 +1,5 @@
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, ''); // Replace with your domain
+const DEBUG = import.meta.env.DEBUG || false
 // http://78.10.223.2:13723
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -59,21 +60,12 @@ function onMessage(request, sender, sendResponse) {
 }
 chrome.runtime.onMessage.addListener(onMessage);
 
-chrome.runtime.onInstalled.addListener(() => {
-	chrome.contextMenus.create({
-		id: 'loginStatus',
-		title: 'Checking login status...', // Temporary title
-		contexts: ['all'],
-		documentUrlPatterns: ['<all_urls>']
-	});
-});
-
 function getUuid() {
 	try {
 		return crypto.randomUUID();
 	} catch {
 		console.log('uuid fallback, nonsecure context?');
-		return Math.floor(Math.random() * 1_000_000).toString();
+		// return Math.floor(Math.random() * 1_000_000).toString();
 	}
 }
 
@@ -91,19 +83,5 @@ async function activate(tab) {
 		uuid: getUuid()
 	});
 }
-// this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 chrome.action.onClicked.addListener(activate);
-
-function updateContextMenu(loggedIn) {
-	const title = loggedIn ? 'User is logged in' : 'User is not logged in';
-	chrome.contextMenus.update('loginStatus', { title: title });
-}
-// TODO: sort this out
-async function onCMclick(info, tab) {
-	if (info.menuItemId === 'loginStatus') {
-		activate(tab);
-	}
-}
-chrome.contextMenus.onClicked.addListener(onCMclick);
-console.log('loaded all background');

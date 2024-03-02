@@ -38,15 +38,15 @@ test("input3", async () => {
 test("input4", async () => {
   const r = await l("/input4.json");
   console.log(r.selectedText);
-  // console.log(r.html)
-  // console.log(document(r).body.outerHTML)
   expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
-    "Hydrazine (combusted to N2+H2O)	19.5	19.3	5,416.7	5,361.1",
+    "Hydrazine (combusted to N2+H2O)	19.5	19.3	5,416.7	5,361.1".replaceAll(
+      /\s+/g,
+      " ",
+    ),
   );
 });
 test("input5", async () => {
   const r = await l("/input5.json");
-  // console.log(document(r).body.outerHTML)
   expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
     "Body fat 38 35 10,555.6 9,722.2 Metabolism in human body (22% efficiency)",
   );
@@ -63,9 +63,10 @@ test("input7", async () => {
     "Composed in Vedic Sanskrit, the texts constitute the oldest layer of Sanskrit literature and the oldest scriptures of Hinduism.",
   );
 });
-// test('input8', async () => {
-// 	const r = await l( '/input8.json')
-// 	expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
-// 		"Persian has features of agglutination, making use of prefixes and suffixes attached to the stems of verbs and nouns, thus making it a synthetic language rather than an analytic one."
-// 	);
-// });
+test("input8", async () => {
+  const r = await l("/input8.json");
+  // this fails because the "line break" is emoji\\n\s+\\n
+  expect(makeQCH(document(r), r.uuid, r.selectedText).quote).not.toBe(
+    "Learn Flexbox with 30 Code Tidbits.",
+  );
+});

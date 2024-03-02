@@ -26,6 +26,7 @@ const splittags = new Set(
 
 let preSpaceIfNotPunct = (s: string | null) =>
   !s || s.match(/^[\p{Pe}\p{Pf}\p{Po}]/u) ? s : " " + s;
+
 function divSplit(v: ArrOr1<Node>) {
   let f = (prev: string[], n: Node) => {
     // @ts-expect-error
@@ -120,11 +121,11 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   const _t2 = lm.textContent;
   lm.textContent = _t2 + sp;
   const sents = divSplit(Array.from(body.childNodes)).join(" ");
+  // .replaceAll(/\\n\s*\\n/g, ". ");
   // console.log(divSplit(Array.from(body.childNodes)));
   const [left, mid, right] = sents.split(sp);
   // console.log([left, mid, right]);
   let g = preSpaceIfNotPunct;
-  const h = makeNonempty("");
   // instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
   // and then likewise .........suffix .......right...
   function getShortestXfix(p: string, pre: boolean, n = 1) {
@@ -146,8 +147,10 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
         return getShortestXfix(p, pre, n + 1);
     }
   }
+  const h = makeNonempty("");
+  const noEndDot = (s: string) => !/\.$/.test(s.trim());
   const potResult = [
-    last(h(tok.sentences(left))),
+    last(h(tok.sentences(left).filter(noEndDot))),
     g(mid),
     g(first(h(tok.sentences(right)))),
   ].join("");
@@ -159,7 +162,7 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   text = text.split(post_short.value)[0] + post_short.value;
   return text;
 }
-const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
+// const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
 export function makeQCH(d: Document, uuid: string, selectedText: string) {
   const matches = Array.from(d.getElementsByClassName("_" + uuid));
   const root = goUp(
