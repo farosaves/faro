@@ -1,4 +1,5 @@
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, ''); // Replace with your domain
+const DEBUG = import.meta.env.DEBUG || false
 // http://78.10.223.2:13723
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -26,22 +27,6 @@ async function uploadSelected(request, sender, sendResponse) {
 	const smr = () => chrome.runtime.sendMessage(request);
 	tryn(5)(smr)
 }
-// const { selectedText, html, website_title, website_url, uuid, serialized } = request;
-// fetch(`${DOMAIN}/api/upload-snippet`, {
-// 	method: 'POST',
-// 	headers: { 'Content-Type': 'application/json' },
-// 	body: JSON.stringify({
-// 		selectedText,
-// 		html,
-// 		website_title,
-// 		website_url,
-// 		uuid,
-// 		serialized
-// 	})
-// })
-// 	.then((response) => response.json())
-// 	.then((data) => console.log(data))
-// 	.catch((error) => console.error('Error:', error));
 
 function onMessage(request, sender, sendResponse) {
 	if (request.action === 'uploadText') {
@@ -73,7 +58,7 @@ function getUuid() {
 		return crypto.randomUUID();
 	} catch {
 		console.log('uuid fallback, nonsecure context?');
-		return Math.floor(Math.random() * 1_000_000).toString();
+		// return Math.floor(Math.random() * 1_000_000).toString();
 	}
 }
 
@@ -94,16 +79,4 @@ async function activate(tab) {
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 chrome.action.onClicked.addListener(activate);
-
-function updateContextMenu(loggedIn) {
-	const title = loggedIn ? 'User is logged in' : 'User is not logged in';
-	chrome.contextMenus.update('loginStatus', { title: title });
-}
-// TODO: sort this out
-async function onCMclick(info, tab) {
-	if (info.menuItemId === 'loginStatus') {
-		activate(tab);
-	}
-}
-chrome.contextMenus.onClicked.addListener(onCMclick);
-console.log('loaded all background');
+if (DEBUG) console.log('loaded all background');
