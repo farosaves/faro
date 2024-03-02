@@ -1,20 +1,20 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as rangy from "rangy";
-  import { invalidateAll } from "$app/navigation";
-  let loaded = false;
-  onMount(() => {
-    if (loaded) invalidateAll();
-    console.log(loaded, "mounted");
-    loaded = true;
+  // import createHighlighter from "./rangy-classapplier.min.js";
 
+  let loaded = false;
+
+  onMount(() => {
+    loaded = true;
+    let ran2sel = (rann: Range) => {
+      let sel = rangy.getSelection();
+      sel.setSingleRange(rann as RangyRange);
+      return sel;
+    };
     document.body.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
-        console.log(
-          window.getSelection()?.getRangeAt(0).commonAncestorContainer
-            .parentNode,
-        );
-        // console.log(rangy.getSelection());
+        let rann = document.getSelection()?.getRangeAt(0)!;
       }
     });
   });

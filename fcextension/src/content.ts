@@ -1,8 +1,16 @@
 // import 'chrome';
 // import { makeQCH } from "../ lib/shared/snippetiser/main";
-import { makeQCH } from "../src/lib/shared/snippetiser/main";
+import { prepare2deserialize, reserialize } from "$lib/serialiser/util";
+import { makeQCH } from "./lib/shared/snippetiser/main";
 
 console.log("hello");
+
+const ran2sel = (rann: Range) => {
+  let sel = rangy.getSelection();
+  sel.setSingleRange(rann as RangyRange);
+  return sel;
+};
+
 chrome.runtime.sendMessage({ action: "loadDeps" });
 
 const applierOptions = {
@@ -11,19 +19,35 @@ const applierOptions = {
     tabIndex: -1,
   },
 };
+const deleteSelection = (uuid, serialized) => {
+  let createClassApplier = rangy.createClassApplier;
+  const classname = "_" + uuid;
+  const elements = document.querySelectorAll(`.${classname}`);
+  const last = elements[elements.length - 1]
+
+  const app = createClassApplier(classname, applierOptions);
+  // const ran = rangee.deserialize(serialized)
+  const ran = rangy.createRange()
+  ran.setStart(elements[0], 0)
+  ran.setEnd(last, 0)
+  app.undoToRange(ran)
+}
 function wrapSelectedText(uuid) {
+
   let createClassApplier = rangy.createClassApplier;
   let createHighlighter = rangy.createHighlighter;
 
   const classname = "_" + uuid;
-  const hl = createHighlighter();
   const app = createClassApplier(classname, applierOptions);
-  const selection = rangy.getSelection();
+  const ran = document.getSelection()?.getRangeAt(0)!;
+  // HERE
+  const rangeText = reserialize(ran)
+  const selection = ran2sel(ran)
+  
+  const hl = createHighlighter();
   hl.addClassApplier(app);
   hl.highlightSelection(classname, { selection });
-  const ser = hl.serialize(selection);
-  console.log(ser);
-  return ser;
+  return hl.serialize(selection) + rangeText
 }
 
 let batchDeserialize = (uss) =>
@@ -34,10 +58,10 @@ let batchDeserialize = (uss) =>
     console.log("deserializeing", uuid, serialized);
     const hl = createHighlighter();
     const app = createClassApplier("_" + uuid, applierOptions);
-    const legacyapp = createClassApplier(uuid, applierOptions);
     hl.addClassApplier(app);
-    hl.addClassApplier(legacyapp);
-    hl.deserialize(serialized);
+    const prepared = prepare2deserialize(document.body.textContent || "", serialized)
+    console.log("prep", prepared)
+    hl.deserialize(prepared);
   });
 
 let gotoText = (uuid) => {
@@ -107,6 +131,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.action === "goto") gotoText(request.uuid);
   if (request.action === "deserialize") batchDeserialize(request.uss);
+  if (request.action === "delete") deleteSelection(request.uuid, request.serialized);
 });
 
 function sendHighlightedText() {

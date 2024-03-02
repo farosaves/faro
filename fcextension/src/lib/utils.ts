@@ -30,6 +30,12 @@ export async function gotoSnippet(uuid: string) {
 	chrome.tabs.sendMessage(tab.id!, {action: "goto", uuid})
 }
 
+export async function deleteSnippet(uuid: string, serialized: string) {
+	console.log("deleting..", uuid, serialized)
+	const tab = (await chrome.tabs.query({active: true, currentWindow: true}))[0]
+	chrome.tabs.sendMessage(tab.id!, {action: "delete", uuid, serialized})
+}
+
 export async function getNotes(supabase: SupabaseClient, source_id: number, user_id: string) {
 	const { data, error } = await supabase
 		.from('notes')
