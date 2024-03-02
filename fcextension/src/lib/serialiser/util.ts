@@ -30,14 +30,13 @@ export let extractPrePost = (s: string) =>
 export let stripQuote = (s: string) =>
   s.replace(/(?<=-[0-9a-f]{12}\$)(.*)$/, "");
 
-export let prepare2deserialize = (textContent: string, s: string) => {
+export let prepare2deserialize = (textContent: string, s: string) => 
   extractPrePost(s).length == 2
     ? subIdxs(
         stripQuote(s),
         ...adjIdxs(textContent, extractPrePost(s), start(s), end(s))
       )
     : stripQuote(s);
-};
 
 export const adjIdxs = (
   textContent: string,
@@ -75,6 +74,8 @@ export const adjIdxs = (
   if (allAligned.length) {
     const [l, r] = allAligned[0];
     return [l.index, r.index + post.length];
+  } else if (nToTake==0) {
+    return [0,0]
   } else {
     return adjIdxs(textContent, pre_post, start, end, nToTake - 1);
   }

@@ -8,10 +8,10 @@ import {
   stripQuote,
   subIdxs,
 } from "./util";
+import { JSDOM } from 'jsdom';
 import { readFile } from "fs/promises";
 import { pipe } from "fp-ts/lib/function";
 import { htmlstr2body } from "$lib/test_utils";
-import { desc } from "$lib/shared/utils";
 
 test("long", async () => {
   const s = "Which is 5 + 1, or 2+4.";
@@ -22,7 +22,7 @@ test("short", async () => {
   expect(prepostfixes(s)).toStrictEqual(["hey!", "hey!"]);
 });
 const load = async (s: string): Promise<HTMLElement> =>
-  pipe(await readFile(__dirname + s, {}), (x) => x.toString(), htmlstr2body);
+  pipe(await readFile(__dirname + s, {}), (x) => new JSDOM(x.toString()).window.document.body);
 
 test("adjIdxs html", async () => {
   const body = await load("/steg2.html");
