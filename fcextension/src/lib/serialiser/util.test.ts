@@ -4,14 +4,12 @@ import {
   extractPrePost,
   normalize,
   prepostfixes,
-  reserialize,
   stripQuote,
   subIdxs,
 } from "./util";
 import { JSDOM } from 'jsdom';
 import { readFile } from "fs/promises";
 import { pipe } from "fp-ts/lib/function";
-import { htmlstr2body } from "$lib/test_utils";
 
 test("long", async () => {
   const s = "Which is 5 + 1, or 2+4.";

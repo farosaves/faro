@@ -4,7 +4,6 @@
   import fuzzysort from "fuzzysort";
   import * as tok from "sbd";
 
-  import { SharedValue } from "shared";
   let alltext: string[];
 
   onMount(async () => {
@@ -72,7 +71,6 @@
   };
 </script>
 
-{SharedValue}
 <p id="p">Select me: <i>italic</i> and <b>bold</b></p>
 <input bind:value={query} on:keyup={f} />
 <button class="btn" on:click={() => {}}>aa</button>

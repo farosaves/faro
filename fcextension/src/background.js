@@ -44,15 +44,6 @@ function onMessage(request, sender, sendResponse) {
 }
 chrome.runtime.onMessage.addListener(onMessage);
 
-chrome.runtime.onInstalled.addListener(() => {
-	chrome.contextMenus.create({
-		id: 'loginStatus',
-		title: 'Checking login status...', // Temporary title
-		contexts: ['all'],
-		documentUrlPatterns: ['<all_urls>']
-	});
-});
-
 function getUuid() {
 	try {
 		return crypto.randomUUID();
@@ -74,7 +65,7 @@ async function activate(tab) {
 		website_title: tab.title,
 		website_url: tab.url,
 		uuid: getUuid()
-	});
+	}).catch(e => console.log(e));
 }
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
