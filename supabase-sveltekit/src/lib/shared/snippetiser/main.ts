@@ -116,7 +116,9 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   const sents = divSplit(Array.from(body.childNodes)).join(" ");
   // .replaceAll(/\\n\s*\\n/g, ". ");
   // console.log(divSplit(Array.from(body.childNodes)));
-  const [left, mid, right] = sents.split(sp).map(s=>s.replace(/(\\[nt])+/," "));
+  const [left, mid, right] = sents
+    .split(sp)
+    .map((s) => s.replace(/(\\[nt])+/, " "));
   // console.log([left, mid, right]);
   // instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
   // and then likewise .........suffix .......right...
@@ -170,13 +172,16 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
   const contextNode = contextNodeOpt.value;
   // console.log(wrapOrPass(contextNode)[0].children[0])
   const potentialQuote = listOrAllChildren(contextNode);
-  const context = divSplit(potentialQuote)
+  let context = divSplit(potentialQuote)
+    .map((s) => s.trim())
     .map(preSpaceIfNotPunct)
-    .map((s) => s.replace(/\.$/, ""))
-    .join(".")
+    // .map((s) => s.replace(/\P{Pe}+$/u, (s) => s + "."))
+    .map((s) => s.replace(/[^!\?\.;]+$/u, (s) => s + "."))
+    .join("")
     .trim();
 
-  const is4highlight = (t: string) => t.split(" ").length < 6;
+  const is4highlight = (t: string) => t.trim().split(" ").length < 6;
+
   if (!is4highlight(selectedText))
     return { quote: selectedText, context, highlights: [] };
   const highlights = [selectedText];
@@ -189,7 +194,6 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
   // console.log(wrapOrPass(contextNode).map(x=>x.outerHTML))
   // console.log(quoteNodes.map(x => x.outerHTML))
   // console.log(divSplit(quoteNodes))
-  const tag = (e: Element) => e.tagName || "not";
   // console.log(tag(quoteNodes[0]))
 
   let quote = getFullSentences(quoteNodes, uuid);
@@ -198,7 +202,7 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
     .replaceAll(/\n+/g, " ")
     .trim();
 
-  const tooShort = (s: string) => s.split(" ").length < 6;
+  const tooShort = (s: string) => s.trim().split(" ").length < 6;
   if (tooShort(quote)) quote = getFullSentences(contextNode, uuid);
   if (quote.length > 1000) quote = selectedText;
   // wikipedia src delete

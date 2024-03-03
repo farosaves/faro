@@ -1,58 +1,60 @@
 <script lang="ts">
-  import { Icon, PencilSquare } from "svelte-hero-icons";
-  import type { MouseEventHandler } from "svelte/elements";
-  import type { Notes } from "../dbtypes";
-  import type { NoteSync } from "./note-sync";
-  import { option as O } from "fp-ts";
-  import { onMount } from "svelte";
-  import { sleep, themeStore } from "./utils";
-  import MyTags from "./MyTags.svelte";
-  import { pipe } from "fp-ts/lib/function";
-  export let note_data: Notes;
-  export let showing_content: boolean;
-  export let close_all_notes: () => void;
-  export let note_sync: NoteSync;
+  import { Icon, PencilSquare } from "svelte-hero-icons"
+  import type { MouseEventHandler } from "svelte/elements"
+  import type { Notes } from "../dbtypes"
+  import type { NoteSync } from "./note-sync"
+  import { option as O } from "fp-ts"
+  import { onMount } from "svelte"
+  import { sleep, themeStore } from "./utils"
+  import MyTags from "./MyTags.svelte"
+  import { pipe } from "fp-ts/lib/function"
+  export let note_data: Notes
+  export let showing_content: boolean
+  export let close_all_notes: () => void
+  export let note_sync: NoteSync
 
-  export let goto_function: MouseEventHandler<any> | undefined;
-  export let deleteCbOpt: O.Option<() => any> = O.none;
+  export let goto_function: MouseEventHandler<any> | undefined
+  export let deleteCbOpt: O.Option<() => any> = O.none
 
   // type OptionValueType<T> = T extends O.Option<infer R> ? R : never
 
-  let this_element: Element;
-  $: tags = note_data.tags || [];
-  let all_tags = note_sync.alltags();
+  let this_element: Element
+  $: tags = note_data.tags || []
+  let all_tags = note_sync.alltags()
   $: replacer = (capture: string) =>
     `<b class="${$themeStore == "dark" ? "text-yellow-100" : ""}">` +
     capture +
-    `</b>`;
+    `</b>`
+  // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
   let escapeHTML = (text: string) => {
-    var div = document.createElement("div");
-    div.innerText = text;
-    return div.innerHTML;
-  };
+    var div = document.createElement("div")
+    div.innerText = text
+    return div.innerHTML
+  }
 
   $: text = note_data.highlights
     ? escapeHTML(note_data.quote).replaceAll(note_data.highlights[0], replacer)
-    : escapeHTML(note_data.quote);
+    : escapeHTML(note_data.quote)
+  //.replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = note_sync.tagUpdate(note_data);
-  $: onTagRemoved = note_sync.tagUpdate(note_data);
+  $: onTagAdded = note_sync.tagUpdate(note_data)
+  $: onTagRemoved = note_sync.tagUpdate(note_data)
 
-  let highlighting = false;
+  let highlighting = false
   const highlightMe = () => {
-    this_element.scrollIntoView({ block: "center" });
-    highlighting = true;
-    setTimeout(() => (highlighting = false), 1000);
-    return true;
-  };
+    this_element.scrollIntoView({ block: "center" })
+    highlighting = true
+    setTimeout(() => (highlighting = false), 1000)
+    return true
+  }
   onMount(() => {
     "highlightOnMount" in note_data &&
       note_data["highlightOnMount"] &&
       highlightMe() &&
-      (note_data["highlightOnMount"] = false);
-  });
+      (note_data["highlightOnMount"] = false)
+  })
 
-  let myModal: HTMLDialogElement | null = null;
+  let myModal: HTMLDialogElement | null = null
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -67,11 +69,11 @@
     style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1">
     <button
       on:click={async () => {
-        const save_showing_content = showing_content;
-        close_all_notes();
+        const save_showing_content = showing_content
+        close_all_notes()
         // svelte stores....
-        await sleep(1);
-        showing_content = !save_showing_content;
+        await sleep(1)
+        showing_content = !save_showing_content
       }}
       on:dblclick={goto_function}>
       {@html text}
@@ -88,10 +90,10 @@
         class="btn btn-xs join-item grow"
         style="color: red;"
         on:click={() => {
-          note_sync.deleteit(note_data);
+          note_sync.deleteit(note_data)
           // prettier-ignore
           pipe(deleteCbOpt, O.map((f) => f()))
-          close_all_notes();
+          close_all_notes()
         }}>DELETE</button>
     </div>
   </div>
