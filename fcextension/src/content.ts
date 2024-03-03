@@ -95,21 +95,22 @@ let walkup2 = (node) =>
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getHighlightedText") {
     const { website_title, website_url, uuid } = request;
-    const selectedText = window.getSelection().toString();
-    console.log(selectedText, window.getSelection().anchorNode.textContent);
+    const selectedText = window.getSelection()?.toString();
+    if (selectedText === undefined) return
+    console.log(selectedText, window.getSelection()?.anchorNode?.textContent);
     console.log(rangy.createRange());
     const serialized = wrapSelectedText(uuid);
-    console.log(window.getSelection().anchorNode);
+    console.log(window.getSelection()?.anchorNode);
     // let html = walkup2(window.getSelection().anchorNode.parentElement).innerHTML;
     gotoText(uuid);
 
-    // const { selectedText, packed_context, website_url, website_title, uuid, serialized } = input;
     console.log("uploading...:", { selectedText, website_url });
-    const { quote, highlights, context } = makeQCH(
+    const { quote, highlights, context: _context } = makeQCH(
       document,
       uuid,
       selectedText,
     );
+    const context = _context.length < 1e4 ? _context : quote
     if (!quote) return { note_data: null };
     const note_data = {
       quote,
