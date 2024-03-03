@@ -173,9 +173,11 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
   // console.log(wrapOrPass(contextNode)[0].children[0])
   const potentialQuote = listOrAllChildren(contextNode);
   let context = divSplit(potentialQuote)
+    .map((s) => s.trim())
     .map(preSpaceIfNotPunct)
-    .map((s) => s.replace(/\.$/, ""))
-    .join(".")
+    // .map((s) => s.replace(/\P{Pe}+$/u, (s) => s + "."))
+    .map((s) => s.replace(/[^!\?\.;]+$/u, (s) => s + "."))
+    .join("")
     .trim();
 
   const is4highlight = (t: string) => t.trim().split(" ").length < 6;
