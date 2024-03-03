@@ -1,7 +1,9 @@
 import { array as A, option as O, nonEmptyArray as nEA } from "fp-ts";
 import { identity, pipe } from "fp-ts/lib/function";
 import * as tok from "sbd";
-const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
+import { JSDOM } from "jsdom";
+ const htmlstr2body = (h: string) => new JSDOM(h).window.document.body;
+
 
 type ArrOr1<T> = T[] | T;
 function goUp(cond: (n: Element) => boolean, e: Element): Element {

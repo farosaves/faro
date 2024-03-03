@@ -12,6 +12,7 @@
   import { supa_update } from "./fun.js"
   import { domain_title } from "$lib/shared/utils.js"
   import { option } from "fp-ts"
+  import Note from "$lib/shared/_Note.svelte"
   let login_url = API_ADDRESS + "/login"
   let curr_title = "Kalanchoe"
   let curr_url = ""
@@ -60,10 +61,6 @@
     if (!logged_in) optimistic = option.none
   }, 1000)
   onMount(async () => {
-    // supabase.auth.onAuthStateChange((event) => {
-    //   if (event == "SIGNED_IN") logged_in = true;
-    // }); this doesnt work... because client is different
-
     try {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
@@ -100,7 +97,17 @@
     await updateActive()
     note_sync.sub(handlePayload(note_sync)(curr_title, curr_url))
   })
+
+  const handle_keydown = (e: KeyboardEvent) => {
+    if (e.metaKey && e.key === "z") {
+      e.preventDefault()
+      note_sync.restoredelete()
+      // (e.shiftKey ? redo : undo)();
+    }
+  }
 </script>
+
+<svelte:window on:keydown={handle_keydown} />
 
 {#if needToRefreshPage}
   <div role="alert" class="alert alert-error">
