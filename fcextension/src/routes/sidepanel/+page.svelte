@@ -12,7 +12,6 @@
   import { supa_update } from "./fun.js"
   import { domain_title } from "$lib/shared/utils.js"
   import { option } from "fp-ts"
-  import Note from "$lib/shared/_Note.svelte"
   let login_url = API_ADDRESS + "/login"
   let curr_title = "Kalanchoe"
   let curr_url = ""
