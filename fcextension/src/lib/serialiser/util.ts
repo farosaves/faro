@@ -26,9 +26,9 @@ export let end = (s: string) =>
     s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0"
   );
 export let extractPrePost = (s: string) =>
-  (s.match(/(?<=-[0-9a-f]{12}\$)(.*)$/)?.[0].toString() || "").split("$");
+  (s.match(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/)?.[0].toString() || "").split("$");
 export let stripQuote = (s: string) =>
-  s.replace(/(?<=-[0-9a-f]{12}\$)(.*)$/, "");
+  s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "");
 
 export let prepare2deserialize = (textContent: string, s: string) => 
   extractPrePost(s).length == 2
