@@ -18,7 +18,7 @@ export const supa_update = (schlep=0) => async (supabase: SupabaseClient, n: Moc
 			.select('id')
 			.maybeSingle()
 			.then(logIfError);
-		note.source_id = data!.id;
+		if (data) note.source_id = data.id;
 	}
 	const {data: newNote} = await supabase.from('notes').insert(note).select().maybeSingle();
 	await sleep(schlep)  // time for sb to update

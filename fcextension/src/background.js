@@ -1,6 +1,6 @@
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, ''); // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
-// http://78.10.223.2:13723
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 chrome.webNavigation.onCompleted.addListener(() => {
@@ -64,11 +64,11 @@ function getUuid() {
 
 async function activate(tab) {
 	chrome.sidePanel.open({ tabId: tab.id });
-	try {
-		await chrome.runtime.sendMessage({ action: 'empty' });
-	} catch {
-		console.log('did not find the thing');
-	} // TODO: we may want to skip the text capture - first click open only
+	// try {
+	// 	await chrome.runtime.sendMessage({ action: 'empty' });
+	// } catch {
+	// 	console.log('did not find the thing');
+	// } // TODO: we may want to skip the text capture - first click open only
 	chrome.tabs.sendMessage(tab.id, {
 		action: 'getHighlightedText',
 		website_title: tab.title,

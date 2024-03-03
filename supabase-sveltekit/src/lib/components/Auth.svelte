@@ -1,11 +1,12 @@
 <script lang="ts">
   import { form, field } from "svelte-forms";
-
+  import { SvelteComp } from "shared";
   let title = "Login";
   let details = "";
   // $: myForm = form(...fields);
 </script>
 
+<SvelteComp t={3} />
 <div class="hero min-h-screen bg-base-200">
   <div class="hero-content flex-col lg:flex-row-reverse">
     <div class="text-center lg:text-left">
