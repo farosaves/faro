@@ -52,13 +52,13 @@
       (note_data["highlightOnMount"] = false);
   });
 
-  let myModal: HTMLDialogElement | null = null;
+  // let myModal: HTMLDialogElement | null = null;
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- on:contextmenu|preventDefault={() => myModal && myModal.showModal()} -->
 <div
   class="collapse bg-base-200 border-primary"
-  on:contextmenu|preventDefault={() => myModal && myModal.showModal()}
   style="border-width: {1 + 5 * +highlighting}px;">
   <input type="checkbox" class="-z-10" bind:checked={showing_content} />
   <div
@@ -95,9 +95,8 @@
         }}>DELETE</button>
     </div>
   </div>
-  <dialog id="my_modal_2" class="modal" bind:this={myModal}>
+  <!-- <dialog id="my_modal_2" class="modal" bind:this={myModal}>
     <div class="modal-box">
-      <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
       <p class="py-4">
         {@html note_data.highlights
           ? escapeHTML(note_data.context || "").replaceAll(
@@ -110,5 +109,5 @@
     <form method="dialog" class="modal-backdrop">
       <button>close</button>
     </form>
-  </dialog>
+  </dialog> -->
 </div>
