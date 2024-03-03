@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import Note from "$lib/components/Note.svelte";
   import { NoteSync } from "$lib/shared/note-sync.js";
+  // import { NoteSync } from "shared";
   import Search from "$lib/components/Search.svelte";
   import type { NoteEx } from "$lib/shared/first.js";
   import TagFilter from "$lib/components/TagFilter.svelte";
