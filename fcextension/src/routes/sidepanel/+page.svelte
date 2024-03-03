@@ -54,10 +54,11 @@
     getHighlight($source_id, tab.id)
   }
   let logged_in = true
+  let optimistic: option.Option<MockNote> = option.none
   setTimeout(() => {
     logged_in = !!session
+    if (!logged_in) optimistic = option.none
   }, 1000)
-  let optimistic: option.Option<MockNote> = option.none
   onMount(async () => {
     // supabase.auth.onAuthStateChange((event) => {
     //   if (event == "SIGNED_IN") logged_in = true;
