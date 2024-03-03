@@ -41,12 +41,12 @@ export let prepare2deserialize = (textContent: string, s: string) =>
 export const adjIdxs = (
   textContent: string,
   pre_post: string[],
-  start: number,
-  end: number,
+  startIdx: number,
+  endIdx: number,
   nToTake = 8
 ): [number, number] => {
   const [pre, post] = pre_post;
-  const len = end - start;
+  const len = endIdx - startIdx;
   const matches = (xfix: string) =>
     Array.from(textContent.matchAll(RegExp(xfix, "gu")));
   const ss = matches(pre);
@@ -69,14 +69,14 @@ export const adjIdxs = (
 };
 
   const score = (l: RegExpExecArray, r: RegExpExecArray) =>
-    (1 + Math.abs(r.index - l.index - targetDiff)) * l.index - start;
+    (1 + Math.abs(r.index - l.index - targetDiff)) * Math.abs(l.index - startIdx);
   const allAligned = aligned(ss, es).toSorted(desc(([l, r]) => -score(l, r)));
-  if (allAligned.length) {
+  if (allAligned.length) { // TODO: here I changed
     const [l, r] = allAligned[0];
     return [l.index, r.index + post.length];
   } else if (nToTake==0) {
     return [0,0]
   } else {
-    return adjIdxs(textContent, pre_post, start, end, nToTake - 1);
+    return adjIdxs(textContent, pre_post, startIdx, endIdx, nToTake - 1);
   }
 };

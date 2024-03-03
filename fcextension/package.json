@@ -8,7 +8,7 @@
 		"build-crx": "vite build --mode crx",
 		"reload": "cp -r build/* dist && sleep 0.1 && cp -r dist/* build && sleep 0.5 && open \"http://reload.extensions\"",
 		"bz": "npm run build && npm run build-crx && zip -r ../supabase-sveltekit/static/ext.zip build",
-		"bfull": "npm run build && npm run build-crx && npm run reload",
+		"bfull": "npm run build && npm run build-crx && sleep 1 && npm run reload",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
