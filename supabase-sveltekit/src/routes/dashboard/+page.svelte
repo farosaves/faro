@@ -62,7 +62,16 @@
   let w_rem = 16;
   let all_notes = note_sync.notestore;
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
+  const handle_keydown = (e: KeyboardEvent) => {
+    if (e.metaKey && e.key === "z") {
+      e.preventDefault();
+      note_sync.restoredelete();
+      // (e.shiftKey ? redo : undo)();
+    }
+  };
 </script>
+
+<svelte:window on:keydown={handle_keydown} />
 
 <LoginPrompt {session} />
 {Object.entries($all_notes).flatMap(([a, b]) => b).length}
