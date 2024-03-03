@@ -1,0 +1,28 @@
+{
+  "name": "shared",
+  "version": "1.1.7",
+  "description": "shared lib.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "compile": "tsc --build tsconfig.json",
+    "copy": "copy package.json dist"
+  },
+  "keywords": [
+    "range",
+    "serialize",
+    "deserialize",
+    "mark",
+    "highlight",
+    "store",
+    "HTML",
+    "DOM"
+  ],
+  "author": "pp",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "3.8.3"
+  }
+}
