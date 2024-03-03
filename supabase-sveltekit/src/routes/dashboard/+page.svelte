@@ -17,7 +17,6 @@
   $: ({ session: _session, supabase } = data);
   $: if (_session) $sessStore = O.some(_session);
   $: session = $sessStore;
-  // $: sessOpt = O.fromNullable(session);
 
   let showing_contents: boolean[][];
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
