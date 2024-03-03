@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import Note from "$lib/components/Note.svelte";
   import { NoteSync } from "$lib/shared/note-sync.js";
+  // import { NoteSync } from "shared";
   import Search from "$lib/components/Search.svelte";
   import type { NoteEx } from "$lib/shared/first.js";
   import TagFilter from "$lib/components/TagFilter.svelte";
@@ -16,7 +17,6 @@
   $: ({ session: _session, supabase } = data);
   $: if (_session) $sessStore = O.some(_session);
   $: session = $sessStore;
-  // $: sessOpt = O.fromNullable(session);
 
   let showing_contents: boolean[][];
   let note_sync: NoteSync = new NoteSync(supabase, undefined);
@@ -62,7 +62,16 @@
   let w_rem = 16;
   let all_notes = note_sync.notestore;
   $: flat_notes = Object.entries($all_notes).flatMap(([s, v]) => v);
+  const handle_keydown = (e: KeyboardEvent) => {
+    if (e.metaKey && e.key === "z") {
+      e.preventDefault();
+      note_sync.restoredelete();
+      // (e.shiftKey ? redo : undo)();
+    }
+  };
 </script>
+
+<svelte:window on:keydown={handle_keydown} />
 
 <LoginPrompt {session} />
 {Object.entries($all_notes).flatMap(([a, b]) => b).length}
