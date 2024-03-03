@@ -1,81 +1,83 @@
 <script lang="ts">
   export let data;
-
-  $: user_email = data.session?.user.email;
-  import { get } from "svelte/store";
-  import { formula } from "svelte-formula";
-  import { logIfError } from "$lib/shared/utils.js";
+  import { form, field } from "svelte-forms";
+  import { matchField, required, pattern } from "svelte-forms/validators";
+  const opt = { checkOnInit: true };
+  const password = field("password", "", [required(), pattern(/.{8,30}/)], opt);
+  const passwordConf = field("passwordConf", "", [matchField(password)], opt);
+  const myForm = form(password, passwordConf);
+  import { onMount } from "svelte";
+  import { logIfError } from "$lib/shared/utils";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  const isNew = $page.url.searchParams.has("new");
 
-  const isNew = $page.url.searchParams.has("beta");
+  onMount(() => {
+    myForm.validate();
+  });
+  let errors = { pat: "", match: "" };
+  const optEr = (err: string, msg: string) =>
+    $myForm.dirty && $myForm.hasError(err) ? msg : "";
+  $: if (myForm && $myForm.dirty)
+    errors = {
+      pat: optEr("password.pattern", "8 to 30 characters please."),
+      match: optEr("passwordConf.match_field", "They need to match"),
+    };
 
-  const { form, formValidity, isFormValid, submitValues, touched, validity } =
-    formula({
-      formValidators: {
-        // @ts-ignore
-        passwordsMatch: (values: {
-          password: string;
-          passwordMatch: string;
-        }) =>
-          values.password === values.passwordMatch
-            ? null
-            : "Your passwords must match",
-      },
-    });
-
-  $: passwordErr = $touched?.password && $validity?.password?.invalid;
-  $: passwordsMatchErr =
-    $touched.passwordMatch && $formValidity?.passwordsMatch;
-
-  function onSubmit() {
-    const { password } = get(submitValues);
+  const submit = () =>
     data.supabase.auth
       // @ts-ignore
-      .updateUser({ password })
+      .updateUser({ password: $password.value })
       .then(logIfError)
       .then(() => goto("/account"));
-  }
 </script>
 
-<div class="">
-  <div>
-    User email: {user_email}
+{$myForm.dirty}
+<!-- <Auth fields={[password, passwordConf]} /> -->
+
+<div class="hero min-h-screen bg-base-200">
+  <div class="hero-content flex-col lg:flex-row-reverse">
+    <div class="text-center lg:text-left">
+      <h1 class="text-5xl font-bold">{isNew ? "Set" : "Reset"} Password</h1>
+      <p class="py-6">
+        <!-- {isNew ? ""} -->
+      </p>
+    </div>
+    <div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+      <form class="card-body" on:submit={submit}>
+        <div class="form-control">
+          <!-- svelte-ignore a11y-label-has-associated-control -->
+          <label class="label">
+            <span class="label-text">Password</span>
+            <span class="text-error text-sm text-center">{errors.pat}</span>
+          </label>
+          <input
+            type="password"
+            class="input input-bordered"
+            bind:value={$password.value}
+            required />
+        </div>
+        <div class="form-control">
+          <!-- svelte-ignore a11y-label-has-associated-control -->
+          <label class="label">
+            <span class="label-text">Repeat password</span>
+            <span class="text-error text-sm text-center">{errors.match}</span>
+          </label>
+          <input
+            type="password"
+            class="input input-bordered"
+            required
+            bind:value={$passwordConf.value} />
+          <!-- <label class="label">
+            <a href="#" class="label-text-alt link link-hover"
+              >Forgot password?</a>
+          </label> -->
+        </div>
+        <div class="form-control mt-6">
+          <button disabled={!$myForm.valid} class="btn btn-primary"
+            >Submit</button>
+        </div>
+      </form>
+    </div>
   </div>
-  <form use:form id="signup" on:submit={onSubmit} class="flex flex-col w-96">
-    <div hidden={$isFormValid}>There are errors</div>
-
-    <div class="form-field">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        minlength="8"
-        class:error={passwordErr} />
-      <span hidden={!passwordErr}>{$validity?.password?.message}</span>
-    </div>
-    <div class="form-field">
-      <label for="passwordMatch">Password Match</label>
-      <input
-        type="password"
-        id="passwordMatch"
-        name="passwordMatch"
-        required
-        minlength="8"
-        class:error={passwordsMatchErr} />
-      <span hidden={!passwordsMatchErr}>{$formValidity?.passwordsMatch}</span>
-    </div>
-    <button
-      class="btn btn-primary self-center"
-      type="submit"
-      disabled={!$isFormValid}>{isNew ? "Set" : "Reset"} your password</button>
-  </form>
 </div>
-
-<style>
-  .error {
-    border: 1px solid red;
-  }
-</style>
