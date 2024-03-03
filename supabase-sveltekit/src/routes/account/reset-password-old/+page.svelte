@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let data../reset-password/$types.js;
+  export let data;
 
   $: user_email = data.session?.user.email;
   import { get } from "svelte/store";
@@ -68,7 +68,7 @@
     <button
       class="btn btn-primary self-center"
       type="submit"
-      disabled={!$isFormValid}>{isNew ? "Set" : "Reset"} your password</button>
+      disabled={!$isFormValid}>Reset your password</button>
   </form>
 </div>
 
