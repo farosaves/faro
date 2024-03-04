@@ -1,5 +1,5 @@
 import type { Notes } from "./dbtypes";
-import type { NoteSync } from "$lib/shared/note-sync";
+import type { NoteSync } from "shared";
 
 export let sub = (note_sync: NoteSync) => {
   console.log(note_sync.user_id);

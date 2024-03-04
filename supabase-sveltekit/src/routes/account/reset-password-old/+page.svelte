@@ -4,9 +4,8 @@
   $: user_email = data.session?.user.email;
   import { get } from "svelte/store";
   import { formula } from "svelte-formula";
-  import { logIfError } from "$lib/shared/utils.js";
+  import { logIfError } from "shared";
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
 
   const { form, formValidity, isFormValid, submitValues, touched, validity } =
     formula({

@@ -1,10 +1,10 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort";
-  import type { NoteEx, Notess } from "$lib/shared/first";
+  import type { NoteEx } from "shared";
   import { array as A, option as O } from "fp-ts";
   import { identity, pipe } from "fp-ts/lib/function";
 
-  export let notes: Notess;
+  export let notes: NoteEx[];
   let query = "";
 
   let selectedKey: "sources.title" | "quote";
