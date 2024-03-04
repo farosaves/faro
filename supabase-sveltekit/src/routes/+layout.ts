@@ -29,7 +29,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
         },
       },
     },
-  ) as unknown as SupabaseClient;  // wtf
+  ) as unknown as SupabaseClient; // wtf
 
   const {
     data: { session },

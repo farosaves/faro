@@ -1,4 +1,4 @@
-import { logIfError, type  SupabaseClient } from "shared";
+import { logIfError, type SupabaseClient } from "shared";
 import { ts } from "$lib/utils";
 import { Card, FSRS } from "fsrs.js";
 
