@@ -5,9 +5,10 @@ import {
   PUBLIC_SUPABASE_ANON_KEY,
   PUBLIC_SUPABASE_URL,
 } from "$env/static/public";
-import type { Database, SupabaseClient } from "shared";
+import type { Database } from "shared";
 import type { LayoutLoad } from "./$types";
 import { createBrowserClient, isBrowser, parse } from "@supabase/ssr";
+import type { SupabaseClient } from "shared";
 
 export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   depends("supabase:auth");
@@ -29,8 +30,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
         },
       },
     },
-  ) as unknown as SupabaseClient; // wtf
-
+  ) as unknown as SupabaseClient
   const {
     data: { session },
   } = await supabase.auth.getSession();

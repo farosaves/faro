@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Cards } from "$lib/dbtypes.js";
+  import type { Cards } from "shared";
   export let data;
   import { option as O, array as A } from "fp-ts";
   import { NoteSync } from "shared";
