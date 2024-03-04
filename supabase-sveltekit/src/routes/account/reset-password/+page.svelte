@@ -7,7 +7,7 @@
   const passwordConf = field("passwordConf", "", [matchField(password)], opt);
   const myForm = form(password, passwordConf);
   import { onMount } from "svelte";
-  import { logIfError } from "$lib/shared/utils";
+  import { logIfError } from "shared";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   const isNew = $page.url.searchParams.has("new");

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { themeStore, updateTheme } from "$lib/shared/utils";
+  import { updateTheme } from "shared";
   const themes = ["light", "dark", "retro", "cyberpunk", "aqua", "night"];
   import { onMount } from "svelte";
   import { themeChange } from "theme-change";

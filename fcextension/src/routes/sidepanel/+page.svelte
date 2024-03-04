@@ -64,6 +64,8 @@
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
           if (request.action == "update_curr_url") updateActive()
+          if (request.action == "content_script_loaded" && needToRefreshPage)
+            updateActive()
           if (request.action === "uploadTextSB") {
             const { note_data } = request as {
               action: string

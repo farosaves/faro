@@ -1,9 +1,6 @@
 import { array as A, option as O, nonEmptyArray as nEA } from "fp-ts";
 import { identity, pipe } from "fp-ts/lib/function";
 import * as tok from "sbd";
-import { JSDOM } from "jsdom";
- const htmlstr2body = (h: string) => new JSDOM(h).window.document.body;
-
 
 type ArrOr1<T> = T[] | T;
 function goUp(cond: (n: Element) => boolean, e: Element): Element {
@@ -92,7 +89,8 @@ let first = <T>(a: T[]) => a[0];
 let getContent = (n: Node) =>
   "outerHTML" in n ? n.outerHTML : n.textContent || "";
 
-function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
+type Hs2t = (s: string) => HTMLElement
+const getFullSentences = (htmlstr2body: Hs2t) => (es: ArrOr1<Node>, uuid: string, sp = "n_______n") => {
   let makeNonempty =
     <T>(placeholder: T) =>
     (xs: T[]) =>
@@ -160,7 +158,7 @@ function getFullSentences(es: ArrOr1<Node>, uuid: string, sp = "n_______n") {
   return text;
 }
 // const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
-export function makeQCH(d: Document, uuid: string, selectedText: string) {
+export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selectedText: string) => {
   const matches = Array.from(d.getElementsByClassName("_" + uuid));
   const root = goUp(
     (e) => e.getElementsByClassName("_" + uuid).length == matches.length,
@@ -197,15 +195,14 @@ export function makeQCH(d: Document, uuid: string, selectedText: string) {
   // console.log(quoteNodes.map(x => x.outerHTML))
   // console.log(divSplit(quoteNodes))
   // console.log(tag(quoteNodes[0]))
-
-  let quote = getFullSentences(quoteNodes, uuid);
+  let quote = getFullSentences(htmlstr2body)(quoteNodes, uuid);
   quote = quote
     .replaceAll(/\[\d{1,2}\]/g, "")
     .replaceAll(/\n+/g, " ")
     .trim();
 
   const tooShort = (s: string) => s.trim().split(" ").length < 6;
-  if (tooShort(quote)) quote = getFullSentences(contextNode, uuid);
+  if (tooShort(quote)) quote = getFullSentences(htmlstr2body)(contextNode, uuid);
   if (quote.length > 1000) quote = selectedText;
   // wikipedia src delete
 

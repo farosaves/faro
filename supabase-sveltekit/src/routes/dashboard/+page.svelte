@@ -1,18 +1,18 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Note from "$lib/components/Note.svelte";
-  import { NoteSync } from "$lib/shared/note-sync.js";
+  import { NoteSync } from "shared";
   // import { NoteSync } from "shared";
   import Search from "$lib/components/Search.svelte";
-  import type { NoteEx } from "$lib/shared/first.js";
+  import type { NoteEx } from "shared";
   import TagFilter from "$lib/components/TagFilter.svelte";
   import DomainFilter from "$lib/components/DomainFilter.svelte";
   import { identity, flow } from "fp-ts/lib/function";
   import { redirect } from "@sveltejs/kit";
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
-  import { handlePayload, type NoteFilter } from "$lib/utils.js";
-  import { sessStore } from "$lib/shared/utils.js";
+  import { handlePayload, type NoteFilter } from "$lib/utils";
+  import { sessStore } from "shared";
   export let data;
   $: ({ session: _session, supabase } = data);
   $: if (_session) $sessStore = O.some(_session);
@@ -72,7 +72,6 @@
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
-
 <LoginPrompt {session} />
 {Object.entries($all_notes).flatMap(([a, b]) => b).length}
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">

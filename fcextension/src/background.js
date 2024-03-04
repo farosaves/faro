@@ -3,11 +3,12 @@ const DEBUG = import.meta.env.DEBUG || false
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-chrome.webNavigation.onCompleted.addListener(() => {
-	chrome.runtime.sendMessage({ action: 'update_curr_url' }).catch(e => console.log(e))
+chrome.tabs.onUpdated.addListener((tabId, info, tab) => {  // here 
+	if (/farosapp\.com\/account/.test(tab.url || "")) chrome.sidePanel.setOptions({enabled: false}).then(() => chrome.sidePanel.setOptions({enabled: true}))
+	chrome.runtime.sendMessage({ action: 'update_cu∂rr_url' }).catch(e => console.log(e))
 });
 
-chrome.tabs.onActivated.addListener(() => {
+chrome.tabs.onActivated.addListener((info) => {
 	chrome.runtime.sendMessage({ action: 'update_curr_url' }).catch(e => console.log(e))
 });
 
@@ -40,6 +41,7 @@ function onMessage(request, sender, sendResponse) {
 				'rangy/rangy-highlighter.min.js'
 			]
 		});
+		chrome.runtime.sendMessage({action: "content_script_loaded"})
 	}
 }
 chrome.runtime.onMessage.addListener(onMessage);
