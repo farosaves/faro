@@ -1,7 +1,7 @@
 import { flow, pipe } from "fp-ts/lib/function.js";
 import { startOfDay, parse, format } from "date-fns";
 import * as fd from "date-fns/fp";
-import type { Cards } from "$lib/dbtypes";
+import type { Cards } from "shared";
 import { State } from "fsrs.js";
 import type { SupabaseClient } from "shared";
 import { logIfError } from "shared";

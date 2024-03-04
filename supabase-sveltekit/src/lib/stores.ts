@@ -1,4 +1,4 @@
-import type { Notes } from "./dbtypes";
+import type { Notes } from "shared";
 import type { NoteSync } from "shared";
 
 export let sub = (note_sync: NoteSync) => {
