@@ -11,8 +11,8 @@
   import { redirect } from "@sveltejs/kit";
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { option as O } from "fp-ts";
-  import { handlePayload, type NoteFilter } from "$lib/utils.js";
-  import { sessStore } from "$lib/shared/utils.js";
+  import { handlePayload, type NoteFilter } from "$lib/utils";
+  import { sessStore } from "$lib/shared/utils";
   export let data;
   $: ({ session: _session, supabase } = data);
   $: if (_session) $sessStore = O.some(_session);
@@ -72,7 +72,6 @@
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
-
 <LoginPrompt {session} />
 {Object.entries($all_notes).flatMap(([a, b]) => b).length}
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
