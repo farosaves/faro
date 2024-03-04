@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "open http://localhost:5173/ & vite dev",
     "build": "vite build",
+    "b": "npm install --prefix ../shared && npm run build --prefix ../shared && npm run build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
