@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "$lib/shared/first";
+import type { SupabaseClient } from "shared";
 import { ts } from "$root/src/lib/utils";
 import { Card, FSRS } from "fsrs.js";
 

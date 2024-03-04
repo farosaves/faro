@@ -52,12 +52,21 @@
 	});
 
 	let myModal: HTMLDialogElement | null = null;
+	let modalText = '';
+	const loadModalText = () =>
+		(modalText = note_data.highlights
+			? escapeHTML(note_data.context || '').replaceAll(note_data.highlights[0], replacer)
+			: escapeHTML(note_data.context || ''));
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- on:mouseenter={loadModalText} -->
 <div
 	class="collapse bg-base-200 border-primary"
-	on:contextmenu|preventDefault={() => myModal && myModal.showModal()}
+	on:contextmenu|preventDefault={() => {
+		if (myModal) myModal.showModal();
+		loadModalText();
+	}}
 	style="border-width: {1 + 5 * +highlighting}px;"
 >
 	<input type="checkbox" class="-z-10" bind:checked={showing_content} />

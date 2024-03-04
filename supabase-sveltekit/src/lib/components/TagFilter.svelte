@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Tags from "$lib/shared/Tags.svelte";
-  import type { NoteEx } from "$lib/shared/first";
+  import { Tags } from "shared";
+  import type { NoteEx } from "shared";
   import { array as A } from "fp-ts";
   import { identity, pipe } from "fp-ts/lib/function";
   import type { Readable } from "svelte/store";

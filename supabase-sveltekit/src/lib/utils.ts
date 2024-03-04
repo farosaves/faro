@@ -1,9 +1,8 @@
 import { Card } from "fsrs.js";
-import type { Notes } from "./dbtypes";
-import { fillInTitleUrl, partition_by_id } from "./shared/utils";
-import type { NoteSync } from "./shared/note-sync";
+import type { Notes } from "shared";
+import { fillInTitleUrl, partition_by_id } from "shared";
+import type { NoteSync, NoteEx } from "shared";
 import { get } from "svelte/store";
-import type { NoteEx } from "./shared/first";
 
 export function ts(card: Card) {
   return {

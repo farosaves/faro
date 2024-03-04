@@ -3,8 +3,8 @@ import { startOfDay, parse, format } from "date-fns";
 import * as fd from "date-fns/fp";
 import type { Cards } from "$lib/dbtypes";
 import { State } from "fsrs.js";
-import type { SupabaseClient } from "$lib/shared/first";
-import { logIfError } from "$lib/shared/utils";
+import type { SupabaseClient } from "shared";
+import { logIfError } from "shared";
 const fstr = "yyyy-MM-dd";
 export const day = (hr = 5) => flow(fd.subHours(hr), fd.format(fstr));
 export const fromDay =
