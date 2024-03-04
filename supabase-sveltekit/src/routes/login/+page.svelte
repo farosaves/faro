@@ -7,13 +7,14 @@
   import { goto } from "$app/navigation";
   let view: ViewType = "magic_link";
   let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"];
+  import { sessStore } from "$lib/shared/utils";
+  import { option as O } from "fp-ts";
   let providers = ["github"];
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
         console.log(session);
-        data.session = session;
-        // if (sessData.session) data
+        if (session) $sessStore = O.some(session);
         setTimeout(() => {
           goto("/account");
         }, 50);
