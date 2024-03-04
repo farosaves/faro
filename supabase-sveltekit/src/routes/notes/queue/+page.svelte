@@ -2,11 +2,11 @@
   import type { Cards } from "$lib/dbtypes.js";
   export let data;
   import { option as O, array as A } from "fp-ts";
-  import { NoteSync } from "$lib/shared/note-sync.js";
+  import { NoteSync } from "shared";
   import { onMount } from "svelte";
   import Note from "$lib/components/Note.svelte";
-  import { asc, filterSort } from "$lib/shared/utils.js";
-  import type { NoteEx, Notess } from "$lib/shared/first.js";
+  import { asc, filterSort } from "shared";
+  import type { NoteEx } from "shared";
   $: ({ supabase, session } = data);
   let user_id = O.fromNullable(session?.user.id);
   $: user_id = O.fromNullable(session?.user.id);
@@ -15,7 +15,6 @@
   const note_sync = new NoteSync(supabase, undefined);
   import { derived, get, type Readable } from "svelte/store";
   import { flow, pipe } from "fp-ts/lib/function.js";
-  import * as fd from "date-fns/fp";
 
   import LoginPrompt from "$lib/components/LoginPrompt.svelte";
   import { day, dequeue$, fromDay, nextIntervals, schedule$ } from "./util.js";

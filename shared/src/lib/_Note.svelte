@@ -52,12 +52,23 @@
 	});
 
 	let myModal: HTMLDialogElement | null = null;
+	let modalPotential = false;
+	let modalText = '';
+	const loadModalText = () =>
+		(modalText = note_data.highlights
+			? escapeHTML(note_data.context || '').replaceAll(note_data.highlights[0], replacer)
+			: escapeHTML(note_data.context || ''));
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- on:mouseenter={loadModalText} -->
 <div
 	class="collapse bg-base-200 border-primary"
-	on:contextmenu|preventDefault={() => myModal && myModal.showModal()}
+	on:mouseenter={() => (modalPotential = true)}
+	on:contextmenu|preventDefault={() => {
+		if (myModal) myModal.showModal();
+		loadModalText();
+	}}
 	style="border-width: {1 + 5 * +highlighting}px;"
 >
 	<input type="checkbox" class="-z-10" bind:checked={showing_content} />
@@ -98,17 +109,19 @@
 			>
 		</div>
 	</div>
-	<dialog id="my_modal_2" class="modal" bind:this={myModal}>
-		<div class="modal-box">
-			<!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
-			<p class="py-4">
-				{@html note_data.highlights
-					? escapeHTML(note_data.context || '').replaceAll(note_data.highlights[0], replacer)
-					: escapeHTML(note_data.context || '')}
-			</p>
-		</div>
-		<form method="dialog" class="modal-backdrop">
-			<button>close</button>
-		</form>
-	</dialog>
+	{#if modalPotential}
+		<dialog id="my_modal_2" class="modal" bind:this={myModal}>
+			<div class="modal-box">
+				<!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
+				<p class="py-4">
+					{@html note_data.highlights
+						? escapeHTML(note_data.context || '').replaceAll(note_data.highlights[0], replacer)
+						: escapeHTML(note_data.context || '')}
+				</p>
+			</div>
+			<form method="dialog" class="modal-backdrop">
+				<button>close</button>
+			</form>
+		</dialog>
+	{/if}
 </div>

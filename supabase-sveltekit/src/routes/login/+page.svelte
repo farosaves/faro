@@ -7,19 +7,22 @@
   import { goto } from "$app/navigation";
   let view: ViewType = "magic_link";
   let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"];
+  import { sessStore } from "shared";
+  import { option as O } from "fp-ts";
+  import type { SupabaseClient } from "@supabase/supabase-js";
   let providers = ["github"];
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
         console.log(session);
-        data.session = session;
-        // if (sessData.session) data
+        if (session) $sessStore = O.some(session);
         setTimeout(() => {
           goto("/account");
         }, 50);
       }
     }),
   );
+  $: supabaseClient = data.supabase as unknown as SupabaseClient;
 </script>
 
 <svelte:head>
@@ -30,7 +33,7 @@
   <div class="w-64">
     <!-- border-dotted border-gray-500 border-2 -->
     <Auth
-      supabaseClient={data.supabase}
+      {supabaseClient}
       redirectTo={`${data.url}/auth/callback?view=${view}`}
       showLinks={false}
       view={view == "sign_up" ? "magic_link" : view}

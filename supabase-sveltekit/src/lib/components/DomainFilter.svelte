@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NoteSync } from "$lib/shared/note-sync";
+  import type { NoteSync } from "shared";
   import type { NoteFilter } from "$lib/utils";
   import { derived } from "svelte/store";
   import {
@@ -9,7 +9,7 @@
     nonEmptyArray as NA,
   } from "fp-ts";
   import { pipe } from "fp-ts/lib/function";
-  import { desc, hostname } from "$lib/shared/utils";
+  import { desc, hostname } from "shared";
   export let note_sync: NoteSync;
   export let domainFilter: NoteFilter;
   const notestore = note_sync.notestore;
