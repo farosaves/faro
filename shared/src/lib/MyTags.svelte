@@ -21,7 +21,8 @@
 >
 	<!-- class="border-[1px] w-full min-h-2" -->
 	<button
-		class="bg-base-100 w-full min-h-6"
+		class="bg-base-100 w-full min-h-6 tooltip"
+		data-tip="tags"
 		class:hidden={open}
 		on:click={() => {
 			open = true;

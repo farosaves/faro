@@ -2,7 +2,7 @@ import {
   PUBLIC_SUPABASE_URL,
   PUBLIC_SUPABASE_ANON_KEY,
 } from "$env/static/public";
-import type { Database } from "$lib/dbtypes";
+import type { Database, SupabaseClient } from "shared";
 import { createContext } from "$lib/trpc/context";
 import { router } from "$lib/trpc/router";
 import { createServerClient } from "@supabase/ssr";
@@ -27,7 +27,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         },
       },
     },
-  );
+  ) as unknown as SupabaseClient;
 
   event.locals.getSession = async () => {
     const {
