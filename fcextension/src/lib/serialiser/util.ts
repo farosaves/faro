@@ -1,58 +1,58 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
 
-import { desc } from "$lib/shared/utils";
-import { serialize } from "@supabase/ssr";
+import { desc } from "$lib/shared/utils"
+import { serialize } from "@supabase/ssr"
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
-export let normalize = (s: string | null) => s || "";
+export let normalize = (s: string | null) => s || ""
 // add this to rangy serialisation
 export let reserialize = (r: Range) =>
   prepostfixes(normalize(r.toString()))
     .map((s) => s.replaceAll("$", "\\$"))
-    .join("$");
+    .join("$")
 export let prepostfixes = (s: string, nToTake = 8) => {
-  const snorm = normalize(s);
-  const l = snorm.length;
-  return [snorm.substring(0, nToTake), snorm.substring(l - nToTake, l)];
-};
+  const snorm = normalize(s)
+  const l = snorm.length
+  return [snorm.substring(0, nToTake), snorm.substring(l - nToTake, l)]
+}
 export let subIdxs = (s: string, l: number, r: number) =>
   s
     .replace(/(?<=type:textContent\|)\d+(?=\$)/, l.toString())
-    .replace(/(?<=type:textContent\|\d+\$)\d+(?=\$)/, r.toString());
+    .replace(/(?<=type:textContent\|\d+\$)\d+(?=\$)/, r.toString())
 export let start = (s: string) =>
-  parseInt(s.match(/(?<=type:textContent\|)\d+(?=\$)/)?.[0].toString() || "0");
+  parseInt(s.match(/(?<=type:textContent\|)\d+(?=\$)/)?.[0].toString() || "0")
 export let end = (s: string) =>
   parseInt(
-    s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0"
-  );
+    s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0",
+  )
 export let extractPrePost = (s: string) =>
-  (s.match(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/)?.[0].toString() || "").split("$");
+  (s.match(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/)?.[0].toString() || "").split("$")
 export let stripQuote = (s: string) =>
-  s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "");
+  s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "")
 
-export let prepare2deserialize = (textContent: string, s: string) => 
+export let prepare2deserialize = (textContent: string, s: string) =>
   extractPrePost(s).length == 2
     ? subIdxs(
         stripQuote(s),
-        ...adjIdxs(textContent, extractPrePost(s), start(s), end(s))
+        ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)),
       )
-    : stripQuote(s);
+    : stripQuote(s)
 
 export const adjIdxs = (
   textContent: string,
   pre_post: string[],
   startIdx: number,
   endIdx: number,
-  nToTake = 8
+  nToTake = 8,
 ): [number, number] => {
-  const [pre, post] = pre_post;
-  const len = endIdx - startIdx;
+  const [pre, post] = pre_post
+  const len = endIdx - startIdx
   const matches = (xfix: string) =>
-    Array.from(textContent.matchAll(RegExp(xfix, "gu")));
-  const ss = matches(pre);
-  const es = matches(post);
+    Array.from(textContent.matchAll(RegExp(xfix, "gu")))
+  const ss = matches(pre)
+  const es = matches(post)
 
-  const targetDiff = len - post.length;
+  const targetDiff = len - post.length
   // prettier-ignore
   const aligned = <T extends { index: number }>(left: T[], right: T[]): T[][] => {
     if (!left.length || !right.length) return [];
@@ -69,14 +69,16 @@ export const adjIdxs = (
 };
 
   const score = (l: RegExpExecArray, r: RegExpExecArray) =>
-    (1 + Math.abs(r.index - l.index - targetDiff)) * Math.abs(l.index - startIdx);
-  const allAligned = aligned(ss, es).toSorted(desc(([l, r]) => -score(l, r)));
-  if (allAligned.length) { // TODO: here I changed
-    const [l, r] = allAligned[0];
-    return [l.index, r.index + post.length];
-  } else if (nToTake==0) {
-    return [0,0]
+    (1 + Math.abs(r.index - l.index - targetDiff)) *
+    Math.abs(l.index - startIdx)
+  const allAligned = aligned(ss, es).toSorted(desc(([l, r]) => -score(l, r)))
+  if (allAligned.length) {
+    // TODO: here I changed
+    const [l, r] = allAligned[0]
+    return [l.index, r.index + post.length]
+  } else if (nToTake == 0) {
+    return [0, 0]
   } else {
-    return adjIdxs(textContent, pre_post, startIdx, endIdx, nToTake - 1);
+    return adjIdxs(textContent, pre_post, startIdx, endIdx, nToTake - 1)
   }
-};
+}

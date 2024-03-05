@@ -1,30 +1,37 @@
-export const prerender = true;
+export const prerender = true
 
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
+import {
+  PUBLIC_SUPABASE_ANON_KEY,
+  PUBLIC_SUPABASE_URL,
+} from "$env/static/public"
 
-import { createBrowserClient, isBrowser, parse } from '@supabase/ssr';
-import type { Database } from '$lib/dbtypes';
+import { createBrowserClient, isBrowser, parse } from "@supabase/ssr"
+import type { Database } from "$lib/dbtypes"
 export const load = async ({ fetch, data, depends }) => {
-	depends('supabase:auth');
+  depends("supabase:auth")
 
-	const supabase = createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		global: {
-			fetch
-		},
-		cookies: {
-			async get(name) {
-				if (!isBrowser()) {
-					return; // (await chrome.cookies.get({url, name})).value
-				}
+  const supabase = createBrowserClient<Database>(
+    PUBLIC_SUPABASE_URL,
+    PUBLIC_SUPABASE_ANON_KEY,
+    {
+      global: {
+        fetch,
+      },
+      cookies: {
+        async get(name) {
+          if (!isBrowser()) {
+            return // (await chrome.cookies.get({url, name})).value
+          }
 
-				const cookie = parse(document.cookie);
-				return cookie[name];
-			}
-		}
-	});
+          const cookie = parse(document.cookie)
+          return cookie[name]
+        },
+      },
+    },
+  )
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
-	return { supabase, session };
-};
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  return { supabase, session }
+}
