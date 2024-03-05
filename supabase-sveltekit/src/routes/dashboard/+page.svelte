@@ -13,6 +13,7 @@
   import { option as O } from "fp-ts";
   import { handlePayload, type NoteFilter } from "$lib/utils";
   import { sessStore } from "shared";
+  import TagView from "$lib/components/TagView.svelte";
   export let data;
   $: ({ session: _session, supabase } = data);
   $: if (_session) $sessStore = O.some(_session);
@@ -72,8 +73,10 @@
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
+
 <LoginPrompt {session} />
 {Object.entries($all_notes).flatMap(([a, b]) => b).length}
+<TagView {note_sync} bind:tagFilter />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden">
   Open drawer</label>
 <div class="drawer md:drawer-open">
@@ -116,7 +119,7 @@
       <li>
         <Search bind:filterSortFun notes={flat_notes} />
       </li>
-      <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li>
+      <!-- <li><TagFilter all_tags={note_sync.alltags()} bind:tagFilter /></li> -->
       <li><DomainFilter {note_sync} bind:domainFilter /></li>
     </ul>
   </div>
