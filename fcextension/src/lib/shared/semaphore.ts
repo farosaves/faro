@@ -1,19 +1,19 @@
 type QueueElement = {
-  resolve: (value: any) => void;
-  reject: (reason?: any) => void;
-  fnToCall: (...args: any[]) => Promise<any>;
-  args: any[];
-};
-type PReturnType<T> = T extends (...args: any[]) => Promise<infer R> ? R : any;
-export type ArgType<T> = T extends (...args: infer R) => any ? R : any;
+  resolve: (value: any) => void
+  reject: (reason?: any) => void
+  fnToCall: (...args: any[]) => Promise<any>
+  args: any[]
+}
+type PReturnType<T> = T extends (...args: any[]) => Promise<infer R> ? R : any
+export type ArgType<T> = T extends (...args: infer R) => any ? R : any
 
 export default class Semaphore {
-  requestQueue: QueueElement[];
-  running: boolean;
+  requestQueue: QueueElement[]
+  running: boolean
 
   constructor() {
-    this.requestQueue = [];
-    this.running = false;
+    this.requestQueue = []
+    this.running = false
   }
   use<F extends (...args: any[]) => Promise<any>>(
     fnToCall: F,
@@ -25,25 +25,25 @@ export default class Semaphore {
         reject,
         fnToCall,
         args,
-      });
-      return this.tryNext();
-    });
+      })
+      return this.tryNext()
+    })
   }
 
   tryNext() {
     if (!this.requestQueue.length) {
-      return;
+      return
     } else if (!this.running) {
-      let { resolve, reject, fnToCall, args } = this.requestQueue.shift()!;
-      this.running = true;
-      let req = fnToCall(...args);
+      let { resolve, reject, fnToCall, args } = this.requestQueue.shift()!
+      this.running = true
+      let req = fnToCall(...args)
       req
         .then((res: any) => resolve(res))
         .catch((err: Error) => reject(err))
         .finally(() => {
-          this.running = false;
-          this.tryNext();
-        });
+          this.running = false
+          this.tryNext()
+        })
     }
   }
 }

@@ -1,0 +1,20 @@
+{
+  "name": "myroot",
+  "dependencies": {
+    "npm-watch": "^0.11.0"
+  },
+  "scripts": {
+    "watch": "npm-watch",
+    "format": "npx prettier --write */src/**/*.ts"
+  },
+  "watch": {
+    "format": {
+      "patterns": [
+        "*/src"
+      ],
+      "extensions": [
+        "ts"
+      ]
+    }
+  }
+}
