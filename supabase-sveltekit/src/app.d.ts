@@ -1,6 +1,7 @@
 // src/app.d.ts
 
-import { Session, SupabaseClient } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
+import { SupabaseClient } from "shared";
 
 declare global {
   namespace App {

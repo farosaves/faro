@@ -4,13 +4,13 @@
   import { array as A } from "fp-ts";
   import { identity, pipe } from "fp-ts/lib/function";
   import type { Readable } from "svelte/store";
-  let tags: string[] = [];
+  let exclTags: string[] = [];
   export let all_tags: Readable<string[]>;
   export let tagFilter: (
     n: NoteEx & { priority: number },
   ) => NoteEx & { priority: number } = identity;
-  $: tagSet = new Set(tags);
-  $: if (tags.length)
+  $: tagSet = new Set(exclTags);
+  $: if (exclTags.length)
     tagFilter = (n) => {
       return {
         ...n,
@@ -27,7 +27,7 @@
 </script>
 
 <Tags
-  bind:tags
+  bind:tags={exclTags}
   autoComplete={$all_tags}
   minChars="0"
   onlyUnique={true}

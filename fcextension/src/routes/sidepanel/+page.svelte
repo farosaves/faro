@@ -11,7 +11,7 @@
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { supa_update } from "./fun.js"
   import { domain_title } from "$lib/shared/utils.js"
-  import { option } from "fp-ts"
+  import { option as O } from "fp-ts"
   let login_url = API_ADDRESS + "/login"
   let curr_title = "Kalanchoe"
   let curr_url = ""
@@ -54,10 +54,10 @@
     getHighlight($source_id, tab.id)
   }
   let logged_in = true
-  let optimistic: option.Option<MockNote> = option.none
+  let optimistic: O.Option<MockNote> = O.none
   setTimeout(() => {
     logged_in = !!session
-    if (!logged_in) optimistic = option.none
+    // if (!logged_in) optimistic = O.none
   }, 1000)
   onMount(async () => {
     try {
@@ -72,10 +72,12 @@
               note_data: MockNote
             }
             if (note_data) {
-              optimistic = option.some(note_data)
+              optimistic = O.some(note_data)
               note_sync.sem
                 .use(supa_update(), supabase, note_data)
                 .then((v) => v && T.note2card.mutate({ note_id: v.id }))
+              setTimeout(() => (optimistic = O.none), 1000)
+              // TODO: if you add two within 1 second it will mess it up
             }
           }
         },
