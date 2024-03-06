@@ -3,24 +3,24 @@ import {
   S3Client,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "$env/static/private";
+// import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "$env/static/private";
 // import { writeFileSync } from 'fs';
 
 export const actions = {
   default: async ({ request }) => {
-    const endpoint =
-      "https://362e2d4a4b780aab43b3c82f2a779a47.r2.cloudflarestorage.com";
+    // const endpoint =
+    //   "https://362e2d4a4b780aab43b3c82f2a779a47.r2.cloudflarestorage.com";
 
     const formData = Object.fromEntries(await request.formData());
-    const totallyS3 = new S3Client({
-      endpoint,
-      region: "EEUR",
-      credentials: {
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY,
-      },
-    });
-    console.log(totallyS3);
+    // const totallyS3 = new S3Client({
+    //   endpoint,
+    //   region: "EEUR",
+    //   credentials: {
+    //     accessKeyId: AWS_ACCESS_KEY_ID,
+    //     secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    //   },
+    // });
+    // console.log(totallyS3);
     const { fileToUpload } = formData as { fileToUpload: File };
     if (
       !(fileToUpload as File).name ||
