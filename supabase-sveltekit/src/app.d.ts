@@ -13,7 +13,6 @@ declare global {
       session: Session | null;
     }
     // interface Error {}
-    interface Platform { env: any // TODO
-  }
+    // interface Platform { }
   }
 }
