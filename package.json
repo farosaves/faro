@@ -2,26 +2,39 @@
   "name": "myroot",
   "dependencies": {
     "npm-watch": "^0.11.0",
+    "playwright": "^1.42.1",
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.2"
   },
   "scripts": {
     "watch": "npm-watch",
-    "format": "npx prettier --write */src/**/*.ts --config .prettierrc", 
+    "format": "npx prettier --write */src/**/*.ts --config .prettierrc",
     "buildShared": "npm run build --prefix ./shared"
   },
   "watch": {
     "format": {
       "patterns": [
-        "shared/src", "fcextension/src", "supabase-sveltekit/src"
+        "shared/src",
+        "fcextension/src",
+        "supabase-sveltekit/src"
       ],
       "extensions": [
         "ts"
       ]
     },
     "buildShared": {
-        "patterns": ["shared/src/lib"],
-        "extensions": ["ts", "js", "svelte"]
+      "patterns": [
+        "shared/src/lib"
+      ],
+      "extensions": [
+        "ts",
+        "js",
+        "svelte"
+      ]
     }
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.25"
   }
 }
