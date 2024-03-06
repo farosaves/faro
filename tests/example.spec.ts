@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const dev = "https://dev.farosapp.com/"
+const dev = process.env.DEV || "http://localhost:5173/"
 test('has title', async ({ page }) => {
   await page.goto(dev);
 
@@ -8,13 +8,9 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle(/Faros/);
 });
 
-test('get started link', async ({ page }) => {
+test('check version is current', async ({ page }) => {
   const resp = await page.goto(dev+"api/version");
   const versionData = await resp?.json(); 
-  expect(versionData?.version).toBe(process.env.COMMIT_UUID);
-  // Click the get started link.
-  // await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  // await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  if (process.env.DEV) expect(versionData?.version).toBe(process.env.COMMIT_UUID);
+  else expect(versionData?.version).toMatch(/[0-9a-f]{40}/)
 });
