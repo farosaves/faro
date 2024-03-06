@@ -1,13 +1,16 @@
 <script lang="ts">
   let files: FileList;
+  export let form;
   $: files && console.log("less than 10 MB?", files[0].size < Math.pow(10, 7));
 </script>
 
-<div class="flex justify-center">
-  <div></div>
-</div>
-
 <div class="hero min-h-screen bg-base-200">
+  {#if form?.success}<div
+      class="flex justify-center btn btn-lg btn-primary z-10 text-5xl font-bold">
+      Upload successful
+    </div>
+  {/if}
+
   <div class="hero-content flex-col lg:flex-row-reverse">
     <div class="text-center lg:text-left">
       <h1 class="text-5xl font-bold">Upload PDF</h1>

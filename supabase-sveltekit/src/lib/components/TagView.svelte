@@ -52,22 +52,25 @@
   };
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 flex flex-nowrap justify-center">
-  <div class="tooltip tooltip-bottom" data-tip="toggle all">
+<!-- <div
+  class="bg-base-100 sticky grid grid-flow-col top-0 z-20 justify-center overflow-x-auto overflow-y-hidden"> -->
+<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
+  <div
+    class="tooltip tooltip-right tooltip-primary carousel-item"
+    data-tip="toggle all">
     <button
-      class="btn btn-neutral btn-sm"
+      class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
       class:btn-outline={exclTagSet.size == $tags_counts.length}>
       <Icon src={CheckCircle} />
     </button>
   </div>
-
   {#each $tags_counts as [tag, cnt]}
     <div
-      class="tooltip tooltip-bottom"
+      class="tooltip tooltip-right tooltip-primary carousel-item"
       data-tip={tag ? cnt : `${cnt} untagged`}>
       <button
-        class="btn btn-neutral btn-sm"
+        class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleSet(tag)}
         class:btn-outline={exclTagSet.has(tag)}
         >{#if tag}{tag}{:else}
