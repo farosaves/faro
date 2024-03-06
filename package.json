@@ -1,0 +1,27 @@
+{
+  "name": "myroot",
+  "dependencies": {
+    "npm-watch": "^0.11.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-svelte": "^3.2.2"
+  },
+  "scripts": {
+    "watch": "npm-watch",
+    "format": "npx prettier --write */src/**/*.ts --config .prettierrc", 
+    "buildShared": "npm run build --prefix ./shared"
+  },
+  "watch": {
+    "format": {
+      "patterns": [
+        "shared/src", "fcextension/src", "supabase-sveltekit/src"
+      ],
+      "extensions": [
+        "ts"
+      ]
+    },
+    "buildShared": {
+        "patterns": ["shared/src/lib"],
+        "extensions": ["ts", "js", "svelte"]
+    }
+  }
+}

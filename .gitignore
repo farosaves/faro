@@ -9,3 +9,4 @@
 **/*.jls
 */another_one
 **/dist
+node_modules/

@@ -1,8 +1,8 @@
-import type { Notes } from "shared";
-import type { NoteSync } from "shared";
+import type { Notes } from "shared"
+import type { NoteSync } from "shared"
 
 export let sub = (note_sync: NoteSync) => {
-  console.log(note_sync.user_id);
+  console.log(note_sync.user_id)
   // let _sub = (event: "INSERT" | "UPDATE"| "DELETE") => 3
   note_sync.sb
     .channel("notes")
@@ -15,9 +15,9 @@ export let sub = (note_sync: NoteSync) => {
         filter: `user_id=eq.${note_sync.user_id}`,
       }, // at least url should be the same so no need to filter
       (payload: { new: Notes }) => {
-        console.log(payload);
-        note_sync.update_all_pages();
+        console.log(payload)
+        note_sync.update_all_pages()
       },
     )
-    .subscribe();
-};
+    .subscribe()
+}

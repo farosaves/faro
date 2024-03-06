@@ -1,6 +1,0 @@
-account_id = "362e2d4a4b780aab43b3c82f2a779a47" # ← Replace with your Account ID.
-workers_dev = true
-
-[[r2_buckets]]
-binding = 'pdf2html'     # <~ valid JavaScript variable name
-bucket_name = 'pdf2html'
