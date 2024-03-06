@@ -19,6 +19,7 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       env:
+        DEV: "https://dev.farosapp.com/"
         COMMIT_UUID: ${{ github.sha }} # Get UUID of the commit
       run: npx playwright test
     - uses: actions/upload-artifact@v4
