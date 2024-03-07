@@ -57,6 +57,7 @@
 		"@trpc/client": "^10.45.0",
 		"fp-ts": "^2.16.2",
 		"sbd": "^1.0.19",
+		"shared": "file:../shared",
 		"svelte-hero-icons": "^5.1.0",
 		"svelte-persisted-store": "^0.9.0",
 		"trpc-sveltekit": "^3.5.22"

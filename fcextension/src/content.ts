@@ -1,7 +1,7 @@
 // import 'chrome';
 // import { makeQCH } from "../ lib/shared/snippetiser/main";
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
-import { makeQCH } from "./lib/shared/snippetiser/main"
+import { makeQCH } from "shared"
 const DEBUG = import.meta.env.VITE_DEBUG || false
 
 if (DEBUG) console.log("hello")
