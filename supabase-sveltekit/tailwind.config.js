@@ -3,8 +3,9 @@ export default {
 	content: [
 		'./**/*.{html,js,svelte,ts}',
 		'./*.{html,js,svelte,ts}',
-		'./index.html',
-		'./src/**/*.{js,ts,jsx,tsx}'
+		// './index.html',
+		'./src/**/*.{js,ts,jsx,tsx}',
+		'../node_modules/shared/**/*.{html,js,svelte,ts}'
 	],
 	theme: {
 		extend: {}
