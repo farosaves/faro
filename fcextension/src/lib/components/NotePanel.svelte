@@ -34,7 +34,9 @@
   $: console.log($note_store[source_id], source_id)
 </script>
 
-{#each [...$note_store[source_id], ...A.fromOption(mocked)] || [] as note_data, i}
+<!-- I had to add || [] here... ofc $note_store[source_id] wasnt guaranteed to be T[]..., is it time to refactor? -->
+<!-- I definitely shouldn't "just index" and expect it to work -->
+{#each [...($note_store[source_id] || []), ...A.fromOption(mocked)] as note_data, i}
   <Note
     {note_data}
     bind:showing_content={showing_contents[i]}

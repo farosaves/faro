@@ -1,1 +1,0 @@
-FROM sergiomtzlosa/pdf2htmlex
