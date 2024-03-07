@@ -1,6 +1,7 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
 
 import { desc } from "$lib/shared/utils"
+import { serialize } from "@supabase/ssr"
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
 export let normalize = (s: string | null) => s || ""
