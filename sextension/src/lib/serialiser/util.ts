@@ -1,6 +1,6 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
 
-import { desc } from "$lib/shared/utils"
+import { desc } from "shared"
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
 export let normalize = (s: string | null) => s || ""
