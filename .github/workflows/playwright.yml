@@ -8,38 +8,38 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install
-        # NOTE: this pins the action to a specific commit sha for security
-        # reasons but you can also use a version tag if desired. For example:
-        # ianwalter/playwright-container@v3.0.0
-        uses: ianwalter/playwright-container@43940dfa7d309fe3569b9df407ae9e84dcbf2e7f
-        with:
-          args: npm ci
-      - name: Test
-        uses: ianwalter/playwright-container@43940dfa7d309fe3569b9df407ae9e84dcbf2e7f
-        with:
-          args: npm test
 
-    # steps:
-    #   - uses: actions/checkout@v4
-    #   - uses: actions/setup-node@v4
-    #     with:
-    #       node-version: lts/*
-    #   - name: Install dependencies
-    #     run: npm ci
-    #   - name: Install Playwright Browsers
-    #     run: npx playwright install --with-deps
-    #   - name: Run Playwright tests
-    #     env:
-    #       DEV: "https://dev.farosapp.com/"
-    #       COMMIT_UUID: ${{ github.sha }} # Get UUID of the commit
-    #     run: npx playwright test
-    #   - uses: actions/upload-artifact@v4
-    #     if: always()
-    #     with:
-    #       name: playwright-report
-    #       path: playwright-report/
-    #       retention-days: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+
+       - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "version=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        env:
+          DEV: "https://dev.farosapp.com/"
+          COMMIT_UUID: ${{ github.sha }} # Get UUID of the commit
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
