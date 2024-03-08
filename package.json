@@ -9,7 +9,7 @@
   "scripts": {
     "watch": "npm-watch",
     "format": "npx prettier --write */src/**/*.ts --config .prettierrc",
-    "buildShared": "npm run build --prefix ./shared",
+    "buildCF": "npm run build -w=shared/ && npm run build -w=supabase-sveltekit/",
     "test": "npx playwright test"
   },
   "watch": {
