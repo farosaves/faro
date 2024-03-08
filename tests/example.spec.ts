@@ -11,6 +11,6 @@ test('has title', async ({ page }) => {
 test('check version is current', async ({ page }) => {
   const resp = await page.goto(dev+"api/version");
   const versionData = await resp?.json(); 
-  if (process.env.DEV) expect(versionData?.version).toBe(process.env.COMMIT_UUID);
-  else expect(versionData?.version).toMatch(/[0-9a-f]{40}/)
+  // if (process.env.DEV) expect(versionData?.version).toBe(process.env.COMMIT_UUID); // doesnt work on pr
+  expect(versionData?.version).toMatch(/[0-9a-f]{40}/)
 });

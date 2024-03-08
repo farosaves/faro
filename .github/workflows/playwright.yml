@@ -1,9 +1,11 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [dev]
-#   pull_request:
-#     branches: [ main, master ]
+  # workflow_run:
+  #   workflows: ["Cloudflare Build"]  # Name of your Cloudflare build workflow
+  #   types: 
+  #     - completed
+  pull_request:
+    branches: [ main ]  # https://github.com/WalshyDev/cf-pages-await if I wanted on push
 jobs:
   test:
     timeout-minutes: 60
