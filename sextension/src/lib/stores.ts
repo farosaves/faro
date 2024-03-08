@@ -33,9 +33,7 @@ const _source_ids = new Proxy(__source_ids, {
 const source_ids = persisted("source_ids", _source_ids)
 
 export const handlePayload =
-  (note_sync: NoteSync) =>
-  (title: string, url: string) =>
-  (payload: { new: Notes | object }) => {
+  (note_sync: NoteSync) => (title: string, url: string) => (payload: { new: Notes | object }) => {
     let update_source_ids = (sb: SupabaseClient) => async (nn: Notes) => {
       const { data, error } = await sb
         .from("sources")
@@ -67,32 +65,31 @@ export const handlePayload =
     }
   }
 
-export let getSourceId =
-  (sb: SupabaseClient) => async (url: string, title: string) => {
-    let query = async (sb: SupabaseClient, url: string, title: string) => {
-      const id = domain_title(url, title)
-      const { data, error } = await sb
-        .from("sources")
-        .select("id")
-        .eq("domain", hostname(url))
-        .eq("title", title)
-        .maybeSingle()
-      if (!data) {
-        console.log("source not there yet probably", error)
-        return
-      }
-      source_ids.update((n) => {
-        n[id] = data.id
-        return n
-      })
-    }
-
+export let getSourceId = (sb: SupabaseClient) => async (url: string, title: string) => {
+  let query = async (sb: SupabaseClient, url: string, title: string) => {
     const id = domain_title(url, title)
-    if (!(id in get(source_ids)))
-      source_ids.update((n) => {
-        n[id] = -1
-        return n
-      })
-    query(sb, url, title).then(() => console.log("updated sid"))
-    return derived(source_ids, (n) => n[id])
+    const { data, error } = await sb
+      .from("sources")
+      .select("id")
+      .eq("domain", hostname(url))
+      .eq("title", title)
+      .maybeSingle()
+    if (!data) {
+      console.log("source not there yet probably", error)
+      return
+    }
+    source_ids.update((n) => {
+      n[id] = data.id
+      return n
+    })
   }
+
+  const id = domain_title(url, title)
+  if (!(id in get(source_ids)))
+    source_ids.update((n) => {
+      n[id] = -1
+      return n
+    })
+  query(sb, url, title).then(() => console.log("updated sid"))
+  return derived(source_ids, (n) => n[id])
+}

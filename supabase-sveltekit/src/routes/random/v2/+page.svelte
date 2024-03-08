@@ -1,6 +1,26 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as rangy from "rangy";
+  import { type Patch, produceWithPatches, type UnFreeze } from "structurajs";
+  import { writable, type Writable } from "svelte/store";
+  const objStore = writable<Record<string, number>[]>([]);
+
+  const updateStore =
+    <T,>(store: Writable<T>) =>
+    (up: (arg: UnFreeze<T>) => void) => {
+      let patches, inverse: Patch[];
+      store.update((storeVal) => {
+        const [result, patches, inverse] = produceWithPatches(storeVal, up);
+        return result;
+      });
+    };
+  // first we get the result and the patches
+
+  const [result, patches, inverse] = produceWithPatches($objS, (draft) => {
+    draft.push({ B: 2 });
+  });
+  // console.log(patches);
+  console.log(result);
   // import createHighlighter from "./rangy-classapplier.min.js";
 
   let loaded = false;
@@ -21,8 +41,8 @@
 </script>
 
 <p>
-  <i><b>Stegosaurus</b></i> (<span class="rt-commentedText nowrap"
-    ><span class="IPA nopopups noexcerpt" lang="en-fonipa"
+  <i><b>Stegosaurus</b></i> (<span class="rt-commentedText nowrap">
+    <span class="IPA nopopups noexcerpt" lang="en-fonipa"
       ><a href="/wiki/Help:IPA/English" title="Help:IPA/English"
         >/<span style="border-bottom:1px dotted"
           ><span title="/ˌ/: secondary stress follows">ˌ</span><span
