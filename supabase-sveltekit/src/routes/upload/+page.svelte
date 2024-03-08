@@ -7,7 +7,7 @@
 <div class="hero min-h-screen bg-base-200">
   {#if form?.success}<div
       class="flex justify-center btn btn-lg btn-primary z-10 text-5xl font-bold">
-      Upload successful
+      Upload successful, id: {form.pdf_id}
     </div>
   {/if}
 

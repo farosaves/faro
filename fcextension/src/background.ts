@@ -1,7 +1,10 @@
+import type { MockNote } from "$lib/utils";
+import {option as O} from "fp-ts"
+
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, ''); // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {  // here 
 	if (/farosapp\.com\/account/.test(tab.url || "")) chrome.sidePanel.setOptions({enabled: false}).then(() => chrome.sidePanel.setOptions({enabled: true}))
@@ -13,8 +16,8 @@ chrome.tabs.onActivated.addListener((info) => {
 });
 
 const tryn =
-	(n, ms = 500) =>
-	async (f) => {
+	(n: number, ms = 500) =>
+	async (f: any) => {  // TODO
 		if (n < 1) return;
 		try {
 			await f();
@@ -23,18 +26,29 @@ const tryn =
 		}
 	};
 
-async function uploadSelected(request, sender, sendResponse) {
+async function uploadSelected(request: { action: string; }, sender: any, sendResponse: any) {
 	request.action = 'uploadTextSB';
 	const smr = () => chrome.runtime.sendMessage(request);
 	tryn(5)(smr)
+	// const { note_data } = request as {
+	// 	action: string
+	// 	note_data: MockNote
+	//   }
+	//   if (note_data) {
+	// 	optimistic = O.some(note_data)
+	// 	  .use(supa_update(), supabase, note_data)
+	// 	  .then((v) => v && T.note2card.mutate({ note_id: v.id }))
+	// 	setTimeout(() => (optimistic = O.none), 1000)
+		// if you add two within 1 second it will mess it up
+	//   } 
 }
 
-function onMessage(request, sender, sendResponse) {
+function onMessage(request: { action: any; }, sender: chrome.runtime.MessageSender, sendResponse: any) {
 	if (request.action === 'uploadText') {
 		uploadSelected(request, sender, sendResponse);
 	} else if (request.action === 'loadDeps') {
 		chrome.scripting.executeScript({
-			target: { tabId: sender.tab.id },
+			target: { tabId: sender?.tab?.id!}, 
 			files: [
 				'rangy/rangy-core.min.js',
 				'rangy/rangy-classapplier.min.js',
@@ -55,14 +69,14 @@ function getUuid() {
 	}
 }
 
-async function activate(tab) {
-	chrome.sidePanel.open({ tabId: tab.id });
+async function activate(tab: chrome.tabs.Tab) {
+	chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions);
 	// try {
 	// 	await chrome.runtime.sendMessage({ action: 'empty' });
 	// } catch {
 	// 	console.log('did not find the thing');
 	// } // TODO: we may want to skip the text capture - first click open only
-	chrome.tabs.sendMessage(tab.id, {
+	chrome.tabs.sendMessage(tab.id!, {
 		action: 'getHighlightedText',
 		website_title: tab.title,
 		website_url: tab.url,
