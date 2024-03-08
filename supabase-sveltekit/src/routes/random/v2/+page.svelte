@@ -4,23 +4,30 @@
   import { type Patch, produceWithPatches, type UnFreeze } from "structurajs";
   import { writable, type Writable } from "svelte/store";
   const objStore = writable<Record<string, number>[]>([]);
+  console.log($objStore);
 
   const updateStore =
     <T,>(store: Writable<T>) =>
     (up: (arg: UnFreeze<T>) => void) => {
       let patches, inverse: Patch[];
       store.update((storeVal) => {
-        const [result, patches, inverse] = produceWithPatches(storeVal, up);
-        return result;
+        const [result, patches, inverse] = //
+          produceWithPatches<T, T>(storeVal, up);
+        return result as T;
       });
     };
+  updateStore(objStore)((x) => {
+    x.push({ a: 1 });
+  });
+  console.log($objStore);
+
   // first we get the result and the patches
 
-  const [result, patches, inverse] = produceWithPatches($objS, (draft) => {
-    draft.push({ B: 2 });
-  });
+  // const [result, patches, inverse] = produceWithPatches($objS, (draft) => {
+  //   draft.push({ B: 2 });
+  // });
   // console.log(patches);
-  console.log(result);
+  // console.log(result);
   // import createHighlighter from "./rangy-classapplier.min.js";
 
   let loaded = false;
