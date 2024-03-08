@@ -1,5 +1,6 @@
 import type { Notes } from "shared"
 import type { NoteSync } from "shared"
+import { writable } from "svelte/store"
 
 export let sub = (note_sync: NoteSync) => {
   console.log(note_sync.user_id)

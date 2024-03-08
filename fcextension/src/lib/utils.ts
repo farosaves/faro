@@ -11,16 +11,12 @@ export let API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 
 // console.log("API_ADDRESS", API_ADDRESS)
 
-export type ATokens =
-  | { access_token: string; refresh_token: string }
-  | undefined
+export type ATokens = { access_token: string; refresh_token: string } | undefined
 export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) return
   const { access_token, refresh_token } = tokens
   // set session
-  await supabase.auth
-    .setSession({ access_token, refresh_token })
-    .then(logIfError)
+  await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError)
 
   const {
     data: { session },
@@ -30,25 +26,17 @@ export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
 
 export async function gotoSnippet(uuid: string) {
   console.log("going to..", uuid)
-  const tab = (
-    await chrome.tabs.query({ active: true, currentWindow: true })
-  )[0]
+  const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   chrome.tabs.sendMessage(tab.id!, { action: "goto", uuid })
 }
 
 export async function deleteSnippet(uuid: string, serialized: string) {
   console.log("deleting..", uuid, serialized)
-  const tab = (
-    await chrome.tabs.query({ active: true, currentWindow: true })
-  )[0]
+  const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
 }
 
-export async function getNotes(
-  supabase: SupabaseClient,
-  source_id: number,
-  user_id: string,
-) {
+export async function getNotes(supabase: SupabaseClient, source_id: number, user_id: string) {
   const { data, error } = await supabase
     .from("notes")
     .select()

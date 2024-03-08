@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Note from "$lib/components/Note.svelte";
+  import Note from "$lib/components/NoteHorizontal.svelte";
   import { NoteSync } from "shared";
   import Search from "$lib/components/Search.svelte";
   import type { NoteEx } from "shared";
@@ -83,20 +83,16 @@
     <!-- my main here -->
     <div class="flex flex-row flex-wrap">
       {#each $note_groups as [title, note_group], i}
-        <div
-          class="border-2 text-center rounded-lg"
-          style="max-width: {w_rem * note_group.length + 0.25}rem; 
-				min-width: {w_rem + 0.15}rem">
+        <div class="border-2 text-center rounded-lg">
           <span class="text-lg text-wrap">{title}</span>
-          <div class="flex flex-row flex-wrap overflow-auto">
+          <div class="flex flex-row">
             {#each note_group as note, j}
               <!-- bind:showing_content={showing_contents[i][j]} -->
               <Note
                 note_data={note}
                 showing_content={safeget(showing_contents, i)[j]}
                 {close_all_notes}
-                {note_sync}
-                {w_rem} />
+                {note_sync} />
             {/each}
           </div>
         </div>

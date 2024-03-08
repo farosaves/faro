@@ -13,9 +13,7 @@ let colorScheme: "light" | "dark" = "dark"
 export const themeStore = writable(colorScheme)
 export const updateTheme = () =>
   themeStore.set(
-    window
-      .getComputedStyle(document.documentElement)
-      .getPropertyValue("color-scheme") as typeof colorScheme,
+    window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as typeof colorScheme,
   )
 
 export let safeGet =
@@ -31,13 +29,10 @@ export const unwrap_def = <T>(o: Option<T>, def: T) =>
     O.match(() => def, identity),
   )
 
-export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) =>
-  flow(A.map(f), A.flatMap(A.fromOption))
+export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
-export let partition_by_id = (id: number) =>
-  A.partition((v: { id: number }) => v.id == id)
-export let delete_by_id = (id: number) =>
-  A.filter((v: { id: number }) => v.id !== id)
+export let partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
+export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
 export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
   return (t1, t2) => f(t2) - f(t1)
@@ -56,8 +51,7 @@ export function logIfError<T extends { error: any }>(r: T): T {
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 export const hostname = (s: string) => s && new URL(s).hostname
 
-export const domain_title = (url: string, title: string) =>
-  [hostname(url), title].join(";")
+export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
 
 // sort descendingly but for negative scores filter out
 export const filterSort =
@@ -88,10 +82,7 @@ export async function getNotes(
   user_id: string,
   prevnotes = [],
 ): Promise<Notess> {
-  let query = supabase
-    .from("notes")
-    .select("*, sources (title, url)")
-    .eq("user_id", user_id)
+  let query = supabase.from("notes").select("*, sources (title, url)").eq("user_id", user_id)
   query = O.match(
     () => query,
     (id: number) => query.eq("source_id", id),
