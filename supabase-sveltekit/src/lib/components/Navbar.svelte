@@ -9,7 +9,7 @@
   });
 </script>
 
-<div class="navbar z-10 relative">
+<div class="navbar z-30 relative">
   <div class="navbar-start">
     <a class="btn btn-ghost text-xl" href="/">Faros</a>
   </div>

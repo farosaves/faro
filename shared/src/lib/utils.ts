@@ -3,8 +3,9 @@ import { array as A } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
-import { writable } from "svelte/store"
+import { writable, type Writable } from "svelte/store"
 import type { Session } from "@supabase/supabase-js"
+import { produceWithPatches, type Patch, type UnFreeze } from "structurajs"
 
 let _sess: O.Option<Session> = O.none
 export const sessStore = writable(_sess)
@@ -95,3 +96,16 @@ export async function getNotes(
     return { ...v, sources: fillInTitleUrl(v) }
   })
 }
+
+export const updateStore =
+  <T>(store: Writable<T>) =>
+  (up: (arg: UnFreeze<T>) => void) => {
+    let [patches, inverse]: Patch[][] = [[], []]
+    let result
+    store.update((storeVal) => {
+      ;[result, patches, inverse] = //
+        produceWithPatches<T, T>(storeVal, up)
+      return result as T
+    })
+    return { patches, inverse }
+  }

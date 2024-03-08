@@ -3,23 +3,14 @@
   import * as rangy from "rangy";
   import { type Patch, produceWithPatches, type UnFreeze } from "structurajs";
   import { writable, type Writable } from "svelte/store";
+  import { updateStore } from "shared";
   const objStore = writable<Record<string, number>[]>([]);
-  console.log($objStore);
 
-  const updateStore =
-    <T,>(store: Writable<T>) =>
-    (up: (arg: UnFreeze<T>) => void) => {
-      let patches, inverse: Patch[];
-      store.update((storeVal) => {
-        const [result, patches, inverse] = //
-          produceWithPatches<T, T>(storeVal, up);
-        return result as T;
-      });
-    };
+  console.log($objStore);
+  $: console.log($objStore);
   updateStore(objStore)((x) => {
     x.push({ a: 1 });
   });
-  console.log($objStore);
 
   // first we get the result and the patches
 
