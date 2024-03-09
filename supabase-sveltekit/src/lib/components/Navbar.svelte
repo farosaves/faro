@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { updateTheme } from "shared";
-  const themes = ["light", "dark", "retro", "cyberpunk", "aqua", "night"];
-  import { onMount } from "svelte";
-  import { themeChange } from "theme-change";
+  import { updateTheme } from "shared"
+  const themes = ["light", "dark", "retro", "cyberpunk", "aqua", "night"]
+  import { onMount } from "svelte"
+  import { themeChange } from "theme-change"
 
   onMount(() => {
-    themeChange(false);
-  });
+    themeChange(false)
+  })
 </script>
 
 <div class="navbar z-30 relative">

@@ -28,10 +28,7 @@
     chrome.tabs
       .sendMessage(tab_id, {
         action: "deserialize",
-        uss: (get(note_sync.notestore)[source_id] || []).map((n) => [
-          n.snippet_uuid,
-          n.serialized_highlight,
-        ]),
+        uss: (get(note_sync.notestore)[source_id] || []).map((n) => [n.snippet_uuid, n.serialized_highlight]),
       })
       .catch((e) => {
         needToRefreshPage = true
@@ -61,27 +58,24 @@
   }, 1000)
   onMount(async () => {
     try {
-      chrome.runtime.onMessage.addListener(
-        async (request, sender, sendResponse) => {
-          if (request.action == "update_curr_url") updateActive()
-          if (request.action == "content_script_loaded" && needToRefreshPage)
-            updateActive()
-          if (request.action === "uploadTextSB") {
-            const { note_data } = request as {
-              action: string
-              note_data: MockNote
-            }
-            if (note_data) {
-              optimistic = O.some(note_data)
-              note_sync.sem
-                .use(supa_update(), supabase, note_data)
-                .then((v) => v && T.note2card.mutate({ note_id: v.id }))
-              setTimeout(() => (optimistic = O.none), 1000)
-              // TODO: if you add two within 1 second it will mess it up
-            }
+      chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+        if (request.action == "update_curr_url") updateActive()
+        if (request.action == "content_script_loaded" && needToRefreshPage) updateActive()
+        if (request.action === "uploadTextSB") {
+          const { note_data } = request as {
+            action: string
+            note_data: MockNote
           }
-        },
-      )
+          if (note_data) {
+            optimistic = O.some(note_data)
+            note_sync.sem
+              .use(supa_update(), supabase, note_data)
+              .then((v) => v && T.note2card.mutate({ note_id: v.id }))
+            setTimeout(() => (optimistic = O.none), 1000)
+            // TODO: if you add two within 1 second it will mess it up
+          }
+        }
+      })
     } catch {
       console.log("dev?")
     }
@@ -117,9 +111,7 @@
     <div class="flex flex-row">
       <!-- prettier-ignore -->
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-      <span
-        >If you just installed (or reloaded) the extension you need to refresh
-        the page.</span>
+      <span>If you just installed (or reloaded) the extension you need to refresh the page.</span>
     </div>
   </div>
 {/if}
@@ -129,8 +121,7 @@
   <div role="alert" class="alert alert-error">
     <!-- prettier-ignore -->
     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-    <span
-      >Not logged in! <a href={login_url} target="_blank">click here</a></span>
+    <span>Not logged in! <a href={login_url} target="_blank">click here</a></span>
   </div>
 {/if}
 

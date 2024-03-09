@@ -18,23 +18,16 @@ export let subIdxs = (s: string, l: number, r: number) =>
   s
     .replace(/(?<=type:textContent\|)\d+(?=\$)/, l.toString())
     .replace(/(?<=type:textContent\|\d+\$)\d+(?=\$)/, r.toString())
-export let start = (s: string) =>
-  parseInt(s.match(/(?<=type:textContent\|)\d+(?=\$)/)?.[0].toString() || "0")
+export let start = (s: string) => parseInt(s.match(/(?<=type:textContent\|)\d+(?=\$)/)?.[0].toString() || "0")
 export let end = (s: string) =>
-  parseInt(
-    s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0",
-  )
+  parseInt(s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0")
 export let extractPrePost = (s: string) =>
   (s.match(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/)?.[0].toString() || "").split("$")
-export let stripQuote = (s: string) =>
-  s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "")
+export let stripQuote = (s: string) => s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "")
 
 export let prepare2deserialize = (textContent: string, s: string) =>
   extractPrePost(s).length == 2
-    ? subIdxs(
-        stripQuote(s),
-        ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)),
-      )
+    ? subIdxs(stripQuote(s), ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)))
     : stripQuote(s)
 
 export const adjIdxs = (
@@ -46,8 +39,7 @@ export const adjIdxs = (
 ): [number, number] => {
   const [pre, post] = pre_post
   const len = endIdx - startIdx
-  const matches = (xfix: string) =>
-    Array.from(textContent.matchAll(RegExp(xfix, "gu")))
+  const matches = (xfix: string) => Array.from(textContent.matchAll(RegExp(xfix, "gu")))
   const ss = matches(pre)
   const es = matches(post)
 
@@ -68,8 +60,7 @@ export const adjIdxs = (
 };
 
   const score = (l: RegExpExecArray, r: RegExpExecArray) =>
-    (1 + Math.abs(r.index - l.index - targetDiff)) *
-    Math.abs(l.index - startIdx)
+    (1 + Math.abs(r.index - l.index - targetDiff)) * Math.abs(l.index - startIdx)
   const allAligned = aligned(ss, es).toSorted(desc(([l, r]) => -score(l, r)))
   if (allAligned.length) {
     // TODO: here I changed

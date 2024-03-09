@@ -26,11 +26,7 @@ export const supa_update =
         .then(logIfError)
       if (data) note.source_id = data.id
     }
-    const { data: newNote } = await supabase
-      .from("notes")
-      .insert(note)
-      .select()
-      .maybeSingle()
+    const { data: newNote } = await supabase.from("notes").insert(note).select().maybeSingle()
     await sleep(schlep) // time for sb to update
     return newNote
   }
