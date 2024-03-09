@@ -1,85 +1,84 @@
 <script>
   // @ts-nocheck
-  let tag = "";
-  let arrelementsmatch = [];
-  let autoCompleteIndex = -1;
+  let tag = ""
+  let arrelementsmatch = []
+  let autoCompleteIndex = -1
 
   let regExpEscape = (s) => {
-    return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-  };
+    return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
+  }
 
-  export let tags = undefined;
-  export let addKeys = undefined;
-  export let maxTags = undefined;
-  export let onlyUnique = undefined;
-  export let removeKeys = undefined;
-  export let placeholder = undefined;
-  export let allowPaste = undefined;
-  export let allowDrop = undefined;
-  export let splitWith = undefined;
-  export let autoComplete = undefined;
-  export let autoCompleteFilter = undefined;
-  export let autoCompleteKey = undefined;
-  export let autoCompleteMarkupKey = undefined;
-  export let name = undefined;
-  export let id = undefined;
-  export let allowBlur = undefined;
-  export let disable = undefined;
-  export let minChars = undefined;
-  export let onlyAutocomplete = undefined;
-  export let labelText = undefined;
-  export let labelShow = undefined;
-  export let readonly = undefined;
-  export let onTagClick = undefined;
-  export let autoCompleteShowKey = undefined;
-  export let onTagAdded = undefined;
-  export let onTagRemoved = undefined;
-  export let cleanOnBlur = undefined;
-  export let customValidation = undefined;
+  export let tags = undefined
+  export let addKeys = undefined
+  export let maxTags = undefined
+  export let onlyUnique = undefined
+  export let removeKeys = undefined
+  export let placeholder = undefined
+  export let allowPaste = undefined
+  export let allowDrop = undefined
+  export let splitWith = undefined
+  export let autoComplete = undefined
+  export let autoCompleteFilter = undefined
+  export let autoCompleteKey = undefined
+  export let autoCompleteMarkupKey = undefined
+  export let name = undefined
+  export let id = undefined
+  export let allowBlur = undefined
+  export let disable = undefined
+  export let minChars = undefined
+  export let onlyAutocomplete = undefined
+  export let labelText = undefined
+  export let labelShow = undefined
+  export let readonly = undefined
+  export let onTagClick = undefined
+  export let autoCompleteShowKey = undefined
+  export let onTagAdded = undefined
+  export let onTagRemoved = undefined
+  export let cleanOnBlur = undefined
+  export let customValidation = undefined
 
-  let layoutElement;
+  let layoutElement
 
-  $: tags = tags || [];
-  $: addKeys = addKeys || [13];
-  $: maxTags = maxTags || false;
-  $: onlyUnique = onlyUnique || false;
-  $: removeKeys = removeKeys || [8];
-  $: placeholder = placeholder || "";
-  $: allowPaste = allowPaste || false;
-  $: allowDrop = allowDrop || false;
-  $: splitWith = splitWith || ",";
-  $: autoComplete = autoComplete || false;
-  $: autoCompleteFilter =
-    typeof autoCompleteFilter == "undefined" ? true : false;
-  $: autoCompleteKey = autoCompleteKey || false;
-  $: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
-  $: name = name || "svelte-tags-input";
-  $: id = id || uniqueID();
-  $: allowBlur = allowBlur || false;
-  $: disable = disable || false;
-  $: minChars = minChars ?? 1;
-  $: onlyAutocomplete = onlyAutocomplete || false;
-  $: labelText = labelText || name;
-  $: labelShow = labelShow || false;
-  $: readonly = readonly || false;
-  $: onTagClick = onTagClick || function () {};
-  $: autoCompleteShowKey = autoCompleteShowKey || autoCompleteKey;
-  $: onTagAdded = onTagAdded || function () {};
-  $: onTagRemoved = onTagRemoved || function () {};
-  $: cleanOnBlur = cleanOnBlur || false;
-  $: customValidation = customValidation || false;
+  $: tags = tags || []
+  $: addKeys = addKeys || [13]
+  $: maxTags = maxTags || false
+  $: onlyUnique = onlyUnique || false
+  $: removeKeys = removeKeys || [8]
+  $: placeholder = placeholder || ""
+  $: allowPaste = allowPaste || false
+  $: allowDrop = allowDrop || false
+  $: splitWith = splitWith || ","
+  $: autoComplete = autoComplete || false
+  $: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false
+  $: autoCompleteKey = autoCompleteKey || false
+  $: autoCompleteMarkupKey = autoCompleteMarkupKey || false
+  $: name = name || "svelte-tags-input"
+  $: id = id || uniqueID()
+  $: allowBlur = allowBlur || false
+  $: disable = disable || false
+  $: minChars = minChars ?? 1
+  $: onlyAutocomplete = onlyAutocomplete || false
+  $: labelText = labelText || name
+  $: labelShow = labelShow || false
+  $: readonly = readonly || false
+  $: onTagClick = onTagClick || function () {}
+  $: autoCompleteShowKey = autoCompleteShowKey || autoCompleteKey
+  $: onTagAdded = onTagAdded || function () {}
+  $: onTagRemoved = onTagRemoved || function () {}
+  $: cleanOnBlur = cleanOnBlur || false
+  $: customValidation = customValidation || false
 
-  $: matchsID = id + "_matchs";
+  $: matchsID = id + "_matchs"
 
-  let storePlaceholder = placeholder;
+  let storePlaceholder = placeholder
 
   function setTag(e) {
-    const currentTag = e.target.value;
+    const currentTag = e.target.value
 
     if (addKeys) {
       addKeys.forEach(function (key) {
         if (key === e.keyCode) {
-          if (currentTag) e.preventDefault();
+          if (currentTag) e.preventDefault()
 
           /* switch (input.keyCode) {
 					  case 9:
@@ -101,174 +100,164 @@
            * If onlyAutocomplete = true: You cannot add random tags
            * If input element with ID
            */
-          if (
-            autoComplete &&
-            onlyAutocomplete &&
-            document.getElementById(matchsID)
-          ) {
-            addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
+          if (autoComplete && onlyAutocomplete && document.getElementById(matchsID)) {
+            addTag(arrelementsmatch?.[autoCompleteIndex]?.label)
           } else {
-            addTag(currentTag);
+            addTag(currentTag)
           }
         }
-      });
+      })
     }
 
     if (removeKeys) {
       removeKeys.forEach(function (key) {
         if (key === e.keyCode && tag === "") {
-          tags.pop();
-          tags = tags;
+          tags.pop()
+          tags = tags
 
-          arrelementsmatch = [];
-          document.getElementById(id).readOnly = false;
-          placeholder = storePlaceholder;
-          document.getElementById(id).focus();
+          arrelementsmatch = []
+          document.getElementById(id).readOnly = false
+          placeholder = storePlaceholder
+          document.getElementById(id).focus()
         }
-      });
+      })
     }
 
     // ArrowDown : focus on first element of the autocomplete
     if (e.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
       // Last element on the list ? Go to the first
-      if (autoCompleteIndex + 1 === arrelementsmatch.length)
-        autoCompleteIndex = 0;
-      else autoCompleteIndex++;
+      if (autoCompleteIndex + 1 === arrelementsmatch.length) autoCompleteIndex = 0
+      else autoCompleteIndex++
     } else if (e.keyCode === 38) {
       // ArrowUp
       // First element on the list ? Go to the last
-      if (autoCompleteIndex <= 0)
-        autoCompleteIndex = arrelementsmatch.length - 1;
-      else autoCompleteIndex--;
+      if (autoCompleteIndex <= 0) autoCompleteIndex = arrelementsmatch.length - 1
+      else autoCompleteIndex--
     } else if (e.keyCode === 27) {
       // Escape
-      arrelementsmatch = [];
-      document.getElementById(id).focus();
+      arrelementsmatch = []
+      document.getElementById(id).focus()
     }
   }
 
   function addTag(currentTag) {
     if (typeof currentTag === "object" && currentTag !== null) {
       if (!autoCompleteKey) {
-        return console.error(
-          "'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects",
-        );
+        return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects")
       }
 
       if (onlyUnique) {
-        let found = tags?.find(
-          (elem) => elem[autoCompleteKey] === currentTag[autoCompleteKey],
-        );
+        let found = tags?.find((elem) => elem[autoCompleteKey] === currentTag[autoCompleteKey])
 
-        if (found) return;
+        if (found) return
       }
 
-      var currentObjTags = currentTag;
-      currentTag = currentTag[autoCompleteKey].trim();
+      var currentObjTags = currentTag
+      currentTag = currentTag[autoCompleteKey].trim()
     } else {
-      currentTag = currentTag.trim();
+      currentTag = currentTag.trim()
     }
 
-    if (currentTag == "") return;
-    if (maxTags && tags.length == maxTags) return;
-    if (onlyUnique && tags.includes(currentTag)) return;
-    if (onlyAutocomplete && arrelementsmatch.length === 0) return;
+    if (currentTag == "") return
+    if (maxTags && tags.length == maxTags) return
+    if (onlyUnique && tags.includes(currentTag)) return
+    if (onlyAutocomplete && arrelementsmatch.length === 0) return
 
-    if (customValidation && !customValidation(currentTag)) return;
+    if (customValidation && !customValidation(currentTag)) return
 
-    tags.push(currentObjTags ? currentObjTags : currentTag);
-    tags = tags;
-    tag = "";
+    tags.push(currentObjTags ? currentObjTags : currentTag)
+    tags = tags
+    tag = ""
 
-    onTagAdded(currentTag, tags);
+    onTagAdded(currentTag, tags)
 
     // Hide autocomplete list
     // Focus on svelte tags input
-    arrelementsmatch = [];
-    autoCompleteIndex = -1;
-    document.getElementById(id).focus();
+    arrelementsmatch = []
+    autoCompleteIndex = -1
+    document.getElementById(id).focus()
 
     if (maxTags && tags.length == maxTags) {
-      document.getElementById(id).readOnly = true;
-      placeholder = "";
+      document.getElementById(id).readOnly = true
+      placeholder = ""
     }
   }
 
   function removeTag(i) {
-    tags.splice(i, 1);
-    onTagRemoved(tags[i], tags);
-    tags = tags;
+    tags.splice(i, 1)
+    onTagRemoved(tags[i], tags)
+    tags = tags
 
     // Hide autocomplete list
     // Focus on svelte tags input
-    arrelementsmatch = [];
-    document.getElementById(id).readOnly = false;
-    placeholder = storePlaceholder;
-    document.getElementById(id).focus();
+    arrelementsmatch = []
+    document.getElementById(id).readOnly = false
+    placeholder = storePlaceholder
+    document.getElementById(id).focus()
   }
 
   function onPaste(e) {
-    if (!allowPaste) return;
-    e.preventDefault();
+    if (!allowPaste) return
+    e.preventDefault()
 
-    const data = getClipboardData(e);
-    splitTags(data).map((tag) => addTag(tag));
+    const data = getClipboardData(e)
+    splitTags(data).map((tag) => addTag(tag))
   }
 
   function onDrop(e) {
-    if (!allowDrop) return;
-    e.preventDefault();
+    if (!allowDrop) return
+    e.preventDefault()
 
-    const data = e.dataTransfer.getData("Text");
-    splitTags(data).map((tag) => addTag(tag));
+    const data = e.dataTransfer.getData("Text")
+    splitTags(data).map((tag) => addTag(tag))
   }
 
   function onFocus() {
-    layoutElement.classList.add("focus");
+    layoutElement.classList.add("focus")
   }
 
   function onBlur(e, currentTag) {
-    layoutElement.classList.remove("focus");
+    layoutElement.classList.remove("focus")
 
     if (allowBlur) {
       // A match is highlighted
       if (arrelementsmatch.length && autoCompleteIndex > -1) {
-        addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
+        addTag(arrelementsmatch?.[autoCompleteIndex]?.label)
       }
       // There is no match, but we may add a new tag
       else if (!arrelementsmatch.length) {
-        e.preventDefault();
-        addTag(currentTag);
+        e.preventDefault()
+        addTag(currentTag)
       }
     }
 
     // Clean input on
     if (cleanOnBlur) {
-      tag = "";
+      tag = ""
     }
 
-    arrelementsmatch = [];
-    autoCompleteIndex = -1;
+    arrelementsmatch = []
+    autoCompleteIndex = -1
   }
 
   function onClick() {
-    minChars == 0 && getMatchElements();
+    minChars == 0 && getMatchElements()
   }
 
   function getClipboardData(e) {
     if (window.clipboardData) {
-      return window.clipboardData.getData("Text");
+      return window.clipboardData.getData("Text")
     }
 
     if (e.clipboardData) {
-      return e.clipboardData.getData("text/plain");
+      return e.clipboardData.getData("text/plain")
     }
 
-    return "";
+    return ""
   }
 
   function splitTags(data) {
-    return data.split(splitWith).map((tag) => tag.trim());
+    return data.split(splitWith).map((tag) => tag.trim())
   }
 
   function escapeHTML(string) {
@@ -279,65 +268,55 @@
       '"': "&quot;",
       "'": "&#x27;",
       "/": "&#x2F;",
-    };
-    return ("" + string).replace(/[&<>"'\/]/g, (match) => htmlEscapes[match]);
+    }
+    return ("" + string).replace(/[&<>"'\/]/g, (match) => htmlEscapes[match])
   }
 
   function buildMatchMarkup(search, value) {
-    return escapeHTML(value).replace(
-      RegExp(regExpEscape(search.toLowerCase()), "i"),
-      "<strong>$&</strong>",
-    );
+    return escapeHTML(value).replace(RegExp(regExpEscape(search.toLowerCase()), "i"), "<strong>$&</strong>")
   }
 
   async function getMatchElements(input) {
-    if (!autoComplete) return;
-    if (maxTags && tags.length >= maxTags) return;
+    if (!autoComplete) return
+    if (maxTags && tags.length >= maxTags) return
 
-    let value = input ? input.target.value : "";
-    let autoCompleteValues = [];
+    let value = input ? input.target.value : ""
+    let autoCompleteValues = []
 
     if (Array.isArray(autoComplete)) {
-      autoCompleteValues = autoComplete;
+      autoCompleteValues = autoComplete
     }
 
     if (typeof autoComplete === "function") {
       if (autoComplete.constructor.name === "AsyncFunction") {
-        autoCompleteValues = await autoComplete(value);
+        autoCompleteValues = await autoComplete(value)
       } else {
-        autoCompleteValues = autoComplete(value);
+        autoCompleteValues = autoComplete(value)
       }
     }
 
     if (autoCompleteValues.constructor.name === "Promise") {
-      autoCompleteValues = await autoCompleteValues;
+      autoCompleteValues = await autoCompleteValues
     }
     // Escape
-    if (
-      (minChars > 0 && value == "") ||
-      (input && input.keyCode === 27) ||
-      value.length < minChars
-    ) {
-      arrelementsmatch = [];
-      return;
+    if ((minChars > 0 && value == "") || (input && input.keyCode === 27) || value.length < minChars) {
+      arrelementsmatch = []
+      return
     }
 
-    let matchs = autoCompleteValues;
+    let matchs = autoCompleteValues
 
-    if (
-      typeof autoCompleteValues[0] === "object" &&
-      autoCompleteValues !== null
-    ) {
+    if (typeof autoCompleteValues[0] === "object" && autoCompleteValues !== null) {
       if (!autoCompleteKey) {
         return console.error(
           "'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects",
-        );
+        )
       }
 
       if (autoCompleteFilter !== false) {
         matchs = autoCompleteValues.filter((e) =>
           e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()),
-        );
+        )
       }
       matchs = matchs.map((matchTag) => {
         return {
@@ -345,31 +324,29 @@
           search: autoCompleteMarkupKey
             ? matchTag[autoCompleteMarkupKey]
             : buildMatchMarkup(value, matchTag[autoCompleteKey]),
-        };
-      });
+        }
+      })
     } else {
       if (autoCompleteFilter !== false) {
-        matchs = autoCompleteValues.filter((e) =>
-          e.toLowerCase().includes(value.toLowerCase()),
-        );
+        matchs = autoCompleteValues.filter((e) => e.toLowerCase().includes(value.toLowerCase()))
       }
       matchs = matchs.map((matchTag) => {
         return {
           label: matchTag,
           search: buildMatchMarkup(value, matchTag),
-        };
-      });
+        }
+      })
     }
 
     if (onlyUnique === true && !autoCompleteKey) {
-      matchs = matchs.filter((tag) => !tags.includes(tag.label));
+      matchs = matchs.filter((tag) => !tags.includes(tag.label))
     }
 
-    arrelementsmatch = matchs;
+    arrelementsmatch = matchs
   }
 
   function uniqueID() {
-    return "sti_" + Math.random().toString(36).substring(2, 11);
+    return "sti_" + Math.random().toString(36).substring(2, 11)
   }
 </script>
 
@@ -382,20 +359,14 @@
 
   {#if tags.length > 0}
     {#each tags as tag, i}
-      <button
-        type="button"
-        class="svelte-tags-input-tag"
-        on:click={onTagClick(tag)}>
+      <button type="button" class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
         {#if typeof tag === "string"}
           {tag}
         {:else}
           {tag[autoCompleteShowKey]}
         {/if}
         {#if !disable && !readonly}
-          <span
-            class="svelte-tags-input-tag-remove"
-            on:pointerdown={() => removeTag(i)}>
-            &#215;</span>
+          <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
         {/if}
       </button>
     {/each}
@@ -441,8 +412,8 @@
   .svelte-tags-input-tag,
   .svelte-tags-input-matchs,
   .svelte-tags-input-layout label {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+      "Droid Sans", "Helvetica Neue", sans-serif;
     font-size: 14px;
     padding: 2px 5px;
   }
