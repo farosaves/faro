@@ -11,11 +11,9 @@ type MakeQCHReq = {
 
 const l = async (s: string): Promise<MakeQCHReq> =>
   pipe(await readFile(__dirname + s, {}), (x) => x.toString(), JSON.parse)
-const potTable = (html: string) =>
-  html.match("<tr>")?.[0] ? "<table>" + html + "</table>" : html
+const potTable = (html: string) => (html.match("<tr>")?.[0] ? "<table>" + html + "</table>" : html)
 const document = (r: MakeQCHReq) =>
-  new JSDOM("<html><body>" + potTable(r.html) + "</body></html>").window
-    .document
+  new JSDOM("<html><body>" + potTable(r.html) + "</body></html>").window.document
 
 test("input1", async () => {
   const r = await l("/input1.json")
@@ -39,10 +37,7 @@ test("input4", async () => {
   const r = await l("/input4.json")
   console.log(r.selectedText)
   expect(makeQCH(document(r), r.uuid, r.selectedText).quote).toBe(
-    "Hydrazine (combusted to N2+H2O)	19.5	19.3	5,416.7	5,361.1".replaceAll(
-      /\s+/g,
-      " ",
-    ),
+    "Hydrazine (combusted to N2+H2O)	19.5	19.3	5,416.7	5,361.1".replaceAll(/\s+/g, " "),
   )
 })
 test("input5", async () => {
@@ -66,9 +61,7 @@ test("input7", async () => {
 test("input8", async () => {
   const r = await l("/input8.json")
   // this fails because the "line break" is emoji\\n\s+\\n
-  expect(makeQCH(document(r), r.uuid, r.selectedText).quote).not.toBe(
-    "Learn Flexbox with 30 Code Tidbits.",
-  )
+  expect(makeQCH(document(r), r.uuid, r.selectedText).quote).not.toBe("Learn Flexbox with 30 Code Tidbits.")
 })
 test("input9", async () => {
   const r = await l("/input9.json")

@@ -3,13 +3,7 @@ import { persisted } from "svelte-persisted-store"
 import type { Notes } from "../dbtypes"
 import type { NoteEx, Notess, SupabaseClient } from "./first"
 import { derived, get, type Writable } from "svelte/store"
-import {
-  filterSort,
-  getNotes,
-  logIfError,
-  partition_by_id,
-  safeGet,
-} from "./utils"
+import { filterSort, getNotes, logIfError, partition_by_id, safeGet } from "./utils"
 import { option as O, record as R, string as S, array as A } from "fp-ts"
 import { groupBy } from "fp-ts/lib/NonEmptyArray"
 import { pipe } from "fp-ts/lib/function"
@@ -40,11 +34,7 @@ export class NoteSync {
   }
   alltags = () =>
     derived(this.notestore, (v) =>
-      A.uniq(S.Eq)(
-        Object.entries(v).flatMap(([_, notess]) =>
-          notess.flatMap((n) => n.tags || []),
-        ),
-      ),
+      A.uniq(S.Eq)(Object.entries(v).flatMap(([_, notess]) => notess.flatMap((n) => n.tags || []))),
     )
 
   async update_one_page(id: number) {
@@ -52,12 +42,7 @@ export class NoteSync {
       console.log("no user in NoteSync")
       return
     }
-    const newnotes = await this.sem.use(
-      getNotes,
-      this.sb,
-      O.some(id),
-      this.user_id,
-    )
+    const newnotes = await this.sem.use(getNotes, this.sb, O.some(id), this.user_id)
     if (newnotes !== null)
       this.notestore.update((s) => {
         s[id] = newnotes
@@ -95,10 +80,7 @@ export class NoteSync {
       (kvs) =>
         pipe(
           Object.entries(kvs), // @ts-ignore
-          A.map(([k, v]) => [
-            v[0] ? v[0].sources.title : "never!",
-            v.map(transform),
-          ]),
+          A.map(([k, v]) => [v[0] ? v[0].sources.title : "never!", v.map(transform)]),
           R.fromEntries<(NoteEx & { priority: number })[]>,
           R.filter((m) => m.length > 0),
           R.toArray<string, (NoteEx & { priority: number })[]>,
@@ -121,12 +103,7 @@ export class NoteSync {
       ? cache[0].sources
       : (
           await this.sem.use(
-            async () =>
-              await this.sb
-                .from("sources")
-                .select()
-                .eq("id", n.source_id)
-                .maybeSingle(),
+            async () => await this.sb.from("sources").select().eq("id", n.source_id).maybeSingle(),
           )
         ).data || {}
     title = title || "title missing"
@@ -142,12 +119,7 @@ export class NoteSync {
     })
     const { sources, ...reNote } = n
     this.sem.use(
-      async () =>
-        await this.sb
-          .from("notes")
-          .insert(reNote)
-          .then(logIfError)
-          .then(this._restoreIE(n, cache)),
+      async () => await this.sb.from("notes").insert(reNote).then(logIfError).then(this._restoreIE(n, cache)),
     )
   }
 
@@ -171,12 +143,7 @@ export class NoteSync {
       return s
     })
     this.sem.use(async () =>
-      this.sb
-        .from("notes")
-        .delete()
-        .eq("id", n.id)
-        .then(logIfError)
-        .then(this._restoreIE(n, cache)),
+      this.sb.from("notes").delete().eq("id", n.id).then(logIfError).then(this._restoreIE(n, cache)),
     )
   }
   // @ts-ignore
@@ -193,9 +160,7 @@ export class NoteSync {
       n[note.source_id].filter((_note) => _note.id == note.id)[0].tags = tags
       return n
     })
-    this.sem.use(async () =>
-      this.sb.from("notes").update({ tags }).eq("id", note.id).then(logIfError),
-    )
+    this.sem.use(async () => this.sb.from("notes").update({ tags }).eq("id", note.id).then(logIfError))
   }
 
   sub = (handlePayload: (payload: { new: Notes | object }) => void) => {

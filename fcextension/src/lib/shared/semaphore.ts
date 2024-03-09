@@ -15,10 +15,7 @@ export default class Semaphore {
     this.requestQueue = []
     this.running = false
   }
-  use<F extends (...args: any[]) => Promise<any>>(
-    fnToCall: F,
-    ...args: ArgType<F>
-  ): Promise<PReturnType<F>> {
+  use<F extends (...args: any[]) => Promise<any>>(fnToCall: F, ...args: ArgType<F>): Promise<PReturnType<F>> {
     return new Promise((resolve, reject) => {
       this.requestQueue.push({
         resolve,

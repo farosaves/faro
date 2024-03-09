@@ -52,10 +52,7 @@ let batchDeserialize = (uss) =>
     const hl = createHighlighter()
     const app = createClassApplier("_" + uuid, applierOptions)
     hl.addClassApplier(app)
-    const prepared = prepare2deserialize(
-      document.body.textContent || "",
-      serialized,
-    )
+    const prepared = prepare2deserialize(document.body.textContent || "", serialized)
     console.log("prep", prepared)
     hl.deserialize(prepared)
   })
@@ -89,11 +86,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // context: will try to grab like a <p> tag
     // quote is what's displayed on the note
     // context is displayed in the dialog on right click
-    const {
-      quote,
-      highlights,
-      context: _context,
-    } = makeQCH(document, uuid, selectedText)
+    const { quote, highlights, context: _context } = makeQCH(document, uuid, selectedText)
     // sometimes context is too much
     const context = _context.length < 1e4 ? _context : quote
     if (!quote) return { note_data: null }
@@ -117,8 +110,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.action === "goto") gotoText(request.uuid)
   if (request.action === "deserialize") batchDeserialize(request.uss)
-  if (request.action === "delete")
-    deleteSelection(request.uuid, request.serialized)
+  if (request.action === "delete") deleteSelection(request.uuid, request.serialized)
 })
 
 function sendHighlightedText() {

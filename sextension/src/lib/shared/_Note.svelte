@@ -22,9 +22,7 @@
   $: tags = note_data.tags || []
   let all_tags = note_sync.alltags()
   $: replacer = (capture: string) =>
-    `<b class="${$themeStore == "dark" ? "text-yellow-100" : ""}">` +
-    capture +
-    `</b>`
+    `<b class="${$themeStore == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`
   // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
   let escapeHTML = (text: string) => {
     var div = document.createElement("div")
@@ -102,10 +100,7 @@
       <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
       <p class="py-4">
         {@html note_data.highlights
-          ? escapeHTML(note_data.context || "").replaceAll(
-              note_data.highlights[0],
-              replacer,
-            )
+          ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], replacer)
           : escapeHTML(note_data.context || "")}
       </p>
     </div>
