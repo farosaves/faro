@@ -16,7 +16,7 @@
   console.log(
     "patches",
     updateStore(objStore)((x) => {
-      x.push({ id: 0, tags: [] })
+      x[0].tags = ["a"]
     }),
   )
 
