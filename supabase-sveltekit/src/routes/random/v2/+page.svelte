@@ -4,13 +4,21 @@
   import { type Patch, produceWithPatches, type UnFreeze } from "structurajs";
   import { writable, type Writable } from "svelte/store";
   import { updateStore } from "shared";
-  const objStore = writable<Record<string, number>[]>([]);
+  const objStore = writable<{ id: Number; tags: string[] }[]>([]);
 
   console.log($objStore);
   $: console.log($objStore);
   updateStore(objStore)((x) => {
-    x.push({ a: 1 });
+    x.push({ id: 0, tags: [] });
+    x.push({ id: 1, tags: [] });
   });
+
+  console.log(
+    "patches",
+    updateStore(objStore)((x) => {
+      x.push({ id: 0, tags: [] });
+    }),
+  );
 
   // first we get the result and the patches
 
