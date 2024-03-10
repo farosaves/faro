@@ -14,5 +14,8 @@
 		"composite": true,
 		"outDir": "./dist"
 	},
-  
+	"ts-node": {
+		"esm": true,
+		"experimentalSpecifierResolution": "node",
+	}
 }
