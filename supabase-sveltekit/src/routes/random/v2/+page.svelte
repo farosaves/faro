@@ -3,22 +3,46 @@
   import * as rangy from "rangy"
   import { type Patch, produceWithPatches, type UnFreeze } from "structurajs"
   import { writable, type Writable } from "svelte/store"
-  import { updateStore } from "shared"
+  import { applyPatches, updateStore } from "shared"
+  // import { SHA256 } from "crypto-js"
+
+  import { record as R, array as A } from "fp-ts"
+  import { groupBy } from "fp-ts/lib/ReadonlyNonEmptyArray"
+  import { identity, pipe } from "fp-ts/lib/function"
+
+  // const hashId =
+  //   <T,>(f: (x: T) => { toString: () => string }) =>
+  //   (x: T) =>
+  //     [SHA256(f(x).toString()).toString(), x] as [string, T]
+
+  // const init = () =>
+  //   pipe(
+  //     [{ id: "a" }, { id: 3 }],
+  //     A.map(hashId((x) => x.id)),
+  //     R.fromEntries,
+  //     // groupBy((r) => SHA256(r.id.toString()).toString()),
+  //   )
+
   const objStore = writable<{ id: Number; tags: string[] }[]>([])
+
+  let arr = [1, 2]
+  let [c, d]: number[] = arr
+  arr[0] = 3
+  console.log(c)
 
   console.log($objStore)
   $: console.log($objStore)
   updateStore(objStore)((x) => {
     x.push({ id: 0, tags: [] })
     x.push({ id: 1, tags: [] })
+    return undefined
+  })
+  const { patches, inverse } = updateStore(objStore)((x) => {
+    x[0].tags = ["a"]
   })
 
-  console.log(
-    "patches",
-    updateStore(objStore)((x) => {
-      x[0].tags = ["a"]
-    }),
-  )
+  console.log("patches", { patches, inverse })
+  setTimeout(() => updateStore(objStore)(applyPatches(inverse)), 100)
 
   // first we get the result and the patches
 

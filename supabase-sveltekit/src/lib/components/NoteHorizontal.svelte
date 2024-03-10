@@ -1,7 +1,7 @@
 <script lang="ts">
   import { type NoteEx } from "shared"
   export let note_data: NoteEx
-  export let showing_content: boolean
+  export let showing_content: boolean | undefined
   import type { NoteSync } from "shared"
   export let note_sync: NoteSync
 

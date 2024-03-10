@@ -8,7 +8,6 @@
   },
   "scripts": {
     "watch": "npm-watch",
-
     "format": "#npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
     "buildCF": "npm run build -w=shared/ && npm run build -w=supabase-sveltekit/",
     "buildShared": "npm run build -w=shared/",
@@ -39,6 +38,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.11.25"
   },
   "version": "1.0.0",

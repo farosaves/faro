@@ -17,7 +17,7 @@
   $: if (_session) $sessStore = O.some(_session)
   $: session = $sessStore
 
-  let showing_contents: boolean[][]
+  let showing_contents: boolean[]
   let note_sync: NoteSync = new NoteSync(supabase, undefined)
   let filterSortFun = (n: NoteEx) => {
     return { ...n, priority: Date.parse(n.created_at) }
@@ -47,7 +47,7 @@
   })
 
   let close_all_notes = () => {
-    showing_contents = $note_groups.map(([t, note_group]) => note_group.map((_) => false))
+    showing_contents = showing_contents.map((v) => false)
   }
   close_all_notes()
   let safeget = <T,>(a: T[][], i: number) => (i in a ? a[i] : [])
@@ -79,11 +79,12 @@
         <div class="border-2 text-center rounded-lg">
           <span class="text-lg text-wrap">{title}</span>
           <div class="flex flex-row">
-            {#each note_group as note, j}
-              <!-- bind:showing_content={showing_contents[i][j]} -->
+            {#each note_group as note, j (note.id)}
+              <!-- bind:showing_content={showing_contents[i][j]} -->3ui.
+
               <Note
+                showing_content={showing_contents[note.id]}
                 note_data={note}
-                showing_content={safeget(showing_contents, i)[j]}
                 {close_all_notes}
                 {note_sync} />
             {/each}
