@@ -1,17 +1,17 @@
 <script lang="ts">
-  import type { NoteSync } from "shared"
+  import type { NoteEx, NoteSync, Notes } from "shared"
   import type { NoteFilter } from "$lib/utils"
-  import { derived } from "svelte/store"
+  import { derived, type Readable } from "svelte/store"
   import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
   import { desc, hostname } from "shared"
-  export let note_sync: NoteSync
+  export let note_groups: Readable<[string, NoteEx[]][]>
   export let domainFilter: NoteFilter
-  const notestore = note_sync.notestore
-
-  const domains = derived(notestore, (x) =>
+  // const notestore = note_sync.notestore
+  const domains = derived(note_groups, (x) =>
     pipe(
-      Object.values(x),
+      x,
+      A.map(([s, ns]) => ns),
       // prettier-ignore
       NA.groupBy(a => pipe(a, A.last, O.match(() => "", x => hostname(x.sources.url)))),
       R.map(NA.reduce(0, (x, y) => x + y.length)),

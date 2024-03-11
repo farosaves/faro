@@ -4,7 +4,7 @@
 import { persisted } from "svelte-persisted-store"
 import type { Notes } from "./dbtypes"
 import type { NoteEx, Notess, SupabaseClient } from "./first"
-import { derived, get, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import {
   applyPatches,
   fillInTitleUrl, // todo!! delete
@@ -24,7 +24,8 @@ type PatchTup = { patches: Patch[]; inverse: Patch[] }
 
 const allNotes: Notes[] = []
 // export type NoteDict = typeof notes
-export const notestore = persisted("notestore", allNotes)
+// export const notestore = persisted("notestore2", allNotes)
+export const notestore = writable(allNotes)
 const _note_del_queue: Notess = []
 const note_del_queue = persisted("note_del_queue", _note_del_queue)
 
@@ -52,9 +53,9 @@ export class NoteSync {
   // voidFix = (v: void): PatchTup => {
   //   return { patches: [], inverse: [] }
   // }
-  refresh_sources = async () => (this.stuMap = await getTitlesUrls(this.sb, this.user_id)(this.stuMap))
+  refresh_sources = async () => (this.stuMap = await getTitlesUrls(this.sb)(this.stuMap))
 
-  refresh_notes = (id: O.Option<number>) =>
+  refresh_notes = (id: O.Option<number> = O.none) =>
     getNotes(this.sb, id, this.user_id).then((nns) =>
       updateStore(this.notestore)((s) => s.filter((n) => n.id != O.toNullable(id)).concat(nns)),
     )
@@ -67,7 +68,7 @@ export class NoteSync {
   get_groups = (transform: (x: NoteEx) => NoteEx & { priority: number }) =>
     derived(this.notestore, (ns) =>
       pipe(
-        ns.map((n) => ({ ...n, sources: this.stuMap[n.source_id] })), // todo!!
+        ns.map((n) => ({ ...n, sources: fillInTitleUrl(this.stuMap[n.source_id]) })),
         A.map(transform), // potentially can add filter here already actually
         NA.groupBy((n) => n.sources.title),
         R.toArray<string, (NoteEx & { priority: number })[]>,

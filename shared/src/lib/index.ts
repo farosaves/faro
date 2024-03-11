@@ -3,7 +3,7 @@
 import _Note from "./_Note.svelte"
 import Tags from "./Tags.svelte"
 import MyTags from "./MyTags.svelte"
-import { NoteSync } from "./note-sync"
+import { NoteSync } from "./note-struct"
 export * from "./utils"
 export * from "./dbtypes"
 import { makeQCH } from "./snippetiser/main"

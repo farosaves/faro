@@ -11,15 +11,15 @@
 
   const tags_counts = derived(notestore, (x) =>
     pipe(
-      Object.values(x),
-      A.flatMap(A.flatMap((note) => note.tags || [])),
+      x,
+      A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
       R.map((x) => x.length),
       R.toArray,
     )
       .concat(
         // prettier-ignore
-        [["", pipe(Object.values(x), A.flatMap(A.filter((note) => !note.tags))).length]], // untagged
+        [["", pipe(x, (A.filter((note) => !note.tags))).length]], // untagged
       )
       .toSorted(desc(([x, y]) => y)),
   )
