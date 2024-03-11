@@ -60,6 +60,7 @@ export const ifErr =
     if (!!error == is) f(error)
     return r
   }
+export const ifNError = (f: (e: any) => void) => ifErr(f, false)
 export const logIfError = ifErr(console.log)
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))

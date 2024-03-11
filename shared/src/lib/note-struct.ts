@@ -12,6 +12,7 @@ import {
   getNotes,
   getTitlesUrls,
   ifErr,
+  ifNError,
   logIfError,
   updateStore,
   type STUMap,
@@ -29,7 +30,9 @@ const eqIfSome = <T>(n: T) =>
 
 const allNotes: Notes[] = []
 export const notestore = persisted("notestore", allNotes)
-// notestore.set(allNotes)
+notestore.set(allNotes)
+const undo_queue: PatchTup[] = []
+const redo_queue: PatchTup[] = []
 const _note_del_queue: Notess = []
 const note_del_queue = persisted("note_del_queue", _note_del_queue)
 
@@ -39,12 +42,14 @@ export class NoteSync {
   user_id: string | undefined
   note_del_queue: Writable<Notess>
   stuMap: STUMap
+  // nq
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
     this.notestore = notestore
     this.stuMap = {}
     this.user_id = user_id
     this.note_del_queue = note_del_queue
+    // this.nq = this.sb.from("notes")
   }
   inited = () => this.user_id !== undefined
   panel(id: number) {
@@ -81,39 +86,33 @@ export class NoteSync {
         ),
       ),
     )
-  // mdSource: O.Option<{ title: string; url: string }>
+  // could make it even better by wrapping this.sb.from("notes")
+
+  actionCb =
+    <V extends { error: any }, U extends PromiseLike<V>>(t: U) =>
+    (patchTup: PatchTup) =>
+      t.then(logIfError).then(ifErr(() => updateStore(this.notestore)(applyPatches(patchTup.inverse))))
   addit = async (note: Notes) => {
     const { patches, inverse } = updateStore(this.notestore)((x) => {
       x.push(note)
     })
-    await this.sb
-      .from("notes")
-      .insert(note)
-      .then(logIfError)
-      .then(ifErr(() => updateStore(this.notestore)(applyPatches(inverse))))
-    // .then(ifErr)  savedelete
+    this.actionCb(this.sb.from("notes").insert(note))
   }
 
   deleteit = (note: Notes) => {
     const { patches, inverse } = updateStore(this.notestore)((ns) => ns.filter((n) => n.id != note.id))
-    this.sb
-      .from("notes")
-      .delete()
-      .eq("id", note.id)
-      .then(logIfError)
-      .then(ifErr(() => updateStore(this.notestore)(applyPatches(inverse))))
+    this.actionCb(this.sb.from("notes").delete().eq("id", note.id))
+    // .then(logIfError)
+    // .then(ifErr(() => updateStore(this.notestore)(applyPatches(inverse))))
   }
 
   tagUpdate = (note: Notes) => (tag: string, tags: string[]) => {
     const { patches, inverse } = updateStore(this.notestore)((ns) => {
       ns.filter((n) => n.id == note.id)[0].tags = tags
     })
-    this.sb
-      .from("notes")
-      .update({ tags })
-      .eq("id", note.id)
-      .then(logIfError)
-      .then(ifErr(() => updateStore(this.notestore)(applyPatches(inverse))))
+    this.actionCb(this.sb.from("notes").update({ tags }).eq("id", note.id))
+    // .then(logIfError)
+    // .then(ifErr(() => updateStore(this.notestore)(applyPatches(inverse))))
   }
 
   restoredelete = () => {
