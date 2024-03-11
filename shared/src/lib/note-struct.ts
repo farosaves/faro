@@ -17,31 +17,36 @@ import {
   type STUMap,
 } from "./utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
-import { flow, pipe } from "fp-ts/lib/function"
+import { flip, flow, pipe } from "fp-ts/lib/function"
 import type { Patch } from "structurajs"
 
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
+const eqIfSome = <T>(n: T) =>
+  O.match<T, boolean>(
+    () => false,
+    (x) => x == n,
+  )
 
 const allNotes: Notes[] = []
-// export type NoteDict = typeof notes
-// export const notestore = persisted("notestore2", allNotes)
-export const notestore = writable(allNotes)
+export const notestore = persisted("notestore", allNotes)
+// notestore.set(allNotes)
 const _note_del_queue: Notess = []
 const note_del_queue = persisted("note_del_queue", _note_del_queue)
 
 export class NoteSync {
   sb: SupabaseClient
   notestore: Writable<Notes[]>
-  user_id: string
+  user_id: string | undefined
   note_del_queue: Writable<Notess>
   stuMap: STUMap
-  constructor(sb: SupabaseClient, user_id: string) {
+  constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
     this.notestore = notestore
     this.stuMap = {}
     this.user_id = user_id
     this.note_del_queue = note_del_queue
   }
+  inited = () => this.user_id !== undefined
   panel(id: number) {
     return derived(
       this.notestore,
@@ -49,21 +54,17 @@ export class NoteSync {
     )
   }
   alltags = () => derived(this.notestore, (ns) => A.uniq(S.Eq)(ns.flatMap((n) => n.tags || [])))
-  // hasUserId = () => !(this.user_id || console.log("no user in NoteSync"))
-  // voidFix = (v: void): PatchTup => {
-  //   return { patches: [], inverse: [] }
-  // }
-  refresh_sources = async () => (this.stuMap = await getTitlesUrls(this.sb)(this.stuMap))
+  refresh_sources = async () =>
+    this.user_id !== undefined
+      ? (this.stuMap = await getTitlesUrls(this.sb)(this.stuMap, this.user_id))
+      : console.log("what?")
 
-  refresh_notes = (id: O.Option<number> = O.none) =>
-    getNotes(this.sb, id, this.user_id).then((nns) =>
-      updateStore(this.notestore)((s) => s.filter((n) => n.id != O.toNullable(id)).concat(nns)),
-    )
-  // pipe(
-  //   TE.match(flow(console.log, this.voidFix), (nns) =>
-  //     updateStore(this.notestore)((s) => s.filter((n) => n.id != O.toNullable(id)).concat(nns)),
-  //   ),
-  // )()
+  refresh_notes = async (id: O.Option<number> = O.none): Promise<PatchTup> =>
+    this.user_id !== undefined
+      ? await getNotes(this.sb, id, this.user_id).then((nns) =>
+          updateStore(this.notestore)((s) => s.filter((n) => eqIfSome(n.id)(id)).concat(nns)),
+        )
+      : { patches: [], inverse: [] }
 
   get_groups = (transform: (x: NoteEx) => NoteEx & { priority: number }) =>
     derived(this.notestore, (ns) =>
@@ -135,7 +136,7 @@ export class NoteSync {
           schema: "public",
           table: "notes",
           filter: `user_id=eq.${this.user_id}`,
-        }, // at least url should be the same so no need to filter
+        },
         handlePayload,
       )
       .subscribe()
