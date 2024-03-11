@@ -116,12 +116,12 @@ export async function getNotes(
   if (data === null) return prevnotes
   return data
 }
-const x = ["a", [1, 2]] as [string, number[]]
-let [left, right] = x
 export type STUMap = Record<number, { title: string; url: string }>
-export const getTitlesUrls = (supabase: SupabaseClient) => async (oldMap: STUMap) =>
+export const getTitlesUrls = (supabase: SupabaseClient) => async (oldMap: STUMap, user_id: string) =>
   pipe(
-    O.fromNullable((await supabase.from("sources").select("*")).data), // .eq("user_id", user_id)
+    O.fromNullable(
+      (await supabase.from("sources").select("*, notes (user_id)").eq("notes.user_id", user_id)).data,
+    ),
     O.match(
       () => oldMap,
       (data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap,
