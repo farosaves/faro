@@ -11,6 +11,7 @@
   import { option as O } from "fp-ts"
   import { type NoteFilter } from "$lib/utils"
   import { sessStore } from "shared"
+  const t = Date.now()
   import TagView from "$lib/components/TagView.svelte"
   export let data
   $: ({ session: _session, supabase } = data)
@@ -27,13 +28,14 @@
   let domainFilter: NoteFilter = identity
   let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter, domainFilter))
   $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter, domainFilter))
+  console.log($note_groups.length)
+  console.log(Date.now() - t)
   onMount(async () => {
     if (O.isNone(session)) redirect(302, "login")
     note_sync.user_id = session.value.user.id // in case updated
     note_sync.sb = supabase // in case updated
     note_sync.sub()
-    console.log($note_groups.length)
-    note_sync.refresh_sources().then(() => note_sync.refresh_notes())
+    setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 2000)
   })
 
   let close_all_notes = () => {
