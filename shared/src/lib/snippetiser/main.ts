@@ -12,11 +12,11 @@ const splittags = new Set(
   ["ul", "h1", "h3", "h2", "details", "p", "li", "blockquote"].map((x) => x.toUpperCase()),
 )
 
-let preSpaceIfNotPunct = <T extends string | null>(s: T) =>
+const preSpaceIfNotPunct = <T extends string | null>(s: T) =>
   !s || s.match(/^[\p{Pe}\p{Pf}\p{Po}]/u) ? s : " " + s
 
 function divSplit(v: ArrOr1<Node>) {
-  let f = (prev: string[], n: Node) => {
+  const f = (prev: string[], n: Node) => {
     // @ts-expect-error
     if (splittags.has(n.tagName)) return [...prev, n.textContent || "", ""]
     else {
@@ -35,14 +35,14 @@ function divSplit(v: ArrOr1<Node>) {
 }
 
 function succ(e: ArrOr1<Element>): O.Option<ArrOr1<Element>> {
-  let siblings = (e: Element) => Array.from(e.parentElement?.children || [])
-  let precedingSectionTags = (e: Element) =>
+  const siblings = (e: Element) => Array.from(e.parentElement?.children || [])
+  const precedingSectionTags = (e: Element) =>
     pipe(
       siblings(e),
       A.takeLeftWhile((e2) => e2 != e),
       A.filter((e2) => sectiontags.has(e2.tagName)),
     )
-  let takeTillNextSectionTag = (e: Element) =>
+  const takeTillNextSectionTag = (e: Element) =>
     pipe(
       siblings(e),
       A.dropLeftWhile((e2) => e != e2),
@@ -63,25 +63,25 @@ const generateUp = (e: O.Option<ArrOr1<Element>>): ArrOr1<Element>[] =>
       (e) => [e, ...generateUp(succ(e))],
     ),
   )
-let listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.from(e.childNodes))
+const listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.from(e.childNodes))
 
 function match(uuid: string) {
-  let _match = (uuid: string) => (e: Element) =>
+  const _match = (uuid: string) => (e: Element) =>
     new Set(e.classList).has("_" + uuid) ? [e] : Array.from(e.getElementsByClassName("_" + uuid))
   //@ts-expect-error
   return (n: Node) => ("classList" in n ? _match(uuid)(n) : [])
 }
-let hasMatch = (uuid: string) => (e: Node) => match(uuid)(e).length > 0
+const hasMatch = (uuid: string) => (e: Node) => match(uuid)(e).length > 0
 
-let last = <T>(a: T[]) => a[a.length - 1]
-let first = <T>(a: T[]) => a[0]
-let getContent = (n: Node) => ("outerHTML" in n ? n.outerHTML : n.textContent || "")
+const last = <T>(a: T[]) => a[a.length - 1]
+const first = <T>(a: T[]) => a[0]
+const getContent = (n: Node) => ("outerHTML" in n ? n.outerHTML : n.textContent || "")
 
 type Hs2t = (s: string) => HTMLElement
 const getFullSentences =
   (htmlstr2body: Hs2t) =>
   (es: ArrOr1<Node>, uuid: string, sp = "n_______n") => {
-    let makeNonempty =
+    const makeNonempty =
       <T>(placeholder: T) =>
       (xs: T[]) =>
         pipe(
@@ -127,7 +127,7 @@ const getFullSentences =
       }
     }
     const h = makeNonempty("")
-    let g = preSpaceIfNotPunct
+    const g = preSpaceIfNotPunct
     const noEndDot = (s: string) => !/\.$/.test(s.trim())
     const potResult = [
       last(h(tok.sentences(left).filter(noEndDot))),
@@ -152,7 +152,7 @@ export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selec
   const contextNode = contextNodeOpt.value
   // console.log(wrapOrPass(contextNode)[0].children[0])
   const potentialQuote = listOrAllChildren(contextNode)
-  let context = divSplit(potentialQuote)
+  const context = divSplit(potentialQuote)
     .map((s) => s.trim())
     .map(preSpaceIfNotPunct)
     // .map((s) => s.replace(/\P{Pe}+$/u, (s) => s + "."))

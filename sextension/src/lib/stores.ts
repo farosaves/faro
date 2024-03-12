@@ -30,8 +30,8 @@ const _source_ids = new Proxy(__source_ids, {
 })
 const source_ids = persisted("source_ids", _source_ids)
 
-export let getSourceId = (sb: SupabaseClient) => async (url: string, title: string) => {
-  let query = async (sb: SupabaseClient, url: string, title: string) => {
+export const getSourceId = (sb: SupabaseClient) => async (url: string, title: string) => {
+  const query = async (sb: SupabaseClient, url: string, title: string) => {
     const id = domain_title(url, title)
     const { data, error } = await sb
       .from("sources")

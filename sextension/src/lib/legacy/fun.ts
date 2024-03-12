@@ -5,7 +5,7 @@ import type { MockNote } from "$lib/utils"
 export const supa_update =
   (schlep = 0) =>
   async (supabase: SupabaseClient, n: MockNote) => {
-    let { sources, ...note } = n
+    const { sources, ...note } = n
     const { data } = await supabase
       .from("sources")
       .select("id")

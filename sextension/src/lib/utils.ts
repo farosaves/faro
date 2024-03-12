@@ -7,12 +7,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { logIfError } from "shared"
 
-export let API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
+export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 
 // console.log("API_ADDRESS", API_ADDRESS)
 
 export type ATokens = { access_token: string; refresh_token: string } | undefined
-export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
+export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) return
   const { access_token, refresh_token } = tokens
   // set session

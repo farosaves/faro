@@ -23,7 +23,7 @@
   //     // groupBy((r) => SHA256(r.id.toString()).toString()),
   //   )
 
-  const objStore = writable<{ id: Number; tags: string[] }[]>([])
+  const objStore = writable<{ id: number; tags: string[] }[]>([])
 
   let arr = [1, 2]
   let [c, d]: number[] = arr

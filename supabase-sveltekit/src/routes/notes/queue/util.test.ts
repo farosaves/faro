@@ -8,7 +8,7 @@ import { State } from "fsrs.js"
 test("diff", () => {
   let x = new Date()
   x = setHours(x, 2)
-  let y = day()(x)
+  const y = day()(x)
   let z = day()(new Date())
   console.log(z, y)
   expect(differenceInCalendarDays(z, y)).toBe(1)
