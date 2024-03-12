@@ -15,6 +15,6 @@
   }
 </script>
 
-<div style="max-width: {w_rem}rem; min-width: {w_rem}rem">
+<div class="relative" style="max-width: {w_rem}rem; min-width: {w_rem}rem ">
   <Note {note_data} bind:showing_content {close_all_notes} {note_sync} {goto_function} />
 </div>
