@@ -498,7 +498,7 @@
   /* svelte-tags-input-matchs */
 
   .svelte-tags-input-matchs-parent {
-    position: relative;
+    position: static;
   }
 
   .svelte-tags-input-matchs {
@@ -524,6 +524,7 @@
     padding: 5px;
     border-radius: 2px;
     cursor: pointer;
+    z-index: 90;
   }
 
   .svelte-tags-input-matchs li:hover,

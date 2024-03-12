@@ -3,7 +3,7 @@
   import Note from "$lib/components/Note.svelte"
   import { NoteSync, getTitlesUrls } from "shared"
   import Search from "$lib/components/Search.svelte"
-  import type { NoteEx } from "shared"
+  import { type NoteEx, Tags } from "shared"
   import DomainFilter from "$lib/components/DomainFilter.svelte"
   import { identity, flow, pipe } from "fp-ts/lib/function"
   import { redirect } from "@sveltejs/kit"
@@ -40,6 +40,7 @@
     showing_contents = showing_contents.map((v) => false)
   }
   close_all_notes()
+  const alltags = note_sync.alltags()
 
   let w_rem = 16
   // const handle_keydown = (e: KeyboardEvent) => {
@@ -50,8 +51,6 @@
   //   }
   // }
 </script>
-
-<!-- <svelte:window on:keydown={handle_keydown} /> -->
 
 <LoginPrompt {session} />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
@@ -64,11 +63,11 @@
     <div class="flex flex-row flex-wrap">
       {#each $note_groups as [title, note_group], i}
         <div
-          class="border-2 text-center rounded-lg border-neutral"
+          class="border-2 text-center rounded-lg border-neutral flex flex-col"
           style="max-width: {w_rem * note_group.length + 0.25}rem; 
 				min-width: {w_rem + 0.15}rem">
-          <span class="text-lg text-wrap">{title}</span>
-          <div class="flex flex-row flex-wrap overflow-auto">
+          <span class="text-lg text-wrap flex-grow-0">{title}</span>
+          <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
             {#each note_group as note, j}
               <!-- bind:showing_content={showing_contents[i][j]} -->
               <Note
@@ -96,6 +95,7 @@
       <!-- <li>
         <Search bind:filterSortFun notes={flat_notes} />
       </li> -->
+      <li></li>
       <li><DomainFilter {note_groups} bind:domainFilter /></li>
     </ul>
   </div>

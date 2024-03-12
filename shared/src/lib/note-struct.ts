@@ -65,8 +65,10 @@ export class NoteSync {
       ),
     )
   }
+  // todo this creates always new store
   alltags = () =>
     derived(this.notestore, (ns) => A.uniq(S.Eq)(Object.values(ns).flatMap((n) => n.tags || [])))
+
   refresh_sources = async () =>
     this.user_id !== undefined
       ? (this.stuMap = await getTitlesUrls(this.sb)(this.stuMap, this.user_id))
