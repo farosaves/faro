@@ -1,5 +1,5 @@
 // import type { SupabaseClient } from "@supabase/supabase-js";
-import { fail } from "@sveltejs/kit";
+import { fail } from "@sveltejs/kit"
 // import type { SupabaseClient } from "shared";
 // import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "$env/static/private";
 // import { writeFileSync } from 'fs';
@@ -9,7 +9,7 @@ export const actions = {
     // const endpoint =
     //   "https://362e2d4a4b780aab43b3c82f2a779a47.r2.cloudflarestorage.com";
 
-    const formData = Object.fromEntries(await request.formData());
+    const formData = Object.fromEntries(await request.formData())
     // const totallyS3 = new S3Client({
     //   endpoint,
     //   region: "EEUR",
@@ -19,7 +19,7 @@ export const actions = {
     //   },
     // });
     // console.log(totallyS3);
-    const { fileToUpload } = formData as { fileToUpload: File };
+    const { fileToUpload } = formData as { fileToUpload: File }
     if (
       !(fileToUpload as File).name ||
       (fileToUpload as File).name === "undefined" ||
@@ -28,7 +28,7 @@ export const actions = {
       return fail(400, {
         error: true,
         message: "You must provide a file to upload",
-      });
+      })
     }
 
     // prettier-ignore
@@ -42,9 +42,13 @@ export const actions = {
     })).json()
 
     // or make pdf table
-    await locals.supabase.from("sources").insert({url: pdf_id+".html", domain: "pdf", title: fileToUpload.name})
+    await locals.supabase.from("sources").insert({
+      url: pdf_id + ".html",
+      domain: "pdf",
+      title: fileToUpload.name,
+    })
 
-    return {success: true, pdf_id}
+    return { success: true, pdf_id }
 
     // const res = await bucket.put(fileToUpload.name, Buffer.from(await fileToUpload.arrayBuffer()), {
     //   httpMetadata: { 'Content-Type': fileToUpload.type }
@@ -53,4 +57,4 @@ export const actions = {
 
     // writeFileSync(`static/${fileToUpload.name}`, Buffer.from(await fileToUpload.arrayBuffer()));
   },
-};
+}

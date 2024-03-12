@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/stores"
 
-  let confirmation_url = $page.url.searchParams.get("confirmation_url");
+  let confirmation_url = $page.url.searchParams.get("confirmation_url")
 </script>
 
 <div class="hero min-h-screen bg-base-200">

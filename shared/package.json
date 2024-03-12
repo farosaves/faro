@@ -70,9 +70,11 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
     "fp-ts": "^2.16.2",
+    "immer": "^10.0.3",
     "jsdom": "^24.0.0",
     "npm-watch": "^0.11.0",
     "sbd": "^1.0.19",
+    "structurajs": "^0.12.0",
     "svelte-persisted-store": "^0.9.1"
   }
 }

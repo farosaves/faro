@@ -15,10 +15,7 @@ export default class Semaphore {
     this.requestQueue = []
     this.running = false
   }
-  use<F extends (...args: any[]) => Promise<any>>(
-    fnToCall: F,
-    ...args: ArgType<F>
-  ): Promise<PReturnType<F>> {
+  use<F extends (...args: any[]) => Promise<any>>(fnToCall: F, ...args: ArgType<F>): Promise<PReturnType<F>> {
     return new Promise((resolve, reject) => {
       this.requestQueue.push({
         resolve,
@@ -34,9 +31,9 @@ export default class Semaphore {
     if (!this.requestQueue.length) {
       return
     } else if (!this.running) {
-      let { resolve, reject, fnToCall, args } = this.requestQueue.shift()!
+      const { resolve, reject, fnToCall, args } = this.requestQueue.shift()!
       this.running = true
-      let req = fnToCall(...args)
+      const req = fnToCall(...args)
       req
         .then((res: any) => resolve(res))
         .catch((err: Error) => reject(err))

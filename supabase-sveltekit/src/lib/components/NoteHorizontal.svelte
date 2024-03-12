@@ -1,18 +1,23 @@
 <script lang="ts">
-  import type { MouseEventHandler } from "svelte/elements"
-  import type { Notes } from "./dbtypes"
-  import type { NoteSync } from "./note-struct"
-  import { option as O } from "fp-ts"
-  import { onMount } from "svelte"
-  import { sleep, themeStore } from "./utils"
-  import MyTags from "./MyTags.svelte"
-  import { identity, pipe } from "fp-ts/lib/function"
-  export let note_data: Notes
-  export let showing_content: boolean
-  export let close_all_notes: () => void
+  import { type NoteEx } from "shared"
+  export let note_data: NoteEx
+  export let showing_content: boolean | undefined
+  import type { NoteSync } from "shared"
   export let note_sync: NoteSync
 
-  export let goto_function: MouseEventHandler<any> | undefined
+  let goto_function = async () => {
+    const url = note_data.sources.url
+    console.log(url)
+    url && open(url)
+  }
+
+  import { sleep, themeStore } from "shared"
+  import { MyTags } from "shared"
+  import { option as O } from "fp-ts"
+  import { onMount } from "svelte"
+  import { pipe } from "fp-ts/lib/function"
+  export let close_all_notes: () => void
+
   export let deleteCbOpt: O.Option<() => any> = O.none
 
   // type OptionValueType<T> = T extends O.Option<infer R> ? R : never
@@ -69,12 +74,12 @@
     if (myModal) myModal.showModal()
     loadModalText()
   }}
-  style="border-width: {1 + 5 * +highlighting}px; position: static;">
+  style="border-width: {1 + 5 * +highlighting}px;">
   <input type="checkbox" class="-z-10" bind:checked={showing_content} />
   <div
     class="collapse-title text-center"
     bind:this={this_element}
-    style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
+    style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1">
     <button
       on:click={async () => {
         const save_showing_content = showing_content
@@ -87,15 +92,7 @@
       {@html text}
     </button>
     <span>
-      <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
-      <!-- <div class="flex justify-center">
-          <div class="py-4 border-2 border-red-600">
-            lil cont
-            <div style="position:absolute; z-index:50">
-              pop<br />pop<br />pop<br />pop
-            </div>
-          </div>
-        </div> -->
+      <MyTags bind:tags autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
     </span>
   </div>
   <div class="collapse-content z-40" style="grid-row-start: 2">

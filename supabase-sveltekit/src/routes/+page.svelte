@@ -16,12 +16,10 @@
         <li class="list-item">Select text</li>
         <li class="list-item">Press Alt (/ Option on Mac) + D</li>
         <li class="list-item">
-          If something doesnt work either: refresh the page or refresh the
-          sidebar with Ctrl (/Command) + B two times
+          If something doesnt work either: refresh the page or refresh the sidebar with Ctrl (/Command) + B
+          two times
         </li>
-        <li class="list-item">
-          You can see all cards in farosapp.com/dashboard
-        </li>
+        <li class="list-item">You can see all cards in farosapp.com/dashboard</li>
       </ul>
     </div>
   </div>
