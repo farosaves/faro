@@ -391,7 +391,7 @@
 
 {#if autoComplete && arrelementsmatch.length > 0}
   <!-- style="z-index: 40; position: relative"> -->
-  <div class="svelte-tags-input-matchs-parent">
+  <div class="svelte-tags-input-matchs-parent z-40">
     <ul id="{id}_matchs" class="svelte-tags-input-matchs">
       {#each arrelementsmatch as element, index}
         <li
@@ -503,10 +503,11 @@
 
   .svelte-tags-input-matchs {
     position: absolute;
+    /* margin-top: -50px; */
     top: 0;
     left: 0;
     right: 0;
-    margin: 3px 0;
+    /* margin: 3px 0; */
     padding: 0px;
     background: #fff;
     border: solid 1px #ccc;
@@ -514,6 +515,8 @@
     max-height: 310px;
     overflow: scroll;
     overflow-x: auto;
+    box-sizing: border-box;
+    z-index: 90;
   }
 
   .svelte-tags-input-matchs li {
