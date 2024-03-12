@@ -27,12 +27,12 @@ export const actions = {
     const session = await getSession()
 
     const { error } = await supabase.from("profiles").upsert({
-      id: session?.user.id,
+      id: session?.user.id || "",
       full_name: fullName,
       username,
       website,
       avatar_url: avatarUrl,
-      updated_at: new Date(),
+      updated_at: new Date().toUTCString(),
     })
     if (error) {
       return fail(500, {
