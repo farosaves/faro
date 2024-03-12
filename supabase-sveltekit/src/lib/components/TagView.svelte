@@ -1,17 +1,16 @@
 <script lang="ts">
   import { Icon, CheckCircle, XCircle } from "svelte-hero-icons"
   import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA } from "fp-ts"
-  import { desc, type NoteEx, type NoteSync } from "shared"
+  import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
+  import { desc, type Notes, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
   export let tagFilter: (n: NoteEx & { priority: number }) => NoteEx & { priority: number } = identity
   export let note_sync: NoteSync
   let notestore = note_sync.notestore
   let exclTagSet = writable(new Set<string>([]))
-
   const tags_counts = derived(notestore, (x) =>
     pipe(
-      x,
+      Object.values(x),
       A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
       R.map((x) => x.length),
@@ -19,24 +18,22 @@
     )
       .concat(
         // prettier-ignore
-        [["", pipe(x, (A.filter((note) => !note.tags))).length]], // untagged
+        [["", pipe(x, R.filter((note) => !!note.tags.length), R.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
   )
+  $: tagFilter = (n) => ({
+    ...n,
+    priority: pipe(
+      NA.fromArray(n.tags),
+      O.getOrElse(() => [""]),
+      A.map((s) => !$exclTagSet.has(s)),
+      A.reduce(false, (x, y) => x || y),
+    )
+      ? n.priority
+      : 0,
+  })
 
-  //if (exclTagSet.size)
-  $: tagFilter = (n) => {
-    return {
-      ...n,
-      priority: pipe(
-        n.tags || [""], // here I handle "" for no tags, so my strange choice to use [""] as no tags for filter is contained to thids file lol
-        A.map((s) => !$exclTagSet.has(s)),
-        A.reduce(false, (x, y) => x || y),
-      )
-        ? n.priority
-        : 0,
-    }
-  }
   $: console.log(!!tagFilter, "tagFilter updated")
   const checkClick = () => {
     // assigns to trigger potential $:

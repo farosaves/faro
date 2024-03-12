@@ -7,15 +7,23 @@ import { get, writable, type Writable } from "svelte/store"
 import type { Session } from "@supabase/supabase-js"
 import {
   type Patch,
-  type UnFreeze,
   convertPatchesToStandard,
   applyPatchesMutatively as _applyPatches,
+  type UnFreeze,
   safeProduceWithPatches,
 } from "structurajs"
 import type { Notes } from "./dbtypes"
-import type { Magma } from "fp-ts/lib/Magma"
-// import { produceWithPatches as pWPimmer, enablePatches } from "immer"
-// enablePatches()
+import {
+  produceWithPatches as pWPimmer,
+  enablePatches,
+  applyPatches as aPimmer,
+  setAutoFreeze,
+  // type Patch as Pimmer,
+  type Draft,
+  type Objectish,
+} from "immer"
+enablePatches()
+// setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 let _sess: O.Option<Session> = O.none
 export const sessStore = writable(_sess)
@@ -88,17 +96,6 @@ export const fillInTitleUrl = (v: T) => {
     )
   return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
 }
-// export const fillInTitleUrl = (v: { sources: T }) => {
-//   let _get = (u: typeof v, fld: "title" | "url", missing: string) =>
-//     pipe(
-//       u,
-//       O.fromNullable,
-//       O.chain((v) => O.fromNullable(v.sources)),
-//       O.chain((v) => O.fromNullable(v[fld])),
-//       O.fold(() => missing, identity),
-//     )
-//   return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
-// }
 
 export async function getNotes(
   supabase: SupabaseClient,
@@ -132,19 +129,26 @@ export const getTitlesUrls = (supabase: SupabaseClient) => async (oldMap: STUMap
 // curry
 export const applyPatches =
   (ps: Patch[]) =>
-  <T>(s: T) =>
+  <T>(s: T) => {
     _applyPatches(s, ps)
+    console.log("xdxd")
+    return s
+  }
 
 export const updateStore =
   <T>(store: Writable<T>) =>
+  // (up: (arg: Draft<T>) => void | Draft<T>) => {
   (up: (arg: UnFreeze<T>) => void | T) => {
     let [patches, inverse]: Patch[][] = [[], []]
     store.update((storeVal) => {
       let [result, ...pinv] = //
+        // pWPimmer(storeVal, up)
         safeProduceWithPatches(storeVal, up)
       ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv)
+      // ;[patches, inverse] = A.map(identity)(pinv)
       return result as T
     })
+    console.log(patches)
     return { patches, inverse }
   }
 

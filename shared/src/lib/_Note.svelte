@@ -1,12 +1,12 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
   import type { Notes } from "./dbtypes"
-  import type { NoteSync } from "./note-sync"
+  import type { NoteSync } from "./note-struct"
   import { option as O } from "fp-ts"
   import { onMount } from "svelte"
   import { sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
-  import { pipe } from "fp-ts/lib/function"
+  import { identity, pipe } from "fp-ts/lib/function"
   export let note_data: Notes
   export let showing_content: boolean
   export let close_all_notes: () => void
@@ -87,7 +87,7 @@
       {@html text}
     </button>
     <span>
-      <MyTags bind:tags autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
+      <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
     </span>
   </div>
   <div class="collapse-content z-40" style="grid-row-start: 2">
