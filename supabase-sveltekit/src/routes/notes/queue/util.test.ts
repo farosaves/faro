@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { day, fromDay, nextIntervals } from "./util"
 import { setHours, differenceInCalendarDays } from "date-fns"
 import * as fd from "date-fns/fp"
-import type { Cards } from "$lib/dbtypes"
+import type { Cards } from "shared"
 import { State } from "fsrs.js"
 
 test("diff", () => {
