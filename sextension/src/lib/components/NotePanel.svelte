@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NoteSync } from "../shared/note-sync"
+  import type { NoteSync } from "shared"
   import Note from "$lib/components/Note.svelte"
   import { option as O, array as A } from "fp-ts"
   import { mock, type MockNote } from "$lib/utils"
@@ -17,7 +17,7 @@
     optimistic,
     O.chain((mn) =>
       pipe(
-        $note_store[source_id] || [],
+        Object.values($note_store || []),
         A.findFirst((r) => r.snippet_uuid == mn.snippet_uuid),
         O.match(
           () => O.some(mn),
@@ -26,17 +26,17 @@
       ),
     ),
   )
-  if (!(source_id in $note_store)) $note_store[source_id] = []
-  let showing_contents = $note_store[source_id].map((_) => false)
+  if (!(source_id in $note_store)) $note_store = []
+  let showing_contents = Object.values($note_store).map((_) => false)
   let close_all_notes = () => {
     showing_contents = showing_contents.map((_) => false)
   }
-  $: console.log($note_store[source_id], source_id)
+  $: console.log($note_store, source_id)
 </script>
 
-<!-- I had to add || [] here... ofc $note_store[source_id] wasnt guaranteed to be T[]..., is it time to refactor? -->
+<!-- I had to add || [] here... ofc $note_store wasnt guaranteed to be T[]..., is it time to refactor? -->
 <!-- I definitely shouldn't "just index" and expect it to work -->
-{#each [...($note_store[source_id] || []), ...A.fromOption(mocked)] as note_data, i}
+{#each [...(Object.values($note_store) || []), ...A.fromOption(mocked)] as note_data, i}
   <Note {note_data} bind:showing_content={showing_contents[i]} {close_all_notes} {note_sync} />
 {:else}
   No notes yet...

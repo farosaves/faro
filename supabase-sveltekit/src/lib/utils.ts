@@ -7,12 +7,4 @@ import { get } from "svelte/store"
 
 // export type SupabaseClient = _SupabaseClient<Database>;
 
-export function ts(card: Card) {
-  return {
-    ...card,
-    due: card.due.toUTCString(),
-    last_review: card.last_review.toUTCString(),
-  }
-}
-
 export type NoteFilter = (n: NoteEx & { priority: number }) => NoteEx & { priority: number }

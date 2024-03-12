@@ -1,5 +1,4 @@
 // import 'chrome';
-// import { makeQCH } from "../ lib/shared/snippetiser/main";
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
 import { makeQCH } from "shared"
 const DEBUG = import.meta.env.VITE_DEBUG || false
@@ -68,6 +67,7 @@ let gotoText = (uuid) => {
     }, 1000)
   })
 }
+const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getHighlightedText") {
@@ -86,7 +86,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // context: will try to grab like a <p> tag
     // quote is what's displayed on the note
     // context is displayed in the dialog on right click
-    const { quote, highlights, context: _context } = makeQCH(document, uuid, selectedText)
+    const { quote, highlights, context: _context } = makeQCH(htmlstr2body)(document, uuid, selectedText)
     // sometimes context is too much
     const context = _context.length < 1e4 ? _context : quote
     if (!quote) return { note_data: null }

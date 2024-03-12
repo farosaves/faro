@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import Note from "$lib/components/Note.svelte"
-  import { NoteSync, getTitlesUrls } from "shared"
+  import { NoteSync } from "shared"
   import Search from "$lib/components/Search.svelte"
   import { type NoteEx, Tags } from "shared"
   import DomainFilter from "$lib/components/DomainFilter.svelte"
@@ -32,8 +32,8 @@
     note_sync.user_id = session.value.user.id // in case updated
     note_sync.sb = supabase // in case updated
     note_sync.sub()
-    note_sync.refresh_sources()
-    note_sync.refresh_notes()
+    console.log($note_groups.length)
+    note_sync.refresh_sources().then(() => note_sync.refresh_notes())
   })
 
   let close_all_notes = () => {

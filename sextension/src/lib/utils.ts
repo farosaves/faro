@@ -5,7 +5,7 @@
  */
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logIfError } from "./shared/utils"
+import { logIfError } from "shared"
 
 export let API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 
@@ -53,6 +53,7 @@ export type MockNote = {
   source_id: number
   highlights: string[]
   context: string
+  context_html: string
   snippet_uuid: string
   serialized_highlight: string
   sources: { title: string; url: string }

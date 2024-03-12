@@ -10,10 +10,10 @@ import {
   fillInTitleUrl, // todo!! delete
   filterSort,
   getNotes,
-  getTitlesUrls,
   ifErr,
   ifNError,
   logIfError,
+  unwrap,
   updateStore,
   type STUMap,
 } from "./utils"
@@ -22,16 +22,11 @@ import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import type { Patch } from "structurajs"
 
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
-const eqIfSome = <T>(n: T) =>
-  O.match<T, boolean>(
-    () => false,
-    (x) => x == n,
-  )
-
-const allNotes: Notes[] = []
+const stuMap: STUMap = {}
+const stuMapStore = persisted("stuMapStore", stuMap)
 const allNotesR: Record<number, Notes> = {}
 export const notestore = persisted("notestore", allNotesR)
-notestore.set(allNotes)
+// notestore.set(allNotes)
 const undo_queue: PatchTup[] = []
 const redo_queue: PatchTup[] = []
 const _note_del_queue: Notess = []
@@ -45,12 +40,12 @@ export class NoteSync {
   notestore: Writable<Record<number, Notes>>
   user_id: string | undefined
   note_del_queue: Writable<Notess>
-  stuMap: STUMap
+  stuMapStore: Writable<STUMap>
   // nq
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
     this.notestore = notestore
-    this.stuMap = {}
+    this.stuMapStore = stuMapStore
     this.user_id = user_id
     this.note_del_queue = note_del_queue
     // this.nq = this.sb.from("notes")
@@ -70,25 +65,35 @@ export class NoteSync {
     derived(this.notestore, (ns) => A.uniq(S.Eq)(Object.values(ns).flatMap((n) => n.tags || [])))
 
   refresh_sources = async () =>
-    this.user_id !== undefined
-      ? (this.stuMap = await getTitlesUrls(this.sb)(this.stuMap, this.user_id))
-      : console.log("what?")
-
-  refresh_notes = async (id: O.Option<number> = O.none): Promise<PatchTup> =>
-    this.user_id !== undefined
-      ? await getNotes(this.sb, id, this.user_id).then((nns) =>
-          //(s) => R.filter((n) => eqIfSome(n.id)(id))(s).concat(nns)
-          updateStore(this.notestore)((ns) =>
-            R.union({ concat: identity })(ns)(Object.fromEntries(nns.map((n) => [n.id, n]))),
+    this.user_id !== undefined &&
+    this.stuMapStore.update(
+      unwrap(
+        pipe(
+          O.fromNullable(
+            (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this.user_id))
+              .data,
           ),
-        )
-      : { patches: [], inverse: [] }
+          O.map((data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap),
+        ),
+      ),
+    )
+
+  refresh_notes = async (id: O.Option<number> = O.none) =>
+    this.user_id !== undefined &&
+    (await getNotes(this.sb, id, this.user_id).then((nns) =>
+      this.notestore.set(Object.fromEntries(nns.map((n) => [n.id, n]))),
+    ))
+  //(s) => R.filter((n) => eqIfSome(n.id)(id))(s).concat(nns)
+  // updateStore(this.notestore)((ns) =>
+  //   R.union({ concat: identity })(ns)(Object.fromEntries(nns.map((n) => [n.id, n]))),
+  // ),
+  // : { patches: [], inverse: [] }
 
   get_groups = (transform: (x: NoteEx) => NoteEx & { priority: number }) =>
-    derived(this.notestore, (ns) =>
+    derived([this.notestore, this.stuMapStore], ([ns, stumap]) =>
       pipe(
-        Object.values(ns).map((n) => ({ ...n, sources: fillInTitleUrl(this.stuMap[n.source_id]) })),
-        A.map(transform), // potentially can add filter here already actually
+        Object.values(ns).map((n) => ({ ...n, sources: fillInTitleUrl(stumap[n.source_id]) })),
+        A.map(transform),
         A.filter((n) => n.priority > 0),
         NA.groupBy((n) => n.sources.title),
         R.toArray<string, (NoteEx & { priority: number })[]>,
@@ -100,7 +105,6 @@ export class NoteSync {
         ),
       ),
     )
-  // could make it even better by wrapping this.sb.from("notes")
   action =
     <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
     (patchTup: PatchTup) =>
@@ -179,6 +183,7 @@ export class NoteSync {
               ns[nn.id] = nn
             })
           } else this.refresh_notes()
+          this.refresh_sources()
         },
       )
       .subscribe()

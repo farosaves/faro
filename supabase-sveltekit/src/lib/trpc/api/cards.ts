@@ -1,6 +1,13 @@
 import { logIfError, type SupabaseClient } from "shared"
-import { ts } from "$lib/utils"
 import { Card, FSRS } from "fsrs.js"
+
+function ts(card: Card) {
+  return {
+    ...card,
+    due: card.due.toUTCString(),
+    last_review: card.last_review.toUTCString(),
+  }
+}
 
 export async function add_card(s: {
   front: string | null

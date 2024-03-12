@@ -8,6 +8,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here
+  // closes the window
   if (/farosapp\.com\/account/.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   chrome.runtime.sendMessage({ action: "update_cu∂rr_url" }).catch((e) => console.log(e))
@@ -30,6 +31,7 @@ const tryn =
     }
   }
 
+// to sidepanel
 async function uploadSelected(request: { action: string }, sender: any, sendResponse: any) {
   request.action = "uploadTextSB"
   const smr = () => chrome.runtime.sendMessage(request)
