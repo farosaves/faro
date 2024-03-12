@@ -22,7 +22,7 @@ export const router = t.router({
     return `Hello tRPC v10 @ ${new Date().toLocaleTimeString()}`
   }),
   my_email: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
-    let sess = await locals.getSession()
+    const sess = await locals.getSession()
     if (sess) {
       const { access_token, refresh_token } = sess
       return { access_token, refresh_token }

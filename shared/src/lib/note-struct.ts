@@ -155,7 +155,7 @@ export class NoteSync {
 
   restoredelete = () => {
     this.note_del_queue.update((ns) => {
-      let [r, ...rs] = ns
+      const [r, ...rs] = ns
       if (!r) return ns // noop
       this.addit(r)
       return rs

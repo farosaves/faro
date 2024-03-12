@@ -31,9 +31,9 @@ export default class Semaphore {
     if (!this.requestQueue.length) {
       return
     } else if (!this.running) {
-      let { resolve, reject, fnToCall, args } = this.requestQueue.shift()!
+      const { resolve, reject, fnToCall, args } = this.requestQueue.shift()!
       this.running = true
-      let req = fnToCall(...args)
+      const req = fnToCall(...args)
       req
         .then((res: any) => resolve(res))
         .catch((err: Error) => reject(err))

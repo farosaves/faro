@@ -25,17 +25,17 @@ import {
 enablePatches()
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
-let _sess: O.Option<Session> = O.none
+const _sess: O.Option<Session> = O.none
 export const sessStore = writable(_sess)
 type ColorScheme = "light" | "dark"
-let colorScheme: ColorScheme = "dark"
+const colorScheme: ColorScheme = "dark"
 export const themeStore = writable<ColorScheme>(colorScheme)
 export const updateTheme = () =>
   themeStore.set(
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme,
   )
 
-export let safeGet =
+export const safeGet =
   <T extends string | number | symbol, U>(record: {
     [id in T]: U[]
   }) =>
@@ -50,8 +50,8 @@ export let safeGet =
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
-export let partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
-export let delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
+export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
+export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
 export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
   return (t1, t2) => f(t2) - f(t1)
@@ -87,7 +87,7 @@ type T = {
   url: string | null
 } | null
 export const fillInTitleUrl = (v: T) => {
-  let _get = (u: typeof v, fld: "title" | "url", missing: string) =>
+  const _get = (u: typeof v, fld: "title" | "url", missing: string) =>
     pipe(
       u,
       O.fromNullable,
@@ -142,7 +142,7 @@ export const updateStore =
   (up: (arg: UnFreeze<T>) => void | T) => {
     let [patches, inverse]: Patch[][] = [[], []]
     store.update((storeVal) => {
-      let [result, ...pinv] = //
+      const [result, ...pinv] = //
         // pWPimmer(storeVal, up)
         safeProduceWithPatches(storeVal, up)
       ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv)
