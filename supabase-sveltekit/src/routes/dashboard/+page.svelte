@@ -9,7 +9,7 @@
   import { redirect } from "@sveltejs/kit"
   import LoginPrompt from "$lib/components/LoginPrompt.svelte"
   import { option as O } from "fp-ts"
-  import { handlePayload, type NoteFilter } from "$lib/utils"
+  import { type NoteFilter } from "$lib/utils"
   import { sessStore } from "shared"
   import TagView from "$lib/components/TagView.svelte"
   export let data
@@ -31,7 +31,7 @@
     if (O.isNone(session)) redirect(302, "login")
     note_sync.user_id = session.value.user.id // in case updated
     note_sync.sb = supabase // in case updated
-    note_sync.sub(handlePayload(note_sync))
+    note_sync.sub()
     note_sync.refresh_sources()
     note_sync.refresh_notes()
   })
