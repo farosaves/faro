@@ -1,5 +1,5 @@
 import type { Notess, SupabaseClient } from "$lib/first.js"
-import { array as A } from "fp-ts"
+import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
@@ -27,12 +27,12 @@ enablePatches()
 
 let _sess: O.Option<Session> = O.none
 export const sessStore = writable(_sess)
-
-let colorScheme: "light" | "dark" = "dark"
-export const themeStore = writable(colorScheme)
+type ColorScheme = "light" | "dark"
+let colorScheme: ColorScheme = "dark"
+export const themeStore = writable<ColorScheme>(colorScheme)
 export const updateTheme = () =>
   themeStore.set(
-    window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as typeof colorScheme,
+    window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme,
   )
 
 export let safeGet =
@@ -42,11 +42,11 @@ export let safeGet =
   (idx: T) =>
     idx in record ? record[idx] : ([] as U[])
 
-export const unwrap_def = <T>(o: Option<T>, def: T) =>
-  pipe(
-    o,
-    O.match(() => def, identity),
-  )
+// export const unwrap_def = <T>(o: Option<T>, def: T) =>
+//   pipe(
+//     o,
+//     O.match(() => def, identity),
+//   )
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
@@ -115,23 +115,24 @@ export async function getNotes(
   return data
 }
 export type STUMap = Record<number, { title: string; url: string }>
-export const getTitlesUrls = (supabase: SupabaseClient) => async (oldMap: STUMap, user_id: string) =>
-  pipe(
-    O.fromNullable(
-      (await supabase.from("sources").select("*, notes (user_id)").eq("notes.user_id", user_id)).data,
-    ),
-    O.match(
-      () => oldMap,
-      (data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap,
-    ),
-  )
+export const unwrap =
+  <T>(x: Option<T>) =>
+  (y: T) =>
+    O.getOrElse(() => y)(x)
+// export const getTitlesUrls = (supabase: SupabaseClient) => async (user_id: string) =>
+//   pipe(
+//     O.fromNullable(
+//       (await supabase.from("sources").select("*, notes (user_id)").eq("notes.user_id", user_id)).data,
+//     ),
+//     O.map((data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap),
+//   )
 
 // curry
 export const applyPatches =
   (ps: Patch[]) =>
   <T>(s: T) => {
     _applyPatches(s, ps)
-    console.log("xdxd")
+    console.log("applying patches")
     return s
   }
 
