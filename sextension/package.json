@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && sleep 0.5 && open \"http://reload.extensions\"",
+    "b": "VITE_PI_IP=http://localhost:5173 vite build && sleep 0.5 && open \"http://reload.extensions\"",
     "preview": "vite preview",
-    "bz": "vite build && zip -r ../supabase-sveltekit/static/ext.zip dist",
+    "bz": "VITE_PI_IP=http://farosapp.com vite build && zip -r ../supabase-sveltekit/static/ext.zip dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
