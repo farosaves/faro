@@ -13,7 +13,7 @@ export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 
 export type ATokens = { access_token: string; refresh_token: string } | undefined
 export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
-  if (!tokens) return
+  if (!tokens) return null
   const { access_token, refresh_token } = tokens
   // set session
   await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError)
