@@ -2,14 +2,14 @@
   import type { MouseEventHandler } from "svelte/elements"
   import type { Notes } from "./dbtypes"
   import type { NoteSync } from "./note-struct"
-  import { option as O } from "fp-ts"
+  import { option as O, array as A } from "fp-ts"
   import { onMount } from "svelte"
   import { sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort, * as FuzzySort from "fuzzysort"
   export let note_data: Notes & {
-    searchArt: O.Option<{ selectedKey: string; optKR: Fuzzysort.KeyResult<Notes> }>
+    searchArt: O.Option<{ selectedKey: string[]; optKR: Fuzzysort.KeysResult<Notes> }>
   }
   export let showing_content: boolean
   export let close_all_notes: () => void
@@ -23,7 +23,7 @@
   let this_element: Element
   $: tags = note_data.tags || []
   let all_tags = note_sync.alltags
-  let className = $themeStore == "dark" ? "text-yellow-100" : ""
+  $: className = $themeStore == "dark" ? "text-yellow-100" : ""
   $: replacer = (capture: string) => `<b class="${className}">` + capture + `</b>`
   // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
   let escapeHTML = (text: string) => {
@@ -42,11 +42,19 @@
       () => {
         const escaped = escapeHTML(note_data.quote)
         return !!note_data.highlights ? escaped.replace(note_data.highlights[0], replacer) : escaped
-      },
+      }, // only replace quote
       ({ selectedKey, optKR }) =>
-        selectedKey == "quote"
-          ? fuzzysort.highlight(optKR, `<b class="${className}">`, `</b>`)
-          : escapeHTML(note_data.quote),
+        pipe(
+          selectedKey,
+          A.findIndex((n) => n == "quote"),
+          O.map((i) => optKR[i]),
+          O.map((r) => fuzzysort.highlight(r, `<b class="${className}">`, `</b>`)),
+          O.chain(O.fromNullable),
+          // O.tap(console.log),
+          O.getOrElse(() => escapeHTML(note_data.quote)),
+        ),
+      // ? fuzzysort.highlight(optKR, `<b class="${className}">`, `</b>`)
+      // : escapeHTML(note_data.quote),
     ),
   )
   //.replace(note_data.quote, quoteBoldReplace)
