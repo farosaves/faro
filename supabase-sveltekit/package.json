@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "open http://localhost:5173/ & vite dev",
     "build": "vite build",
-    "b": "npm install --prefix ../shared && npm run build --prefix ../shared && npm run build",
+    "b": "npm install --prefix ../shared && npm run build --prefix ../shared && npm run bz --prefix ../sextension && npm run build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -30,7 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "^10.4.18",
-    "daisyui": "^4.4.24",
+    "daisyui": "^4.7.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.35.1",

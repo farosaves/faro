@@ -2,7 +2,7 @@
   import { Icon, CheckCircle, XCircle } from "svelte-hero-icons"
   import { identity, pipe } from "fp-ts/lib/function"
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
-  import { desc, type Notes, type NoteEx, type NoteSync } from "shared"
+  import { desc, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
   export let tagFilter: (n: NoteEx & { priority: number }) => NoteEx & { priority: number } = identity
   export let note_sync: NoteSync
