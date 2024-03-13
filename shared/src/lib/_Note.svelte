@@ -7,7 +7,7 @@
   import { sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
-  import fuzzysort, * as FuzzySort from "fuzzysort"
+  import fuzzysort from "fuzzysort"
   export let note_data: Notes & {
     searchArt: O.Option<{ selectedKey: string[]; optKR: Fuzzysort.KeysResult<Notes> }>
   }
