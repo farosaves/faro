@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 
-const dev = process.env.DEV || "http://localhost:5173/"
+const dev = process.env.DEV || "http://dev.farosapp.com/"
 test("has title", async ({ page }) => {
   await page.goto(dev)
 
@@ -16,8 +16,12 @@ test("check version is current", async ({ page }) => {
 })
 
 test("login flow", async ({ page }) => {
-  await page.goto(dev + "login")
+  await page.goto(dev)
+  await page.getByText("Dashboard", {exact: true}).click()
   await expect(page).toHaveTitle("Faros - Login")
+  const email = page.getByPlaceholder(/email/);
+  const password = page.getByPlaceholder(/password/);
+
   
 
   // expect(page).to
