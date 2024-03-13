@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
+  import { goto } from "$app/navigation"
+  import { onMount } from "svelte"
 
-  export let data;
+  export let data
 
-  let { supabase } = data;
-  let message = "Signing out....";
+  let { supabase } = data
+  let message = "Signing out...."
   onMount(() =>
     supabase.auth.signOut().then(({ error }) => {
       if (error) {
-        message = "There was an issue signing out.";
+        message = "There was an issue signing out."
       } else {
-        goto("/");
+        goto("/")
       }
     }),
-  );
+  )
 </script>
 
 <h1 class="text-2xl font-bold m-6">{message}</h1>

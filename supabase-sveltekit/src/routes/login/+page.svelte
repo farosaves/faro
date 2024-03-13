@@ -1,28 +1,28 @@
 <script lang="ts">
-  import { ThemeSupa, type ViewType } from "@supabase/auth-ui-shared";
-  import { Auth } from "@supabase/auth-ui-svelte";
-  export let data;
-  import Radio from "$lib/Radio.svelte";
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
-  let view: ViewType = "magic_link";
-  let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"];
-  import { sessStore } from "shared";
-  import { option as O } from "fp-ts";
-  import type { SupabaseClient } from "@supabase/supabase-js";
-  let providers = ["github"];
+  import { ThemeSupa, type ViewType } from "@supabase/auth-ui-shared"
+  import { Auth } from "@supabase/auth-ui-svelte"
+  export let data
+  import Radio from "$lib/Radio.svelte"
+  import { onMount } from "svelte"
+  import { goto } from "$app/navigation"
+  let view: ViewType = "sign_in"
+  let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"]
+  import { sessStore } from "shared"
+  import { option as O } from "fp-ts"
+  import type { SupabaseClient } from "@supabase/supabase-js"
+  let providers = ["github"]
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
-        console.log(session);
-        if (session) $sessStore = O.some(session);
+        console.log(session)
+        if (session) $sessStore = O.some(session)
         setTimeout(() => {
-          goto("/account");
-        }, 50);
+          goto("/account")
+        }, 50)
       }
     }),
-  );
-  $: supabaseClient = data.supabase as unknown as SupabaseClient;
+  )
+  $: supabaseClient = data.supabase as unknown as SupabaseClient
 </script>
 
 <svelte:head>

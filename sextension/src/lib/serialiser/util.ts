@@ -3,38 +3,32 @@
 import { desc } from "shared"
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
-export let normalize = (s: string | null) => s || ""
+export const normalize = (s: string | null) => s || ""
 // add this to rangy serialisation
-export let reserialize = (r: Range) =>
+export const reserialize = (r: Range) =>
   prepostfixes(normalize(r.toString()))
     .map((s) => s.replaceAll("$", "\\$"))
     .join("$")
-export let prepostfixes = (s: string, nToTake = 8) => {
+export const prepostfixes = (s: string, nToTake = 8) => {
   const snorm = normalize(s)
   const l = snorm.length
   return [snorm.substring(0, nToTake), snorm.substring(l - nToTake, l)]
 }
-export let subIdxs = (s: string, l: number, r: number) =>
+export const subIdxs = (s: string, l: number, r: number) =>
   s
     .replace(/(?<=type:textContent\|)\d+(?=\$)/, l.toString())
     .replace(/(?<=type:textContent\|\d+\$)\d+(?=\$)/, r.toString())
-export let start = (s: string) =>
+export const start = (s: string) =>
   parseInt(s.match(/(?<=type:textContent\|)\d+(?=\$)/)?.[0].toString() || "0")
-export let end = (s: string) =>
-  parseInt(
-    s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0",
-  )
-export let extractPrePost = (s: string) =>
+export const end = (s: string) =>
+  parseInt(s.match(/(?<=type:textContent\|\d+\$)\d+(?=\$)/)?.[0].toString() || "0")
+export const extractPrePost = (s: string) =>
   (s.match(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/)?.[0].toString() || "").split("$")
-export let stripQuote = (s: string) =>
-  s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "")
+export const stripQuote = (s: string) => s.replace(/(?<=-[0-9a-f]{12}\$)(.|\n)*$/, "")
 
-export let prepare2deserialize = (textContent: string, s: string) =>
+export const prepare2deserialize = (textContent: string, s: string) =>
   extractPrePost(s).length == 2
-    ? subIdxs(
-        stripQuote(s),
-        ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)),
-      )
+    ? subIdxs(stripQuote(s), ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)))
     : stripQuote(s)
 
 export const adjIdxs = (
@@ -46,8 +40,7 @@ export const adjIdxs = (
 ): [number, number] => {
   const [pre, post] = pre_post
   const len = endIdx - startIdx
-  const matches = (xfix: string) =>
-    Array.from(textContent.matchAll(RegExp(xfix, "gu")))
+  const matches = (xfix: string) => Array.from(textContent.matchAll(RegExp(xfix, "gu")))
   const ss = matches(pre)
   const es = matches(post)
 
@@ -68,8 +61,7 @@ export const adjIdxs = (
 };
 
   const score = (l: RegExpExecArray, r: RegExpExecArray) =>
-    (1 + Math.abs(r.index - l.index - targetDiff)) *
-    Math.abs(l.index - startIdx)
+    (1 + Math.abs(r.index - l.index - targetDiff)) * Math.abs(l.index - startIdx)
   const allAligned = aligned(ss, es).toSorted(desc(([l, r]) => -score(l, r)))
   if (allAligned.length) {
     // TODO: here I changed
