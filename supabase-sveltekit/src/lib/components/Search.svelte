@@ -3,7 +3,6 @@
   import type { NoteEx, NoteSync, Notes } from "shared"
   import { array as A, option as O } from "fp-ts"
   import { identity, pipe } from "fp-ts/lib/function"
-  import type { Readable } from "svelte/store"
 
   export let note_sync: NoteSync
   const notes = note_sync.noteArr
@@ -11,10 +10,10 @@
   const possibleSelections = ["sources.title", "quote"]
   const texts = ["Titles", "Text"]
   const entries = A.zip(possibleSelections)(texts)
-  let selectedKey: (typeof possibleSelections)[number]
-  $: res = !!query && fuzzysort.go(query, $notes, { key: selectedKey, limit: 5 })
+  let selectedKey = possibleSelections // : (typeof possibleSelections)[number][]
+  $: res = !!query && fuzzysort.go(query, $notes, { keys: selectedKey, limit: 5 })
   //   let allHighlight = (result: any) => fuzzysort.highlight(res[0]);
-  $: res && res.length && console.log(fuzzysort.highlight(res[0])) //, "<b>", "</b>"));
+  // $: res && res.length && console.log(fuzzysort.highlight(res[0][0])) //, "<b>", "</b>"));
   // console.log(fuzzysort.highlight(res[0], "<b>", "</b>"));
   // TODO: refactor as a store
   export let fuzzySort: (n: NoteEx) => NoteEx & { priority: number }
@@ -32,12 +31,7 @@
           Array.from(res),
           A.findFirst((r) => r.obj.id == n.id),
           O.map((optKR) => ({ selectedKey, optKR })),
-          // O.map((r) => fuzzysort.highlight(r, "<b>", "</b>")),
-          // O.chain(O.fromNullable),
-          // O.match(() => "", identity),
         )
-        // if (selectedKey == "quote") quote = highlight
-        // else if (selectedKey == "sources.title") sources.title = highlight
       } else {
         priority = Date.parse(n.created_at)
         searchArt = O.none
@@ -48,6 +42,7 @@
   } else {
     fuzzySort = (n) => ({ ...n, priority: Date.parse(n.created_at) })
   }
+  // $: console.log(selectedKey)
 </script>
 
 <div class="flex flex-col content-center">
@@ -57,22 +52,27 @@
       placeholder="Type here to search"
       class="input w-full max-w-xs min-w-32"
       bind:value={query} />
-    <button hidden on:click={() => console.log(query, res, selectedKey, $notes.length)}></button>
+    <!-- <button hidden on:click={() => console.log(query, res, selectedKey, $notes.length)}></button> -->
   </form>
   <div>
     <div class="join w-full">
       {#each entries as [ariaLabel, value] (value)}
         <input
           class="join-item btn grow"
+          type="checkbox"
+          name="options"
+          bind:group={selectedKey}
+          {value}
+          aria-label={ariaLabel} />
+        <!-- <input
+          class="join-item btn grow"
           type="radio"
           name="options"
           bind:group={selectedKey}
           {value}
           aria-label={ariaLabel}
-          on:click={() => (selectedKey = selectedKey == value ? "" : value)} />
+          on:click={() => (selectedKey = selectedKey == value ? "" : value)} /> -->
       {/each}
-
-      <!-- <input class="join-item btn" type="radio" name="options" aria-label="Radio 3" /> -->
     </div>
   </div>
 </div>
