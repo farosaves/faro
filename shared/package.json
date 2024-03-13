@@ -70,6 +70,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
     "fp-ts": "^2.16.2",
+    "fuzzysort": "^2.0.4",
     "immer": "^10.0.3",
     "jsdom": "^24.0.0",
     "npm-watch": "^0.11.0",

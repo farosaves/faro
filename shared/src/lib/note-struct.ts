@@ -4,7 +4,7 @@
 import { persisted } from "svelte-persisted-store"
 import type { Notes } from "./dbtypes"
 import type { NoteEx, Notess, SupabaseClient } from "./first"
-import { derived, get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
   fillInTitleUrl, // todo!! delete
@@ -44,9 +44,12 @@ type NQ = ReturnType<typeof _f>
 export class NoteSync {
   sb: SupabaseClient
   notestore: Writable<Record<number, Notes>>
+  noteArr: Readable<NoteEx[]>
   user_id: string | undefined
   note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
+  alltags: Readable<string[]>
+
   // nq
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
@@ -54,6 +57,11 @@ export class NoteSync {
     this.stuMapStore = stuMapStore
     this.user_id = user_id
     this.note_del_queue = note_del_queue
+    this.noteArr = derived([this.notestore, this.stuMapStore], ([n, s]) => {
+      const vals = Object.values(n)
+      return vals.map((n) => ({ ...n, sources: fillInTitleUrl(s[n.source_id]), searchArt: O.none }))
+    })
+    this.alltags = derived(this.noteArr, (ns) => A.uniq(S.Eq)(ns.flatMap((n) => n.tags || [])))
     // this.nq = this.sb.from("notes")
   }
   inited = () => this.user_id !== undefined
@@ -66,9 +74,6 @@ export class NoteSync {
       ),
     )
   }
-  // todo this creates always new store
-  alltags = () =>
-    derived(this.notestore, (ns) => A.uniq(S.Eq)(Object.values(ns).flatMap((n) => n.tags || [])))
 
   refresh_sources = async () =>
     this.user_id !== undefined &&
@@ -98,7 +103,11 @@ export class NoteSync {
   get_groups = (transform: (x: NoteEx) => NoteEx & { priority: number }) =>
     derived([this.notestore, this.stuMapStore], ([ns, stumap]) =>
       pipe(
-        Object.values(ns).map((n) => ({ ...n, sources: fillInTitleUrl(stumap[n.source_id]) })),
+        Object.values(ns).map((n) => ({
+          ...n,
+          sources: fillInTitleUrl(stumap[n.source_id]),
+          searchArt: O.none,
+        })),
         A.map(transform),
         A.filter((n) => n.priority > 0),
         NA.groupBy((n) => n.sources.title),
@@ -111,6 +120,7 @@ export class NoteSync {
         ),
       ),
     )
+
   action =
     <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
     (patchTup: PatchTup) =>

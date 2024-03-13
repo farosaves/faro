@@ -37,7 +37,11 @@
 <!-- I had to add || [] here... ofc $note_store wasnt guaranteed to be T[]..., is it time to refactor? -->
 <!-- I definitely shouldn't "just index" and expect it to work -->
 {#each [...(Object.values($note_store) || []), ...A.fromOption(mocked)] as note_data, i}
-  <Note {note_data} bind:showing_content={showing_contents[i]} {close_all_notes} {note_sync} />
+  <Note
+    note_data={{ ...note_data, searchArt: O.none }}
+    bind:showing_content={showing_contents[i]}
+    {close_all_notes}
+    {note_sync} />
 {:else}
   No notes yet...
 {/each}
