@@ -60,9 +60,7 @@
   }, 1000)
   const getSessionTok = async () => {
     let atokens = await T.my_email.query()
-    console.log(atokens)
     const session = await getSession(supabase, atokens)
-    console.log(session)
     if (session) return session
     const { data } = await supabase.auth.getSession()
     if (data.session) return data.session
