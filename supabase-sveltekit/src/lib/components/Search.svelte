@@ -1,6 +1,6 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import type { NoteEx, NoteSync, Notes } from "shared"
+  import { shortcut, type NoteEx, type NoteSync } from "shared"
   import { array as A, option as O } from "fp-ts"
   import { identity, pipe } from "fp-ts/lib/function"
 
@@ -11,11 +11,7 @@
   const texts = ["Titles", "Text"]
   const entries = A.zip(possibleSelections)(texts)
   let selectedKey = possibleSelections // : (typeof possibleSelections)[number][]
-  $: res = !!query && fuzzysort.go(query, $notes, { keys: selectedKey, limit: 5 })
-  //   let allHighlight = (result: any) => fuzzysort.highlight(res[0]);
-  // $: res && res.length && console.log(fuzzysort.highlight(res[0][0])) //, "<b>", "</b>"));
-  // console.log(fuzzysort.highlight(res[0], "<b>", "</b>"));
-  // TODO: refactor as a store
+  $: res = !!query && fuzzysort.go(query, $notes, { keys: selectedKey, limit: 25 })
   export let fuzzySort: (n: NoteEx) => NoteEx & { priority: number }
   $: if (res && res.length) {
     fuzzySort = (n: NoteEx) => {
@@ -43,16 +39,19 @@
     fuzzySort = (n) => ({ ...n, priority: Date.parse(n.created_at) })
   }
   // $: console.log(selectedKey)
+  const callback = () => document.getElementById("search_input")?.focus()
 </script>
 
 <div class="flex flex-col content-center">
   <form>
     <input
       type="text"
+      id="search_input"
       placeholder="Type here to search"
       class="input w-full max-w-xs min-w-32"
+      use:shortcut={{ alt: true, code: "KeyF", callback }}
       bind:value={query} />
-    <!-- <button hidden on:click={() => console.log(query, res, selectedKey, $notes.length)}></button> -->
+    <button hidden on:click={() => console.log(query, res, selectedKey, $notes.length)}></button>
   </form>
   <div>
     <div class="join w-full">

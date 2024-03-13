@@ -5,7 +5,7 @@
   import { onMount } from "svelte"
   import { API_ADDRESS, getSession, type MockNote } from "$lib/utils"
   import { getSourceId, scratches } from "$lib/stores"
-  import { NoteSync, domain_title } from "shared"
+  import { NoteSync, domain_title, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { supa_update } from "$lib/legacy/fun"
@@ -110,6 +110,9 @@
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
+
+<a href={`${API_ADDRESS}/dashboard`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
+  >go to dashboard - rly i should have command for it..</a>
 
 {#if needToRefreshPage}
   <div role="alert" class="alert alert-error">
