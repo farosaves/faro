@@ -13,16 +13,6 @@ import {
   safeProduceWithPatches,
 } from "structurajs"
 import type { Notes } from "./dbtypes"
-import {
-  produceWithPatches as pWPimmer,
-  enablePatches,
-  applyPatches as aPimmer,
-  setAutoFreeze,
-  // type Patch as Pimmer,
-  type Draft,
-  type Objectish,
-} from "immer"
-enablePatches()
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 const _sess: O.Option<Session> = O.none

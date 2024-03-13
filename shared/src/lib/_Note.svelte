@@ -7,7 +7,10 @@
   import { sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
-  export let note_data: Notes
+  import fuzzysort, * as FuzzySort from "fuzzysort"
+  export let note_data: Notes & {
+    searchArt: O.Option<{ selectedKey: string; optKR: Fuzzysort.KeyResult<Notes> }>
+  }
   export let showing_content: boolean
   export let close_all_notes: () => void
   export let note_sync: NoteSync
@@ -19,19 +22,33 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
-  let all_tags = note_sync.alltags()
-  $: replacer = (capture: string) =>
-    `<b class="${$themeStore == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`
+  let all_tags = note_sync.alltags
+  let className = $themeStore == "dark" ? "text-yellow-100" : ""
+  $: replacer = (capture: string) => `<b class="${className}">` + capture + `</b>`
   // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
   let escapeHTML = (text: string) => {
     var div = document.createElement("div")
     div.innerText = text
     return div.innerHTML
   }
+  // O.map((r) => fuzzysort.highlight(r, "<b>", "</b>")),
+  // O.chain(O.fromNullable),
+  // O.match(() => "", identity),
 
-  $: text = note_data.highlights
-    ? escapeHTML(note_data.quote).replaceAll(note_data.highlights[0], replacer)
-    : escapeHTML(note_data.quote)
+  // $: search =
+  $: text = pipe(
+    note_data.searchArt,
+    O.match(
+      () => {
+        const escaped = escapeHTML(note_data.quote)
+        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], replacer) : escaped
+      },
+      ({ selectedKey, optKR }) =>
+        selectedKey == "quote"
+          ? fuzzysort.highlight(optKR, `<b class="${className}">`, `</b>`)
+          : escapeHTML(note_data.quote),
+    ),
+  )
   //.replace(note_data.quote, quoteBoldReplace)
 
   $: onTagAdded = note_sync.tagUpdate(note_data)

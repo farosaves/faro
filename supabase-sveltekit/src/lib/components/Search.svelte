@@ -1,69 +1,76 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import type { NoteEx } from "shared"
+  import type { NoteEx, NoteSync, Notes } from "shared"
   import { array as A, option as O } from "fp-ts"
   import { identity, pipe } from "fp-ts/lib/function"
+  import type { Readable } from "svelte/store"
 
-  export let notes: NoteEx[]
+  export let note_sync: NoteSync
+  const notes = note_sync.noteArr
   let query = ""
-
-  let selectedKey: "sources.title" | "quote"
-  $: res = !!query && fuzzysort.go(query, notes, { key: selectedKey, limit: 5 })
+  const possibleSelections = ["sources.title", "quote"]
+  const texts = ["Titles", "Text"]
+  const entries = A.zip(possibleSelections)(texts)
+  let selectedKey: (typeof possibleSelections)[number]
+  $: res = !!query && fuzzysort.go(query, $notes, { key: selectedKey, limit: 5 })
   //   let allHighlight = (result: any) => fuzzysort.highlight(res[0]);
   $: res && res.length && console.log(fuzzysort.highlight(res[0])) //, "<b>", "</b>"));
   // console.log(fuzzysort.highlight(res[0], "<b>", "</b>"));
   // TODO: refactor as a store
-  export let filterSortFun: (n: NoteEx) => NoteEx & { priority: number }
+  export let fuzzySort: (n: NoteEx) => NoteEx & { priority: number }
   $: if (res && res.length) {
-    filterSortFun = (n) => {
+    fuzzySort = (n: NoteEx) => {
       let priority: number
-      let { quote, sources } = n
+      let searchArt
       if (res && res.length) {
         priority = pipe(
           Array.from(res),
           A.findFirstMap((r) => (r.obj.id == n.id ? O.some(r.score + 1_000_000) : O.none)),
           O.match(() => 0, identity),
         )
-        let highlight = pipe(
+        searchArt = pipe(
           Array.from(res),
           A.findFirst((r) => r.obj.id == n.id),
-          O.map((r) => fuzzysort.highlight(r, "<b>", "</b>")),
-          O.chain(O.fromNullable),
-          O.match(() => "", identity),
+          O.map((optKR) => ({ selectedKey, optKR })),
+          // O.map((r) => fuzzysort.highlight(r, "<b>", "</b>")),
+          // O.chain(O.fromNullable),
+          // O.match(() => "", identity),
         )
-        if (selectedKey == "quote") quote = highlight
-        else if (selectedKey == "sources.title") sources.title = highlight
-      } else priority = Date.parse(n.created_at)
-      return { ...n, priority, quote, sources }
+        // if (selectedKey == "quote") quote = highlight
+        // else if (selectedKey == "sources.title") sources.title = highlight
+      } else {
+        priority = Date.parse(n.created_at)
+        searchArt = O.none
+      }
+
+      return { ...n, priority, searchArt }
     }
+  } else {
+    fuzzySort = (n) => ({ ...n, priority: Date.parse(n.created_at) })
   }
 </script>
 
-<div class="hidden">
+<div class="flex flex-col content-center">
   <form>
-    <input type="text" placeholder="Type here" class="input w-full max-w-xs" bind:value={query} />
-    <button hidden on:click={() => console.log(query, res, selectedKey, notes.length)}></button>
+    <input
+      type="text"
+      placeholder="Type here to search"
+      class="input w-full max-w-xs min-w-32"
+      bind:value={query} />
+    <button hidden on:click={() => console.log(query, res, selectedKey, $notes.length)}></button>
   </form>
-  <!-- <label class="label cursor-pointer join-item">
-    <span class="label-text">Tags</span>
-    <input type="checkbox" bind:checked={byTags} class="checkbox" />
-  </label> -->
   <div>
     <div class="join w-full">
-      <input
-        class="join-item btn grow"
-        type="radio"
-        name="options"
-        bind:group={selectedKey}
-        value={"sources.title"}
-        aria-label="Titles" />
-      <input
-        class="join-item btn grow"
-        type="radio"
-        name="options"
-        aria-label="Text"
-        bind:group={selectedKey}
-        value={"quote"} />
+      {#each entries as [ariaLabel, value] (value)}
+        <input
+          class="join-item btn grow"
+          type="radio"
+          name="options"
+          bind:group={selectedKey}
+          {value}
+          aria-label={ariaLabel}
+          on:click={() => (selectedKey = selectedKey == value ? "" : value)} />
+      {/each}
 
       <!-- <input class="join-item btn" type="radio" name="options" aria-label="Radio 3" /> -->
     </div>

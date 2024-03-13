@@ -21,13 +21,11 @@
   let showing_contents: boolean[] = []
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
-  let filterSortFun = (n: NoteEx) => {
-    return { ...n, priority: Date.parse(n.created_at) }
-  }
+  let fuzzySort = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
   let tagFilter: NoteFilter = identity
   let domainFilter: NoteFilter = identity
-  let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter, domainFilter))
-  $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter, domainFilter))
+  let note_groups = note_sync.get_groups(flow(fuzzySort, tagFilter, domainFilter))
+  $: note_groups = note_sync.get_groups(flow(fuzzySort, tagFilter, domainFilter))
   console.log($note_groups.length)
   console.log(Date.now() - t)
   onMount(async () => {
@@ -42,7 +40,6 @@
     showing_contents = showing_contents.map((v) => false)
   }
   close_all_notes()
-  const alltags = note_sync.alltags()
 
   let w_rem = 16
   // const handle_keydown = (e: KeyboardEvent) => {
@@ -94,9 +91,9 @@
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
-      <!-- <li>
-        <Search bind:filterSortFun notes={flat_notes} />
-      </li> -->
+      <li>
+        <Search bind:fuzzySort {note_sync} />
+      </li>
       <li></li>
       <li><DomainFilter {note_groups} bind:domainFilter /></li>
     </ul>
