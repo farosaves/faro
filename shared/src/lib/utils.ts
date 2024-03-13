@@ -1,43 +1,57 @@
 import type { Notess, SupabaseClient } from "$lib/first.js"
-import { array as A } from "fp-ts"
+import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
-import { option as O } from "fp-ts"
+import { option as O, record as R, number as N } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
-import { writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import type { Session } from "@supabase/supabase-js"
+import {
+  type Patch,
+  convertPatchesToStandard,
+  applyPatchesMutatively as _applyPatches,
+  type UnFreeze,
+  safeProduceWithPatches,
+} from "structurajs"
+import type { Notes } from "./dbtypes"
+import {
+  produceWithPatches as pWPimmer,
+  enablePatches,
+  applyPatches as aPimmer,
+  setAutoFreeze,
+  // type Patch as Pimmer,
+  type Draft,
+  type Objectish,
+} from "immer"
+enablePatches()
+// setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
-let _sess: O.Option<Session> = O.none
+const _sess: O.Option<Session> = O.none
 export const sessStore = writable(_sess)
-
-let colorScheme: "light" | "dark" = "dark"
-export const themeStore = writable(colorScheme)
+type ColorScheme = "light" | "dark"
+const colorScheme: ColorScheme = "dark"
+export const themeStore = writable<ColorScheme>(colorScheme)
 export const updateTheme = () =>
   themeStore.set(
-    window
-      .getComputedStyle(document.documentElement)
-      .getPropertyValue("color-scheme") as typeof colorScheme,
+    window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme,
   )
 
-export let safeGet =
+export const safeGet =
   <T extends string | number | symbol, U>(record: {
     [id in T]: U[]
   }) =>
   (idx: T) =>
     idx in record ? record[idx] : ([] as U[])
 
-export const unwrap_def = <T>(o: Option<T>, def: T) =>
-  pipe(
-    o,
-    O.match(() => def, identity),
-  )
+// export const unwrap_def = <T>(o: Option<T>, def: T) =>
+//   pipe(
+//     o,
+//     O.match(() => def, identity),
+//   )
 
-export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) =>
-  flow(A.map(f), A.flatMap(A.fromOption))
+export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
-export let partition_by_id = (id: number) =>
-  A.partition((v: { id: number }) => v.id == id)
-export let delete_by_id = (id: number) =>
-  A.filter((v: { id: number }) => v.id !== id)
+export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
+export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
 export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
   return (t1, t2) => f(t2) - f(t1)
@@ -47,17 +61,20 @@ export const asc =
   (t1: T, t2: T) =>
     f(t1) - f(t2)
 
-export function logIfError<T extends { error: any }>(r: T): T {
-  const { error } = r
-  error && console.log("error from logIfError util function\n", error)
-  return r
-}
+export const ifErr =
+  (f: (e: any) => void, is = true) =>
+  <T extends { error: any }>(r: T) => {
+    const { error } = r
+    if (!!error == is) f(error)
+    return r
+  }
+export const ifNError = (f: (e: any) => void) => ifErr(f, false)
+export const logIfError = ifErr(console.log)
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 export const hostname = (s: string) => s && new URL(s).hostname
 
-export const domain_title = (url: string, title: string) =>
-  [hostname(url), title].join(";")
+export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
 
 // sort descendingly but for negative scores filter out
 export const filterSort =
@@ -65,17 +82,15 @@ export const filterSort =
   (xs: T[]) =>
     xs.filter((x) => f(x) > 0).toSorted(desc(f))
 
-export const fillInTitleUrl = (v: {
-  sources: {
-    title: string | null
-    url: string | null
-  } | null
-}) => {
-  let _get = (u: typeof v, fld: "title" | "url", missing: string) =>
+type T = {
+  title: string | null
+  url: string | null
+} | null
+export const fillInTitleUrl = (v: T) => {
+  const _get = (u: typeof v, fld: "title" | "url", missing: string) =>
     pipe(
       u,
       O.fromNullable,
-      O.chain((v) => O.fromNullable(v.sources)),
       O.chain((v) => O.fromNullable(v[fld])),
       O.fold(() => missing, identity),
     )
@@ -87,11 +102,8 @@ export async function getNotes(
   source_id: Option<number>,
   user_id: string,
   prevnotes = [],
-): Promise<Notess> {
-  let query = supabase
-    .from("notes")
-    .select("*, sources (title, url)")
-    .eq("user_id", user_id)
+): Promise<Notes[]> {
+  let query = supabase.from("notes").select("*").eq("user_id", user_id)
   query = O.match(
     () => query,
     (id: number) => query.eq("source_id", id),
@@ -100,7 +112,57 @@ export async function getNotes(
   const { data } = await query
 
   if (data === null) return prevnotes
-  return data.map((v) => {
-    return { ...v, sources: fillInTitleUrl(v) }
-  })
+  return data
 }
+export type STUMap = Record<number, { title: string; url: string }>
+export const unwrap =
+  <T>(x: Option<T>) =>
+  (y: T) =>
+    O.getOrElse(() => y)(x)
+// export const getTitlesUrls = (supabase: SupabaseClient) => async (user_id: string) =>
+//   pipe(
+//     O.fromNullable(
+//       (await supabase.from("sources").select("*, notes (user_id)").eq("notes.user_id", user_id)).data,
+//     ),
+//     O.map((data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap),
+//   )
+
+// curry
+export const applyPatches =
+  (ps: Patch[]) =>
+  <T>(s: T) => {
+    _applyPatches(s, ps)
+    console.log("applying patches")
+    return s
+  }
+
+export const updateStore =
+  <T>(store: Writable<T>) =>
+  // (up: (arg: Draft<T>) => void | Draft<T>) => {
+  (up: (arg: UnFreeze<T>) => void | T) => {
+    let [patches, inverse]: Patch[][] = [[], []]
+    store.update((storeVal) => {
+      const [result, ...pinv] = //
+        // pWPimmer(storeVal, up)
+        safeProduceWithPatches(storeVal, up)
+      ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv)
+      // ;[patches, inverse] = A.map(identity)(pinv)
+      return result as T
+    })
+    console.log(patches)
+    return { patches, inverse }
+  }
+
+// export const updateStoreImmer =
+//   <T>(store: Writable<T>) =>
+//   (up: (arg: UnFreeze<T>) => void) => {
+//     let [patches, inverse]: Patch[][] = [[], []]
+//     store.update((storeVal) => {
+//       let [result, ...pinv] = //
+//         pWPimmer(storeVal, up)
+//       ;[patches, inverse] = pinv
+//       return result as T
+//     })
+
+//     return { patches, inverse }
+//   }

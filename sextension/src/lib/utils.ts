@@ -5,22 +5,18 @@
  */
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logIfError } from "./shared/utils"
+import { logIfError } from "shared"
 
-export let API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
+export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 
 // console.log("API_ADDRESS", API_ADDRESS)
 
-export type ATokens =
-  | { access_token: string; refresh_token: string }
-  | undefined
-export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
+export type ATokens = { access_token: string; refresh_token: string } | undefined
+export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) return
   const { access_token, refresh_token } = tokens
   // set session
-  await supabase.auth
-    .setSession({ access_token, refresh_token })
-    .then(logIfError)
+  await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError)
 
   const {
     data: { session },
@@ -30,25 +26,17 @@ export let getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
 
 export async function gotoSnippet(uuid: string) {
   console.log("going to..", uuid)
-  const tab = (
-    await chrome.tabs.query({ active: true, currentWindow: true })
-  )[0]
+  const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   chrome.tabs.sendMessage(tab.id!, { action: "goto", uuid })
 }
 
 export async function deleteSnippet(uuid: string, serialized: string) {
   console.log("deleting..", uuid, serialized)
-  const tab = (
-    await chrome.tabs.query({ active: true, currentWindow: true })
-  )[0]
+  const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
 }
 
-export async function getNotes(
-  supabase: SupabaseClient,
-  source_id: number,
-  user_id: string,
-) {
+export async function getNotes(supabase: SupabaseClient, source_id: number, user_id: string) {
   const { data, error } = await supabase
     .from("notes")
     .select()
@@ -65,6 +53,7 @@ export type MockNote = {
   source_id: number
   highlights: string[]
   context: string
+  context_html: string
   snippet_uuid: string
   serialized_highlight: string
   sources: { title: string; url: string }

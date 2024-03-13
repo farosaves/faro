@@ -11,7 +11,11 @@
 		"strict": true,
 		"module": "ES6",
 		"moduleResolution": "bundler",
-		"composite": true
+		"composite": true,
+		"outDir": "./dist"
 	},
-  
+	"ts-node": {
+		"esm": true,
+		"experimentalSpecifierResolution": "node",
+	}
 }

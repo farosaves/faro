@@ -13,7 +13,7 @@
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "watch": "npm-watch",
-    "update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/dbtypes.ts -f)"
+    "update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/dbtypes.ts -f) && (npx supabase-to-zod --input src/lib/dbtypes.ts --output src/lib/schemas.ts)"
   },
   "watch": {
     "build": {
@@ -51,7 +51,7 @@
     "@types/jsdom": "^21.1.6",
     "@types/sbd": "^1.0.5",
     "autoprefixer": "^10.4.18",
-    "daisyui": "^4.7.2",
+    "daisyui": "^4.7.3",
     "postcss": "^8.4.35",
     "prettier": "^3.1.1",
     "prettier-plugin-svelte": "^3.1.2",
@@ -70,9 +70,11 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
     "fp-ts": "^2.16.2",
+    "immer": "^10.0.3",
     "jsdom": "^24.0.0",
     "npm-watch": "^0.11.0",
     "sbd": "^1.0.19",
+    "structurajs": "^0.12.0",
     "svelte-persisted-store": "^0.9.1"
   }
 }

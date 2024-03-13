@@ -8,9 +8,11 @@
   },
   "scripts": {
     "watch": "npm-watch",
-    "format": "npx prettier --write */src/**/*.ts --config .prettierrc",
-    "buildCF": "npm run build -w=shared/ && npm run build -w=supabase-sveltekit/",
-    "test": "npx playwright test"
+    "format": "#npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
+    "b": "npm run build -w=shared/ && npm run bz -w=sextension/ && npm run build -w=supabase-sveltekit/",
+    "buildShared": "npm run build -w=shared/",
+    "test": "npx playwright test",
+    "testdocker": "docker run --env-file=.testenv -e COMMIT_UUID=$COMMIT_UUID --ipc=host --init -ti -v ./tests:/usr/src/tests mcr.microsoft.com/playwright:v1.42.1 /bin/bash -c 'cd /usr/src && npm install -D @playwright/test && npx playwright test'"
   },
   "watch": {
     "format": {
@@ -36,7 +38,13 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
-    "@types/node": "^20.11.25"
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^20.11.25",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.2",
+    "typescript-eslint": "^7.2.0"
   },
   "version": "1.0.0",
   "main": "index.js",

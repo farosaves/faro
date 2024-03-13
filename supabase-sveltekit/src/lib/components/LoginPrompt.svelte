@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Session } from "@supabase/supabase-js";
-  import { type Option, isNone } from "fp-ts/lib/Option";
+  import type { Session } from "@supabase/supabase-js"
+  import { type Option, isNone } from "fp-ts/lib/Option"
 
-  export let session: Option<Session>;
+  export let session: Option<Session>
 </script>
 
 {#if isNone(session)}
@@ -17,7 +17,6 @@
         stroke-linejoin="round"
         stroke-width="2"
         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-    <span
-      >Not logged in! <a class="underline" href="/login">Click here</a></span>
+    <span>Not logged in! <a class="underline" href="/login">Click here</a></span>
   </div>
 {/if}
