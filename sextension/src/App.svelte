@@ -58,14 +58,17 @@
     logged_in = !!session
     // if (!logged_in) optimistic = O.none
   }, 1000)
-  const _getSession = async () => {
+  const getSessionTok = async () => {
     let atokens = await T.my_email.query()
-    const _session = await getSession(supabase, atokens)
-    if (_session) return session
+    console.log(atokens)
+    const session = await getSession(supabase, atokens)
+    console.log(session)
+    if (session) return session
     const { data } = await supabase.auth.getSession()
     if (data.session) return data.session
     console.log("no session!")
     window.open(login_url) // irc doesnt work
+    return null
   }
 
   onMount(async () => {
@@ -90,7 +93,7 @@
     } catch {
       console.log("dev?")
     }
-    const _session = await _getSession()
+    const _session = await getSessionTok()
     if (_session) session = _session
     console.log("session is", session)
     note_sync.user_id = session.user.id
