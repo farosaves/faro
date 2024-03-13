@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 
-const dev = process.env.DEV || "http://dev.farosapp.com/"
+const dev = process.env.DEV || "http://localhost:5173/"
 test("has title", async ({ page }) => {
   await page.goto(dev)
 
@@ -18,12 +18,18 @@ test("check version is current", async ({ page }) => {
 test("login flow", async ({ page }) => {
   await page.goto(dev)
   await page.getByText("Dashboard", {exact: true}).click()
-  await expect(page).toHaveTitle("Faros - Login")
-  const email = page.getByPlaceholder(/email/);
-  const password = page.getByPlaceholder(/password/);
-
-  
-
-  // expect(page).to
-  // Expect a title "to contain" a substring.
+  // await expect(page).toHaveTitle("Faros - Login")
+  await expect(page).toHaveURL(/login/)
+  const email = page.getByPlaceholder(/email/i);
+  await email.fill("pawel.paradysz@protonmail.com")
+  const password = page.getByPlaceholder(/password/i);
+  await password.fill("test1234")
+  await password.press("Enter")
+  await expect(page).toHaveURL(/account/)
+  await page.getByText("Dashboard", {exact: true}).click()
+  await expect(page).toHaveURL(/dashboard/)
+  // reactivity
+  await expect(page.locator("button.btn-sm").nth(2)).not.toHaveClass(/btn-outline/)
+  await page.locator("button.btn-sm").nth(1).click()
+  await expect(page.locator("button.btn-sm").nth(2)).toHaveClass(/btn-outline/)
 })
