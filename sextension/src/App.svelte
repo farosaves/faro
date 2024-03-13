@@ -58,6 +58,19 @@
     logged_in = !!session
     // if (!logged_in) optimistic = O.none
   }, 1000)
+  const getSessionTok = async () => {
+    let atokens = await T.my_email.query()
+    console.log(atokens)
+    const session = await getSession(supabase, atokens)
+    console.log(session)
+    if (session) return session
+    const { data } = await supabase.auth.getSession()
+    if (data.session) return data.session
+    console.log("no session!")
+    window.open(login_url) // irc doesnt work
+    return null
+  }
+
   onMount(async () => {
     try {
       chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
@@ -80,15 +93,8 @@
     } catch {
       console.log("dev?")
     }
-    let { data } = await supabase.auth.getSession()
-    let atokens = await T.my_email.query()
-    if (!data.session) {
-      console.log("getting session")
-      atokens || window.open(login_url) // TODO: doesnt work iirc
-      session = (await getSession(supabase, atokens))!
-    } else {
-      session = data.session
-    }
+    const _session = await getSessionTok()
+    if (_session) session = _session
     console.log("session is", session)
     note_sync.user_id = session.user.id
     logged_in = !!session
