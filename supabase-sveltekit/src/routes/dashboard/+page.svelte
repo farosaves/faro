@@ -24,8 +24,8 @@
   let fuzzySort = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
   let tagFilter: NoteFilter = identity
   let domainFilter: NoteFilter = identity
-  let note_groups = note_sync.get_groups(flow(fuzzySort, tagFilter, domainFilter))
-  $: note_groups = note_sync.get_groups(flow(fuzzySort, tagFilter, domainFilter))
+  $: note_sync.transformStore.set(flow(fuzzySort, tagFilter, domainFilter))
+  const note_groups = note_sync.groupStore
   console.log($note_groups.length)
   console.log(Date.now() - t)
   onMount(async () => {
