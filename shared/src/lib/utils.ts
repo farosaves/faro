@@ -104,7 +104,6 @@ export async function getNotes(
   if (data === null) return prevnotes
   return data
 }
-export type STUMap = Record<number, { title: string; url: string }>
 export const unwrap =
   <T>(x: Option<T>) =>
   (y: T) =>
