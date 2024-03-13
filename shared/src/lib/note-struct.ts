@@ -19,13 +19,19 @@ import {
 } from "./utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
-import type { Patch } from "structurajs"
 
+import type { Patch } from "structurajs"
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
 const stuMap: STUMap = {}
 const stuMapStore = persisted("stuMapStore", stuMap)
 const allNotesR: Record<number, Notes> = {}
 export const notestore = persisted("notestore", allNotesR)
+// this block shall ensure local data gets overwritten on db schema changes
+import { notesRowSchema } from "./schemas"
+import { z } from "zod"
+const validateNs = z.record(z.string(), notesRowSchema).parse
+// prettier-ignore
+notestore.update(ns => pipe(() =>validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 // notestore.set(allNotes)
 const undo_queue: PatchTup[] = []
 const redo_queue: PatchTup[] = []
