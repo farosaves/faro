@@ -29,7 +29,7 @@ test("login flow", async ({ page }) => {
   await page.getByText("Dashboard", {exact: true}).click()
   await expect(page).toHaveURL(/dashboard/)
   // reactivity
-  await expect(page.locator("button.btn-sm").nth(2)).not.toHaveClass(/btn-outline/)
-  await page.locator("button.btn-sm").nth(1).click()
-  await expect(page.locator("button.btn-sm").nth(2)).toHaveClass(/btn-outline/)
+  await expect(page.locator("button.btn-sm").nth(1)).not.toHaveClass(/btn-outline/)
+  await page.locator("button.btn-sm").nth(0).click()
+  await expect(page.locator("button.btn-sm").nth(1)).toHaveClass(/btn-outline/)
 })
