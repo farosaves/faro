@@ -1,6 +1,6 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import { shortcut, type NoteEx, type NoteSync } from "shared"
+  import { shortcut, type NoteEx, type NoteSync, idx, escapeHTML, replacer } from "shared"
   import { array as A, option as O } from "fp-ts"
   import { identity, pipe } from "fp-ts/lib/function"
 
@@ -17,6 +17,7 @@
     fuzzySort = (n: NoteEx) => {
       let priority: number
       let searchArt
+      let title: string
       if (res && res.length) {
         priority = pipe(
           Array.from(res),
@@ -28,12 +29,30 @@
           A.findFirst((r) => r.obj.id == n.id),
           O.map((optKR) => ({ selectedKey, optKR })),
         )
+        title = pipe(
+          searchArt,
+          O.chain(({ selectedKey, optKR }) =>
+            pipe(
+              selectedKey,
+              A.findIndex((n) => n == "sources.title"),
+              O.chain((i) => idx(optKR, i)),
+              O.map((r) => {
+                const target = escapeHTML(r.target)
+                return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
+              }),
+              O.chain(O.fromNullable),
+              // O.tap(console.log),
+            ),
+          ),
+          O.getOrElse(() => n.sources.title),
+        )
       } else {
         priority = Date.parse(n.created_at)
         searchArt = O.none
+        title = n.sources.title
       }
-
-      return { ...n, priority, searchArt }
+      const sources = { url: n.sources.url, title }
+      return { ...n, priority, searchArt, sources }
     }
   } else {
     fuzzySort = (n) => ({ ...n, priority: Date.parse(n.created_at) })

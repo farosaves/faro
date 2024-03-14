@@ -4,7 +4,7 @@
   import type { NoteSync } from "./note-struct"
   import { option as O, array as A } from "fp-ts"
   import { onMount } from "svelte"
-  import { sleep, themeStore } from "./utils"
+  import { escapeHTML, idx, replacer, sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -23,34 +23,24 @@
   let this_element: Element
   $: tags = note_data.tags || []
   let all_tags = note_sync.alltags
-  $: className = $themeStore == "dark" ? "text-yellow-100" : ""
 
-  $: replacer = (capture: string) => `<b class="${className}">` + capture + `</b>`
-  // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
-  let escapeHTML = (text: string) => {
-    var div = document.createElement("div")
-    div.innerText = text
-    return div.innerHTML
-  }
-  // O.map((r) => fuzzysort.highlight(r, "<b>", "</b>")),
-  // O.chain(O.fromNullable),
-  // O.match(() => "", identity),
-
-  // $: search =
   $: text = pipe(
     note_data.searchArt,
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], replacer) : escaped
+        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
       }, // only replace quote
       ({ selectedKey, optKR }) =>
         pipe(
           selectedKey,
           A.findIndex((n) => n == "quote"),
-          O.map((i) => optKR[i]),
+          O.chain((i) => idx(optKR, i)), // here I check that quote has a highlight
           // O.map((r) => fuzzysort.highlight(r, `<b class="${className}">`, `</b>`)),
-          O.map((r) => fuzzysort.highlight(r, replacer)?.join("")),
+          O.map((r) => {
+            const target = escapeHTML(r.target)
+            return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
+          }),
           O.chain(O.fromNullable),
           // O.tap(console.log),
           O.getOrElse(() => escapeHTML(note_data.quote)),
@@ -83,7 +73,7 @@
   let modalText = ""
   const loadModalText = () =>
     (modalText = note_data.highlights
-      ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], replacer)
+      ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
       : escapeHTML(note_data.context || ""))
 </script>
 
@@ -146,7 +136,7 @@
         <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
         <p class="py-4">
           {@html note_data.highlights
-            ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], replacer)
+            ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
             : escapeHTML(note_data.context || "")}
         </p>
       </div>
