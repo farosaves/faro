@@ -29,6 +29,7 @@
           A.findFirst((r) => r.obj.id == n.id),
           O.map((optKR) => ({ selectedKey, optKR })),
         )
+        // todo this is almost the same as one in shared _Note
         title = pipe(
           searchArt,
           O.chain(({ selectedKey, optKR }) =>
@@ -41,7 +42,6 @@
                 return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
               }),
               O.chain(O.fromNullable),
-              // O.tap(console.log),
             ),
           ),
           O.getOrElse(() => n.sources.title),
