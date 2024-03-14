@@ -2,9 +2,9 @@
   import { _Note as Note, type Notes } from "shared"
   import type { NoteSync } from "shared"
   import { deleteSnippet, gotoSnippet } from "$lib/utils"
-  import { some } from "fp-ts/lib/Option"
+  import { some, type Option } from "fp-ts/lib/Option"
   export let note_sync: NoteSync
-  export let note_data: Notes
+  export let note_data: Notes & { searchArt: Option<never> } // no searching
   export let showing_content: boolean
   export let close_all_notes: () => void
   $: goto_function = () => gotoSnippet(note_data.snippet_uuid!)

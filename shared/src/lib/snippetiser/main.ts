@@ -166,23 +166,25 @@ export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selec
   const highlights = [selectedText]
 
   // console.log(divSplit(potentialQuote))
-  // console.log(potentialQuote.map(x => x.textContent))
-  // console.log(potentialQuote.map(x=>x.textContent))
+  // console.log(potentialQuote.map((x) => x.textContent))
+  // console.log(potentialQuote.map((x) => x.textContent))
   const quoteNodes = A.filter(hasMatch(uuid))(potentialQuote)
   // console.log(d.body.outerHTML)
-  // console.log(wrapOrPass(contextNode).map(x=>x.outerHTML))
-  // console.log(quoteNodes.map(x => x.outerHTML))
-  // console.log(divSplit(quoteNodes))
+  // console.log(wrapOrPass(contextNode).map((x) => x.outerHTML))
+  // console.log(quoteNodes.map((x) => x.outerHTML))
+  console.log(divSplit(quoteNodes))
   // console.log(tag(quoteNodes[0]))
   let quote = getFullSentences(htmlstr2body)(quoteNodes, uuid)
   quote = quote
     .replaceAll(/\[\d{1,2}\]/g, "")
     .replaceAll(/\n+/g, " ")
     .trim()
-
   const tooShort = (s: string) => s.trim().split(" ").length < 6
-  if (tooShort(quote)) quote = getFullSentences(htmlstr2body)(contextNode, uuid)
-  if (quote.length > 1000) quote = selectedText
+  if (tooShort(quote)) {
+    const quoteFromContextNode = getFullSentences(htmlstr2body)(contextNode, uuid)
+    if (quoteFromContextNode.length < 1000) quote = quoteFromContextNode
+  }
+
   // wikipedia src delete
 
   quote = quote
