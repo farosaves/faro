@@ -32,14 +32,19 @@ export const actions = {
     }
 
     // prettier-ignore
-    const {pdf_id}: {pdf_id: string} = await (await fetch("http://127.0.0.1:2227/", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-      },
-      body: Buffer.from(await fileToUpload.arrayBuffer())
-    })).json()
+    type T = {pdf_id: string, error: string}
+    const { pdf_id, error }: T = await (
+      await fetch("http://127.0.0.1:2227/", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+        body: Buffer.from(await fileToUpload.arrayBuffer()),
+      })
+    ).json()
+
+    if (error) return { success: false, error }
 
     // or make pdf table
     await locals.supabase.from("sources").insert({

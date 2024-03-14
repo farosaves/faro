@@ -31,12 +31,13 @@ const validateNs = z.record(z.string(), notesRowSchema).parse
 // prettier-ignore
 notestore.update(ns => pipe(() =>validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
-const validateSTUMap = z.record(z.number(), z.object({ title: z.string(), url: z.string() })).parse
+const validateSTUMap = z.record(z.string(), z.object({ title: z.string(), url: z.string() })).parse
 type STUMap = ReturnType<typeof validateSTUMap>
 const stuMap: STUMap = {}
 const stuMapStore = persisted("stuMapStore", stuMap)
 // prettier-ignore
-stuMapStore.update(ns => pipe(() =>validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+// stuMapStore.set(stuMap)  // need to add it when changing dashboard/+page.server.ts
 
 const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
 const transformStore = writable(defTransform)
