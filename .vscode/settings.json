@@ -1,4 +1,4 @@
 {
-  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen",
-  "python.analysis.autoImportCompletions": true
+  "python.analysis.autoImportCompletions": true,
+  "julia.environmentPath": "/Users/pawel/Projects/flashcardiser/oxygen"
 }
