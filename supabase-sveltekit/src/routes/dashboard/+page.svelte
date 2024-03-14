@@ -21,13 +21,11 @@
   let showing_contents: boolean[] = []
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
-  let filterSortFun = (n: NoteEx) => {
-    return { ...n, priority: Date.parse(n.created_at) }
-  }
+  let fuzzySort = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
   let tagFilter: NoteFilter = identity
   let domainFilter: NoteFilter = identity
-  let note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter, domainFilter))
-  $: note_groups = note_sync.get_groups(flow(filterSortFun, tagFilter, domainFilter))
+  $: note_sync.transformStore.set(flow(fuzzySort, tagFilter, domainFilter))
+  const note_groups = note_sync.groupStore
   console.log($note_groups.length)
   console.log(Date.now() - t)
   onMount(async () => {
@@ -42,7 +40,6 @@
     showing_contents = showing_contents.map((v) => false)
   }
   close_all_notes()
-  const alltags = note_sync.alltags()
 
   let w_rem = 16
   // const handle_keydown = (e: KeyboardEvent) => {
@@ -68,7 +65,7 @@
           class="border-2 text-center rounded-lg border-neutral flex flex-col"
           style="max-width: {w_rem * note_group.length + 0.25}rem; 
 				min-width: {w_rem + 0.15}rem">
-          <span class="text-lg text-wrap flex-grow-0">{title}</span>
+          <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
           <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
             {#each note_group as note, j}
               <!-- bind:showing_content={showing_contents[i][j]} -->
@@ -94,9 +91,9 @@
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
-      <!-- <li>
-        <Search bind:filterSortFun notes={flat_notes} />
-      </li> -->
+      <li>
+        <Search bind:fuzzySort {note_sync} />
+      </li>
       <li></li>
       <li><DomainFilter {note_groups} bind:domainFilter /></li>
     </ul>

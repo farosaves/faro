@@ -3,7 +3,7 @@ import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import type { Session } from "@supabase/supabase-js"
 import {
   type Patch,
@@ -13,16 +13,6 @@ import {
   safeProduceWithPatches,
 } from "structurajs"
 import type { Notes } from "./dbtypes"
-import {
-  produceWithPatches as pWPimmer,
-  enablePatches,
-  applyPatches as aPimmer,
-  setAutoFreeze,
-  // type Patch as Pimmer,
-  type Draft,
-  type Objectish,
-} from "immer"
-enablePatches()
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 const _sess: O.Option<Session> = O.none
@@ -30,6 +20,10 @@ export const sessStore = writable(_sess)
 type ColorScheme = "light" | "dark"
 const colorScheme: ColorScheme = "dark"
 export const themeStore = writable<ColorScheme>(colorScheme)
+export const replacer = derived(
+  themeStore,
+  (t) => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`,
+)
 export const updateTheme = () =>
   themeStore.set(
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme,
@@ -94,7 +88,7 @@ export const fillInTitleUrl = (v: T) => {
       O.chain((v) => O.fromNullable(v[fld])),
       O.fold(() => missing, identity),
     )
-  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
+  return { title: escapeHTML(_get(v, "title", "missing Title")), url: _get(v, "url", "") }
 }
 
 export async function getNotes(
@@ -114,18 +108,33 @@ export async function getNotes(
   if (data === null) return prevnotes
   return data
 }
-export type STUMap = Record<number, { title: string; url: string }>
+
+// type Idx<T> = Array<T> | Record<string | number | symbol, T>
+// export function idx(a: Array<T>, i: number): O.Option<T>
+// export function idx<A extends string | number | symbol>(a: Record<A, T>, i: A): O.Option<T>
+// export function idx(a: Idx<T>, i: any): O.Option<T> {
+//   return O.fromNullable(a[i])
+// }
+type Idx<T> = { [key: string]: T } | { [key: number]: T } | { [key: symbol]: T }
+
+export function idx<T>(a: { [key: string]: T }, i: string): O.Option<T>
+export function idx<T>(a: { [key: number]: T }, i: number): O.Option<T>
+export function idx<T>(a: { [key: symbol]: T }, i: symbol): O.Option<T>
+export function idx<T>(a: Idx<T>, i: string | number | symbol): O.Option<T> {
+  // @ts-expect-error
+  return O.fromNullable(a[i])
+}
+
+export const escapeHTML = (text: string) => {
+  var div = document.createElement("div")
+  div.innerText = text
+  return div.innerHTML
+}
+
 export const unwrap =
   <T>(x: Option<T>) =>
   (y: T) =>
     O.getOrElse(() => y)(x)
-// export const getTitlesUrls = (supabase: SupabaseClient) => async (user_id: string) =>
-//   pipe(
-//     O.fromNullable(
-//       (await supabase.from("sources").select("*, notes (user_id)").eq("notes.user_id", user_id)).data,
-//     ),
-//     O.map((data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap),
-//   )
 
 // curry
 export const applyPatches =

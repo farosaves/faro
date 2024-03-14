@@ -73,6 +73,13 @@ test("input9", async () => {
     "can somebody pleaseeeeeeeee translate this song for me ??\\n\\nI love the melody, and im dying to understand the words.",
   )
 })
+test("input9", async () => {
+  const r = await l("/input10.json")
+  // not sure if that is what I want but ?? could be mid code
+  expect(makeQCH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe(
+    "fuzzysort.highlight(result, open=\\'<b>\\', close=\\'</b>\\')",
+  )
+})
 
 test("context6", async () => {
   const r = await l("/input6.json")
