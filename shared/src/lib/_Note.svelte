@@ -24,6 +24,7 @@
   $: tags = note_data.tags || []
   let all_tags = note_sync.alltags
   $: className = $themeStore == "dark" ? "text-yellow-100" : ""
+
   $: replacer = (capture: string) => `<b class="${className}">` + capture + `</b>`
   // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
   let escapeHTML = (text: string) => {
@@ -48,7 +49,8 @@
           selectedKey,
           A.findIndex((n) => n == "quote"),
           O.map((i) => optKR[i]),
-          O.map((r) => fuzzysort.highlight(r, `<b class="${className}">`, `</b>`)),
+          // O.map((r) => fuzzysort.highlight(r, `<b class="${className}">`, `</b>`)),
+          O.map((r) => fuzzysort.highlight(r, replacer)?.join("")),
           O.chain(O.fromNullable),
           // O.tap(console.log),
           O.getOrElse(() => escapeHTML(note_data.quote)),
