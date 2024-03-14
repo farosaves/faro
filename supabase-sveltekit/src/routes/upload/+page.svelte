@@ -9,6 +9,10 @@
       Upload successful, id: {form.pdf_id}
     </div>
   {/if}
+  {#if form?.error}<div class="flex justify-center btn btn-lg btn-error z-10 text-5xl font-bold">
+      Not successful, error: {form?.error}
+    </div>
+  {/if}
 
   <div class="hero-content flex-col lg:flex-row-reverse">
     <div class="text-center lg:text-left">

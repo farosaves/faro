@@ -5,17 +5,16 @@
   import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
   import { desc, hostname } from "shared"
-  export let note_groups: Readable<[string, NoteEx[]][]>
+  export let note_sync: NoteSync
   export let domainFilter: NoteFilter
   // const notestore = note_sync.notestore
-  const domains = derived(note_groups, (x) =>
+  const domains = derived(note_sync.noteArr, (x) =>
     pipe(
       x,
-      A.map(([s, ns]) => ns),
       // prettier-ignore
-      NA.groupBy(a => pipe(a, A.last, O.match(() => "", x => hostname(x.sources.url)))),
-      R.map(NA.reduce(0, (x, y) => x + y.length)),
-      R.filter((x) => x > 1),
+      NA.groupBy((n) => hostname(n.sources.url)),
+      R.map((ns) => ns.length),
+      // R.filter((x) => x > 1),
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),
   )
@@ -28,22 +27,32 @@
     if (uncheckedDomains.has(hostname(n.sources.url))) n.priority = 0
     return n
   }
+  const toggleAll = () => {
+    // assigns to trigger potential $:
+    if (uncheckedDomains.size > 0) uncheckedDomains = new Set()
+    else uncheckedDomains = new Set($domains.map(([x, y]) => x))
+  }
 </script>
 
 <details>
-  <summary
-    >All Domains
-    <!-- <label class="label cursor-pointer">
-      <span class="label-text"></span>
-      <input type="checkbox" checked class="checkbox" />
-    </label> -->
-  </summary>
+  <summary> Domains </summary>
   <ul class="menu bg-base-200 w-56 rounded-box">
+    <li>
+      <label class="label cursor-pointer">
+        <span class="label-text">Toggle All</span>
+        <input type="checkbox" checked on:change={toggleAll} class="checkbox" />
+      </label>
+    </li>
+
     {#each $domains as [domain, num], i}
       <li>
         <label class="label cursor-pointer">
-          <span class="label-text">{num} {domain}</span>
-          <input type="checkbox" checked on:change={toggleDomain(domain)} class="checkbox" />
+          <span class="label-text tooltip tooltip-left tooltip-primary" data-tip={num}>{domain}</span>
+          <input
+            type="checkbox"
+            checked={!uncheckedDomains.has(domain)}
+            on:click={toggleDomain(domain)}
+            class="checkbox" />
         </label>
       </li>
     {/each}
