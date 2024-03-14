@@ -65,7 +65,7 @@
           class="border-2 text-center rounded-lg border-neutral flex flex-col"
           style="max-width: {w_rem * note_group.length + 0.25}rem; 
 				min-width: {w_rem + 0.15}rem">
-          <span class="text-lg text-wrap flex-grow-0">{title}</span>
+          <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
           <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
             {#each note_group as note, j}
               <!-- bind:showing_content={showing_contents[i][j]} -->
