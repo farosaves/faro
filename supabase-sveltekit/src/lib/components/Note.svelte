@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _Note as Note, type NoteEx } from "shared"
+
   export let w_rem = 16
   export let note_data: NoteEx
   export let showing_content: boolean

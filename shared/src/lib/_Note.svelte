@@ -2,12 +2,15 @@
   import type { MouseEventHandler } from "svelte/elements"
   import type { Notes } from "./dbtypes"
   import type { NoteSync } from "./note-struct"
-  import { option as O } from "fp-ts"
+  import { option as O, array as A } from "fp-ts"
   import { onMount } from "svelte"
-  import { sleep, themeStore } from "./utils"
+  import { escapeHTML, idx, replacer, sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
-  export let note_data: Notes
+  import fuzzysort from "fuzzysort"
+  export let note_data: Notes & {
+    searchArt: O.Option<{ selectedKey: string[]; optKR: Fuzzysort.KeysResult<Notes> }>
+  }
   export let showing_content: boolean
   export let close_all_notes: () => void
   export let note_sync: NoteSync
@@ -19,19 +22,33 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
-  let all_tags = note_sync.alltags()
-  $: replacer = (capture: string) =>
-    `<b class="${$themeStore == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`
-  // const quoteBoldReplace = (capture: string) => `<b>${capture}</b>`
-  let escapeHTML = (text: string) => {
-    var div = document.createElement("div")
-    div.innerText = text
-    return div.innerHTML
-  }
+  let all_tags = note_sync.alltags
 
-  $: text = note_data.highlights
-    ? escapeHTML(note_data.quote).replaceAll(note_data.highlights[0], replacer)
-    : escapeHTML(note_data.quote)
+  $: text = pipe(
+    note_data.searchArt,
+    O.match(
+      () => {
+        const escaped = escapeHTML(note_data.quote)
+        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
+      }, // only replace quote
+      ({ selectedKey, optKR }) =>
+        pipe(
+          selectedKey,
+          A.findIndex((n) => n == "quote"),
+          O.chain((i) => idx(optKR, i)), // here I check that quote has a highlight
+          // O.map((r) => fuzzysort.highlight(r, `<b class="${className}">`, `</b>`)),
+          O.map((r) => {
+            const target = escapeHTML(r.target)
+            return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
+          }),
+          O.chain(O.fromNullable),
+          // O.tap(console.log),
+          O.getOrElse(() => escapeHTML(note_data.quote)),
+        ),
+      // ? fuzzysort.highlight(optKR, `<b class="${className}">`, `</b>`)
+      // : escapeHTML(note_data.quote),
+    ),
+  )
   //.replace(note_data.quote, quoteBoldReplace)
 
   $: onTagAdded = note_sync.tagUpdate(note_data)
@@ -56,7 +73,7 @@
   let modalText = ""
   const loadModalText = () =>
     (modalText = note_data.highlights
-      ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], replacer)
+      ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
       : escapeHTML(note_data.context || ""))
 </script>
 
@@ -119,7 +136,7 @@
         <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
         <p class="py-4">
           {@html note_data.highlights
-            ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], replacer)
+            ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
             : escapeHTML(note_data.context || "")}
         </p>
       </div>

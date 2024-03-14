@@ -7,7 +7,7 @@
     "dev": "vite",
     "b": "VITE_PI_IP=http://localhost:5173 vite build && sleep 0.5 && open \"http://reload.extensions\"",
     "preview": "vite preview",
-    "bz": "VITE_PI_IP=http://farosapp.com vite build && zip -r ../supabase-sveltekit/static/ext.zip dist",
+    "bz": "VITE_PI_IP=http://farosapp.com vite build && rm ../supabase-sveltekit/static/ext.zip && zip -r ../supabase-sveltekit/static/ext.zip dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {

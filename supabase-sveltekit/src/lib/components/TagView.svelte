@@ -37,7 +37,7 @@
   $: console.log(!!tagFilter, "tagFilter updated")
   const checkClick = () => {
     // assigns to trigger potential $:
-    if ($exclTagSet.size == $tags_counts.length) $exclTagSet = new Set()
+    if ($exclTagSet.size > 0) $exclTagSet = new Set()
     else $exclTagSet = new Set($tags_counts.map(([x, y]) => x))
   }
   $: console.log(Array.from($exclTagSet))
