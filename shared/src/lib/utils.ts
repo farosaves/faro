@@ -108,13 +108,6 @@ export const unwrap =
   <T>(x: Option<T>) =>
   (y: T) =>
     O.getOrElse(() => y)(x)
-// export const getTitlesUrls = (supabase: SupabaseClient) => async (user_id: string) =>
-//   pipe(
-//     O.fromNullable(
-//       (await supabase.from("sources").select("*, notes (user_id)").eq("notes.user_id", user_id)).data,
-//     ),
-//     O.map((data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)])) as STUMap),
-//   )
 
 // curry
 export const applyPatches =
