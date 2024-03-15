@@ -13,7 +13,7 @@ import {
   ifErr,
   ifNError,
   logIfError,
-  unwrap,
+  unwrapTo,
   updateStore,
 } from "./utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
@@ -92,25 +92,14 @@ export class NoteSync {
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
   }
   inited = () => this.user_id !== undefined
-  panel(id: number) {
-    return derived(
-      this.notestore,
-      flow(
-        Object.values,
-        A.filter((n) => n.source_id == id),
-      ),
-    )
-  }
 
   refresh_sources = async () =>
     this.user_id !== undefined &&
     this.stuMapStore.update(
-      unwrap(
+      unwrapTo(
         pipe(
-          O.fromNullable(
-            (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this.user_id))
-              .data,
-          ),
+          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this.user_id)).data,
+          O.fromNullable,
           O.map((data) => Object.fromEntries(data.map((n) => [n.id, fillInTitleUrl(n)]))),
         ),
       ),
@@ -121,7 +110,7 @@ export class NoteSync {
   refresh_notes = async (id: O.Option<number> = O.none) =>
     this.user_id !== undefined &&
     (await getNotes(this.sb, id, this.user_id).then((nns) =>
-      this.notestore.set(Object.fromEntries(nns.map((n) => [n.id, n]))),
+      this.notestore.update((ns) => ({ ...ns, ...Object.fromEntries(nns.map((n) => [n.id, n])) })),
     ))
 
   action =

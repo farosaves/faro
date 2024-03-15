@@ -8,9 +8,9 @@
   import { NoteSync, domain_title, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
-  import { supa_update } from "$lib/legacy/fun"
   import { option as O, record as R } from "fp-ts"
   import { loadSB } from "$lib/loadSB"
+  import { NoteMut } from "$lib/note_mut"
   let login_url = API_ADDRESS + "/login"
   let curr_title = "Kalanchoe"
   let curr_url = ""
@@ -18,6 +18,7 @@
   const { supabase } = loadResult
   let session: Session
   let note_sync: NoteSync = new NoteSync(supabase, undefined)
+  const note_mut: NoteMut = new NoteMut(note_sync)
   let source_id: Readable<number>
   let curr_domain_title = ""
   $: T = trpc2()
@@ -82,7 +83,8 @@
           console.log("got data", note_data)
           if (note_data) {
             optimistic = O.some(note_data)
-            supa_update()(supabase, note_data).then((v) => v && T.note2card.mutate({ note_id: v.id }))
+            note_mut.addNote(note_data, { title: curr_title, url: curr_url })
+            // supa_update()(supabase, note_data).then((v) => v && T.note2card.mutate({ note_id: v.id }))
             setTimeout(() => (optimistic = O.none), 1000)
             // TODO: if you add two within 1 second it will mess it up
           }
@@ -98,6 +100,7 @@
     logged_in = !!session
     await updateActive()
     note_sync.sub()
+    console.log(get(note_sync.notestore))
   })
 
   const handle_keydown = (e: KeyboardEvent) => {

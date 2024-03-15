@@ -5,7 +5,7 @@
  */
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logIfError } from "shared"
+import { logIfError, type Notes } from "shared"
 
 export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 
@@ -36,34 +36,15 @@ export async function deleteSnippet(uuid: string, serialized: string) {
   chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
 }
 
-export async function getNotes(supabase: SupabaseClient, source_id: number, user_id: string) {
-  const { data, error } = await supabase
-    .from("notes")
-    .select()
-    .eq("source_id", source_id)
-    .eq("user_id", user_id)
-    .order("created_at")
-  error && console.log("getNotes error", error)
-  console.log(data)
-  return data ?? null
-}
+export type MockNote = Omit<Notes, keyof ReturnType<typeof createMock>>
 
-export type MockNote = {
-  quote: string
-  source_id: number
-  highlights: string[]
-  context: string
-  context_html: string
-  snippet_uuid: string
-  serialized_highlight: string
-  sources: { title: string; url: string }
-}
-
-export const mock = {
-  id: -1,
+let currentId = 0
+export const createMock = () => ({
+  id: (currentId -= 1),
+  source_id: -1,
   predicted_topic: "",
   created_at: "",
   tags: [],
   user_id: "",
   user_note: "",
-}
+})
