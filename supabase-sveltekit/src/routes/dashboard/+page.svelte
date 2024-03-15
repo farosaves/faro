@@ -6,12 +6,10 @@
   import { type NoteEx, Tags } from "shared"
   import DomainFilter from "$lib/components/DomainFilter.svelte"
   import { identity, flow, pipe } from "fp-ts/lib/function"
-  import { redirect } from "@sveltejs/kit"
   import LoginPrompt from "$lib/components/LoginPrompt.svelte"
   import { option as O } from "fp-ts"
   import { type NoteFilter } from "$lib/utils"
   import { sessStore } from "shared"
-  const t = Date.now()
   import TagView from "$lib/components/TagView.svelte"
   export let data
   $: ({ session: _session, supabase } = data)
@@ -27,13 +25,19 @@
   $: note_sync.transformStore.set(flow(fuzzySort, tagFilter, domainFilter))
   const note_groups = note_sync.groupStore
   console.log($note_groups.length)
-  console.log(Date.now() - t)
   onMount(async () => {
-    if (O.isNone(session)) redirect(302, "login")
-    note_sync.user_id = session.value.user.id // in case updated
-    note_sync.sb = supabase // in case updated
-    note_sync.sub()
-    setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 2000)
+    if (O.isNone(session)) {
+      if (data.mock) {
+        const mock = data.mock
+        note_sync.notestore.update((n) => ({ ...n, ...mock.notes }))
+        note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
+      }
+    } else {
+      note_sync.user_id = session.value.user.id // in case updated
+      note_sync.sb = supabase // in case updated
+      note_sync.sub()
+      setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 2000)
+    }
   })
 
   let close_all_notes = () => {
@@ -49,9 +53,13 @@
   //     // (e.shiftKey ? redo : undo)();
   //   }
   // }
+  // const ns = note_sync.notestore
+  // const na = note_sync.noteArr
 </script>
 
-<LoginPrompt {session} />
+<!-- {$na[0]?.quote}
+{$note_groups[0]} -->
+<!-- <LoginPrompt {session} /> -->
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
 <TagView {note_sync} bind:tagFilter />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
@@ -90,12 +98,12 @@
   </div>
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
+    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content">
       <li>
         <Search bind:fuzzySort {note_sync} />
       </li>
       <li></li>
-      <li><DomainFilter {note_groups} bind:domainFilter /></li>
+      <li><DomainFilter {note_sync} bind:domainFilter /></li>
     </ul>
   </div>
 </div>

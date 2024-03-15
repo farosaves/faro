@@ -2,10 +2,21 @@
   <div class="hero-content text-center">
     <div class="max-w-md space-y-3">
       <h1 class="text-5xl font-bold">Hello there</h1>
+      <p class="py-1">
+        Faros is kinda like pinterest where you save highlights from any webpage.<br />
+      </p>
+      <p class="py-1">
+        You can go to <u><b><a href="/dashboard">dashboard</a></b></u> to roughly see what it looks like.<br />
+        Without signing up...<br />
+      </p>
+      <p class="py-1">
+        To use it you need to sign up and download the chrome extensions here. Or wait until I put it on the
+        chrome store.<br />
+      </p>
+      <!-- Needless to say you shouldn't install extensions like this from people you don't know personally lol<br /> -->
       <p>
-        Faros is kinda like pinterest where you save highlights from any webpage.
         <a
-          class="py-6 underline"
+          class="py-3 underline"
           href="https://www.theseotoday.com/2022/09/how-to-add-extensions-to-chrome.html"
           >Here are the steps to add extensions to Chrome manually</a>
         <br />
