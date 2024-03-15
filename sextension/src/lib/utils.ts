@@ -36,7 +36,7 @@ export async function deleteSnippet(uuid: string, serialized: string) {
   chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
 }
 
-export type MockNote = Omit<Notes, keyof ReturnType<typeof createMock>>
+export type PendingNote = Omit<Notes, keyof ReturnType<typeof createMock>>
 
 let currentId = 0
 export const createMock = () => ({

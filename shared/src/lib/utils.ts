@@ -4,6 +4,7 @@ import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
+import { Subject, Observable } from "rxjs"
 import type { Session } from "@supabase/supabase-js"
 import {
   type Patch,
@@ -89,6 +90,13 @@ export const fillInTitleUrl = (v: T) => {
       O.fold(() => missing, identity),
     )
   return { title: escapeHTML(_get(v, "title", "missing Title")), url: _get(v, "url", "") }
+}
+
+// https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
+const toStore = <T>(Sub: Observable<T>, init: T) => {
+  const store = writable(init)
+  Sub.subscribe(store.set)
+  return store
 }
 
 export async function getNotes(

@@ -3,9 +3,9 @@
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { API_ADDRESS, getSession, type MockNote } from "$lib/utils"
+  import { API_ADDRESS, getSession, type PendingNote } from "$lib/utils"
   import { scratches } from "$lib/stores"
-  import { NoteSync, domain_title, getOrElse, shortcut } from "shared"
+  import { NoteSync, domain_title, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O, record as R } from "fp-ts"
@@ -65,7 +65,7 @@
     getHighlight(O.getOrElse(() => -1)(source_id), tab.id)
   }
   let logged_in = true
-  let optimistic: O.Option<MockNote> = O.none
+  let optimistic: O.Option<PendingNote> = O.none
   setTimeout(() => {
     logged_in = !!session
     // if (!logged_in) optimistic = O.none
@@ -100,7 +100,7 @@
         if (request.action === "uploadTextSB") {
           const { note_data } = request as {
             action: string
-            note_data: MockNote
+            note_data: PendingNote
           }
           console.log("got data", note_data)
           if (note_data) {
