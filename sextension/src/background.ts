@@ -1,8 +1,9 @@
-import type { MockNote } from "$lib/utils"
+import type { PendingNote } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
+import { pendingNotes } from "$lib/chromey/messages"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
@@ -19,7 +20,7 @@ const appRouter = t.router({
 })
 export type AppRouter = typeof appRouter
 
-// @ts-expect-error namespace missing
+// @ts-expect-error namespace missings
 createChromeHandler({
   router: appRouter,
 })
@@ -27,8 +28,7 @@ createChromeHandler({
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  // here
-  // closes the window
+  // here closes the window
   if (/farosapp\.com\/account/.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
@@ -52,27 +52,14 @@ const tryn =
   }
 
 // to sidepanel
-async function uploadSelected(request: { action: string }, sender: any, sendResponse: any) {
-  request.action = "uploadTextSB"
-  const smr = () => chrome.runtime.sendMessage(request)
-  tryn(5)(smr)
-  // const { note_data } = request as {
-  // 	action: string
-  // 	note_data: MockNote
-  //   }
-  //   if (note_data) {
-  // 	optimistic = O.some(note_data)
-  // 	  .use(supa_update(), supabase, note_data)
-  // 	  .then((v) => v && T.note2card.mutate({ note_id: v.id }))
-  // 	setTimeout(() => (optimistic = O.none), 1000)
-  // if you add two within 1 second it will mess it up
-  //   }
-}
+
+pendingNotes.stream.subscribe(([note_data, sender]) => {
+  const smr = () => chrome.runtime.sendMessage({ action: "uploadTextSB", note_data })
+  tryn(5, 1000)(smr)
+})
 
 function onMessage(request: { action: any }, sender: chrome.runtime.MessageSender, sendResponse: any) {
-  if (request.action === "uploadText") {
-    uploadSelected(request, sender, sendResponse)
-  } else if (request.action === "loadDeps") {
+  if (request.action === "loadDeps") {
     chrome.scripting.executeScript({
       target: { tabId: sender?.tab?.id! },
       files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
@@ -87,17 +74,11 @@ function getUuid() {
     return crypto.randomUUID()
   } catch {
     console.log("uuid fallback, nonsecure context?")
-    // return Math.floor(Math.random() * 1_000_000).toString();
   }
 }
 
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)
-  // try {
-  // 	await chrome.runtime.sendMessage({ action: 'empty' });
-  // } catch {
-  // 	console.log('did not find the thing');
-  // } // TODO: we may want to skip the text capture - first click open only
   chrome.tabs
     .sendMessage(tab.id!, {
       action: "getHighlightedText",
