@@ -1,8 +1,28 @@
 import type { MockNote } from "$lib/utils"
 import { option as O } from "fp-ts"
+import { initTRPC } from "@trpc/server"
+import { createChromeHandler } from "trpc-chrome/adapter"
+import { z } from "zod"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
+
+const t = initTRPC.create({
+  isServer: false,
+  allowOutsideOfServer: true,
+})
+
+const addZ = z.tuple([z.number(), z.number()])
+type AddZ = z.infer<typeof addZ>
+const appRouter = t.router({
+  add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
+})
+export type AppRouter = typeof appRouter
+
+// @ts-expect-error namespace missing
+createChromeHandler({
+  router: appRouter,
+})
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -11,7 +31,7 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // closes the window
   if (/farosapp\.com\/account/.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-  chrome.runtime.sendMessage({ action: "update_cu∂rr_url" }).catch((e) => console.log(e))
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
 })
 
 chrome.tabs.onActivated.addListener((info) => {

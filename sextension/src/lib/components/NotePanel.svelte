@@ -4,10 +4,11 @@
   import { option as O, array as A } from "fp-ts"
   import { createMock, type MockNote } from "$lib/utils"
   import { pipe } from "fp-ts/lib/function"
+  import type { NoteMut } from "$lib/note_mut"
 
   export let note_sync: NoteSync
-  let note_store = note_sync.notestore
-  export let source_id: number
+  export let note_mut: NoteMut
+  const note_panel = note_mut.panel
 
   export let optimistic: O.Option<MockNote> = O.none
   // prettier-ignore
@@ -17,7 +18,7 @@
     optimistic,
     O.chain((mn) =>
       pipe(
-        Object.values($note_store || []),
+        Object.values($note_panel || []),
         A.findFirst((r) => r.snippet_uuid == mn.snippet_uuid),
         O.match(
           () => O.some(mn),
@@ -26,17 +27,20 @@
       ),
     ),
   )
-  if (!(source_id in $note_store)) $note_store = []
-  let showing_contents = Object.values($note_store).map((_) => false)
+
+  // if (!(source_id in $note_store)) $note_store = []
+  let showing_contents = Object.values($note_panel).map((_) => false)
   let close_all_notes = () => {
     showing_contents = showing_contents.map((_) => false)
   }
-  $: console.log($note_store, source_id)
+  // $: console.log($note_store, source_id)
+  const curr_source = note_mut.curr_source
 </script>
 
+{$note_panel.length}<br />{JSON.stringify($curr_source)}
 <!-- I had to add || [] here... ofc $note_store wasnt guaranteed to be T[]..., is it time to refactor? -->
 <!-- I definitely shouldn't "just index" and expect it to work -->
-{#each [...(Object.values($note_store) || []), ...A.fromOption(mocked)] as note_data, i}
+{#each [...(Object.values($note_panel) || []), ...A.fromOption(mocked)] as note_data, i}
   <Note
     note_data={{ ...note_data, searchArt: O.none }}
     bind:showing_content={showing_contents[i]}
