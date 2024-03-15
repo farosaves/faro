@@ -4,34 +4,38 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import { API_ADDRESS, getSession, type MockNote } from "$lib/utils"
-  import { getSourceId, scratches } from "$lib/stores"
-  import { NoteSync, domain_title, shortcut } from "shared"
+  import { scratches } from "$lib/stores"
+  import { NoteSync, domain_title, getOrElse, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O, record as R } from "fp-ts"
   import { loadSB } from "$lib/loadSB"
   import { NoteMut } from "$lib/note_mut"
+  import { createTRPCProxyClient } from "@trpc/client"
+  import type { AppRouter } from "./background"
+  import { chromeLink } from "trpc-chrome/link"
   let login_url = API_ADDRESS + "/login"
-  let curr_title = "Kalanchoe"
-  let curr_url = ""
+  let title = "Kalanchoe"
+  let url = ""
   const loadResult = loadSB()
   const { supabase } = loadResult
   let session: Session
   let note_sync: NoteSync = new NoteSync(supabase, undefined)
   const note_mut: NoteMut = new NoteMut(note_sync)
-  let source_id: Readable<number>
   let curr_domain_title = ""
   $: T = trpc2()
+  const port = chrome.runtime.connect()
+  export const TB = createTRPCProxyClient<AppRouter>({
+    links: [/* 👉 */ chromeLink({ port })],
+  })
+
   let needToRefreshPage = false
   function getHighlight(source_id: number, tab_id: number) {
     needToRefreshPage = false
     chrome.tabs
       .sendMessage(tab_id, {
         action: "deserialize",
-        uss: R.toArray(get(note_sync.notestore) || []).map(([k, n]) => [
-          n.snippet_uuid,
-          n.serialized_highlight,
-        ]),
+        uss: get(note_mut.panel).map((n) => [n.snippet_uuid, n.serialized_highlight]),
       })
       .catch((e) => {
         needToRefreshPage = true
@@ -41,17 +45,24 @@
   async function updateActive() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
     if (!tab.url || !tab.title || !tab.id) return
-    curr_title = tab.title
-    curr_url = tab.url
-    curr_domain_title = domain_title(tab.url, curr_title)
+    ;({ url, title } = tab)
+
+    curr_domain_title = O.getOrElse(() => "")(domain_title(url, title))
     if (!(curr_domain_title in $scratches))
       scratches.update((t) => {
         t[curr_domain_title] = ""
         return t
       })
-    source_id = await getSourceId(supabase)(curr_url, curr_title)
-    await note_sync.refresh_notes(O.some($source_id))
-    getHighlight($source_id, tab.id)
+
+    let source_id = note_mut.localSrcId({ url, title })
+    if (O.isSome(source_id)) await note_sync.refresh_notes(source_id)
+    else {
+      await note_sync.refresh_sources()
+      source_id = note_mut.localSrcId({ url, title })
+      await note_sync.refresh_notes(source_id)
+    }
+
+    getHighlight(O.getOrElse(() => -1)(source_id), tab.id)
   }
   let logged_in = true
   let optimistic: O.Option<MockNote> = O.none
@@ -71,6 +82,17 @@
   }
 
   onMount(async () => {
+    const _session = await getSessionTok()
+    if (_session) session = _session
+    console.log("session is", session)
+    note_sync.user_id = session.user.id
+    // note_sync.refresh_sources()
+    // note_sync.refresh_notes()
+    logged_in = !!session
+    await updateActive()
+    note_sync.sub()
+    console.log(get(note_sync.notestore))
+
     try {
       chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         if (request.action == "update_curr_url") updateActive()
@@ -83,24 +105,15 @@
           console.log("got data", note_data)
           if (note_data) {
             optimistic = O.some(note_data)
-            note_mut.addNote(note_data, { title: curr_title, url: curr_url })
+            note_mut.addNote(note_data, { title, url })
             // supa_update()(supabase, note_data).then((v) => v && T.note2card.mutate({ note_id: v.id }))
             setTimeout(() => (optimistic = O.none), 1000)
-            // TODO: if you add two within 1 second it will mess it up
           }
         }
       })
     } catch {
       console.log("dev?")
     }
-    const _session = await getSessionTok()
-    if (_session) session = _session
-    console.log("session is", session)
-    note_sync.user_id = session.user.id
-    logged_in = !!session
-    await updateActive()
-    note_sync.sub()
-    console.log(get(note_sync.notestore))
   })
 
   const handle_keydown = (e: KeyboardEvent) => {
@@ -137,8 +150,8 @@
 {/if}
 
 <div class="max-w-xs mx-auto space-y-4">
-  <div class=" text-xl text-center w-full italic">{curr_title}</div>
-  <NotePanel bind:optimistic {note_sync} source_id={$source_id} />
+  <div class=" text-xl text-center w-full italic">{title}</div>
+  <NotePanel bind:optimistic {note_sync} {note_mut} />
 
   <textarea
     placeholder="scratchy scratch scratch"

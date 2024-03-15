@@ -1,18 +1,19 @@
 <script lang="ts">
-  import type { NoteEx, NoteSync, Notes } from "shared"
+  import type { NoteEx, NoteSync, Notes, SourceData } from "shared"
   import type { NoteFilter } from "$lib/utils"
   import { derived, type Readable } from "svelte/store"
   import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
-  import { desc, hostname } from "shared"
+  import { desc, getOrElse, hostname } from "shared"
   export let note_sync: NoteSync
   export let domainFilter: NoteFilter
   // const notestore = note_sync.notestore
+  const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
   const domains = derived(note_sync.noteArr, (x) =>
     pipe(
       x,
       // prettier-ignore
-      NA.groupBy((n) => hostname(n.sources.url)),
+      NA.groupBy(hostnameStr),
       R.map((ns) => ns.length),
       // R.filter((x) => x > 1),
       R.toArray,
@@ -24,7 +25,7 @@
     uncheckedDomains = uncheckedDomains // store signal
   }
   $: domainFilter = (n) => {
-    if (uncheckedDomains.has(hostname(n.sources.url))) n.priority = 0
+    if (uncheckedDomains.has(hostnameStr(n))) n.priority = 0
     return n
   }
   const toggleAll = () => {

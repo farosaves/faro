@@ -1,9 +1,24 @@
 // import 'chrome';
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
 import { makeQCH } from "shared"
+import { createTRPCProxyClient } from "@trpc/client"
+import { chromeLink } from "trpc-chrome/link"
+import type { AppRouter } from "./background"
 const DEBUG = import.meta.env.VITE_DEBUG || false
 
 if (DEBUG) console.log("hello")
+
+const port = chrome.runtime.connect()
+export const T = createTRPCProxyClient<AppRouter>({
+  links: [/* 👉 */ chromeLink({ port })],
+})
+T.onAdd.subscribe(undefined, {
+  onData(data) {
+    console.log(data)
+  },
+})
+
+if (DEBUG) console.log(T.add.query([1, 77]))
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
@@ -19,47 +34,47 @@ const applierOptions = {
     tabIndex: -1,
   },
 }
-const deleteSelection = (uuid, serialized) => {
+const deleteSelection = (uuid: string) => {
   // let createClassApplier = rangy.createClassApplier;
   const classname = "_" + uuid
   const elements = document.querySelectorAll(`.${classname}`)
   if (DEBUG) console.log("deleting", uuid, elements.length)
   // note this needs to be in sync with applier options above
-  elements.forEach((e) => (e.style.textDecoration = ""))
+  elements.forEach((e: any) => (e.style.textDecoration = ""))
 }
-function wrapSelectedText(uuid) {
-  const createClassApplier = rangy.createClassApplier
-  const createHighlighter = rangy.createHighlighter
+function wrapSelectedText(uuid: string) {
+  const _rangy = rangy as any
   const classname = "_" + uuid
-  const app = createClassApplier(classname, applierOptions)
+  const app = _rangy.createClassApplier(classname, applierOptions)
   const ran = document.getSelection()?.getRangeAt(0)!
   const rangeText = reserialize(ran)
   const selection = ran2sel(ran)
 
-  const hl = createHighlighter()
+  const hl = _rangy.createHighlighter()
   hl.addClassApplier(app)
   hl.highlightSelection(classname, { selection })
   return hl.serialize(selection) + rangeText
 }
 
-const batchDeserialize = (uss) =>
+const batchDeserialize = (uss: [string, string][]) =>
   uss.forEach(([uuid, serialized]) => {
     if (!serialized) return
-    const createClassApplier = rangy.createClassApplier
-    const createHighlighter = rangy.createHighlighter
+    const _rangy = rangy as any
     console.log("deserializeing", uuid, serialized)
-    const hl = createHighlighter()
-    const app = createClassApplier("_" + uuid, applierOptions)
+    const hl = _rangy.createHighlighter()
+    const app = _rangy.createClassApplier("_" + uuid, applierOptions)
     hl.addClassApplier(app)
     const prepared = prepare2deserialize(document.body.textContent || "", serialized)
     console.log("prep", prepared)
-    hl.deserialize(prepared)
+    try {
+      hl.deserialize(prepared)
+    } catch {}
   })
 
-const gotoText = (uuid) => {
+const gotoText = (uuid: string) => {
   const elems = document.getElementsByClassName("_" + uuid)
   elems.item(0)!.scrollIntoView({ block: "center" })
-  Array.from(elems).forEach((elem) => {
+  Array.from(elems).forEach((elem: any) => {
     const sc = elem.style.backgroundColor
     elem.style.backgroundColor = "#fff200"
     setTimeout(() => {
@@ -96,11 +111,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       context,
       snippet_uuid: uuid,
       serialized_highlight: serialized,
-      sources: { title: website_title, url: website_url },
     }
-    // supa_update(locals.supabase, note_data).then(console.log);
-    // return { note_data };
-    // }),
 
     chrome.runtime.sendMessage({
       action: "uploadText",
@@ -109,14 +120,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.action === "goto") gotoText(request.uuid)
   if (request.action === "deserialize") batchDeserialize(request.uss)
-  if (request.action === "delete") deleteSelection(request.uuid, request.serialized)
+  if (request.action === "delete") deleteSelection(request.uuid)
 })
-
-function sendHighlightedText() {
-  const text = window.getSelection().toString()
-  if (text) {
-    chrome.runtime.sendMessage({ text: text })
-  } else {
-    chrome.runtime.sendMessage({ error: "No text selected." })
-  }
-}

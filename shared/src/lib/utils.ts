@@ -66,9 +66,9 @@ export const ifNError = (f: (e: any) => void) => ifErr(f, false)
 export const logIfError = ifErr(console.log)
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
-export const hostname = (s: string) => s && new URL(s).hostname
+export const hostname = (s: string) => O.tryCatch(() => s && new URL(s).hostname)
 
-export const domain_title = (url: string, title: string) => [hostname(url), title].join(";")
+export const domain_title = (url: string, title: string) => O.map((s) => [s, title].join(";"))(hostname(url))
 
 // sort descendingly but for negative scores filter out
 export const filterSort =
