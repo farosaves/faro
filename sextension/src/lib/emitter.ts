@@ -1,4 +1,5 @@
 import * as Rx from "rxjs"
+import { observable } from "@trpc/server/observable"
 
 const hasOwnProp = {}.hasOwnProperty
 
@@ -38,3 +39,29 @@ export class Emitter<T> {
     }
   }
 }
+
+const pushsub = <T>() => {
+  const ee = new Emitter<T>()
+  const push = (x: T) => ee.emit("bob", x)
+  const sub = () => {
+    // return an `observable` with a callback which is triggered immediately
+    return observable<T>((emit) => {
+      const onAdd = emit.next
+      // trigger `onAdd()` when `add` is triggered in our event emitter
+      ee.on("bob", onAdd)
+      // unsubscribe function when client disconnects or stops subscribing
+      return () => {
+        ee.off("bob", onAdd)
+      }
+    })
+  }
+  return [push, sub]
+}
+const [pushAdd, subAdd] = pushsub()
+// const appRouter = t.router({
+//   add: t.procedure.input(addZ).query(({ input }) => {
+//     pushAdd(input)
+//     return input[0] + input[1]
+//   }),
+//   onAdd: t.procedure.subscription(subAdd),
+// })
