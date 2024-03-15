@@ -1,9 +1,24 @@
 // import 'chrome';
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
 import { makeQCH } from "shared"
+import { createTRPCProxyClient } from "@trpc/client"
+import { chromeLink } from "trpc-chrome/link"
+import type { AppRouter } from "./background"
 const DEBUG = import.meta.env.VITE_DEBUG || false
 
 if (DEBUG) console.log("hello")
+
+const port = chrome.runtime.connect()
+export const T = createTRPCProxyClient<AppRouter>({
+  links: [/* 👉 */ chromeLink({ port })],
+})
+T.onAdd.subscribe(undefined, {
+  onData(data) {
+    console.log(data)
+  },
+})
+
+if (DEBUG) console.log(T.add.query([1, 77]))
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()

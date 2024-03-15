@@ -5,12 +5,15 @@
   import { onMount } from "svelte"
   import { API_ADDRESS, getSession, type MockNote } from "$lib/utils"
   import { scratches } from "$lib/stores"
-  import { NoteSync, domain_title, shortcut } from "shared"
+  import { NoteSync, domain_title, getOrElse, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O, record as R } from "fp-ts"
   import { loadSB } from "$lib/loadSB"
   import { NoteMut } from "$lib/note_mut"
+  import { createTRPCProxyClient } from "@trpc/client"
+  import type { AppRouter } from "./background"
+  import { chromeLink } from "trpc-chrome/link"
   let login_url = API_ADDRESS + "/login"
   let title = "Kalanchoe"
   let url = ""
@@ -21,6 +24,11 @@
   const note_mut: NoteMut = new NoteMut(note_sync)
   let curr_domain_title = ""
   $: T = trpc2()
+  const port = chrome.runtime.connect()
+  export const TB = createTRPCProxyClient<AppRouter>({
+    links: [/* 👉 */ chromeLink({ port })],
+  })
+
   let needToRefreshPage = false
   function getHighlight(source_id: number, tab_id: number) {
     needToRefreshPage = false
