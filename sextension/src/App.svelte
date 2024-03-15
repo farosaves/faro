@@ -5,7 +5,7 @@
   import { onMount } from "svelte"
   import { API_ADDRESS, getSession, type MockNote } from "$lib/utils"
   import { scratches } from "$lib/stores"
-  import { NoteSync, domain_title, getOrElse, shortcut } from "shared"
+  import { NoteSync, domain_title, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O, record as R } from "fp-ts"
@@ -27,10 +27,7 @@
     chrome.tabs
       .sendMessage(tab_id, {
         action: "deserialize",
-        uss: R.toArray(get(note_sync.notestore) || []).map(([k, n]) => [
-          n.snippet_uuid,
-          n.serialized_highlight,
-        ]),
+        uss: get(note_mut.panel).map((n) => [n.snippet_uuid, n.serialized_highlight]),
       })
       .catch((e) => {
         needToRefreshPage = true
@@ -100,7 +97,7 @@
           console.log("got data", note_data)
           if (note_data) {
             optimistic = O.some(note_data)
-            note_mut.addNote(note_data, { title: title, url: url })
+            note_mut.addNote(note_data, { title, url })
             // supa_update()(supabase, note_data).then((v) => v && T.note2card.mutate({ note_id: v.id }))
             setTimeout(() => (optimistic = O.none), 1000)
           }
