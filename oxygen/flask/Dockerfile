@@ -16,4 +16,4 @@ COPY --from=0 /lib64 /lib64
 WORKDIR /app
 COPY . ./
 RUN pip install -r ./requirements.txt
-CMD python app.py
+CMD python wsgi.py
