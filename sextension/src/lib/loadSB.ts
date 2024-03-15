@@ -1,5 +1,5 @@
 const { VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_URL } = import.meta.env
-console.log(VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_URL)
+
 import { createBrowserClient, isBrowser, parse } from "@supabase/ssr"
 import type { Database } from "shared"
 export const loadSB = () => {

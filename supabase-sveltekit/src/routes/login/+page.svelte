@@ -17,7 +17,7 @@
         console.log(session)
         if (session) $sessStore = O.some(session)
         setTimeout(() => {
-          goto("/account")
+          goto("/account?from=login")
         }, 50)
       }
     }),

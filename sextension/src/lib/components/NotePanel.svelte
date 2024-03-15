@@ -2,7 +2,7 @@
   import type { NoteSync } from "shared"
   import Note from "$lib/components/Note.svelte"
   import { option as O, array as A } from "fp-ts"
-  import { mock, type MockNote } from "$lib/utils"
+  import { createMock, type MockNote } from "$lib/utils"
   import { pipe } from "fp-ts/lib/function"
 
   export let note_sync: NoteSync
@@ -11,7 +11,7 @@
 
   export let optimistic: O.Option<MockNote> = O.none
   // prettier-ignore
-  $: mocked = pipe(optimistic, O.map(r => {return {...r, ...mock}}))
+  $: mocked = pipe(optimistic, O.map(r => {return {...r, ...createMock()}}))
 
   $: optimistic = pipe(
     optimistic,
