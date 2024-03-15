@@ -1,12 +1,8 @@
 import type { MockNote } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
-import { observable, type Observer } from "@trpc/server/observable"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
-import { Emitter } from "$lib/emitter"
-import { getOrElse } from "shared"
-import { pipe } from "fp-ts/lib/function"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
@@ -18,33 +14,9 @@ const t = initTRPC.create({
 
 const addZ = z.tuple([z.number(), z.number()])
 type AddZ = z.infer<typeof addZ>
-
-const pushsub = <T>() => {
-  const ee = new Emitter<T>()
-  const push = (x: T) => ee.emit("bob", x)
-  const sub = () => {
-    // return an `observable` with a callback which is triggered immediately
-    return observable<T>((emit) => {
-      const onAdd = emit.next
-      // trigger `onAdd()` when `add` is triggered in our event emitter
-      ee.on("bob", onAdd)
-      // unsubscribe function when client disconnects or stops subscribing
-      return () => {
-        ee.off("bob", onAdd)
-      }
-    })
-  }
-  return [push, sub]
-}
-const [pushAdd, subAdd] = pushsub()
 const appRouter = t.router({
-  add: t.procedure.input(addZ).query(({ input }) => {
-    pushAdd(input)
-    return input[0] + input[1]
-  }),
-  onAdd: t.procedure.subscription(subAdd),
+  add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
 })
-
 export type AppRouter = typeof appRouter
 
 // @ts-expect-error namespace missing
