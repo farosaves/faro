@@ -18,7 +18,7 @@
     )
       .concat(
         // prettier-ignore
-        [["", pipe(x, R.filter((note) => !!note.tags.length), R.size)]],
+        [["", pipe(x, R.filter((note) => !note.tags.length), R.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
   )
