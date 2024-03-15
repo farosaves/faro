@@ -28,7 +28,7 @@ export const GET = async ({ url, locals: { supabase } }) => {
       throw redirect(303, "/account/reset-password?new")
     })
     .with("magic_link", () => {
-      throw redirect(303, "/account")
+      throw redirect(303, "/account?from=magiclink")
     })
   throw redirect(303, "/dashboard")
 }

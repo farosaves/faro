@@ -9,8 +9,9 @@ export * from "./dbtypes"
 export * from "./shortcut"
 import { makeQCH } from "./snippetiser/main"
 import * as dbtypes from "./dbtypes"
-import type { NoteEx, SupabaseClient } from "./first"
+import type { NoteEx, SupabaseClient, SourceData } from "./first"
 
-export { NoteSync, Tags, MyTags, _Note, makeQCH, dbtypes, type NoteEx, type SupabaseClient }
+export { NoteSync, Tags, MyTags, _Note, makeQCH, dbtypes }
+export type { NoteEx, SupabaseClient, SourceData }
 
 // import _Note from "./_Note.svelte"
