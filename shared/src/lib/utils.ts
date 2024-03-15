@@ -93,7 +93,7 @@ export const fillInTitleUrl = (v: T) => {
 }
 
 // https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
-const toStore = <T>(Sub: Observable<T>, init: T) => {
+export const toStore = <T>(Sub: Observable<T>, init: T) => {
   const store = writable(init)
   Sub.subscribe(store.set)
   return store
