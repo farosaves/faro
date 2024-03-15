@@ -131,7 +131,7 @@ export const escapeHTML = (text: string) => {
   return div.innerHTML
 }
 
-export const unwrap =
+export const unwrapTo =
   <T>(x: Option<T>) =>
   (y: T) =>
     O.getOrElse(() => y)(x)
