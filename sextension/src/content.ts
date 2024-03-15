@@ -92,7 +92,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (!quote) return { note_data: null }
     const note_data = {
       quote,
-      source_id: -1,
       highlights,
       context,
       snippet_uuid: uuid,

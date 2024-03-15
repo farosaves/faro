@@ -28,7 +28,7 @@
       // @ts-ignore
       .updateUser({ password: $password.value })
       .then(logIfError)
-      .then(() => goto("/account"))
+      .then(() => goto("/account?from=passwordreset"))
 </script>
 
 {$myForm.dirty}
