@@ -3,7 +3,7 @@
 // @ts-ignore
 import { persisted } from "svelte-persisted-store"
 import type { Notes } from "./dbtypes"
-import type { NoteEx, Notess, SupabaseClient } from "./first"
+import type { NoteEx, Notess, SourceData, SupabaseClient } from "./first"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
@@ -104,6 +104,9 @@ export class NoteSync {
         ),
       ),
     )
+
+  update_source = async (id: number, { sources }: SourceData) =>
+    this.stuMapStore.update(R.upsertAt(id.toString(), sources))
 
   reset_transform = () => this.transformStore.set(defTransform)
 
