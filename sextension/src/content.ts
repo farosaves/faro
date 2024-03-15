@@ -12,11 +12,11 @@ const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
   links: [/* 👉 */ chromeLink({ port })],
 })
-T.onAdd.subscribe(undefined, {
-  onData(data) {
-    console.log(data)
-  },
-})
+// T.onAdd.subscribe(undefined, {
+//   onData(data) {
+//     console.log(data)
+//   },
+// })
 
 if (DEBUG) console.log(T.add.query([1, 77]))
 
