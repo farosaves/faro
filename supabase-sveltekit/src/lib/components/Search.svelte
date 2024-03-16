@@ -3,6 +3,8 @@
   import { shortcut, type NoteEx, type NoteSync, idx, escapeHTML, replacer } from "shared"
   import { array as A, option as O } from "fp-ts"
   import { identity, pipe } from "fp-ts/lib/function"
+  import { onMount } from "svelte"
+  import { page } from "$app/stores"
 
   export let note_sync: NoteSync
   const notes = note_sync.noteArr
@@ -59,6 +61,9 @@
   }
   // $: console.log(selectedKey)
   const callback = () => document.getElementById("search_input")?.focus()
+  onMount(() => {
+    if ($page.url.searchParams.has("search")) setTimeout(callback, 200)
+  })
 </script>
 
 <div class="flex flex-col content-center">

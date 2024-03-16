@@ -14,7 +14,7 @@
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
-  import { pendingNotes } from "$lib/chromey/messages"
+  import { pendingNotes, RemoteStore } from "$lib/chromey/messages"
   let login_url = API_ADDRESS + "/login"
   let title = "Kalanchoe"
   let url = ""
@@ -42,6 +42,7 @@
         needToRefreshPage = true
       })
   }
+  const currUrl = RemoteStore("currUrl", "pending url")
 
   async function updateActive() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -133,6 +134,8 @@
 
 <a href={`${API_ADDRESS}/dashboard`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
   >go to dashboard - rly i should have command for it..</a>
+
+{$currUrl}
 
 {#if needToRefreshPage}
   <div role="alert" class="alert alert-error">
