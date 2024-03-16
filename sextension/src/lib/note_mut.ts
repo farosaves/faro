@@ -53,13 +53,6 @@ export class NoteMut {
 
   // get source if already present locally
   localSrcId = (source: Src) => {
-    // get current
-    const optIdC = pipe(
-      get(this.curr_source),
-      O.chain(O.fromPredicate(([src, id]) => R.getEq(S.Eq).equals(src, source))),
-      O.map((t) => t[1]),
-    )
-    if (O.isSome(optIdC)) return optIdC
     // get store
     const { url, title } = source
     const optId = O.chain((dt: string) => idx(get(this.source_idStore), dt))(domain_title(url, title))
@@ -69,7 +62,7 @@ export class NoteMut {
     return O.none
   }
   // get locally or db
-  _updatedSrcId = async (source: Src) => {
+  private _updatedSrcId = async (source: Src) => {
     const localId = this.localSrcId(source)
     if (O.isSome(localId)) return localId
     const { data } = await this.ns.sb
