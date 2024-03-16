@@ -1,9 +1,11 @@
-import type { PendingNote } from "$lib/utils"
+import { API_ADDRESS, type PendingNote } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
-import { loadDeps, pendingNotes } from "$lib/chromey/messages"
+import { pushStore, pendingNotes } from "$lib/chromey/messages"
+import { get, writable } from "svelte/store"
+import { escapeRegExp, hostname } from "shared"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
@@ -27,15 +29,26 @@ createChromeHandler({
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+const currUrl = writable("bebebobou")
+
+pushStore("currUrl", currUrl)
+
+const updateCurrUrl = (tab?: chrome.tabs.Tab) => {
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  if (tab?.url) currUrl.set(tab?.url)
+  console.log(get(currUrl))
+}
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
   if (/farosapp\.com\/account/.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  updateCurrUrl(tab)
 })
 
-chrome.tabs.onActivated.addListener((info) => {
+chrome.tabs.onActivated.addListener(({ tabId }) => {
+  console.log("activated")
   chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
 const tryn =
@@ -69,14 +82,6 @@ function onMessage(request: { action: any }, sender: chrome.runtime.MessageSende
 }
 chrome.runtime.onMessage.addListener(onMessage)
 
-//
-loadDeps.sub(([v, { tab }]) =>
-  chrome.scripting.executeScript({
-    target: { tabId: tab?.id! },
-    files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
-  }),
-)
-
 const getUuid = () => crypto.randomUUID()
 // try {
 //   return
@@ -98,4 +103,12 @@ async function activate(tab: chrome.tabs.Tab) {
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })
 chrome.action.onClicked.addListener(activate)
+
+chrome.commands.onCommand.addListener((command) => {
+  const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
+  if (command == "search" && !api_regexp.test(get(currUrl))) {
+    chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
+  }
+})
+
 if (DEBUG) console.log("loaded all background")

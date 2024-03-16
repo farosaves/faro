@@ -6,6 +6,7 @@
   import * as tok from "sbd"
   import { writable, type Subscriber } from "svelte/store"
   import { flow } from "fp-ts/lib/function"
+  import { toStore } from "shared"
 
   let alltext: string[]
   let mousePosition: Observable<{ x: number; y: number }> | null = null
@@ -15,11 +16,12 @@
   // console.log(ff)
 
   Sub.forEach(console.log)
-  const toStore = <T,>(Sub: Observable<T>, init: T) => {
-    const store = writable(init)
-    Sub.subscribe(store.set)
-    return store
-  }
+  // const toStore = <T,>(Sub: Observable<T>, init: T) => {
+  //   const store = writable(init)
+  //   Sub.subscribe(store.set)
+  //   return store
+  // }
+
   const query = toStore(Sub, "")
   let s: Subscriber<string>
   console.log(Sub.subscribe(() => {}))

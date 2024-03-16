@@ -1,3 +1,4 @@
+import { escapeRegExp } from "$lib/utils"
 import { array as A, option as O, nonEmptyArray as nEA } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import * as tok from "sbd"
@@ -113,9 +114,7 @@ const getFullSentences =
     function getShortestXfix(p: string, pre: boolean, n = 1) {
       const rev = pre ? (x: string[]) => x : (x: string[]) => x.toReversed()
       const prefix = rev(rev(p.split(" ")).slice(0, n)).join(" ")
-      const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
 
-      // @ts-ignore
       const nmatch = Array.from(bodyText.matchAll(RegExp(escapeRegExp(prefix), "g"))).length
       switch (nmatch) {
         case 1:
