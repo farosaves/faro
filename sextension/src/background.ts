@@ -3,7 +3,7 @@ import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
-import { pendingNotes } from "$lib/chromey/messages"
+import { loadDeps, pendingNotes } from "$lib/chromey/messages"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
@@ -69,13 +69,20 @@ function onMessage(request: { action: any }, sender: chrome.runtime.MessageSende
 }
 chrome.runtime.onMessage.addListener(onMessage)
 
-function getUuid() {
-  try {
-    return crypto.randomUUID()
-  } catch {
-    console.log("uuid fallback, nonsecure context?")
-  }
-}
+//
+loadDeps.sub(([v, { tab }]) =>
+  chrome.scripting.executeScript({
+    target: { tabId: tab?.id! },
+    files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
+  }),
+)
+
+const getUuid = () => crypto.randomUUID()
+// try {
+//   return
+// } catch {
+//   console.log("uuid fallback, nonsecure context?")
+// }
 
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)

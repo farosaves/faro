@@ -14,6 +14,7 @@
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
+  import { pendingNotes } from "$lib/chromey/messages"
   let login_url = API_ADDRESS + "/login"
   let title = "Kalanchoe"
   let url = ""
@@ -82,6 +83,9 @@
   }
 
   onMount(async () => {
+    pendingNotes.stream.subscribe(([x, { tab }]) => {
+      console.log("note data directly", tab?.id, x)
+    })
     const _session = await getSessionTok()
     if (_session) session = _session
     console.log("session is", session)

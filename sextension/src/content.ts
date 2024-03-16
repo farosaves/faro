@@ -113,7 +113,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       context,
       snippet_uuid: uuid,
       serialized_highlight: serialized,
-      context_html: "", // I'm thinking whether it makes sense to get it
     }
     pendingNotes.send(note_data)
   }

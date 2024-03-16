@@ -47,4 +47,5 @@ export const createMock = () => ({
   tags: [],
   user_id: "",
   user_note: "",
+  context_html: "",
 })
