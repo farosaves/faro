@@ -4,10 +4,9 @@
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
   import { desc, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
-  export let tagFilter: (n: NoteEx & { priority: number }) => NoteEx & { priority: number } = identity
+  import { exclTagSet, tagFilter } from "$lib/filterSortStores"
   export let note_sync: NoteSync
   let notestore = note_sync.notestore
-  let exclTagSet = writable(new Set<string>([]))
   const tags_counts = derived(notestore, (x) =>
     pipe(
       Object.values(x),
@@ -22,19 +21,8 @@
       )
       .toSorted(desc(([x, y]) => y)),
   )
-  $: tagFilter = (n) => ({
-    ...n,
-    priority: pipe(
-      NA.fromArray(n.tags),
-      O.getOrElse(() => [""]),
-      A.map((s) => !$exclTagSet.has(s)),
-      A.reduce(false, (x, y) => x || y),
-    )
-      ? n.priority
-      : 0,
-  })
 
-  $: console.log(!!tagFilter, "tagFilter updated")
+  $: console.log(!!$tagFilter, "tagFilter updated")
   const checkClick = () => {
     // assigns to trigger potential $:
     if ($exclTagSet.size > 0) $exclTagSet = new Set()

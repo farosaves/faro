@@ -8,9 +8,8 @@
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
-  export let note_data: Notes & {
-    searchArt: O.Option<{ selectedKey: string[]; optKR: Fuzzysort.KeysResult<Notes> }>
-  }
+  import type { NoteEx } from "./db/typeExtras"
+  export let note_data: NoteEx
   export let showing_content: boolean
   export let close_all_notes: () => void
   export let note_sync: NoteSync
@@ -31,11 +30,11 @@
         const escaped = escapeHTML(note_data.quote)
         return !!note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
       }, // only replace quote
-      ({ selectedKey, optKR }) =>
+      ({ selectedKeys, optKR }) =>
         pipe(
-          selectedKey,
+          selectedKeys,
           A.findIndex((n) => n == "quote"),
-          O.chain((i) => RA.lookup(i, optKR)), // here I check that quote has a highlight
+          O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map((r) => {
             const target = escapeHTML(r.target)
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
