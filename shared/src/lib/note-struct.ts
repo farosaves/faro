@@ -7,7 +7,7 @@ import type { NoteEx, Notess, SourceData, SupabaseClient } from "./db/typeExtras
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
-  fillInTitleUrl, // todo!! delete
+  fillInTitleUrl, // todo? lol
   filterSort,
   getNotes,
   ifErr,
@@ -21,6 +21,10 @@ import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "./db/schemas"
 import { z } from "zod"
 import type { Patch } from "structurajs"
+
+interface M<T> {
+  map: <T extends M, A>()
+}
 
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
 
@@ -65,6 +69,14 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     ),
   )
 
+type T = Record<string, number> | Array<number>
+// const getidx = (x:T, i: string | number) => x[i]
+([4]).at(2)
+let r: Map<string, number> = new Map([["a", 3]])
+r.get("r")
+
+// getidx([1], "s") 
+
 export class NoteSync {
   sb: SupabaseClient
   notestore: Writable<Record<number, Notes>>
@@ -92,6 +104,12 @@ export class NoteSync {
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
   }
   inited = () => this.user_id !== undefined
+
+  setUid = (user_id: string) => {
+    this.user_id = user_id
+    this.notestore.update(R.filter((n) => n.user_id == user_id))
+  }
+
 
   refresh_sources = async () =>
     this.user_id !== undefined &&
