@@ -7,14 +7,15 @@
   import DomainFilter from "$lib/components/DomainFilter.svelte"
   import { identity, flow, pipe } from "fp-ts/lib/function"
   import LoginPrompt from "$lib/components/LoginPrompt.svelte"
-  import { option as O } from "fp-ts"
+  import { option as O, record as R } from "fp-ts"
   import { type NoteFilter } from "$lib/utils"
   import { sessStore } from "shared"
   import TagView from "$lib/components/TagView.svelte"
+  import { get } from "svelte/store"
   export let data
   $: ({ session: _session, supabase } = data)
   $: if (_session) $sessStore = O.some(_session)
-  $: session = $sessStore
+
   // let showing_contents: boolean[][]
   let showing_contents: boolean[] = []
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
@@ -25,15 +26,18 @@
   $: note_sync.transformStore.set(flow(fuzzySort, tagFilter, domainFilter))
   const note_groups = note_sync.groupStore
   console.log($note_groups.length)
+
+  let showLoginPrompt = false
   onMount(async () => {
-    if (O.isNone(session)) {
+    if (O.isNone($sessStore)) {
       if (data.mock) {
         const mock = data.mock
         note_sync.notestore.update((n) => ({ ...n, ...mock.notes }))
+        showLoginPrompt = R.size(get(note_sync.notestore)) > R.size(mock.notes)
         note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
       }
     } else {
-      note_sync.user_id = session.value.user.id // in case updated
+      note_sync.user_id = $sessStore.value.user.id // in case updated
       note_sync.sb = supabase // in case updated
       note_sync.sub()
       setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 2000)
@@ -59,7 +63,7 @@
 
 <!-- {$na[0]?.quote}
 {$note_groups[0]} -->
-<!-- <LoginPrompt {session} /> -->
+<LoginPrompt session={$sessStore} />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
 <TagView {note_sync} bind:tagFilter />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
