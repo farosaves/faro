@@ -2,7 +2,7 @@
   import type { NoteSync } from "shared"
   import Note from "$lib/components/Note.svelte"
   import { option as O, array as A } from "fp-ts"
-  import { createMock, type PendingNote } from "$lib/utils"
+  import { createMock, type PendingNote } from "shared"
   import { pipe } from "fp-ts/lib/function"
   import type { NoteMut } from "$lib/note_mut"
 
