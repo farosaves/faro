@@ -43,7 +43,7 @@
 
   onMount(async () => {
     if (O.isSome(user_id)) {
-      note_sync.user_id = user_id.value
+      note_sync.setUid(user_id.value)
       let { data } = await supabase
         .from("cards")
         .select("*, card_contents (note_id, front, back)")
@@ -59,7 +59,7 @@
   const schedule = (card: Cards, n: number) => () => schedule$(supabase)(card, n)
 </script>
 
-<LoginPrompt session={O.fromNullable(session)} />
+<LoginPrompt showLoginPrompt={!!session} />
 {#each pending as { note, card }}
   <div class="flex flex-col items-center">
     <div class="w-min flex flex-col items-center">

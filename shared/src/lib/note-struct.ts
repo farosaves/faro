@@ -22,10 +22,6 @@ import { notesRowSchema } from "./db/schemas"
 import { z } from "zod"
 import type { Patch } from "structurajs"
 
-interface M<T> {
-  map: <T extends M, A>()
-}
-
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
 
 const allNotesR: Record<number, Notes> = {}
@@ -71,17 +67,17 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
 
 type T = Record<string, number> | Array<number>
 // const getidx = (x:T, i: string | number) => x[i]
-([4]).at(2)
+;[4].at(2)
 let r: Map<string, number> = new Map([["a", 3]])
 r.get("r")
 
-// getidx([1], "s") 
+// getidx([1], "s")
 
 export class NoteSync {
   sb: SupabaseClient
   notestore: Writable<Record<number, Notes>>
   noteArr: Readable<NoteEx[]>
-  user_id: string | undefined
+  private user_id: string | undefined
   note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
   alltags: Readable<string[]>
@@ -110,7 +106,6 @@ export class NoteSync {
     this.notestore.update(R.filter((n) => n.user_id == user_id))
   }
 
-
   refresh_sources = async () =>
     this.user_id !== undefined &&
     this.stuMapStore.update(
@@ -131,7 +126,7 @@ export class NoteSync {
   refresh_notes = async (id: O.Option<number> = O.none) =>
     this.user_id !== undefined &&
     (await getNotes(this.sb, id, this.user_id).then((nns) =>
-      this.notestore.update((ns) => ({ ...ns, ...Object.fromEntries(nns.map((n) => [n.id, n])) })),
+      this.notestore.set(Object.fromEntries(nns.map((n) => [n.id, n]))),
     ))
 
   action =
