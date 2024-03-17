@@ -161,7 +161,16 @@ export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selec
 
   const is4highlight = (t: string) => t.trim().split(" ").length < 6
 
-  if (!is4highlight(selectedText)) return { quote: selectedText, context, highlights: [] }
+  if (!is4highlight(selectedText))
+    return {
+      quote: selectedText
+        .replaceAll(/\[\d{1,2}\]/g, "")
+        .replaceAll(/\n+/g, " ")
+        .trim(),
+      context,
+      highlights: [],
+    }
+
   const highlights = [selectedText]
 
   // console.log(divSplit(potentialQuote))
