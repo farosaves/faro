@@ -1,7 +1,7 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import { shortcut, type NoteEx, type NoteSync, idx, escapeHTML, replacer } from "shared"
-  import { array as A, option as O } from "fp-ts"
+  import { shortcut, type NoteEx, type NoteSync, escapeHTML, replacer } from "shared"
+  import { array as A, option as O, readonlyArray as RA } from "fp-ts"
   import { identity, pipe } from "fp-ts/lib/function"
   import { onMount } from "svelte"
   import { page } from "$app/stores"
@@ -38,7 +38,7 @@
             pipe(
               selectedKey,
               A.findIndex((n) => n == "sources.title"),
-              O.chain((i) => idx(optKR, i)),
+              O.chain((i) => RA.lookup(i)(optKR)),
               O.map((r) => {
                 const target = escapeHTML(r.target)
                 return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")

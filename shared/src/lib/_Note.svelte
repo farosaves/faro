@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
-  import type { Notes } from "./dbtypes"
+  import type { Notes } from "./db/types"
   import type { NoteSync } from "./note-struct"
-  import { option as O, array as A } from "fp-ts"
+  import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
-  import { escapeHTML, idx, replacer, sleep, themeStore } from "./utils"
+  import { escapeHTML, replacer, sleep, themeStore } from "./utils"
   import MyTags from "./MyTags.svelte"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -35,8 +35,7 @@
         pipe(
           selectedKey,
           A.findIndex((n) => n == "quote"),
-          O.chain((i) => idx(optKR, i)), // here I check that quote has a highlight
-          // O.map((r) => fuzzysort.highlight(r, `<b class="${className}">`, `</b>`)),
+          O.chain((i) => RA.lookup(i, optKR)), // here I check that quote has a highlight
           O.map((r) => {
             const target = escapeHTML(r.target)
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")

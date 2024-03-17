@@ -2,8 +2,8 @@
 
 // @ts-ignore
 import { persisted } from "svelte-persisted-store"
-import type { Notes } from "./dbtypes"
-import type { NoteEx, Notess, SourceData, SupabaseClient } from "./first"
+import type { Notes } from "./db/types"
+import type { NoteEx, Notess, SourceData, SupabaseClient } from "./db/typeExtras"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
@@ -18,7 +18,7 @@ import {
 } from "./utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
-import { notesRowSchema } from "./schemas"
+import { notesRowSchema } from "./db/schemas"
 import { z } from "zod"
 import type { Patch } from "structurajs"
 
@@ -170,12 +170,11 @@ export class NoteSync {
         (payload: { new: Notes | object }) => {
           if ("id" in payload.new) {
             const nn = payload.new
-            const id = nn.source_id
-            updateStore(this.notestore)((ns) => {
+            const id = updateStore(this.notestore)((ns) => {
               ns[nn.id] = nn
             })
+            const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
           } else this.refresh_notes()
-          this.refresh_sources()
         },
       )
       .subscribe()

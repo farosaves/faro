@@ -9,7 +9,7 @@ import {
   type Notes,
   type SourceData,
 } from "shared"
-import { createMock, type PendingNote } from "./utils"
+import { createMock, type PendingNote } from "shared"
 import { option as O, record as R, string as S, array as A, tuple as T } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
@@ -96,6 +96,7 @@ export class NoteMut {
 
     //
     const source_id = await this.upSetSrcId(source)
+
     const { data: newNote } = await this.ns.sb
       .from("notes")
       .insert({ ...note, source_id })

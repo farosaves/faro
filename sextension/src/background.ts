@@ -1,11 +1,11 @@
-import { API_ADDRESS, type PendingNote } from "$lib/utils"
+import { API_ADDRESS } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { pushStore, pendingNotes } from "$lib/chromey/messages"
 import { get, writable } from "svelte/store"
-import { escapeRegExp, hostname } from "shared"
+import { escapeRegExp, hostname, type PendingNote } from "shared"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false

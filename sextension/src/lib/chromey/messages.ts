@@ -1,4 +1,4 @@
-import type { PendingNote } from "$lib/utils"
+import type { PendingNote } from "shared"
 import { getMessage } from "@extend-chrome/messages"
 
 export const gmWrap = <T>(s: string) => {
