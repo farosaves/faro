@@ -5,11 +5,10 @@
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, replacer, sleep, themeStore } from "./utils"
-  import MyTags from "./MyTags.svelte"
+  import { MyTags, type NoteEx, type SourceData } from "./index"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
-  import type { NoteEx } from "./db/typeExtras"
-  export let note_data: NoteEx
+  export let note_data: Omit<NoteEx, keyof SourceData>
   export let showing_content: boolean
   export let close_all_notes: () => void
   export let note_sync: NoteSync

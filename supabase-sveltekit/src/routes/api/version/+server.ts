@@ -1,3 +1,4 @@
+// @ts-ignore
 import { CF_PAGES_COMMIT_SHA } from "$env/static/private"
 
 export const GET = () => {
