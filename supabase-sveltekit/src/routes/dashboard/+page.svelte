@@ -12,6 +12,7 @@
   import { sessStore } from "shared"
   import TagView from "$lib/components/TagView.svelte"
   import { get } from "svelte/store"
+  import { domainFilter, fuzzySort, tagFilter } from "$lib/filterSortStores.js"
   export let data
   $: ({ session: _session, supabase } = data)
   $: if (_session) $sessStore = O.some(_session)
@@ -20,10 +21,7 @@
   let showing_contents: boolean[] = []
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
-  let fuzzySort = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
-  let tagFilter: NoteFilter = identity
-  let domainFilter: NoteFilter = identity
-  $: note_sync.transformStore.set(flow(fuzzySort, tagFilter, domainFilter))
+  $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
   const note_groups = note_sync.groupStore
   console.log($note_groups.length)
 
@@ -65,7 +63,7 @@
 {$note_groups[0]} -->
 <LoginPrompt session={$sessStore} />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
-<TagView {note_sync} bind:tagFilter />
+<TagView {note_sync} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
 <div class="drawer md:drawer-open">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
@@ -104,10 +102,10 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content">
       <li>
-        <Search bind:fuzzySort {note_sync} />
+        <Search {note_sync} />
       </li>
       <li></li>
-      <li><DomainFilter {note_sync} bind:domainFilter /></li>
+      <li><DomainFilter {note_sync} /></li>
     </ul>
   </div>
 </div>

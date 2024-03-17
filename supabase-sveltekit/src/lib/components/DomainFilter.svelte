@@ -5,33 +5,26 @@
   import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
   import { desc, getOrElse, hostname } from "shared"
+  import { uncheckedDomains } from "$lib/filterSortStores"
   export let note_sync: NoteSync
-  export let domainFilter: NoteFilter
   // const notestore = note_sync.notestore
   const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
   const domains = derived(note_sync.noteArr, (x) =>
     pipe(
       x,
-      // prettier-ignore
       NA.groupBy(hostnameStr),
       R.map((ns) => ns.length),
-      // R.filter((x) => x > 1),
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),
   )
-  let uncheckedDomains = new Set<string>()
   const toggleDomain = (domain: string) => () => {
-    uncheckedDomains.has(domain) ? uncheckedDomains.delete(domain) : uncheckedDomains.add(domain)
-    uncheckedDomains = uncheckedDomains // store signal
-  }
-  $: domainFilter = (n) => {
-    if (uncheckedDomains.has(hostnameStr(n))) n.priority = 0
-    return n
+    $uncheckedDomains.has(domain) ? $uncheckedDomains.delete(domain) : $uncheckedDomains.add(domain)
+    $uncheckedDomains = $uncheckedDomains // store signal
   }
   const toggleAll = () => {
     // assigns to trigger potential $:
-    if (uncheckedDomains.size > 0) uncheckedDomains = new Set()
-    else uncheckedDomains = new Set($domains.map(([x, y]) => x))
+    if ($uncheckedDomains.size > 0) $uncheckedDomains = new Set()
+    else $uncheckedDomains = new Set($domains.map(([x, y]) => x))
   }
 </script>
 
@@ -51,7 +44,7 @@
           <span class="label-text tooltip tooltip-left tooltip-primary" data-tip={num}>{domain}</span>
           <input
             type="checkbox"
-            checked={!uncheckedDomains.has(domain)}
+            checked={!$uncheckedDomains.has(domain)}
             on:click={toggleDomain(domain)}
             class="checkbox" />
         </label>

@@ -14,13 +14,6 @@ export const pendingNotes = gmWrap<PendingNote>("STATS")
 
 import { get, writable, type Readable } from "svelte/store"
 
-// const toStore = <T, A extends Constr<T>>(sub: A, init: T) => {
-//   await firstValueFrom()
-//   const store = writable(init)
-//   sub(store.set)
-//   return store
-// }
-
 type SharedStores = "currUrl"
 
 export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = console.log) => {
