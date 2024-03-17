@@ -4,7 +4,7 @@
   import { derived, type Readable } from "svelte/store"
   import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
-  import { desc, getOrElse, hostname } from "shared"
+  import { desc, hostname } from "shared"
   import { uncheckedDomains } from "$lib/filterSortStores"
   export let note_sync: NoteSync
   // const notestore = note_sync.notestore

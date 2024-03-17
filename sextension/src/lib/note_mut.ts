@@ -1,15 +1,6 @@
-import { persisted } from "svelte-persisted-store"
-import {
-  NoteSync,
-  domain_title,
-  getOrElse,
-  hostname,
-  idx,
-  logIfError,
-  type Notes,
-  type SourceData,
-} from "shared"
-import { createMock, type PendingNote } from "shared"
+import { NoteSync, domain_title, hostname, logIfError, type Notes, type SourceData } from "shared"
+import { createMock } from "shared"
+import type { InsertNotes, PendingNote } from "shared"
 import { option as O, record as R, string as S, array as A, tuple as T } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
@@ -30,7 +21,7 @@ export class NoteMut {
       pipe(
         ots,
         O.map((ts) => Object.values(ns).filter((n) => n.source_id == ts[1])),
-        getOrElse(() => []),
+        O.getOrElse<Notes[]>(() => []),
       ),
     )
     this.source_idStore = derived(
@@ -55,7 +46,9 @@ export class NoteMut {
   localSrcId = (source: Src) => {
     // get store
     const { url, title } = source
-    const optId = O.chain((dt: string) => idx(get(this.source_idStore), dt))(domain_title(url, title))
+    const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore)[dt]))(
+      domain_title(url, title),
+    )
     if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
     // stil we're on not inserted so set to none:
     this.curr_source.set(O.none)
