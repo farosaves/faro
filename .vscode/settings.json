@@ -1,4 +1,9 @@
 {
   "python.analysis.autoImportCompletions": true,
-  "julia.environmentPath": "/Users/pawel/Projects/flashcardiser/oxygen"
+  "julia.environmentPath": "/Users/pawel/Projects/flashcardiser/oxygen",
+  "prettier.configPath": ".prettier.yaml",
+  "[svelte]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
 }
