@@ -61,7 +61,8 @@
 
 <!-- {$na[0]?.quote}
 {$note_groups[0]} -->
-<LoginPrompt session={$sessStore} />
+{showLoginPrompt}
+<LoginPrompt bind:showLoginPrompt />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
 <TagView {note_sync} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
