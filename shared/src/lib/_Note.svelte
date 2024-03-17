@@ -40,11 +40,8 @@
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
           }),
           O.chain(O.fromNullable),
-          // O.tap(console.log),
           O.getOrElse(() => escapeHTML(note_data.quote)),
         ),
-      // ? fuzzysort.highlight(optKR, `<b class="${className}">`, `</b>`)
-      // : escapeHTML(note_data.quote),
     ),
   )
   //.replace(note_data.quote, quoteBoldReplace)
