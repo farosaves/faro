@@ -91,7 +91,7 @@
     const _session = await getSessionTok()
     if (_session) session = _session
     console.log("session is", session)
-    note_sync.user_id = session.user.id
+    note_sync.setUid(session.user.id)
     // note_sync.refresh_sources()
     // note_sync.refresh_notes()
     logged_in = !!session

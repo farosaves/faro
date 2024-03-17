@@ -30,12 +30,14 @@
     if (O.isNone($sessStore)) {
       if (data.mock) {
         const mock = data.mock
-        note_sync.notestore.update((n) => ({ ...n, ...mock.notes }))
-        showLoginPrompt = R.size(get(note_sync.notestore)) > R.size(mock.notes)
-        note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
+        showLoginPrompt = R.size({ ...get(note_sync.notestore), ...mock.notes }) > R.size(mock.notes)
+        if (!showLoginPrompt) {
+          note_sync.notestore.update((n) => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
+          note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
+        }
       }
     } else {
-      note_sync.user_id = $sessStore.value.user.id // in case updated
+      note_sync.setUid($sessStore.value.user.id) // in case updated
       note_sync.sb = supabase // in case updated
       note_sync.sub()
       setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 2000)
