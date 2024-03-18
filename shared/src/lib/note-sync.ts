@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import { persisted } from "svelte-persisted-store"
-import type { Notes } from "./db/types"
+import type { InsertNotes, Notes } from "./db/types"
 import type { NoteEx, Notess, SourceData, SupabaseClient } from "./db/typeExtras"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
@@ -21,6 +21,7 @@ import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "./db/schemas"
 import { z } from "zod"
 import type { Patch } from "structurajs"
+import { createMock } from "./db/mock"
 
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
 
@@ -65,17 +66,9 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     ),
   )
 
-type T = Record<string, number> | Array<number>
-// const getidx = (x:T, i: string | number) => x[i]
-;[4].at(2)
-let r: Map<string, number> = new Map([["a", 3]])
-r.get("r")
-
-// getidx([1], "s")
-
 export class NoteSync {
   sb: SupabaseClient
-  notestore: Writable<Record<number, Notes>>
+  notestore: Writable<Record<string, Notes>>
   noteArr: Readable<NoteEx[]>
   private user_id: string | undefined
   note_del_queue: Writable<Notess>
@@ -118,12 +111,12 @@ export class NoteSync {
       ),
     )
 
-  update_source = async (id: number, { sources }: SourceData) =>
-    this.stuMapStore.update(R.upsertAt(id.toString(), sources))
+  update_source = async (id: string, { sources }: SourceData) =>
+    this.stuMapStore.update(R.upsertAt(id, sources))
 
   reset_transform = () => this.transformStore.set(defTransform)
 
-  refresh_notes = async (id: O.Option<number> = O.none) =>
+  refresh_notes = async (id: O.Option<string> = O.none) =>
     this.user_id !== undefined &&
     (await getNotes(this.sb, id, this.user_id).then((nns) =>
       this.notestore.set(Object.fromEntries(nns.map((n) => [n.id, n]))),
@@ -140,11 +133,15 @@ export class NoteSync {
         })
         .then(ifErr(() => updateStore(this.notestore)(applyPatches(patchTup.inverse))))
 
-  addit = async (note: Notes) => {
+  addF = async (note: Notes) => {
     const { patches, inverse } = updateStore(this.notestore)((x) => {
       x[note.id] = note
     })
     await this.action((x) => x.insert(note))
+  }
+
+  add = async (note: InsertNotes, source_id: string) => {
+    const n = { ...createMock(), note }
   }
 
   deleteit = async (note: Notes) => {
@@ -163,7 +160,7 @@ export class NoteSync {
     this.note_del_queue.update((ns) => {
       const [r, ...rs] = ns
       if (!r) return ns // noop
-      this.addit(r)
+      this.addF(r)
       return rs
     })
   }

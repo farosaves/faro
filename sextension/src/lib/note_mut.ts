@@ -11,7 +11,7 @@ const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync
-  curr_source: Writable<O.Option<[Src, number]>>
+  curr_source: Writable<O.Option<[Src, string]>>
   panel: Readable<Notes[]>
   source_idStore
   constructor(ns: NoteSync) {
@@ -30,12 +30,11 @@ export class NoteMut {
         R.map(({ url, title }) => domain_title(url, title)),
         R.compact,
         invertLast(identity),
-        R.map(parseInt),
       ),
     )
   }
 
-  _updateSrc = (source: Src, id: number) => {
+  _updateSrc = (source: Src, id: string) => {
     this.curr_source.set(O.some([source, id]))
     const { title, url } = source
     this.ns.update_source(id, { sources: source })
@@ -72,10 +71,10 @@ export class NoteMut {
     const oid = await this._updatedSrcId(source)
     if (O.isSome(oid)) return oid.value
     const { url, title } = source
-
+    const id = crypto.randomUUID()
     const { data: data2, error } = await this.ns.sb
       .from("sources")
-      .insert({ domain: hostnameStr(url), url, title })
+      .insert({ id, domain: hostnameStr(url), url, title })
       .select("id")
       .maybeSingle()
       .then(logIfError)
@@ -88,13 +87,13 @@ export class NoteMut {
     // optimistic
 
     //
-    const source_id = await this.upSetSrcId(source)
+    // const source_id = await this.upSetSrcId(source)
 
-    const { data: newNote } = await this.ns.sb
-      .from("notes")
-      .insert({ ...note, source_id })
-      .select()
-      .maybeSingle()
-    return newNote
+    // const { data: newNote } = await this.ns.sb
+    //   .from("notes")
+    //   .insert({ ...note, source_id })
+    //   .select()
+    //   .maybeSingle()
+    // return newNote
   }
 }

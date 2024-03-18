@@ -3,36 +3,6 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
-      card_contents: {
-        Row: {
-          back: string | null
-          created_at: string
-          front: string | null
-          id: number
-          is_accepted: boolean
-          is_rejected: boolean
-          note_id: number | null
-        }
-        Insert: {
-          back?: string | null
-          created_at?: string
-          front?: string | null
-          id?: number
-          is_accepted?: boolean
-          is_rejected?: boolean
-          note_id?: number | null
-        }
-        Update: {
-          back?: string | null
-          created_at?: string
-          front?: string | null
-          id?: number
-          is_accepted?: boolean
-          is_rejected?: boolean
-          note_id?: number | null
-        }
-        Relationships: []
-      }
       cards: {
         Row: {
           card_content_id: number
@@ -81,13 +51,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "cards_card_content_id_fkey"
-            columns: ["card_content_id"]
-            isOneToOne: false
-            referencedRelation: "card_contents"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "cards_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -96,33 +59,18 @@ export type Database = {
           },
         ]
       }
-      countries: {
-        Row: {
-          id: number
-          name: string
-        }
-        Insert: {
-          id?: number
-          name: string
-        }
-        Update: {
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
       notes: {
         Row: {
           context: string | null
           context_html: string | null
           created_at: string
           highlights: string[]
-          id: number
+          id: string
           predicted_topic: string | null
           quote: string
           serialized_highlight: string | null
           snippet_uuid: string | null
-          source_id: number
+          source_id: string
           tags: string[]
           user_id: string
           user_note: string | null
@@ -132,12 +80,12 @@ export type Database = {
           context_html?: string | null
           created_at?: string
           highlights: string[]
-          id?: number
+          id: string
           predicted_topic?: string | null
           quote: string
           serialized_highlight?: string | null
           snippet_uuid?: string | null
-          source_id: number
+          source_id?: string
           tags?: string[]
           user_id?: string
           user_note?: string | null
@@ -147,29 +95,29 @@ export type Database = {
           context_html?: string | null
           created_at?: string
           highlights?: string[]
-          id?: number
+          id?: string
           predicted_topic?: string | null
           quote?: string
           serialized_highlight?: string | null
           snippet_uuid?: string | null
-          source_id?: number
+          source_id?: string
           tags?: string[]
           user_id?: string
           user_note?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "notes_source_id_fkey"
-            columns: ["source_id"]
-            isOneToOne: false
-            referencedRelation: "sources"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "notes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_notes_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
             referencedColumns: ["id"]
           },
         ]
@@ -214,7 +162,7 @@ export type Database = {
           created_at: string
           DOI: string | null
           domain: string | null
-          id: number
+          id: string
           title: string | null
           url: string | null
         }
@@ -222,7 +170,7 @@ export type Database = {
           created_at?: string
           DOI?: string | null
           domain?: string | null
-          id?: number
+          id: string
           title?: string | null
           url?: string | null
         }
@@ -230,7 +178,7 @@ export type Database = {
           created_at?: string
           DOI?: string | null
           domain?: string | null
-          id?: number
+          id?: string
           title?: string | null
           url?: string | null
         }
@@ -326,17 +274,9 @@ export type Enums<
 
 // Schema: public
 // Tables
-export type CardContents = Database["public"]["Tables"]["card_contents"]["Row"]
-export type InsertCardContents = Database["public"]["Tables"]["card_contents"]["Insert"]
-export type UpdateCardContents = Database["public"]["Tables"]["card_contents"]["Update"]
-
 export type Cards = Database["public"]["Tables"]["cards"]["Row"]
 export type InsertCards = Database["public"]["Tables"]["cards"]["Insert"]
 export type UpdateCards = Database["public"]["Tables"]["cards"]["Update"]
-
-export type Countries = Database["public"]["Tables"]["countries"]["Row"]
-export type InsertCountries = Database["public"]["Tables"]["countries"]["Insert"]
-export type UpdateCountries = Database["public"]["Tables"]["countries"]["Update"]
 
 export type Notes = Database["public"]["Tables"]["notes"]["Row"]
 export type InsertNotes = Database["public"]["Tables"]["notes"]["Insert"]
