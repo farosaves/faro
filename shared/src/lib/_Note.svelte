@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
   import type { Notes } from "./db/types"
-  import type { NoteSync } from "./note-struct"
+  import type { NoteSync } from "./note-sync"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, replacer, sleep, themeStore } from "./utils"
