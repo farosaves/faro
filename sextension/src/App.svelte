@@ -32,7 +32,7 @@
   })
 
   let needToRefreshPage = false
-  function getHighlight(source_id: number, tab_id: number) {
+  function getHighlight(source_id: string, tab_id: number) {
     needToRefreshPage = false
     chrome.tabs
       .sendMessage(tab_id, {
@@ -65,7 +65,7 @@
       await note_sync.refresh_notes(source_id)
     }
 
-    getHighlight(O.getOrElse(() => -1)(source_id), tab.id)
+    getHighlight(O.getOrElse(() => "")(source_id), tab.id)
   }
   let logged_in = true
   let optimistic: O.Option<PendingNote> = O.none

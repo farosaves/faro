@@ -2,10 +2,10 @@ import type { Notes } from "./types"
 
 export type PendingNote = Omit<Notes, keyof ReturnType<typeof createMock>>
 
-let currentId = 0
+// let currentId = 0
 export const createMock = () => ({
-  id: (currentId -= 1),
-  source_id: -1,
+  id: crypto.randomUUID(),
+  source_id: "",
   predicted_topic: "",
   created_at: "",
   tags: [],

@@ -103,14 +103,14 @@ export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$
 
 export async function getNotes(
   supabase: SupabaseClient,
-  source_id: Option<number>,
+  source_id: Option<string>,
   user_id: string,
   prevnotes = [],
 ): Promise<Notes[]> {
-  let query = supabase.from("notes").select("*").eq("user_id", user_id)
+  let query = supabase.from("notes").select("*").eq("user_id", parseFloat(user_id))
   query = O.match(
     () => query,
-    (id: number) => query.eq("source_id", id),
+    (id: string) => query.eq("source_id", id),
   )(source_id)
 
   const { data } = await query

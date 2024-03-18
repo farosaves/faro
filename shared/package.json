@@ -12,8 +12,7 @@
     "test": "vitest",
     "lint": "prettier --check .",
     "format": "prettier --write .",
-    "watch": "npm-watch",
-    "update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/db/types.ts -f) && (npx supabase-to-zod --input src/lib/dbtypes.ts --output src/lib/schemas.ts)"
+    "watch": "npm-watch"
   },
   "watch": {
     "build": {

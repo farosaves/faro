@@ -18,7 +18,7 @@
   $: if (_session) $sessStore = O.some(_session)
 
   // let showing_contents: boolean[][]
-  let showing_contents: boolean[] = []
+  let showing_contents: Record<string, boolean> = {}
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
   $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
@@ -45,7 +45,7 @@
   })
 
   let close_all_notes = () => {
-    showing_contents = showing_contents.map((v) => false)
+    showing_contents = R.map((v) => false)(showing_contents)
   }
   close_all_notes()
 
