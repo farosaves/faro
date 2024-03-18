@@ -1,14 +1,32 @@
-import { API_ADDRESS } from "$lib/utils"
+import { API_ADDRESS, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { pushStore, pendingNotes } from "$lib/chromey/messages"
-import { get, writable } from "svelte/store"
+import { derived, get, writable } from "svelte/store"
 import { escapeRegExp, hostname, type PendingNote } from "shared"
+import { trpc2 } from "$lib/trpc-client"
+import { loadSB } from "$lib/loadSB"
+import type { Session, SupportedStorage } from "@supabase/supabase-js"
+import { supabase } from "$lib/chromey/bg"
 
-const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
+const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 const DEBUG = import.meta.env.DEBUG || false
+
+const T = trpc2()
+
+const sess = writable<O.Option<Session>>(O.none)
+// prettier-ignore
+const user_id = derived(sess, O.map(s=>s.user.id))
+
+const refresh = async () => {
+  const toks = await T.my_tokens.query() //.then((x) => console.log("bg tokens", x))
+  const newSess = O.fromNullable(await getSession(supabase, toks))
+  sess.update((n) => O.orElse(newSess, () => n))
+  console.log(get(user_id), newSess)
+}
+refresh()
 
 const t = initTRPC.create({
   isServer: false,
