@@ -5,20 +5,24 @@ import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { pushStore, pendingNotes } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { escapeRegExp, hostname, type PendingNote } from "shared"
+import { NoteSync, escapeRegExp, hostname, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import { loadSB } from "$lib/loadSB"
 import type { Session, SupportedStorage } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
+import { NoteMut } from "$lib/note_mut"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 const DEBUG = import.meta.env.DEBUG || false
 
 const T = trpc2()
 
+const note_sync: NoteSync = new NoteSync(supabase, undefined)
+const note_mut: NoteMut = new NoteMut(note_sync)
 const sess = writable<O.Option<Session>>(O.none)
 // prettier-ignore
 const user_id = derived(sess, O.map(s=>s.user.id))
+user_id.subscribe(O.map(note_sync.setUid))
 
 const refresh = async () => {
   const toks = await T.my_tokens.query() //.then((x) => console.log("bg tokens", x))
