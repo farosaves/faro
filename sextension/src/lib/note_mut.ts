@@ -83,17 +83,18 @@ export class NoteMut {
   }
 
   addNote = async (n: PendingNote, source: Src) => {
-    const { ...note } = n
+    const id = crypto.randomUUID()
+    const { ...note } = { ...n, id }
     // optimistic
 
     //
-    // const source_id = await this.upSetSrcId(source)
+    const source_id = await this.upSetSrcId(source)
 
-    // const { data: newNote } = await this.ns.sb
-    //   .from("notes")
-    //   .insert({ ...note, source_id })
-    //   .select()
-    //   .maybeSingle()
-    // return newNote
+    const { data: newNote } = await this.ns.sb
+      .from("notes")
+      .insert({ ...note, source_id })
+      .select()
+      .maybeSingle()
+    return newNote
   }
 }

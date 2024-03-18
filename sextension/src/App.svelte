@@ -58,12 +58,11 @@
       })
 
     let source_id = note_mut.localSrcId({ url, title })
-    if (O.isSome(source_id)) await note_sync.refresh_notes(source_id)
-    else {
+    if (!O.isSome(source_id)) {
       await note_sync.refresh_sources()
       source_id = note_mut.localSrcId({ url, title })
-      await note_sync.refresh_notes(source_id)
     }
+    await note_sync.refresh_notes(source_id)
 
     getHighlight(O.getOrElse(() => "")(source_id), tab.id)
   }
