@@ -1,0 +1,7 @@
+DIR=shared/src/lib/db;
+npx supabase gen types typescript --project-id 'hspfduumtusknleyjeoi' --schema public > $DIR/types.ts;
+npx better-supabase-types -i $DIR/types.ts -f;
+npx supabase-to-zod --input $DIR/types.ts --output $DIR/schemas.ts;
+npx prettier --write shared/src/lib/db/* --config=".prettierrc.yaml"
+# warning on linx the '' is not needed
+sed -i '' 's/import { Json/import type { Json/g' $DIR/schemas.ts

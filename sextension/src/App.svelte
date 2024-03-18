@@ -3,9 +3,10 @@
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { API_ADDRESS, getSession, type MockNote } from "$lib/utils"
+  import { API_ADDRESS, getSession } from "$lib/utils"
+  import type { PendingNote } from "shared"
   import { scratches } from "$lib/stores"
-  import { NoteSync, domain_title, getOrElse, shortcut } from "shared"
+  import { NoteSync, domain_title, shortcut } from "shared"
   import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O, record as R } from "fp-ts"
@@ -14,6 +15,7 @@
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
+  import { pendingNotes, RemoteStore } from "$lib/chromey/messages"
   let login_url = API_ADDRESS + "/login"
   let title = "Kalanchoe"
   let url = ""
@@ -30,7 +32,7 @@
   })
 
   let needToRefreshPage = false
-  function getHighlight(source_id: number, tab_id: number) {
+  function getHighlight(source_id: string, tab_id: number) {
     needToRefreshPage = false
     chrome.tabs
       .sendMessage(tab_id, {
@@ -41,6 +43,7 @@
         needToRefreshPage = true
       })
   }
+  const currUrl = RemoteStore("currUrl", "pending url")
 
   async function updateActive() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -55,17 +58,16 @@
       })
 
     let source_id = note_mut.localSrcId({ url, title })
-    if (O.isSome(source_id)) await note_sync.refresh_notes(source_id)
-    else {
+    if (!O.isSome(source_id)) {
       await note_sync.refresh_sources()
       source_id = note_mut.localSrcId({ url, title })
-      await note_sync.refresh_notes(source_id)
     }
+    await note_sync.refresh_notes(source_id)
 
-    getHighlight(O.getOrElse(() => -1)(source_id), tab.id)
+    getHighlight(O.getOrElse(() => "")(source_id), tab.id)
   }
   let logged_in = true
-  let optimistic: O.Option<MockNote> = O.none
+  let optimistic: O.Option<PendingNote> = O.none
   setTimeout(() => {
     logged_in = !!session
     // if (!logged_in) optimistic = O.none
@@ -82,10 +84,13 @@
   }
 
   onMount(async () => {
+    pendingNotes.stream.subscribe(([x, { tab }]) => {
+      console.log("note data directly", tab?.id, x)
+    })
     const _session = await getSessionTok()
     if (_session) session = _session
     console.log("session is", session)
-    note_sync.user_id = session.user.id
+    note_sync.setUid(session.user.id)
     // note_sync.refresh_sources()
     // note_sync.refresh_notes()
     logged_in = !!session
@@ -100,7 +105,7 @@
         if (request.action === "uploadTextSB") {
           const { note_data } = request as {
             action: string
-            note_data: MockNote
+            note_data: PendingNote
           }
           console.log("got data", note_data)
           if (note_data) {
@@ -129,6 +134,8 @@
 
 <a href={`${API_ADDRESS}/dashboard`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
   >go to dashboard - rly i should have command for it..</a>
+
+{$currUrl}
 
 {#if needToRefreshPage}
   <div role="alert" class="alert alert-error">

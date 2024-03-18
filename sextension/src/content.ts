@@ -4,6 +4,7 @@ import { makeQCH } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
+import { pendingNotes } from "$lib/chromey/messages"
 const DEBUG = import.meta.env.VITE_DEBUG || false
 
 if (DEBUG) console.log("hello")
@@ -12,11 +13,6 @@ const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
   links: [/* 👉 */ chromeLink({ port })],
 })
-// T.onAdd.subscribe(undefined, {
-//   onData(data) {
-//     console.log(data)
-//   },
-// })
 
 if (DEBUG) console.log(T.add.query([1, 77]))
 
@@ -84,6 +80,7 @@ const gotoText = (uuid: string) => {
 }
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
+// type Req = { action: "getHighlightedText" | "goto" | "deserialize" | "delete" }
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getHighlightedText") {
     const { website_title, website_url, uuid } = request
@@ -95,7 +92,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log(window.getSelection()?.anchorNode)
     gotoText(uuid)
 
-    console.log("uploading...:", { selectedText, website_url })
+    DEBUG && console.log("uploading...:", { selectedText, website_url })
     // makeQCH grabs text around the highlighted bit:
     // quote: will try to grab the full sentence
     // context: will try to grab like a <p> tag
@@ -112,11 +109,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       snippet_uuid: uuid,
       serialized_highlight: serialized,
     }
-
-    chrome.runtime.sendMessage({
-      action: "uploadText",
-      note_data,
-    })
+    pendingNotes.send(note_data)
   }
   if (request.action === "goto") gotoText(request.uuid)
   if (request.action === "deserialize") batchDeserialize(request.uss)

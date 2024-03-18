@@ -1,11 +1,8 @@
 <script lang="ts">
-  import type { Session } from "@supabase/supabase-js"
-  import { type Option, isNone } from "fp-ts/lib/Option"
-
-  export let session: Option<Session>
+  export let showLoginPrompt: boolean
 </script>
 
-{#if isNone(session)}
+{#if showLoginPrompt}
   <div role="alert" class="alert alert-error">
     <svg
       xmlns="http://www.w3.org/2000/svg"

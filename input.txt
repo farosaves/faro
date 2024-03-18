@@ -1,0 +1,2 @@
+sed 's/world/world/' input.txt > output.txt
+

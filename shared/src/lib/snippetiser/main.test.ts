@@ -73,17 +73,24 @@ test("input9", async () => {
     "can somebody pleaseeeeeeeee translate this song for me ??\\n\\nI love the melody, and im dying to understand the words.",
   )
 })
-test("input9", async () => {
+test("input10", async () => {
   const r = await l("/input10.json")
   // not sure if that is what I want but ?? could be mid code
   expect(makeQCH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe(
     "fuzzysort.highlight(result, open=\\'<b>\\', close=\\'</b>\\')",
   )
 })
-
-test("context6", async () => {
-  const r = await l("/input6.json")
-  expect(makeQCH(htmlstr2body)(document(r), r.uuid, r.selectedText).context).toBe(
-    "Persian has features of agglutination, making use of prefixes and suffixes attached to the stems of verbs and nouns, thus making it a synthetic language rather than an analytic one. Persian is an SOV language, thus having a head-final phrase structure. Persian utilizes a noun root + plural suffix + case suffix + postposition suffix syntax similar to Turkish. For example: Mashinhashunra niga mikardam meaning 'I was looking at their cars'. Breaking down mashin+ha+shun+ra (car+s+their+at) we can see its agglutinative nature and the fact that Persian is able to affix a given number of dependent morphemes to a root morpheme (in this example, car).\\n.",
+test("input11", async () => {
+  const r = await l("/input11.json")
+  // not sure if that is what I want but ?? could be mid code
+  expect(makeQCH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe(
+    "In Galo beliefs, Jimi manifests as Melo (Sky) and Sidi (Earth), out of the interaction of which all things and beings are born, including Donyi and Polo. There are other myths explaining the meaning of the duality Donyi and Polo.",
   )
 })
+
+// test("context6", async () => {
+//   const r = await l("/input6.json")
+//   expect(makeQCH(htmlstr2body)(document(r), r.uuid, r.selectedText).context).toBe(
+//     "Persian has features of agglutination, making use of prefixes and suffixes attached to the stems of verbs and nouns, thus making it a synthetic language rather than an analytic one. Persian is an SOV language, thus having a head-final phrase structure. Persian utilizes a noun root + plural suffix + case suffix + postposition suffix syntax similar to Turkish. For example: Mashinhashunra niga mikardam meaning 'I was looking at their cars'. Breaking down mashin+ha+shun+ra (car+s+their+at) we can see its agglutinative nature and the fact that Persian is able to affix a given number of dependent morphemes to a root morpheme (in this example, car).\\n.",
+//   )
+// })

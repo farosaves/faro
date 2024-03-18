@@ -1,9 +1,10 @@
-import type { Notess, SupabaseClient } from "$lib/first.js"
+import type { Notess, SupabaseClient } from "./db/typeExtras"
 import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
+import { Subject, Observable } from "rxjs"
 import type { Session } from "@supabase/supabase-js"
 import {
   type Patch,
@@ -12,7 +13,7 @@ import {
   type UnFreeze,
   safeProduceWithPatches,
 } from "structurajs"
-import type { Notes } from "./dbtypes"
+import type { Notes } from "./db/types"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 const _sess: O.Option<Session> = O.none
@@ -91,19 +92,30 @@ export const fillInTitleUrl = (v: T) => {
   return { title: escapeHTML(_get(v, "title", "missing Title")), url: _get(v, "url", "") }
 }
 
+// https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
+export const toStore = <T>(Sub: Observable<T>, init: T) => {
+  const store = writable(init)
+  Sub.subscribe(store.set)
+  return store
+}
+
+export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
+
 export async function getNotes(
   supabase: SupabaseClient,
-  source_id: Option<number>,
+  source_id: Option<string>,
   user_id: string,
   prevnotes = [],
 ): Promise<Notes[]> {
+  console.log("getting notes")
   let query = supabase.from("notes").select("*").eq("user_id", user_id)
   query = O.match(
     () => query,
-    (id: number) => query.eq("source_id", id),
+    (id: string) => query.eq("source_id", id),
   )(source_id)
 
   const { data } = await query
+  console.log("got notes")
 
   if (data === null) return prevnotes
   return data
@@ -115,15 +127,19 @@ export async function getNotes(
 // export function idx(a: Idx<T>, i: any): O.Option<T> {
 //   return O.fromNullable(a[i])
 // }
-type Idx<T> = { [key: string]: T } | { [key: number]: T } | { [key: symbol]: T }
+// export function idx<S extends string | number | symbol, T>(a: Record<S, T>, i: S): O.Option<T>
+// export function idx<T>(a: Array<T>, i: number): O.Option<T>
 
-export function idx<T>(a: { [key: string]: T }, i: string): O.Option<T>
-export function idx<T>(a: { [key: number]: T }, i: number): O.Option<T>
-export function idx<T>(a: { [key: symbol]: T }, i: symbol): O.Option<T>
-export function idx<T>(a: Idx<T>, i: string | number | symbol): O.Option<T> {
-  // @ts-expect-error
-  return O.fromNullable(a[i])
-}
+// const x = [{ a: "hello" }]
+// const y: ReadonlyArray<{ a: string }> = [{ a: "hello" }]
+// const z: Record<string, number> = { hey: 3 }
+// I want these 3 to not give type error
+
+// export function idx<T>(a: { [key: number]: T }, i: number): O.Option<T>
+// export function idx<T>(a: { [key: symbol]: T }, i: symbol): O.Option<T>
+// export function idx<T>(a: Idx<T>, i: string | number | symbol): O.Option<T> {
+
+// }
 
 export const escapeHTML = (text: string) => {
   var div = document.createElement("div")

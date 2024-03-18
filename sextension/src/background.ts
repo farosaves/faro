@@ -1,8 +1,11 @@
-import type { MockNote } from "$lib/utils"
+import { API_ADDRESS } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
+import { pushStore, pendingNotes } from "$lib/chromey/messages"
+import { get, writable } from "svelte/store"
+import { escapeRegExp, hostname, type PendingNote } from "shared"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
 const DEBUG = import.meta.env.DEBUG || false
@@ -19,23 +22,33 @@ const appRouter = t.router({
 })
 export type AppRouter = typeof appRouter
 
-// @ts-expect-error namespace missing
+// @ts-expect-error namespace missings
 createChromeHandler({
   router: appRouter,
 })
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+const currUrl = writable("bebebobou")
+
+pushStore("currUrl", currUrl)
+
+const updateCurrUrl = (tab?: chrome.tabs.Tab) => {
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  if (tab?.url) currUrl.set(tab?.url)
+  console.log(get(currUrl))
+}
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  // here
-  // closes the window
+  // here closes the window
   if (/farosapp\.com\/account/.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  updateCurrUrl(tab)
 })
 
-chrome.tabs.onActivated.addListener((info) => {
+chrome.tabs.onActivated.addListener(({ tabId }) => {
+  console.log("activated")
   chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
 const tryn =
@@ -52,27 +65,14 @@ const tryn =
   }
 
 // to sidepanel
-async function uploadSelected(request: { action: string }, sender: any, sendResponse: any) {
-  request.action = "uploadTextSB"
-  const smr = () => chrome.runtime.sendMessage(request)
-  tryn(5)(smr)
-  // const { note_data } = request as {
-  // 	action: string
-  // 	note_data: MockNote
-  //   }
-  //   if (note_data) {
-  // 	optimistic = O.some(note_data)
-  // 	  .use(supa_update(), supabase, note_data)
-  // 	  .then((v) => v && T.note2card.mutate({ note_id: v.id }))
-  // 	setTimeout(() => (optimistic = O.none), 1000)
-  // if you add two within 1 second it will mess it up
-  //   }
-}
+
+pendingNotes.stream.subscribe(([note_data, sender]) => {
+  const smr = () => chrome.runtime.sendMessage({ action: "uploadTextSB", note_data })
+  tryn(5, 1000)(smr)
+})
 
 function onMessage(request: { action: any }, sender: chrome.runtime.MessageSender, sendResponse: any) {
-  if (request.action === "uploadText") {
-    uploadSelected(request, sender, sendResponse)
-  } else if (request.action === "loadDeps") {
+  if (request.action === "loadDeps") {
     chrome.scripting.executeScript({
       target: { tabId: sender?.tab?.id! },
       files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
@@ -82,22 +82,15 @@ function onMessage(request: { action: any }, sender: chrome.runtime.MessageSende
 }
 chrome.runtime.onMessage.addListener(onMessage)
 
-function getUuid() {
-  try {
-    return crypto.randomUUID()
-  } catch {
-    console.log("uuid fallback, nonsecure context?")
-    // return Math.floor(Math.random() * 1_000_000).toString();
-  }
-}
+const getUuid = () => crypto.randomUUID()
+// try {
+//   return
+// } catch {
+//   console.log("uuid fallback, nonsecure context?")
+// }
 
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)
-  // try {
-  // 	await chrome.runtime.sendMessage({ action: 'empty' });
-  // } catch {
-  // 	console.log('did not find the thing');
-  // } // TODO: we may want to skip the text capture - first click open only
   chrome.tabs
     .sendMessage(tab.id!, {
       action: "getHighlightedText",
@@ -110,4 +103,12 @@ async function activate(tab: chrome.tabs.Tab) {
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })
 chrome.action.onClicked.addListener(activate)
+
+chrome.commands.onCommand.addListener((command) => {
+  const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
+  if (command == "search" && !api_regexp.test(get(currUrl))) {
+    chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
+  }
+})
+
 if (DEBUG) console.log("loaded all background")

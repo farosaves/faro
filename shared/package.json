@@ -12,8 +12,7 @@
     "test": "vitest",
     "lint": "prettier --check .",
     "format": "prettier --write .",
-    "watch": "npm-watch",
-    "update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/dbtypes.ts -f) && (npx supabase-to-zod --input src/lib/dbtypes.ts --output src/lib/schemas.ts)"
+    "watch": "npm-watch"
   },
   "watch": {
     "build": {
@@ -74,6 +73,7 @@
     "immer": "^10.0.3",
     "jsdom": "^24.0.0",
     "npm-watch": "^0.11.0",
+    "rxjs": "^7.8.1",
     "sbd": "^1.0.19",
     "structurajs": "^0.12.0",
     "svelte-persisted-store": "^0.9.1"
