@@ -88,7 +88,7 @@ export const notesInsertSchema = z.object({
   quote: z.string(),
   serialized_highlight: z.string().optional().nullable(),
   snippet_uuid: z.string().optional().nullable(),
-  source_id: z.string().optional(),
+  source_id: z.string(),
   tags: z.array(z.string()).optional(),
   user_id: z.string().optional(),
   user_note: z.string().optional().nullable(),
@@ -150,7 +150,7 @@ export const sourcesInsertSchema = z.object({
   created_at: z.string().optional(),
   DOI: z.string().optional().nullable(),
   domain: z.string().optional().nullable(),
-  id: z.string(),
+  id: z.string().optional(),
   title: z.string().optional().nullable(),
   url: z.string().optional().nullable(),
 })

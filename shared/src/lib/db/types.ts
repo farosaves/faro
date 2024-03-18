@@ -85,7 +85,7 @@ export type Database = {
           quote: string
           serialized_highlight?: string | null
           snippet_uuid?: string | null
-          source_id?: string
+          source_id: string
           tags?: string[]
           user_id?: string
           user_note?: string | null
@@ -170,7 +170,7 @@ export type Database = {
           created_at?: string
           DOI?: string | null
           domain?: string | null
-          id: string
+          id?: string
           title?: string | null
           url?: string | null
         }
