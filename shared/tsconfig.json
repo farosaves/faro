@@ -7,12 +7,15 @@
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"sourceMap": true,
+		// "sourceMap": true,
+		"declarationMap": true,
 		"strict": true,
 		"module": "ES6",
 		"moduleResolution": "bundler",
 		"composite": true,
-		"outDir": "./dist"
+		// "noEmit": false,
+		// "inlineSourceMap": true,
+		// "outDir": "./emit"
 	},
 	"ts-node": {
 		"esm": true,
