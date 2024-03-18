@@ -2,11 +2,26 @@ import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArra
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
 import { escapeHTML, replacer, type NoteEx } from "shared"
-import { derived, writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import { hostnameStr } from "./utils"
+import { persisted } from "svelte-persisted-store"
+import * as devalue from "devalue"
+import { z } from "zod"
 
+const _exclTagSets = {
+  ss: { "": new Set([]) } as Record<string, Set<string>>,
+  ui: O.none as O.Option<string>,
+}
+
+// type ExclTagSets = typeof _exclTagSet & { curr: () => Set<string> }
+
+export const currTagSet = (t: typeof _exclTagSets) => t.ss[O.getOrElse(() => "")(t.ui)]
+
+// export const exclTagSets = persisted("exclTagSets", _exclTagSets, { serializer: devalue })
+export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
+
+export const exclTagSet = derived(exclTagSets, ({ ss, ui }) => ss[O.getOrElse(() => "")(ui)])
 type _A = NoteEx & { priority: number }
-export const exclTagSet = writable(new Set<string>([]))
 export const tagFilter = derived(exclTagSet, (exclTagSet) => (n: _A) => ({
   ...n,
   priority: pipe(
