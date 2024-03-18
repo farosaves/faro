@@ -36,6 +36,10 @@
 		"_execute_action": {
 			"suggested_key": {"default": "Alt+D"},
 			"description": "Capture text"
+		},
+		"search": {
+			"suggested_key": {"default": "Alt+G"},
+			"description": "Search in the dashboard"
 		}
 	},
 	"side_panel": {

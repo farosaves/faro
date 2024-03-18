@@ -1,15 +1,6 @@
-import { persisted } from "svelte-persisted-store"
-import {
-  NoteSync,
-  domain_title,
-  getOrElse,
-  hostname,
-  idx,
-  logIfError,
-  type Notes,
-  type SourceData,
-} from "shared"
-import { createMock, type MockNote } from "./utils"
+import { NoteSync, domain_title, hostname, logIfError, type Notes, type SourceData } from "shared"
+import { createMock } from "shared"
+import type { InsertNotes, PendingNote } from "shared"
 import { option as O, record as R, string as S, array as A, tuple as T } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
@@ -20,7 +11,7 @@ const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync
-  curr_source: Writable<O.Option<[Src, number]>>
+  curr_source: Writable<O.Option<[Src, string]>>
   panel: Readable<Notes[]>
   source_idStore
   constructor(ns: NoteSync) {
@@ -30,7 +21,7 @@ export class NoteMut {
       pipe(
         ots,
         O.map((ts) => Object.values(ns).filter((n) => n.source_id == ts[1])),
-        getOrElse(() => []),
+        O.getOrElse<Notes[]>(() => []),
       ),
     )
     this.source_idStore = derived(
@@ -39,12 +30,11 @@ export class NoteMut {
         R.map(({ url, title }) => domain_title(url, title)),
         R.compact,
         invertLast(identity),
-        R.map(parseInt),
       ),
     )
   }
 
-  _updateSrc = (source: Src, id: number) => {
+  _updateSrc = (source: Src, id: string) => {
     this.curr_source.set(O.some([source, id]))
     const { title, url } = source
     this.ns.update_source(id, { sources: source })
@@ -53,23 +43,18 @@ export class NoteMut {
 
   // get source if already present locally
   localSrcId = (source: Src) => {
-    // get current
-    const optIdC = pipe(
-      get(this.curr_source),
-      O.chain(O.fromPredicate(([src, id]) => R.getEq(S.Eq).equals(src, source))),
-      O.map((t) => t[1]),
-    )
-    if (O.isSome(optIdC)) return optIdC
     // get store
     const { url, title } = source
-    const optId = O.chain((dt: string) => idx(get(this.source_idStore), dt))(domain_title(url, title))
+    const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore)[dt]))(
+      domain_title(url, title),
+    )
     if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
     // stil we're on not inserted so set to none:
     this.curr_source.set(O.none)
     return O.none
   }
   // get locally or db
-  _updatedSrcId = async (source: Src) => {
+  private _updatedSrcId = async (source: Src) => {
     const localId = this.localSrcId(source)
     if (O.isSome(localId)) return localId
     const { data } = await this.ns.sb
@@ -86,10 +71,10 @@ export class NoteMut {
     const oid = await this._updatedSrcId(source)
     if (O.isSome(oid)) return oid.value
     const { url, title } = source
-
+    const id = crypto.randomUUID()
     const { data: data2, error } = await this.ns.sb
       .from("sources")
-      .insert({ domain: hostnameStr(url), url, title })
+      .insert({ id, domain: hostnameStr(url), url, title })
       .select("id")
       .maybeSingle()
       .then(logIfError)
@@ -97,12 +82,14 @@ export class NoteMut {
     throw error // TODO: if doing offline needs to be options
   }
 
-  addNote = async (n: MockNote, source: Src) => {
-    const { ...note } = n
+  addNote = async (n: PendingNote, source: Src) => {
+    const id = crypto.randomUUID()
+    const { ...note } = { ...n, id }
     // optimistic
 
     //
     const source_id = await this.upSetSrcId(source)
+
     const { data: newNote } = await this.ns.sb
       .from("notes")
       .insert({ ...note, source_id })

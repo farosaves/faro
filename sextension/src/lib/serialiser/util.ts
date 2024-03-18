@@ -1,6 +1,6 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
 
-import { desc } from "shared"
+import { desc, escapeRegExp } from "shared"
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
 export const normalize = (s: string | null) => s || ""
@@ -40,7 +40,7 @@ export const adjIdxs = (
 ): [number, number] => {
   const [pre, post] = pre_post
   const len = endIdx - startIdx
-  const matches = (xfix: string) => Array.from(textContent.matchAll(RegExp(xfix, "gu")))
+  const matches = (xfix: string) => Array.from(textContent.matchAll(RegExp(escapeRegExp(xfix), "gu")))
   const ss = matches(pre)
   const es = matches(post)
 
