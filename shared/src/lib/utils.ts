@@ -107,13 +107,15 @@ export async function getNotes(
   user_id: string,
   prevnotes = [],
 ): Promise<Notes[]> {
-  let query = supabase.from("notes").select("*").eq("user_id", parseFloat(user_id))
+  console.log("getting notes")
+  let query = supabase.from("notes").select("*").eq("user_id", user_id)
   query = O.match(
     () => query,
     (id: string) => query.eq("source_id", id),
   )(source_id)
 
   const { data } = await query
+  console.log("got notes")
 
   if (data === null) return prevnotes
   return data
