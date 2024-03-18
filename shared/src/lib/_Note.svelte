@@ -9,8 +9,8 @@
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
   export let note_data: Omit<NoteEx, keyof SourceData>
-  export let showing_content: boolean
-  export let close_all_notes: () => void
+  export let isOpen: boolean
+  export let closeAll: () => void
   export let note_sync: NoteSync
 
   export let goto_function: MouseEventHandler<any> | undefined
@@ -81,18 +81,18 @@
     loadModalText()
   }}
   style="border-width: {1 + 5 * +highlighting}px; position: static;">
-  <input type="checkbox" class="-z-10" bind:checked={showing_content} />
+  <input type="checkbox" class="-z-10" bind:checked={isOpen} />
   <div
     class="collapse-title text-center"
     bind:this={this_element}
     style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
     <button
       on:click={async () => {
-        const save_showing_content = showing_content
-        close_all_notes()
+        const save_showing_content = isOpen
+        closeAll()
         // svelte stores....
         await sleep(1)
-        showing_content = !save_showing_content
+        isOpen = !save_showing_content
       }}
       on:dblclick={goto_function}>
       {@html text}
@@ -120,7 +120,7 @@
           note_sync.deleteit(note_data)
           // prettier-ignore
           pipe(deleteCbOpt, O.map((f) => f()))
-          close_all_notes()
+          closeAll()
         }}>DELETE</button>
     </div>
   </div>

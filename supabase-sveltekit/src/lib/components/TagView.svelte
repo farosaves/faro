@@ -4,7 +4,7 @@
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
   import { desc, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
-  import { exclTagSet, tagFilter } from "$lib/filterSortStores"
+  import { currTagSet, exclTagSet, exclTagSets, tagFilter } from "$lib/filterSortStores"
   export let note_sync: NoteSync
   let notestore = note_sync.notestore
   const tags_counts = derived(notestore, (x) =>
@@ -30,8 +30,8 @@
   }
   $: console.log(Array.from($exclTagSet))
   const toggleSet = (tag: string) =>
-    exclTagSet.update((s) => {
-      s.delete(tag) || s.add(tag)
+    exclTagSets.update((s) => {
+      currTagSet(s).delete(tag) || currTagSet(s).add(tag)
       return s
     })
 </script>

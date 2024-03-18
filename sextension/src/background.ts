@@ -68,7 +68,6 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  console.log("activated")
   chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })

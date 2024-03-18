@@ -13,12 +13,13 @@
   import TagView from "$lib/components/TagView.svelte"
   import { get } from "svelte/store"
   import { domainFilter, fuzzySort, tagFilter } from "$lib/filterSortStores.js"
+  import Overview from "$lib/components/Overview.svelte"
   export let data
   $: ({ session: _session, supabase } = data)
   $: if (_session) $sessStore = O.some(_session)
 
   // let showing_contents: boolean[][]
-  let showing_contents: Record<string, boolean> = {}
+  let noteOpens: Record<string, boolean> = {}
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
   $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
@@ -44,10 +45,10 @@
     }
   })
 
-  let close_all_notes = () => {
-    showing_contents = R.map((v) => false)(showing_contents)
+  let closeAll = () => {
+    noteOpens = R.map((v) => false)(noteOpens)
   }
-  close_all_notes()
+  closeAll()
 
   let w_rem = 16
   // const handle_keydown = (e: KeyboardEvent) => {
@@ -59,11 +60,12 @@
   // }
   // const ns = note_sync.notestore
   // const na = note_sync.noteArr
+
+  let Xview = false
 </script>
 
 <!-- {$na[0]?.quote}
 {$note_groups[0]} -->
-{showLoginPrompt}
 <LoginPrompt bind:showLoginPrompt />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
 <TagView {note_sync} />
@@ -73,6 +75,9 @@
   <div class="drawer-content z-0">
     <!-- my main here -->
     <div class="flex flex-row flex-wrap">
+      {#if Xview}
+        <Overview {note_sync} />
+      {/if}
       {#each $note_groups as [title, note_group], i}
         <div
           class="border-2 text-center rounded-lg border-neutral flex flex-col"
@@ -81,13 +86,7 @@
           <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
           <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
             {#each note_group as note, j}
-              <!-- bind:showing_content={showing_contents[i][j]} -->
-              <Note
-                note_data={note}
-                showing_content={showing_contents[note.id]}
-                {close_all_notes}
-                {note_sync}
-                {w_rem} />
+              <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {note_sync} {w_rem} />
             {/each}
           </div>
         </div>
@@ -104,6 +103,9 @@
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content">
+      <li>
+        <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
+      </li>
       <li>
         <Search {note_sync} />
       </li>
