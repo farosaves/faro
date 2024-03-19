@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
+  import { IconStar, IconStarFilled } from "@tabler/icons-svelte"
+
   import type { Notes } from "./db/types"
   import type { NoteSync } from "./note-sync"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
@@ -98,7 +100,9 @@
       {@html text}
     </button>
     <span>
+      <input type="checkbox" />
       <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
+      <input type="checkbox" />
       <!-- <div class="flex justify-center">
           <div class="py-4 border-2 border-red-600">
             lil cont

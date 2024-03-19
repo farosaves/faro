@@ -20,12 +20,12 @@
     await sleep(1)
     $isOpen = !_isOpen
     await sleep(1)
-    if ($isOpen) $exclTagSets.ui = O.some(id)
-    else $exclTagSets.ui = O.none
-    await sleep(1)
-    $exclTagSets.ss[O.getOrElse(() => "")($exclTagSets.ui)] = new Set(
-      A.difference(S.Eq)($allTags, $tags).concat(""),
-    )
+    // if ($isOpen) $exclTagSets.ui = O.some(id)
+    // else $exclTagSets.ui = O.none
+    // await sleep(1)
+    // $exclTagSets.ss[O.getOrElse(() => "")($exclTagSets.ui)] = new Set(
+    //   A.difference(S.Eq)($allTags, $tags).concat(""),
+    // )
     // @ts-expect-error
     if (!$isOpen) e.target?.blur()
   }
