@@ -100,9 +100,9 @@
       {@html text}
     </button>
     <span>
-      <input type="checkbox" />
+      <!-- <input type="checkbox" /> -->
       <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
-      <input type="checkbox" />
+      <!-- <input type="checkbox" /> -->
       <!-- <div class="flex justify-center">
           <div class="py-4 border-2 border-red-600">
             lil cont
