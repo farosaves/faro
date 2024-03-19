@@ -1,6 +1,7 @@
 {
   "name": "myroot",
   "dependencies": {
+    "@tabler/icons-svelte": "^3.1.0",
     "devalue": "^4.3.2",
     "npm-watch": "^0.11.0",
     "playwright": "^1.42.1",
