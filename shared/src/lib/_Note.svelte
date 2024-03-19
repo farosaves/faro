@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
-  import { IconStar, IconStarFilled } from "@tabler/icons-svelte"
+  // import { IconStar, IconStarFilled } from "@tabler/icons-svelte"
 
   import type { Notes } from "./db/types"
   import type { NoteSync } from "./note-sync"
@@ -92,6 +92,7 @@
       on:click={async () => {
         const save_showing_content = isOpen
         closeAll()
+
         // svelte stores....
         await sleep(1)
         isOpen = !save_showing_content

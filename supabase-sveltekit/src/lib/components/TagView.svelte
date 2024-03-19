@@ -1,6 +1,6 @@
 <script lang="ts">
   // import { Icon, CheckCircle, XCircle, ArchiveBoxXMark } from "svelte-hero-icons"
-  import { IconCheckbox, IconTagOff } from "@tabler/icons-svelte"
+  // import { IconCheckbox, IconTagOff } from "@tabler/icons-svelte"
 
   import { identity, pipe } from "fp-ts/lib/function"
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
@@ -46,7 +46,8 @@
       class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
       class:btn-outline={currTagSet($t).size == $tags_counts.length}>
-      <IconCheckbox size="26" />
+      <!-- <IconCheckbox size="26" /> -->
+      ico1
     </button>
   </div>
   {#each $tags_counts as [tag, cnt]}
@@ -56,7 +57,8 @@
         on:click={() => toggleSet(tag)}
         class:btn-outline={currTagSet($t).has(tag)}
         >{#if tag}{tag}{:else}
-          <IconTagOff size="26" />
+          ico2
+          <!-- <IconTagOff size="26" /> -->
 
           <!-- <Icon size="26" src={ArchiveBoxXMark} /> -->
         {/if}
