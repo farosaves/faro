@@ -1,3 +1,4 @@
+// @ts-ignore
 import type { Context } from "$lib/trpc/context"
 import { initTRPC } from "@trpc/server"
 import z from "zod"

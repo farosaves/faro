@@ -3,6 +3,7 @@
   "dependencies": {
     "@tabler/icons-svelte": "^3.1.0",
     "devalue": "^4.3.2",
+    "nodemon": "^3.1.0",
     "npm-watch": "^0.11.0",
     "playwright": "^1.42.1",
     "prettier": "^3.2.5",
@@ -11,6 +12,9 @@
   },
   "scripts": {
     "watch": "npm-watch",
+    "checkshared": "svelte-check --workspace=shared/",
+    "checkss": "svelte-check --workspace=supabase-sveltekit/",
+    "checksext": "svelte-check --workspace=sextension/",
     "format": "#npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
     "b": "npm run build -w=shared/ && npm run bz -w=sextension/ && npm run build -w=supabase-sveltekit/",
     "buildShared": "npm run build -w=shared/",
