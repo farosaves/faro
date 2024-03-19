@@ -37,7 +37,7 @@
   const curr_source = note_mut.curr_source
 </script>
 
-{$note_panel.length}<br />{JSON.stringify($curr_source)}
+<!-- {$note_panel.length}<br />{JSON.stringify($curr_source)} -->
 <!-- I had to add || [] here... ofc $note_store wasnt guaranteed to be T[]..., is it time to refactor? -->
 <!-- I definitely shouldn't "just index" and expect it to work -->
 {#each [...(Object.values($note_panel) || []), ...A.fromOption(mocked)] as note_data, i}

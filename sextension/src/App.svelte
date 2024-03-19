@@ -132,10 +132,10 @@
 
 <svelte:window on:keydown={handle_keydown} />
 
-<a href={`${API_ADDRESS}/dashboard`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
-  >go to dashboard - rly i should have command for it..</a>
+<a href={`${API_ADDRESS}/dashboard?search`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
+  >go to dashboard / alfF</a>
 
-{$currUrl}
+<!-- {$currUrl} -->
 
 {#if needToRefreshPage}
   <div role="alert" class="alert alert-error">
