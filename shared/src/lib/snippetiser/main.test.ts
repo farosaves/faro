@@ -11,7 +11,7 @@ type MakeQCHReq = {
 const htmlstr2body = (h: string) => new JSDOM(h).window.document.body
 
 const l = async (s: string): Promise<MakeQCHReq> =>
-  pipe(await readFile(__dirname + s, {}), (x) => x.toString(), JSON.parse)
+  pipe(await readFile(__dirname + s, {}), x => x.toString(), JSON.parse)
 const potTable = (html: string) => (html.match("<tr>")?.[0] ? "<table>" + html + "</table>" : html)
 const document = (r: MakeQCHReq) =>
   new JSDOM("<html><body>" + potTable(r.html) + "</body></html>").window.document

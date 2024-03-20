@@ -4,6 +4,13 @@
   "[svelte]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.codeActionsOnSave": {
+      // "editor.formatOnSave": false,
+      "source.fixAll.eslint": true
+    },
+  },
   "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen",
 
 }

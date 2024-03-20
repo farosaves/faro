@@ -19,6 +19,6 @@ export const loadSB = () => {
     },
   })
 
-  const session = supabase.auth.getSession().then((d) => d.data.session)
+  const session = supabase.auth.getSession().then(d => d.data.session)
   return { supabase, session }
 }
