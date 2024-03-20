@@ -8,7 +8,6 @@
   const defaultP = 0
   export let p: number
   export let changeP: (p: number) => void
-  // opacity-0 hover:opacity-100
   const onClick = (n: number) => () => hovered && changeP((p = p == n ? defaultP : n))
 </script>
 
