@@ -2,12 +2,13 @@ import type { Notess, SupabaseClient } from "./db/typeExtras"
 import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
-import { flow, identity, pipe } from "fp-ts/lib/function"
+import { flow, identity, LazyArg, pipe } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { Subject, Observable } from "rxjs"
 import type { Session } from "@supabase/supabase-js"
+import type { Patch } from "immer"
+
 import {
-  type Patch,
   convertPatchesToStandard,
   applyPatchesMutatively as _applyPatches,
   type UnFreeze,
@@ -30,18 +31,7 @@ export const updateTheme = () =>
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme,
   )
 
-export const safeGet =
-  <T extends string | number | symbol, U>(record: {
-    [id in T]: U[]
-  }) =>
-  (idx: T) =>
-    idx in record ? record[idx] : ([] as U[])
-
-// export const unwrap_def = <T>(o: Option<T>, def: T) =>
-//   pipe(
-//     o,
-//     O.match(() => def, identity),
-//   )
+export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
@@ -63,7 +53,7 @@ export const ifErr =
     if (!!error == is) f(error)
     return r
   }
-export const ifNError = (f: (e: any) => void) => ifErr(f, false)
+export const ifNErr = (f: (e: any) => void) => ifErr(f, false)
 export const logIfError = ifErr(console.log)
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -72,9 +62,10 @@ export const hostname = (s: string) => O.tryCatch(() => s && new URL(s).hostname
 export const domain_title = (url: string, title: string) => O.map((s) => [s, title].join(";"))(hostname(url))
 
 // sort descendingly but for negative scores filter out
+
 export const filterSort =
-  <T>(f: (x: T) => number) =>
-  (xs: T[]) =>
+  <T>(f: (x: T) => number) => 
+  (xs: T[]) =>  // @ts-expect-error
     xs.filter((x) => f(x) > 0).toSorted(desc(f))
 
 type T = {
@@ -170,7 +161,7 @@ export const updateStore =
       const [result, ...pinv] = //
         // pWPimmer(storeVal, up)
         safeProduceWithPatches(storeVal, up)
-      ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv)
+      ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv) as Patch[][]
       // ;[patches, inverse] = A.map(identity)(pinv)
       return result as T
     })
