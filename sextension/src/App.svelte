@@ -96,7 +96,7 @@
     logged_in = !!session
     await updateActive()
     note_sync.sub()
-    console.log(get(note_sync.notestore))
+    console.log(get(note_sync.noteStore))
 
     try {
       chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {

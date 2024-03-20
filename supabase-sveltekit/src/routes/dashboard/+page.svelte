@@ -31,9 +31,9 @@
     if (O.isNone($sessStore)) {
       if (data.mock) {
         const mock = data.mock
-        showLoginPrompt = R.size({ ...get(note_sync.notestore), ...mock.notes }) > R.size(mock.notes)
+        showLoginPrompt = R.size({ ...get(note_sync.noteStore), ...mock.notes }) > R.size(mock.notes)
         if (!showLoginPrompt) {
-          note_sync.notestore.update((n) => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
+          note_sync.noteStore.update((n) => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
           note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
         }
       }

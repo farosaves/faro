@@ -77,7 +77,11 @@
         $isOpen = !_isOpen
       }}
       on:dblclick={dblclick}> -->
-    <textarea class="w-full border-2 text-center" contenteditable bind:textContent on:click={toggleOpen} />
+    <textarea
+      class="textarea textarea-borderedtext-center"
+      contenteditable
+      bind:textContent
+      on:click={toggleOpen} />
     <!-- </button> -->
     <span>
       <MyTags tags={[...$tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />

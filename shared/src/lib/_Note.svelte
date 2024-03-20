@@ -10,6 +10,7 @@
   import { MyTags, type NoteEx, type SourceData } from "./index"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
+  import StarArchive from "./StarArchive.svelte"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
@@ -49,6 +50,7 @@
 
   $: onTagAdded = note_sync.tagUpdate(note_data)
   $: onTagRemoved = note_sync.tagUpdate(note_data)
+  $: changeP = note_sync.changePrioritised(note_data)
 
   let highlighting = false
   const highlightMe = () => {
@@ -100,33 +102,23 @@
       on:dblclick={goto_function}>
       {@html text}
     </button>
-    <span>
-      <!-- <input type="checkbox" /> -->
-      <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
-      <!-- <input type="checkbox" /> -->
-      <!-- <div class="flex justify-center">
-          <div class="py-4 border-2 border-red-600">
-            lil cont
-            <div style="position:absolute; z-index:50">
-              pop<br />pop<br />pop<br />pop
-            </div>
-          </div>
-        </div> -->
-    </span>
+    <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
   </div>
   <div class="collapse-content z-40" style="grid-row-start: 2">
     <div class="join w-full">
       <!-- <button class="btn btn-xs join-item grow" on:click={() => {}}>
         Pin / Unpin</button> -->
-      <button
-        class="btn btn-xs join-item grow"
-        style="color: red;"
-        on:click={() => {
-          note_sync.deleteit(note_data)
-          // prettier-ignore
-          pipe(deleteCbOpt, O.map((f) => f()))
-          closeAll()
-        }}>DELETE</button>
+      <StarArchive bind:isOpen bind:p={note_data.prioritised} {changeP}>
+        <button
+          class="btn btn-xs join-item grow"
+          style="color: red;"
+          on:click={() => {
+            note_sync.deleteit(note_data)
+            // prettier-ignore
+            pipe(deleteCbOpt, O.map((f) => f()))
+            closeAll()
+          }}>DELETE</button>
+      </StarArchive>
     </div>
   </div>
   {#if modalPotential}

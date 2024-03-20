@@ -1,6 +1,8 @@
 <script lang="ts">
   // import { Icon, CheckCircle, XCircle, ArchiveBoxXMark } from "svelte-hero-icons"
   // import { IconCheckbox, IconTagOff } from "@tabler/icons-svelte"
+  import IconCheckbox from "~icons/tabler/checkbox"
+  import IconTagOff from "~icons/tabler/tag-off"
 
   import { identity, pipe } from "fp-ts/lib/function"
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
@@ -8,8 +10,8 @@
   import { derived, writable } from "svelte/store"
   import { currTagSet, exclTagSets as t, tagFilter } from "$lib/filterSortStores"
   export let note_sync: NoteSync
-  let notestore = note_sync.notestore
-  const tags_counts = derived(notestore, (x) =>
+  let noteStore = note_sync.noteStore
+  const tags_counts = derived(noteStore, (x) =>
     pipe(
       Object.values(x),
       A.flatMap((note) => note.tags || []),
@@ -47,7 +49,7 @@
       on:click={checkClick}
       class:btn-outline={currTagSet($t).size == $tags_counts.length}>
       <!-- <IconCheckbox size="26" /> -->
-      ico1
+      <IconCheckbox />
     </button>
   </div>
   {#each $tags_counts as [tag, cnt]}
@@ -57,7 +59,7 @@
         on:click={() => toggleSet(tag)}
         class:btn-outline={currTagSet($t).has(tag)}
         >{#if tag}{tag}{:else}
-          ico2
+          <IconTagOff />
           <!-- <IconTagOff size="26" /> -->
 
           <!-- <Icon size="26" src={ArchiveBoxXMark} /> -->

@@ -2,6 +2,7 @@
 
 import { Session } from "@supabase/supabase-js"
 import { SupabaseClient } from "shared"
+import "unplugin-icons/types/svelte"
 
 declare global {
   namespace App {

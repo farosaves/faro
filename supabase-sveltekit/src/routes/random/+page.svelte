@@ -6,7 +6,7 @@
   import * as tok from "sbd"
   import { writable, type Subscriber } from "svelte/store"
   import { flow } from "fp-ts/lib/function"
-  import { toStore } from "shared"
+  import { StarArchive, toStore } from "shared"
 
   let alltext: string[]
   let mousePosition: Observable<{ x: number; y: number }> | null = null
@@ -67,6 +67,7 @@
   // console.log(O)
   // console.log($O)
   let a = 0
+  console.log(1 - 2 || 3)
 </script>
 
 <p id="p">Select me: <i>italic</i> and <b>bold</b></p>

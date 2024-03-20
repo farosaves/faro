@@ -22,15 +22,20 @@ import { notesRowSchema } from "./db/schemas"
 import { z } from "zod"
 import type { Patch } from "structurajs"
 import { createMock } from "./db/mock"
+import * as devalue from "devalue"
+import * as lzString from "lz-string"
 
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
 
-const allNotesR: Record<number, Notes> = {}
-export const notestore = persisted("notestore", allNotesR)
-// this block shall ensure local data gets overwritten on db schema changes
 const validateNs = z.record(z.string(), notesRowSchema).parse
+const allNotesR: ReturnType<typeof validateNs> = {}
+
+// const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
+// browser && localStorage.removeItem("notestore")
+export const noteStore = persisted("notestore", allNotesR, { serializer: devalue, onError: console.log })
+// this block shall ensure local data gets overwritten on db schema changes
 // prettier-ignore
-notestore.update(ns => pipe(() =>validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
+noteStore.update(ns => pipe(() =>validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
 const validateSTUMap = z.record(z.string(), z.object({ title: z.string(), url: z.string() })).parse
 type STUMap = ReturnType<typeof validateSTUMap>
@@ -68,7 +73,7 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
 
 export class NoteSync {
   sb: SupabaseClient
-  notestore: Writable<Record<string, Notes>>
+  noteStore: Writable<Record<string, Notes>>
   noteArr: Readable<NoteEx[]>
   private user_id: string | undefined
   note_del_queue: Writable<Notess>
@@ -79,11 +84,11 @@ export class NoteSync {
 
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
-    this.notestore = notestore
+    this.noteStore = noteStore
     this.stuMapStore = stuMapStore
     this.user_id = user_id
     this.note_del_queue = note_del_queue
-    this.noteArr = derived([this.notestore, this.stuMapStore], ([n, s]) => {
+    this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
       const vals = Object.values(n)
       return vals.map((n) => ({ ...n, sources: fillInTitleUrl(s[n.source_id]), searchArt: O.none }))
     })
@@ -96,7 +101,7 @@ export class NoteSync {
 
   setUid = (user_id: string) => {
     this.user_id = user_id
-    this.notestore.update(R.filter((n) => n.user_id == user_id))
+    this.noteStore.update(R.filter((n) => n.user_id == user_id))
   }
 
   refresh_sources = async () =>
@@ -119,7 +124,7 @@ export class NoteSync {
   refresh_notes = async (id: O.Option<string> = O.none) =>
     this.user_id !== undefined &&
     (await getNotes(this.sb, id, this.user_id).then((nns) =>
-      this.notestore.set(Object.fromEntries(nns.map((n) => [n.id, n]))),
+      this.noteStore.set(Object.fromEntries(nns.map((n) => [n.id, n]))),
     ))
 
   action =
@@ -131,10 +136,10 @@ export class NoteSync {
           console.log(patchTup)
           return e
         })
-        .then(ifErr(() => updateStore(this.notestore)(applyPatches(patchTup.inverse))))
+        .then(ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
 
   addF = async (note: Notes) => {
-    const { patches, inverse } = updateStore(this.notestore)((x) => {
+    const { patches, inverse } = updateStore(this.noteStore)((x) => {
       x[note.id] = note
     })
     await this.action((x) => x.insert(note))
@@ -145,15 +150,21 @@ export class NoteSync {
   }
 
   deleteit = async (note: Notes) => {
-    const patchTup = updateStore(this.notestore)((ns) => R.filter((n: Notes) => n.id != note.id)(ns))
+    const patchTup = updateStore(this.noteStore)((ns) => R.filter((n: Notes) => n.id != note.id)(ns))
     await this.action((x) => x.delete().eq("id", note.id))(patchTup)
   }
 
   tagUpdate = (note: Notes) => async (tag: string, tags: string[]) => {
-    const patchTup = updateStore(this.notestore)((ns) => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
       Object.values(ns).filter((n) => n.id == note.id)[0].tags = tags
     })
     this.action((x) => x.update({ tags }).eq("id", note.id))(patchTup)
+  }
+  changePrioritised = (note: Notes) => async (prioritised: number) => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
+      Object.values(ns).filter((n) => n.id == note.id)[0].prioritised = prioritised
+    })
+    this.action((x) => x.update({ prioritised }).eq("id", note.id))(patchTup)
   }
 
   restoredelete = () => {
@@ -180,7 +191,7 @@ export class NoteSync {
         (payload: { new: Notes | object }) => {
           if ("id" in payload.new) {
             const nn = payload.new
-            const id = updateStore(this.notestore)((ns) => {
+            const id = updateStore(this.noteStore)((ns) => {
               ns[nn.id] = nn
             })
             const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))

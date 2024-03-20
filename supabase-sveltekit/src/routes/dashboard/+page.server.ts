@@ -30,6 +30,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       serialized_highlight: "",
       snippet_uuid: "",
       user_note: "",
+      prioritised: 0,
     })
     const mocknoteArr: Notes[] = [
       {
