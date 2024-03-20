@@ -11,19 +11,20 @@ import {
   filterSort,
   getNotes,
   ifErr,
-  ifNError,
+  ifNErr,
   logIfError,
   unwrapTo,
   updateStore,
+  getOrElse,
 } from "./utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "./db/schemas"
 import { z } from "zod"
-import type { Patch } from "structurajs"
+import type { Patch } from "immer"
 import { createMock } from "./db/mock"
 import * as devalue from "devalue"
-import * as lzString from "lz-string"
+// import * as lzString from "lz-string"
 
 type PatchTup = { patches: Patch[]; inverse: Patch[] }
 
@@ -48,11 +49,9 @@ stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(
 const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
 const transformStore = writable(defTransform)
 
-const undo_queue: PatchTup[] = []
-const redo_queue: PatchTup[] = []
+const undo_stack: PatchTup[] = []
+const redo_stack: PatchTup[] = []
 // each patch may need validation if persisted..
-const _note_del_queue: Notess = []
-const note_del_queue = persisted("note_del_queue", _note_del_queue)
 
 const __f = (sb: SupabaseClient) => sb.from("notes")
 type NQ = ReturnType<typeof __f>
@@ -76,7 +75,7 @@ export class NoteSync {
   noteStore: Writable<Record<string, Notes>>
   noteArr: Readable<NoteEx[]>
   private user_id: string | undefined
-  note_del_queue: Writable<Notess>
+  // note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
   alltags: Readable<string[]>
   transformStore: Writable<(x: NoteEx) => NoteEx & { priority: number }>
@@ -87,7 +86,7 @@ export class NoteSync {
     this.noteStore = noteStore
     this.stuMapStore = stuMapStore
     this.user_id = user_id
-    this.note_del_queue = note_del_queue
+    // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
       const vals = Object.values(n)
       return vals.map((n) => ({ ...n, sources: fillInTitleUrl(s[n.source_id]), searchArt: O.none }))
@@ -129,7 +128,7 @@ export class NoteSync {
 
   action =
     <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
-    (patchTup: PatchTup) =>
+    (patchTup: PatchTup, userAction = true) =>
       f(this.sb.from("notes"))
         .then(logIfError)
         .then((e) => {
@@ -137,12 +136,34 @@ export class NoteSync {
           return e
         })
         .then(ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
+        .then(
+          ifNErr(() => {
+            if (userAction) {
+              undo_stack.push(patchTup)
+              redo_stack.splice(0, redo_stack.length)
+            }
+          }),
+        )
 
-  addF = async (note: Notes) => {
-    const { patches, inverse } = updateStore(this.noteStore)((x) => {
-      x[note.id] = note
-    })
-    await this.action((x) => x.insert(note))
+  undo = () => {
+    const pT = undo_stack.pop()
+    if (!pT) return
+    const { patches, inverse } = pT
+    console.log("inv patch", inverse)
+    updateStore(this.noteStore)(applyPatches(inverse))
+    const notesUpsert = inverse
+      .filter((x) => x.op != "remove")
+      .map((x) =>
+        pipe(
+          O.fromNullable(x.path[0] as string),
+          O.chain((x) => R.lookup(x, get(this.noteStore))), // 1. from the store - e.g. tag udpate
+          getOrElse(() => x.value),
+        ),
+      )
+    // prettier-ignore
+    console.log("undo ids upsert: ", notesUpsert.map(x =>x.id))
+    console.log(notesUpsert)
+    this.action((x) => x.upsert(notesUpsert))({ inverse: patches, patches: inverse }, false)
   }
 
   add = async (note: InsertNotes, source_id: string) => {
@@ -166,16 +187,6 @@ export class NoteSync {
     })
     this.action((x) => x.update({ prioritised }).eq("id", note.id))(patchTup)
   }
-
-  restoredelete = () => {
-    this.note_del_queue.update((ns) => {
-      const [r, ...rs] = ns
-      if (!r) return ns // noop
-      this.addF(r)
-      return rs
-    })
-  }
-  savedelete = (n: NoteEx) => this.note_del_queue.update((ns) => [n, ...ns])
 
   sub = () => {
     this.sb

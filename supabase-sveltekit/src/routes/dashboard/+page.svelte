@@ -51,19 +51,20 @@
   closeAll()
 
   let w_rem = 16
-  // const handle_keydown = (e: KeyboardEvent) => {
-  //   if (e.metaKey && e.key === "z") {
-  //     e.preventDefault()
-  //     note_sync.restoredelete()
-  //     // (e.shiftKey ? redo : undo)();
-  //   }
-  // }
-  // const ns = note_sync.notestore
+  const handle_keydown = (e: KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "z") {
+      e.preventDefault()
+      note_sync.undo()
+      // (e.shiftKey ? redo : undo)();
+    }
+  }
+  // const ns = note_sync.noteStore
   // const na = note_sync.noteArr
 
   let Xview = false
 </script>
 
+<svelte:window on:keydown={handle_keydown} />
 <!-- {$na[0]?.quote}
 {$note_groups[0]} -->
 <LoginPrompt bind:showLoginPrompt />
