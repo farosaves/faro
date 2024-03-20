@@ -124,7 +124,7 @@
   const handle_keydown = (e: KeyboardEvent) => {
     if (e.metaKey && e.key === "z") {
       e.preventDefault()
-      note_sync.restoredelete()
+      // note_sync.restoredelete()
       // (e.shiftKey ? redo : undo)();
     }
   }

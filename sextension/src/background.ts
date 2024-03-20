@@ -17,12 +17,12 @@ const DEBUG = import.meta.env.DEBUG || false
 
 const T = trpc2()
 
-const note_sync: NoteSync = new NoteSync(supabase, undefined)
-const note_mut: NoteMut = new NoteMut(note_sync)
+// const note_sync: NoteSync = new NoteSync(supabase, undefined)
+// const note_mut: NoteMut = new NoteMut(note_sync)
 const sess = writable<O.Option<Session>>(O.none)
 // prettier-ignore
 const user_id = derived(sess, O.map(s => s.user.id))
-user_id.subscribe(O.map(note_sync.setUid))
+// user_id.subscribe(O.map(note_sync.setUid))
 
 const refresh = async () => {
   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
@@ -75,7 +75,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 const tryn
   = (n: number, ms = 500) =>
     async (f: any) => {
-    // TODO
+      // TODO
       if (n < 1) return
       try {
         await f()
