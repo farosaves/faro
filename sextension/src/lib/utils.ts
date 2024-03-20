@@ -1,8 +1,3 @@
-/**
- * a little helper that is written for convenience so that instead
- * of calling `const { data: { session } } = await supabase.auth.getSession()`
- * you just call this `await getSession()`
- */
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { logIfError, type Notes } from "shared"

@@ -17,7 +17,7 @@ export class NoteMut {
   constructor(ns: NoteSync) {
     this.ns = ns
     this.curr_source = writable(O.none)
-    this.panel = derived([this.ns.notestore, this.curr_source], ([ns, ots]) =>
+    this.panel = derived([this.ns.noteStore, this.curr_source], ([ns, ots]) =>
       pipe(
         ots,
         O.map(ts => Object.values(ns).filter(n => n.source_id == ts[1])),

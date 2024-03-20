@@ -7,10 +7,8 @@
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "editor.codeActionsOnSave": {
-      // "editor.formatOnSave": false,
-      "source.fixAll.eslint": true
-    },
+      "source.fixAll.eslint": "explicit"
+    }
   },
-  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen",
-
+  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen"
 }

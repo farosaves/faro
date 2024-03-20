@@ -2,11 +2,13 @@ import type { Notess, SupabaseClient } from "./db/typeExtras"
 import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
-import { flow, identity, LazyArg, pipe } from "fp-ts/lib/function"
+import { flow, identity, pipe } from "fp-ts/lib/function"
+import type { LazyArg } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { Subject, Observable } from "rxjs"
 import type { Session } from "@supabase/supabase-js"
-import type { Patch } from "immer"
+import type { Draft, Patch } from "immer"
+// import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
 import {
   convertPatchesToStandard,
@@ -65,7 +67,7 @@ export const domain_title = (url: string, title: string) => O.map(s => [s, title
 
 export const filterSort
   = <T>(f: (x: T) => number) =>
-    (xs: T[]) => // @ts-expect-error
+    (xs: T[]) =>
       xs.filter(x => f(x) > 0).toSorted(desc(f))
 
 type T = {
@@ -158,11 +160,10 @@ export const updateStore
     (up: (arg: UnFreeze<T>) => void | T) => {
       let [patches, inverse]: Patch[][] = [[], []]
       store.update((storeVal) => {
-        const [result, ...pinv] //
-          // pWPimmer(storeVal, up)
+        // ;[result, patches, inverse] = pWPimmer(storeVal, up)  // immer doesnt fix here
+        const [result, ...pinv]
           = safeProduceWithPatches(storeVal, up)
           ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv) as Patch[][]
-        // ;[patches, inverse] = A.map(identity)(pinv)
         return result as T
       })
       console.log(patches)

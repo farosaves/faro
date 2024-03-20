@@ -2,8 +2,8 @@
 
 // @ts-ignore
 import { persisted } from "svelte-persisted-store"
-import type { InsertNotes, Notes } from "./db/types"
-import type { NoteEx, Notess, SourceData, SupabaseClient } from "./db/typeExtras"
+import type { InsertNotes, Notes } from "../db/types"
+import type { NoteEx, Notess, SourceData, SupabaseClient } from "../db/typeExtras"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
@@ -15,25 +15,24 @@ import {
   logIfError,
   unwrapTo,
   updateStore,
-  getOrElse,
-} from "./utils"
+} from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
-import { notesRowSchema } from "./db/schemas"
+import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import type { Patch } from "immer"
-import { createMock } from "./db/mock"
+import { createMock } from "../db/mock"
 import * as devalue from "devalue"
+import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 // import * as lzString from "lz-string"
-
-type PatchTup = { patches: Patch[], inverse: Patch[] }
 
 const validateNs = z.record(z.string(), notesRowSchema).parse
 const allNotesR: ReturnType<typeof validateNs> = {}
 
 const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
-browser && localStorage.removeItem("notestore")
-export const noteStore = persisted("notestore", allNotesR, { serializer: devalue, onError: console.log })
+browser && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
+export const noteStore = persisted("notestore", allNotesR, { serializer: devalue })
+console.log(get(noteStore))
 // this block shall ensure local data gets overwritten on db schema changes
 noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
@@ -48,8 +47,6 @@ stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(
 const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
 const transformStore = writable(defTransform)
 
-const undo_stack: PatchTup[] = []
-const redo_stack: PatchTup[] = []
 // each patch may need validation if persisted..
 
 const __f = (sb: SupabaseClient) => sb.from("notes")
@@ -128,8 +125,8 @@ export class NoteSync {
 
   action
     = <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
-      (patchTup: PatchTup, userAction = true) =>
-        f(this.sb.from("notes"))
+      (patchTup: PatchTup, userAction = true) =>  // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
+        f(this.sb.from("notes"))  // note that the stacks on failed update from xxdo don't get updated properly yet..
           .then(logIfError)
           .then((e) => {
             console.log(patchTup)
@@ -139,32 +136,43 @@ export class NoteSync {
           .then(
             ifNErr(() => {
               if (userAction) {
-                undo_stack.push(patchTup)
-                redo_stack.splice(0, redo_stack.length)
+                xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
               }
             }),
           )
 
-  undo = () => {
-    const pT = undo_stack.pop()
-    if (!pT) return
-    const { patches, inverse } = pT
-    console.log("inv patch", inverse)
+
+
+  xxdo = (patchTup: PatchTup) => {
+    // const pT = from_stack.pop()
+    // if (!pT) return
+    const { patches, inverse } = patchTup
+    const pTInverted = { inverse: patches, patches: inverse }
+    console.log("patches:", patchTup)
     updateStore(this.noteStore)(applyPatches(inverse))
-    const notesUpsert = inverse
-      .filter(x => x.op != "remove")
-      .map(x =>
-        pipe(
-          O.fromNullable(x.path[0] as string),
-          O.chain(x => R.lookup(x, get(this.noteStore))), // 1. from the store - e.g. tag udpate
-          getOrElse(() => x.value),
-        ),
-      )
-    // prettier-ignore
-    console.log("undo ids upsert: ", notesUpsert.map(x => x.id))
-    console.log(notesUpsert)
-    this.action(x => x.upsert(notesUpsert))({ inverse: patches, patches: inverse }, false)
+    const notesOps = getNotesOps(inverse, get(this.noteStore))
+    console.log("notesOps: ", notesOps)
+    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
+    const op = notesOps.map(x => x.op)[0] // !
+    if (op == "upsert")
+      this.action(x => x.upsert(notesOps.map(on => on.note)))(pTInverted, false)
+    if (op == "delete")
+      this.action(x => x.delete().in("id", notesOps.map(on => on.note.id)))(pTInverted, false)
+    return pTInverted
   }
+
+  // undo = () => this.xxdo(undo_stack, redo_stack)
+  undo = () => xxdoStacks.update(({ undo, redo }) => {
+    const pT = undo.pop()
+    if (!pT) return ({ undo, redo })
+    return ({ undo, redo: [...redo, this.xxdo(pT)] })
+  })
+
+  redo = () => xxdoStacks.update(({ undo, redo }) => {
+    const pT = redo.pop()
+    if (!pT) return ({ undo, redo })
+    return ({ redo, undo: [...undo, this.xxdo(pT)] })
+  })
 
   add = async (note: InsertNotes, source_id: string) => {
     const n = { ...createMock(), note }
