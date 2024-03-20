@@ -12,7 +12,7 @@
   import { sessStore } from "shared"
   import TagView from "$lib/components/TagView.svelte"
   import { get } from "svelte/store"
-  import { domainFilter, fuzzySort, tagFilter } from "$lib/filterSortStores.js"
+  import { domainFilter, fuzzySort, newestFirst, tagFilter } from "$lib/filterSortStores.js"
   import Overview from "$lib/components/Overview.svelte"
   export let data
   $: ({ session: _session, supabase } = data)
@@ -104,13 +104,17 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content">
       <li>
-        <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
+        <button class="btn btn-sm" on:click={() => ($newestFirst = !$newestFirst)}>
+          {$newestFirst ? "New" : "Old"}est first</button>
       </li>
       <li>
         <Search {note_sync} />
       </li>
       <li></li>
       <li><DomainFilter {note_sync} /></li>
+      <li hidden>
+        <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
+      </li>
     </ul>
   </div>
 </div>

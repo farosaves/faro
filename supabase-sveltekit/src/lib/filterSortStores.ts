@@ -44,11 +44,13 @@ export const domainFilter = derived(uncheckedDomains, (d) => (n: _A) => {
 export const fzRes = writable<false | Fuzzysort.KeysResults<NoteEx>>(false)
 export const fzSelectedKeys = writable<string[]>([])
 
-const fuzzySortDef: (n: NoteEx) => NoteEx & { priority: number } = (n: NoteEx) => ({
+export const newestFirst = writable(true)
+
+const fuzzySortDef = (newestFirst: boolean) => (n: NoteEx): NoteEx & { priority: number } => ({
   ...n,
-  priority: Date.parse(n.created_at),
+  priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at)
 })
-export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer], ([res, selectedKeys, replacer]) => {
+export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
     return (n: NoteEx) => {
       let priority: number
@@ -83,7 +85,8 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer], ([res, selec
           O.getOrElse(() => n.sources.title),
         )
       } else {
-        priority = Date.parse(n.created_at)
+        const createdMilis = Date.parse(n.created_at)
+        priority = newestFirst ? createdMilis : Date.now() - createdMilis
         searchArt = O.none
         title = n.sources.title
       }
@@ -91,6 +94,6 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer], ([res, selec
       return { ...n, priority, searchArt, sources }
     }
   } else {
-    return fuzzySortDef
+    return fuzzySortDef(newestFirst)
   }
 })
