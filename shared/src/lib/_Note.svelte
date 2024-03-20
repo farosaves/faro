@@ -3,7 +3,7 @@
   // import { IconStar, IconStarFilled } from "@tabler/icons-svelte"
 
   import type { Notes } from "./db/types"
-  import type { NoteSync } from "./note-sync"
+  import type { NoteSync } from "./sync/main"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, replacer, sleep, themeStore } from "./utils"
@@ -73,13 +73,16 @@
     (modalText = note_data.highlights
       ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
       : escapeHTML(note_data.context || ""))
+
+  let hovered = false
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- on:mouseenter={loadModalText} -->
 <div
   class="collapse bg-base-200 border-primary"
-  on:mouseenter={() => (modalPotential = true)}
+  on:mouseenter={() => (modalPotential = hovered = true)}
+  on:mouseleave={() => (hovered = false)}
   on:contextmenu|preventDefault={() => {
     if (myModal) myModal.showModal()
     loadModalText()
@@ -108,7 +111,7 @@
     <div class="join w-full">
       <!-- <button class="btn btn-xs join-item grow" on:click={() => {}}>
         Pin / Unpin</button> -->
-      <StarArchive bind:isOpen bind:p={note_data.prioritised} {changeP}>
+      <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
         <button
           class="btn btn-xs join-item grow"
           style="color: red;"

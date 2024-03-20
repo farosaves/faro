@@ -58,11 +58,8 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     A.filter(n => n.priority > 0),
     NA.groupBy(n => n.sources.title),
     R.toArray<string, (NoteEx & { priority: number })[]>,
-    filterSort(([st, nss]) =>
-      pipe(
-        nss.map(x => x.priority),
-        A.reduce(0, Math.max),
-      ),
+    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max),),  // !hacky + 1000
+      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max),)
     ),
   )
 
@@ -141,11 +138,7 @@ export class NoteSync {
             }),
           )
 
-
-
   xxdo = (patchTup: PatchTup) => {
-    // const pT = from_stack.pop()
-    // if (!pT) return
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
@@ -164,12 +157,14 @@ export class NoteSync {
   // undo = () => this.xxdo(undo_stack, redo_stack)
   undo = () => xxdoStacks.update(({ undo, redo }) => {
     const pT = undo.pop()
+    console.log("undo", pT)
     if (!pT) return ({ undo, redo })
     return ({ undo, redo: [...redo, this.xxdo(pT)] })
   })
 
   redo = () => xxdoStacks.update(({ undo, redo }) => {
     const pT = redo.pop()
+    console.log("undo", pT)
     if (!pT) return ({ undo, redo })
     return ({ redo, undo: [...undo, this.xxdo(pT)] })
   })
@@ -179,7 +174,9 @@ export class NoteSync {
   }
 
   deleteit = async (note: Notes) => {
-    const patchTup = updateStore(this.noteStore)(ns => R.filter((n: Notes) => n.id != note.id)(ns))
+    const patchTup = updateStore(this.noteStore)(ns => {
+      delete ns[note.id]
+    })
     await this.action(x => x.delete().eq("id", note.id))(patchTup)
   }
 
