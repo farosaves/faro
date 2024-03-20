@@ -54,8 +54,7 @@
   const handle_keydown = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "z") {
       e.preventDefault()
-      note_sync.undo()
-      // (e.shiftKey ? redo : undo)();
+      ;(e.shiftKey ? note_sync.redo : note_sync.undo)()
     }
   }
   // const ns = note_sync.noteStore
