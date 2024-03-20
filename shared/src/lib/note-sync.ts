@@ -31,11 +31,10 @@ type PatchTup = { patches: Patch[], inverse: Patch[] }
 const validateNs = z.record(z.string(), notesRowSchema).parse
 const allNotesR: ReturnType<typeof validateNs> = {}
 
-// const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
-// browser && localStorage.removeItem("notestore")
+const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
+browser && localStorage.removeItem("notestore")
 export const noteStore = persisted("notestore", allNotesR, { serializer: devalue, onError: console.log })
 // this block shall ensure local data gets overwritten on db schema changes
-// prettier-ignore
 noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
 const validateSTUMap = z.record(z.string(), z.object({ title: z.string(), url: z.string() })).parse
