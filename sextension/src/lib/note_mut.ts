@@ -20,7 +20,7 @@ export class NoteMut {
     this.panel = derived([this.ns.notestore, this.curr_source], ([ns, ots]) =>
       pipe(
         ots,
-        O.map((ts) => Object.values(ns).filter((n) => n.source_id == ts[1])),
+        O.map(ts => Object.values(ns).filter(n => n.source_id == ts[1])),
         O.getOrElse<Notes[]>(() => []),
       ),
     )
@@ -53,6 +53,7 @@ export class NoteMut {
     this.curr_source.set(O.none)
     return O.none
   }
+
   // get locally or db
   private _updatedSrcId = async (source: Src) => {
     const localId = this.localSrcId(source)
@@ -66,6 +67,7 @@ export class NoteMut {
     if (data) return O.some(this._updateSrc(source, data.id))
     return O.none
   }
+
   // get locally or db or insert: to be called when adding note
   upSetSrcId = async (source: Src) => {
     const oid = await this._updatedSrcId(source)

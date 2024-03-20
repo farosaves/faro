@@ -21,13 +21,13 @@ const note_sync: NoteSync = new NoteSync(supabase, undefined)
 const note_mut: NoteMut = new NoteMut(note_sync)
 const sess = writable<O.Option<Session>>(O.none)
 // prettier-ignore
-const user_id = derived(sess, O.map(s=>s.user.id))
+const user_id = derived(sess, O.map(s => s.user.id))
 user_id.subscribe(O.map(note_sync.setUid))
 
 const refresh = async () => {
-  const toks = await T.my_tokens.query() //.then((x) => console.log("bg tokens", x))
+  const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
   const newSess = O.fromNullable(await getSession(supabase, toks))
-  sess.update((n) => O.orElse(newSess, () => n))
+  sess.update(n => O.orElse(newSess, () => n))
   console.log(get(user_id), newSess)
 }
 refresh()
@@ -49,14 +49,14 @@ createChromeHandler({
   router: appRouter,
 })
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 const currUrl = writable("bebebobou")
 
 pushStore("currUrl", currUrl)
 
 const updateCurrUrl = (tab?: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
   if (tab?.url) currUrl.set(tab?.url)
   console.log(get(currUrl))
 }
@@ -68,22 +68,22 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
-const tryn =
-  (n: number, ms = 500) =>
-  async (f: any) => {
+const tryn
+  = (n: number, ms = 500) =>
+    async (f: any) => {
     // TODO
-    if (n < 1) return
-    try {
-      await f()
-    } catch {
-      await sleep(ms)
-      await tryn(n - 1, ms)(f)
+      if (n < 1) return
+      try {
+        await f()
+      } catch {
+        await sleep(ms)
+        await tryn(n - 1, ms)(f)
+      }
     }
-  }
 
 // to sidepanel
 
@@ -119,7 +119,7 @@ async function activate(tab: chrome.tabs.Tab) {
       website_url: tab.url,
       uuid: getUuid(),
     })
-    .catch((e) => console.log(e))
+    .catch(e => console.log(e))
 }
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })

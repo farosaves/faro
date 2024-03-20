@@ -12,7 +12,6 @@ export default defineConfig({
     Icons({
       compiler: "svelte",
     }),
-    ,
     crx({ manifest }),
   ],
   resolve: {
