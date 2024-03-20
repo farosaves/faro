@@ -40,8 +40,8 @@ export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f)
 export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
 export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
-export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
-  return (t1, t2) => f(t2) - f(t1)
+export function desc<T>(first: (t: T) => number, second: (t: T) => number = (t) => 0): (t1: T, t2: T) => number {
+  return (t1, t2) => first(t2) - first(t1) || second(t2) - second(t1)
 }
 export const asc
   = <T>(f: (t: T) => number) =>
@@ -64,11 +64,10 @@ export const hostname = (s: string) => O.tryCatch(() => s && new URL(s).hostname
 export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
 
 // sort descendingly but for negative scores filter out
-
 export const filterSort
-  = <T>(f: (x: T) => number) =>
+  = <T>(first: (x: T) => number, second = first) =>
     (xs: T[]) =>
-      xs.filter(x => f(x) > 0).toSorted(desc(f))
+      xs.filter(x => first(x) > 0).toSorted(desc(first, second))
 
 type T = {
   title: string | null
