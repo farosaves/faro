@@ -11,4 +11,7 @@
   $: deleteCbOpt = some(() => deleteSnippet(note_data.snippet_uuid!, note_data.serialized_highlight!))
 </script>
 
-<Note {note_data} {note_sync} bind:isOpen {closeAll} {goto_function} {deleteCbOpt} />
+<div class="relative">
+  <!-- relative binds the tag input placement to this div; the div below should be relative to, but maybe other rules interact with -->
+  <Note {note_data} {note_sync} bind:isOpen {closeAll} {goto_function} {deleteCbOpt} />
+</div>

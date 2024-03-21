@@ -11,6 +11,7 @@ export * from "./shortcut"
 export * from "./db/mock"
 import { makeQCH } from "./snippetiser/main"
 import * as dbtypes from "./db/types"
+export * from './stores'
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
 export { NoteSync, Tags, MyTags, _Note, makeQCH, dbtypes, StarArchive }
