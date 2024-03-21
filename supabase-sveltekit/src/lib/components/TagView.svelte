@@ -41,12 +41,14 @@
     })
 
   // let modalPotential: boolean
-  const updateTag = (oldTag: string, newTag: string) => {
-    return true
-  }
   let myModal: HTMLDialogElement | null = null
   let currTag: string
   let newTag: string
+  const updateTag = () => {
+    note_sync.tagUpdate(currTag, newTag)
+    currTag = newTag
+    return true
+  }
   const onDblClick = (tag: string) => () => {
     if (myModal) {
       currTag = newTag = tag
@@ -54,6 +56,7 @@
       $modalOpenStore = true
     }
   }
+  const deleteTag = () => myModal && myModal.close()
 </script>
 
 <!-- <div
@@ -92,16 +95,16 @@
 </div>
 
 <dialog class="modal" bind:this={myModal} on:close={() => ($modalOpenStore = false)}>
-  <div class="modal-box">
+  <div class="modal-box flex flex-col border-2 items-center">
     <button
       class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
       on:click={() => myModal && myModal.close()}>✕</button>
-    <form class="flex flex-col border-2 items-center">
-      <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
+    <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
+    <form class=" ">
       <input class="input input-bordered text-center" type="text" bind:value={newTag} />
-      <button hidden on:click={() => console.log("aa")} />
-      <button class="btn text-error mt-2">delete</button>
+      <button hidden on:click={updateTag} />
     </form>
+    <button class="btn text-error mt-2" on:click={deleteTag}>delete</button>
     <!-- on:click={() => newTag && updateTag(currTag, newTag) && (currTag = newTag) && console.log("aa")} -->
   </div>
   <form method="dialog" class="modal-backdrop">
