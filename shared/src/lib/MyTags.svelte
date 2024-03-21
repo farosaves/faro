@@ -27,6 +27,7 @@
       <span class="">{tag}</span>
     {/each}
   </button>
+
   <div class:hidden={!open}>
     <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique />
   </div>
