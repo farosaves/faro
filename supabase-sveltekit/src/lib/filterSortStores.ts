@@ -4,9 +4,6 @@ import fuzzysort from "fuzzysort"
 import { escapeHTML, replacer, type NoteEx } from "shared"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { hostnameStr } from "./utils"
-import { persisted } from "svelte-persisted-store"
-import * as devalue from "devalue"
-import { z } from "zod"
 
 const _exclTagSets = {
   ss: { "": new Set([]) } as Record<string, Set<string>>,

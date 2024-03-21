@@ -9,6 +9,7 @@
   import { desc, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
   import { currTagSet, exclTagSets as t, tagFilter } from "$lib/filterSortStores"
+  import { modalOpenStore } from "shared"
   export let note_sync: NoteSync
   let noteStore = note_sync.noteStore
   const tags_counts = derived(noteStore, (x) =>
@@ -40,20 +41,27 @@
     })
 
   // let modalPotential: boolean
-  const updateTag = (oldTag: string, newTag: string) => {
-    return true
-  }
   let myModal: HTMLDialogElement | null = null
   let currTag: string
   let newTag: string
-  const onDblClick = (tag: string) => () => (currTag = newTag = tag) && myModal && myModal.showModal()
+  const updateTag = () => {
+    note_sync.tagUpdate(currTag, newTag)
+    currTag = newTag
+    return true
+  }
+  const onDblClick = (tag: string) => () => {
+    if (myModal) {
+      currTag = newTag = tag
+      myModal.showModal()
+      $modalOpenStore = true
+    }
+  }
+  const deleteTag = () => myModal && myModal.close()
 </script>
 
 <!-- <div
   class="bg-base-100 sticky grid grid-flow-col top-0 z-20 justify-center overflow-x-auto overflow-y-hidden"> -->
-{currTag}
-{newTag}
-{myModal}
+
 <!-- on:mouseenter={() => (modalPotential = true)}
   on:mouseleave={() => (modalPotential = false)} -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -86,12 +94,19 @@
   {/each}
 </div>
 
-<dialog class="modal" bind:this={myModal}>
-  <form class="modal-box flex">
-    <p class="py-4">Rename this tag:<br /> {currTag}</p>
-    <input class="input input-bordered text-center" type="text" bind:value={newTag} />
-    <button hidden on:click={() => newTag && updateTag(currTag, newTag) && (currTag = newTag)} />
-  </form>
+<dialog class="modal" bind:this={myModal} on:close={() => ($modalOpenStore = false)}>
+  <div class="modal-box flex flex-col border-2 items-center">
+    <button
+      class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+      on:click={() => myModal && myModal.close()}>✕</button>
+    <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
+    <form class=" ">
+      <input class="input input-bordered text-center" type="text" bind:value={newTag} />
+      <button hidden on:click={updateTag} />
+    </form>
+    <button class="btn text-error mt-2" on:click={deleteTag}>delete</button>
+    <!-- on:click={() => newTag && updateTag(currTag, newTag) && (currTag = newTag) && console.log("aa")} -->
+  </div>
   <form method="dialog" class="modal-backdrop">
     <button>close</button>
   </form>

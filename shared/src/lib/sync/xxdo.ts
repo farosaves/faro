@@ -17,7 +17,7 @@ export type NotesOps = {
 }[]
 const _getOp = (x: Patch): NotesOps[0]["op"] => x.op == "remove" ? "delete" : "upsert"
 
-export const getNotesOps = (patch: Patch[], ns: Record<string, Notes>): NotesOps => patch
+export const getNotesOps = (patches: Patch[], ns: Record<string, Notes>): NotesOps => patches
     // .filter(x => x.op != "remove")
     .map(x =>
         pipe(

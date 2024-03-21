@@ -1,7 +1,7 @@
 // note-sync with structura
 
 // @ts-ignore
-import { persisted } from "svelte-persisted-store"
+import { persisted } from "./persisted"
 import type { InsertNotes, Notes } from "../db/types"
 import type { NoteEx, Notess, SourceData, SupabaseClient } from "../db/typeExtras"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
@@ -20,7 +20,6 @@ import { option as O, record as R, string as S, array as A, nonEmptyArray as NA 
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
-import type { Patch } from "immer"
 import { createMock } from "../db/mock"
 import * as devalue from "devalue"
 import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
@@ -138,19 +137,25 @@ export class NoteSync {
             }),
           )
 
+  act = (patchTup: PatchTup, userAction: boolean) => {
+    // maps the operation with patchTup.patches to db update
+    const notesOps = getNotesOps(patchTup.patches, get(this.noteStore))
+    console.log("notesOps: ", notesOps)
+    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
+    const op = notesOps.map(x => x.op)[0]
+    if (op == "upsert")
+      this.action(x => x.upsert(notesOps.map(on => on.note)))(patchTup, userAction)
+    if (op == "delete")
+      this.action(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup, userAction)
+  }
+
+
   xxdo = (patchTup: PatchTup) => {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
-    updateStore(this.noteStore)(applyPatches(inverse))
-    const notesOps = getNotesOps(inverse, get(this.noteStore))
-    console.log("notesOps: ", notesOps)
-    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
-    const op = notesOps.map(x => x.op)[0] // !
-    if (op == "upsert")
-      this.action(x => x.upsert(notesOps.map(on => on.note)))(pTInverted, false)
-    if (op == "delete")
-      this.action(x => x.delete().in("id", notesOps.map(on => on.note.id)))(pTInverted, false)
+    updateStore(this.noteStore)(applyPatches(inverse))  // ! redo by 'default'
+    this.act(pTInverted, false)
     return pTInverted
   }
 
@@ -164,7 +169,7 @@ export class NoteSync {
 
   redo = () => xxdoStacks.update(({ undo, redo }) => {
     const pT = redo.pop()
-    console.log("undo", pT)
+    console.log("redo", pT)
     if (!pT) return ({ undo, redo })
     return ({ redo, undo: [...undo, this.xxdo(pT)] })
   })
@@ -180,11 +185,21 @@ export class NoteSync {
     await this.action(x => x.delete().eq("id", note.id))(patchTup)
   }
 
-  tagUpdate = (note: Notes) => async (tag: string, tags: string[]) => {
+  tagChange = (note: Notes) => async (tag: string, tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       Object.values(ns).filter(n => n.id == note.id)[0].tags = tags
     })
     this.action(x => x.update({ tags }).eq("id", note.id))(patchTup)
+  }
+
+  tagUpdate = async (oldTag: string, newTag: string) => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
+      Object.values(ns).forEach(n => {
+        const i = n.tags.indexOf(oldTag)
+        if (~i) n.tags[i] = newTag
+      })
+    })
+    this.act(patchTup, true)
   }
 
   changePrioritised = (note: Notes) => async (prioritised: number) => {
