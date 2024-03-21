@@ -66,6 +66,7 @@
 <svelte:window on:keydown={handle_keydown} />
 <!-- {$na[0]?.quote}
 {$note_groups[0]} -->
+<!-- {showLoginPrompt} -->
 <LoginPrompt bind:showLoginPrompt />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
 <TagView {note_sync} />
