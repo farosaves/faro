@@ -14,6 +14,7 @@
   import { get } from "svelte/store"
   import { domainFilter, fuzzySort, newestFirst, tagFilter } from "$lib/filterSortStores.js"
   import Overview from "$lib/components/Overview.svelte"
+  import { modalOpenStore } from "shared"
   export let data
   $: ({ session: _session, supabase } = data)
   $: if (_session) $sessStore = O.some(_session)
@@ -52,7 +53,7 @@
 
   let w_rem = 16
   const handle_keydown = (e: KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "z") {
+    if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore) {
       e.preventDefault()
       ;(e.shiftKey ? note_sync.redo : note_sync.undo)()
     }
@@ -64,8 +65,10 @@
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- <div tabindex="-1" on:keydown={handle_keydown}> -->
 <!-- {$na[0]?.quote}
-{$note_groups[0]} -->
+  {$note_groups[0]} -->
 <!-- {showLoginPrompt} -->
 <LoginPrompt bind:showLoginPrompt />
 <!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
@@ -82,8 +85,8 @@
       {#each $note_groups as [title, note_group], i}
         <div
           class="border-2 text-center rounded-lg border-neutral flex flex-col"
-          style="max-width: {w_rem * note_group.length + 0.25}rem; 
-				min-width: {w_rem + 0.15}rem">
+          style="max-width: {w_rem * note_group.length + 0.25}rem;
+          min-width: {w_rem + 0.15}rem">
           <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
           <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
             {#each note_group as note, j}
@@ -97,8 +100,8 @@
     <div class="toast toast-end z-10">
       <!-- {$note_del_queue.length} -->
       <!-- <div class="alert alert-info">
-        <button on:click={note_sync.restoredelete}>Undo last delete.</button>
-      </div> -->
+          <button on:click={note_sync.restoredelete}>Undo last delete.</button>
+        </div> -->
     </div>
   </div>
   <div class="drawer-side z-10">
@@ -119,3 +122,4 @@
     </ul>
   </div>
 </div>
+<!-- </div> -->

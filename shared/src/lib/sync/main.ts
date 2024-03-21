@@ -1,7 +1,7 @@
 // note-sync with structura
 
 // @ts-ignore
-import { persisted } from "svelte-persisted-store"
+import { persisted } from "./persisted"
 import type { InsertNotes, Notes } from "../db/types"
 import type { NoteEx, Notess, SourceData, SupabaseClient } from "../db/typeExtras"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
@@ -20,7 +20,6 @@ import { option as O, record as R, string as S, array as A, nonEmptyArray as NA 
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
-import type { Patch } from "immer"
 import { createMock } from "../db/mock"
 import * as devalue from "devalue"
 import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"

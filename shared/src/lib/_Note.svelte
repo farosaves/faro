@@ -1,12 +1,11 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
-  // import { IconStar, IconStarFilled } from "@tabler/icons-svelte"
 
-  import type { Notes } from "./db/types"
   import type { NoteSync } from "./sync/main"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
-  import { escapeHTML, replacer, sleep, themeStore } from "./utils"
+  import { escapeHTML, sleep } from "./utils"
+  import { modalOpenStore, replacer } from "./stores"
   import { MyTags, type NoteEx, type SourceData } from "./index"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -86,6 +85,7 @@
   on:contextmenu|preventDefault={() => {
     if (myModal) myModal.showModal()
     loadModalText()
+    $modalOpenStore = true
   }}
   style="border-width: {1 + 5 * +highlighting}px; position: static;">
   <input type="checkbox" class="-z-10" bind:checked={isOpen} />
@@ -113,8 +113,7 @@
         Pin / Unpin</button> -->
       <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
         <button
-          class="btn btn-xs join-item grow"
-          style="color: red;"
+          class="btn btn-xs text-error"
           on:click={() => {
             note_sync.deleteit(note_data)
             // prettier-ignore
@@ -125,7 +124,11 @@
     </div>
   </div>
   {#if modalPotential}
-    <dialog id="modal${note_data.id}" class="modal" bind:this={myModal}>
+    <dialog
+      id="modal${note_data.id}"
+      class="modal"
+      bind:this={myModal}
+      on:close={() => ($modalOpenStore = false)}>
       <div class="modal-box">
         <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
         <p class="py-4">
