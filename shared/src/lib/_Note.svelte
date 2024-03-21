@@ -47,8 +47,8 @@
   )
   //.replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = note_sync.tagUpdate(note_data)
-  $: onTagRemoved = note_sync.tagUpdate(note_data)
+  $: onTagAdded = note_sync.tagChange(note_data)
+  $: onTagRemoved = note_sync.tagChange(note_data)
   $: changeP = note_sync.changePrioritised(note_data)
 
   let highlighting = false
