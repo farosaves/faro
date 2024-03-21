@@ -208,11 +208,11 @@ export class NoteSync {
         (payload: { new: Notes | object }) => {
           if ("id" in payload.new) {
             const nn = payload.new
-            const id = updateStore(this.noteStore)((ns) => {
+            updateStore(this.noteStore)((ns) => {
               ns[nn.id] = nn
             })
-            const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this.refresh_notes()
+            // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
+          } else this.refresh_notes()  // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
         },
       )
       .subscribe()

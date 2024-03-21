@@ -38,11 +38,27 @@
       currTagSet(s).delete(tag) || currTagSet(s).add(tag)
       return s
     })
+
+  // let modalPotential: boolean
+  const updateTag = (oldTag: string, newTag: string) => {
+    return true
+  }
+  let myModal: HTMLDialogElement | null = null
+  let currTag: string
+  let newTag: string
+  const onDblClick = (tag: string) => () => (currTag = newTag = tag) && myModal && myModal.showModal()
 </script>
 
 <!-- <div
   class="bg-base-100 sticky grid grid-flow-col top-0 z-20 justify-center overflow-x-auto overflow-y-hidden"> -->
+{currTag}
+{newTag}
+{myModal}
+<!-- on:mouseenter={() => (modalPotential = true)}
+  on:mouseleave={() => (modalPotential = false)} -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
+  <!-- {modalPotential} -->
   <div class="tooltip tooltip-right tooltip-primary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
@@ -57,6 +73,7 @@
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleSet(tag)}
+        on:contextmenu={onDblClick(tag)}
         class:btn-outline={currTagSet($t).has(tag)}
         >{#if tag}{tag}{:else}
           <IconTagOff />
@@ -68,3 +85,14 @@
     </div>
   {/each}
 </div>
+
+<dialog class="modal" bind:this={myModal}>
+  <form class="modal-box flex">
+    <p class="py-4">Rename this tag:<br /> {currTag}</p>
+    <input class="input input-bordered text-center" type="text" bind:value={newTag} />
+    <button hidden on:click={() => newTag && updateTag(currTag, newTag) && (currTag = newTag)} />
+  </form>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

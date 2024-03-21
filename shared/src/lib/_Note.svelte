@@ -125,7 +125,7 @@
     </div>
   </div>
   {#if modalPotential}
-    <dialog id="my_modal_2" class="modal" bind:this={myModal}>
+    <dialog id="modal${note_data.id}" class="modal" bind:this={myModal}>
       <div class="modal-box">
         <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
         <p class="py-4">
