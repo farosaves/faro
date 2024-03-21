@@ -9,7 +9,11 @@
   let id: string
 </script>
 
-<div tabindex="-1" class="border-t border-primary" use:clickOutside on:click_outside={() => (open = false)}>
+<div
+  tabindex="-1"
+  class="border-t border-primary w-full"
+  use:clickOutside
+  on:click_outside={() => (open = false)}>
   <button
     class="bg-base-100 w-full min-h-6 flex justify-around"
     data-tip="Add tags here"
@@ -23,6 +27,7 @@
       <span class="">{tag}</span>
     {/each}
   </button>
+
   <div class:hidden={!open}>
     <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique />
   </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { NoteEx, NoteSync, Notes, SourceData } from "shared"
-  import type { NoteFilter } from "$lib/utils"
   import { derived, type Readable } from "svelte/store"
   import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"

@@ -19,7 +19,7 @@ type SharedStores = "currUrl"
 export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = console.log) => {
   const _idStart = idStart ?? id + "__start"
   const msg = gmWrap<T>(id)
-  store.subscribe(async (x) => await msg.send(x).catch(errCb))
+  store.subscribe(async x => await msg.send(x).catch(errCb))
   const start = gmWrap<void>(_idStart)
   start.sub(() => msg.send(get(store)))
 }

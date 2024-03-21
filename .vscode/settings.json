@@ -4,6 +4,11 @@
   "[svelte]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen",
-
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen"
 }

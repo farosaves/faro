@@ -29,9 +29,9 @@
   )
 
   // if (!(source_id in $note_store)) $note_store = []
-  let showing_contents = Object.values($note_panel).map((_) => false)
-  let close_all_notes = () => {
-    showing_contents = showing_contents.map((_) => false)
+  let noteOpens = Object.values($note_panel).map((_) => false)
+  let closeAll = () => {
+    noteOpens = noteOpens.map((_) => false)
   }
   // $: console.log($note_store, source_id)
   const curr_source = note_mut.curr_source
@@ -41,11 +41,7 @@
 <!-- I had to add || [] here... ofc $note_store wasnt guaranteed to be T[]..., is it time to refactor? -->
 <!-- I definitely shouldn't "just index" and expect it to work -->
 {#each [...(Object.values($note_panel) || []), ...A.fromOption(mocked)] as note_data, i}
-  <Note
-    note_data={{ ...note_data, searchArt: O.none }}
-    bind:showing_content={showing_contents[i]}
-    {close_all_notes}
-    {note_sync} />
+  <Note note_data={{ ...note_data, searchArt: O.none }} bind:isOpen={noteOpens[i]} {closeAll} {note_sync} />
 {:else}
   No notes yet...
 {/each}

@@ -1,14 +1,36 @@
-import { API_ADDRESS } from "$lib/utils"
+import { API_ADDRESS, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { initTRPC } from "@trpc/server"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { pushStore, pendingNotes } from "$lib/chromey/messages"
-import { get, writable } from "svelte/store"
-import { escapeRegExp, hostname, type PendingNote } from "shared"
+import { derived, get, writable } from "svelte/store"
+import { NoteSync, escapeRegExp, hostname, type PendingNote } from "shared"
+import { trpc2 } from "$lib/trpc-client"
+import { loadSB } from "$lib/loadSB"
+import type { Session, SupportedStorage } from "@supabase/supabase-js"
+import { supabase } from "$lib/chromey/bg"
+import { NoteMut } from "$lib/note_mut"
 
-const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "") // Replace with your domain
+const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 const DEBUG = import.meta.env.DEBUG || false
+
+const T = trpc2()
+
+// const note_sync: NoteSync = new NoteSync(supabase, undefined)
+// const note_mut: NoteMut = new NoteMut(note_sync)
+const sess = writable<O.Option<Session>>(O.none)
+// prettier-ignore
+const user_id = derived(sess, O.map(s => s.user.id))
+// user_id.subscribe(O.map(note_sync.setUid))
+
+const refresh = async () => {
+  const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
+  const newSess = O.fromNullable(await getSession(supabase, toks))
+  sess.update(n => O.orElse(newSess, () => n))
+  console.log(get(user_id), newSess)
+}
+refresh()
 
 const t = initTRPC.create({
   isServer: false,
@@ -27,14 +49,14 @@ createChromeHandler({
   router: appRouter,
 })
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 const currUrl = writable("bebebobou")
 
 pushStore("currUrl", currUrl)
 
 const updateCurrUrl = (tab?: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
   if (tab?.url) currUrl.set(tab?.url)
   console.log(get(currUrl))
 }
@@ -46,23 +68,22 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  console.log("activated")
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch((e) => console.log(e))
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
-const tryn =
-  (n: number, ms = 500) =>
-  async (f: any) => {
-    // TODO
-    if (n < 1) return
-    try {
-      await f()
-    } catch {
-      await sleep(ms)
-      await tryn(n - 1, ms)(f)
+const tryn
+  = (n: number, ms = 500) =>
+    async (f: any) => {
+      // TODO
+      if (n < 1) return
+      try {
+        await f()
+      } catch {
+        await sleep(ms)
+        await tryn(n - 1, ms)(f)
+      }
     }
-  }
 
 // to sidepanel
 
@@ -98,7 +119,7 @@ async function activate(tab: chrome.tabs.Tab) {
       website_url: tab.url,
       uuid: getUuid(),
     })
-    .catch((e) => console.log(e))
+    .catch(e => console.log(e))
 }
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })

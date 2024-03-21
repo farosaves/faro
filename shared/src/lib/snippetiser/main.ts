@@ -7,10 +7,10 @@ type ArrOr1<T> = T[] | T
 function goUp(cond: (n: Element) => boolean, e: Element): Element {
   return cond(e.parentElement!) ? e.parentElement! : goUp(cond, e.parentElement!)
 }
-const sectiontags = new Set(["ul", "h1", "h3", "h2", "details", "tr"].map((x) => x.toUpperCase()))
+const sectiontags = new Set(["ul", "h1", "h3", "h2", "details", "tr"].map(x => x.toUpperCase()))
 
 const splittags = new Set(
-  ["ul", "h1", "h3", "h2", "details", "p", "li", "blockquote"].map((x) => x.toUpperCase()),
+  ["ul", "h1", "h3", "h2", "details", "p", "li", "blockquote"].map(x => x.toUpperCase()),
 )
 
 const preSpaceIfNotPunct = <T extends string | null>(s: T) =>
@@ -29,7 +29,7 @@ function divSplit(v: ArrOr1<Node>) {
   return pipe(
     Array.isArray(v) ? v : Array.from(v.childNodes),
     A.reduce<Node, string[]>([""], f),
-    A.filter((s) => s.trim().length != 0),
+    A.filter(s => s.trim().length != 0),
     A.map(tok.sentences),
     A.flatten,
   )
@@ -40,13 +40,13 @@ function succ(e: ArrOr1<Element>): O.Option<ArrOr1<Element>> {
   const precedingSectionTags = (e: Element) =>
     pipe(
       siblings(e),
-      A.takeLeftWhile((e2) => e2 != e),
-      A.filter((e2) => sectiontags.has(e2.tagName)),
+      A.takeLeftWhile(e2 => e2 != e),
+      A.filter(e2 => sectiontags.has(e2.tagName)),
     )
   const takeTillNextSectionTag = (e: Element) =>
     pipe(
       siblings(e),
-      A.dropLeftWhile((e2) => e != e2),
+      A.dropLeftWhile(e2 => e != e2),
       A.takeLeftWhile((e2: Element) => !(e2 != e && sectiontags.has(e2.tagName))),
     )
 
@@ -61,7 +61,7 @@ const generateUp = (e: O.Option<ArrOr1<Element>>): ArrOr1<Element>[] =>
     e,
     O.fold(
       () => [],
-      (e) => [e, ...generateUp(succ(e))],
+      e => [e, ...generateUp(succ(e))],
     ),
   )
 const listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.from(e.childNodes))
@@ -69,7 +69,7 @@ const listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.fro
 function match(uuid: string) {
   const _match = (uuid: string) => (e: Element) =>
     new Set(e.classList).has("_" + uuid) ? [e] : Array.from(e.getElementsByClassName("_" + uuid))
-  //@ts-expect-error
+  // @ts-expect-error
   return (n: Node) => ("classList" in n ? _match(uuid)(n) : [])
 }
 const hasMatch = (uuid: string) => (e: Node) => match(uuid)(e).length > 0
@@ -79,83 +79,83 @@ const first = <T>(a: T[]) => a[0]
 const getContent = (n: Node) => ("outerHTML" in n ? n.outerHTML : n.textContent || "")
 
 type Hs2t = (s: string) => HTMLElement
-const getFullSentences =
-  (htmlstr2body: Hs2t) =>
-  (es: ArrOr1<Node>, uuid: string, sp = "n_______n") => {
-    const makeNonempty =
-      <T>(placeholder: T) =>
-      (xs: T[]) =>
-        pipe(
-          nEA.fromArray(xs),
-          O.match(() => nEA.of(placeholder), identity),
-        )
+const getFullSentences
+  = (htmlstr2body: Hs2t) =>
+    (es: ArrOr1<Node>, uuid: string, sp = "n_______n") => {
+      const makeNonempty
+      = <T>(placeholder: T) =>
+        (xs: T[]) =>
+          pipe(
+            nEA.fromArray(xs),
+            O.match(() => nEA.of(placeholder), identity),
+          )
 
-    const body = htmlstr2body(listOrAllChildren(es).map(getContent).join(""))
-    const bodyText = body.innerText || body.textContent || ""
-    if (bodyText === null) return ""
+      const body = htmlstr2body(listOrAllChildren(es).map(getContent).join(""))
+      const bodyText = body.innerText || body.textContent || ""
+      if (bodyText === null) return ""
 
-    const matching = A.filter(hasMatch(uuid))(Array.from(body.children))
+      const matching = A.filter(hasMatch(uuid))(Array.from(body.children))
 
-    const match_ = match(uuid)
-    const fm = match_(matching[0])[0]
-    const _lm = match_(matching[matching.length - 1])
-    const lm = _lm[_lm.length - 1]
-    const _t1 = fm.textContent
-    fm.textContent = sp + _t1
-    const _t2 = lm.textContent
-    lm.textContent = _t2 + sp
-    const sents = divSplit(Array.from(body.childNodes)).join(" ")
-    // .replaceAll(/\\n\s*\\n/g, ". ");
-    // console.log(divSplit(Array.from(body.childNodes)));
-    const [left, mid, right] = sents.split(sp).map((s) => s.replace(/(\\[nt])+/, " "))
-    // console.log([left, mid, right]);
-    // instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
-    // and then likewise .........suffix .......right...
-    function getShortestXfix(p: string, pre: boolean, n = 1) {
-      const rev = pre ? (x: string[]) => x : (x: string[]) => x.toReversed()
-      const prefix = rev(rev(p.split(" ")).slice(0, n)).join(" ")
+      const match_ = match(uuid)
+      const fm = match_(matching[0])[0]
+      const _lm = match_(matching[matching.length - 1])
+      const lm = _lm[_lm.length - 1]
+      const _t1 = fm.textContent
+      fm.textContent = sp + _t1
+      const _t2 = lm.textContent
+      lm.textContent = _t2 + sp
+      const sents = divSplit(Array.from(body.childNodes)).join(" ")
+      // .replaceAll(/\\n\s*\\n/g, ". ");
+      // console.log(divSplit(Array.from(body.childNodes)));
+      const [left, mid, right] = sents.split(sp).map(s => s.replace(/(\\[nt])+/, " "))
+      // console.log([left, mid, right]);
+      // instead can take: shortest prefix of the left below that only occurs once in body.innerText and split on that
+      // and then likewise .........suffix .......right...
+      function getShortestXfix(p: string, pre: boolean, n = 1) {
+        const rev = pre ? (x: string[]) => x : (x: string[]) => x.toReversed()
+        const prefix = rev(rev(p.split(" ")).slice(0, n)).join(" ")
 
-      const nmatch = Array.from(bodyText.matchAll(RegExp(escapeRegExp(prefix), "g"))).length
-      switch (nmatch) {
-        case 1:
-          return O.some(prefix)
-        case 0:
-          return O.none
-        default: // more matches - too short
-          return getShortestXfix(p, pre, n + 1)
+        const nmatch = Array.from(bodyText.matchAll(RegExp(escapeRegExp(prefix), "g"))).length
+        switch (nmatch) {
+          case 1:
+            return O.some(prefix)
+          case 0:
+            return O.none
+          default: // more matches - too short
+            return getShortestXfix(p, pre, n + 1)
+        }
       }
+      const h = makeNonempty("")
+      const g = preSpaceIfNotPunct
+      const noEndDot = (s: string) => !/\.$/.test(s.trim())
+      const potResult = [
+        last(h(tok.sentences(left).filter(noEndDot))),
+        g(mid),
+        g(first(h(tok.sentences(right)))),
+      ].join("")
+      const pre_short = getShortestXfix(potResult, true)
+      const post_short = getShortestXfix(potResult, false)
+      if (O.isNone(pre_short) || O.isNone(post_short)) return potResult // this most likely means our sentence appears twice in the text..
+      let text = bodyText
+      text = pre_short.value + text.split(pre_short.value)[1]
+      text = text.split(post_short.value)[0] + post_short.value
+      return text
     }
-    const h = makeNonempty("")
-    const g = preSpaceIfNotPunct
-    const noEndDot = (s: string) => !/\.$/.test(s.trim())
-    const potResult = [
-      last(h(tok.sentences(left).filter(noEndDot))),
-      g(mid),
-      g(first(h(tok.sentences(right)))),
-    ].join("")
-    const pre_short = getShortestXfix(potResult, true)
-    const post_short = getShortestXfix(potResult, false)
-    if (O.isNone(pre_short) || O.isNone(post_short)) return potResult // this most likely means our sentence appears twice in the text..
-    let text = bodyText
-    text = pre_short.value + text.split(pre_short.value)[1]
-    text = text.split(post_short.value)[0] + post_short.value
-    return text
-  }
 // const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
 export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selectedText: string) => {
   const matches = Array.from(d.getElementsByClassName("_" + uuid))
-  const root = goUp((e) => e.getElementsByClassName("_" + uuid).length == matches.length, matches[0])
+  const root = goUp(e => e.getElementsByClassName("_" + uuid).length == matches.length, matches[0])
   const gen = generateUp(O.fromNullable(root))
-  const contextNodeOpt = A.findFirst<ArrOr1<Element>>((e) => divSplit(e).length > 2)(gen)
+  const contextNodeOpt = A.findFirst<ArrOr1<Element>>(e => divSplit(e).length > 2)(gen)
   if (O.isNone(contextNodeOpt)) throw Error
   const contextNode = contextNodeOpt.value
   // console.log(wrapOrPass(contextNode)[0].children[0])
   const potentialQuote = listOrAllChildren(contextNode)
   const context = divSplit(potentialQuote)
-    .map((s) => s.trim())
+    .map(s => s.trim())
     .map(preSpaceIfNotPunct)
     // .map((s) => s.replace(/\P{Pe}+$/u, (s) => s + "."))
-    .map((s) => s.replace(/[^!\?\.;]+$/u, (s) => s + "."))
+    .map(s => s.replace(/[^!\?\.;]+$/u, s => s + "."))
     .join("")
     .trim()
 
