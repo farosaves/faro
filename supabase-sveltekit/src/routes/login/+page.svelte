@@ -10,14 +10,15 @@
   import { sessStore } from "shared"
   import { option as O } from "fp-ts"
   import type { SupabaseClient } from "@supabase/supabase-js"
-  let providers = ["github"]
+  import { page } from "$app/stores"
+  // let providers = ["github"]
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
         console.log(session)
         if (session) $sessStore = O.some(session)
         setTimeout(() => {
-          goto("/account?from=login")
+          $page.url.pathname == "login" && goto("/account?from=login")
         }, 50)
       }
     }),
