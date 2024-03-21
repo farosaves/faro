@@ -39,8 +39,8 @@
 
   //   $: tags = note_data.tags || []
 
-  //   $: onTagAdded = note_sync.tagUpdate(note_data)
-  //   $: onTagRemoved = note_sync.tagUpdate(note_data)
+  //   $: onTagAdded = note_sync.tagChange(note_data)
+  //   $: onTagRemoved = note_sync.tagChange(note_data)
 
   let highlighting = false
   const highlightMe = () => {
