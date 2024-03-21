@@ -1,0 +1,4 @@
+# fixpaths
+perl -pi -e 's/("(\.\.\/)+)\.\.\/\.\.\/(?=src\/lib\/)/\1/g' dist/**/*.d.ts.map
+perl -pi -e 's/("(\.\.\/)+)\.\.\/\.\.\/(?=src\/lib\/)/\1/g' dist/*.d.ts.map
+

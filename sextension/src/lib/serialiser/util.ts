@@ -7,7 +7,7 @@ export const normalize = (s: string | null) => s || ""
 // add this to rangy serialisation
 export const reserialize = (r: Range) =>
   prepostfixes(normalize(r.toString()))
-    .map((s) => s.replaceAll("$", "\\$"))
+    .map(s => s.replaceAll("$", "\\$"))
     .join("$")
 export const prepostfixes = (s: string, nToTake = 8) => {
   const snorm = normalize(s)
@@ -47,18 +47,18 @@ export const adjIdxs = (
   const targetDiff = len - post.length
   // prettier-ignore
   const aligned = <T extends { index: number }>(left: T[], right: T[]): T[][] => {
-    if (!left.length || !right.length) return [];
-    const [lf, ...lr] = left;
-    const [rf, ...rr] = right;
-    const diff = rf.index - lf.index;
+    if (!left.length || !right.length) return []
+    const [lf, ...lr] = left
+    const [rf, ...rr] = right
+    const diff = rf.index - lf.index
     if (diff / targetDiff > 1.1)
-        // too far apart -> right too far -> only update left
-        return aligned(lr, right);
+    // too far apart -> right too far -> only update left
+      return aligned(lr, right)
     else if (diff / targetDiff < 0.9)
-        // too close -> left too far -> only update right
-        return aligned(left, rr);
-    else return [[lf, rf], ...aligned(lr, rr)];
-};
+    // too close -> left too far -> only update right
+      return aligned(left, rr)
+    else return [[lf, rf], ...aligned(lr, rr)]
+  }
 
   const score = (l: RegExpExecArray, r: RegExpExecArray) =>
     (1 + Math.abs(r.index - l.index - targetDiff)) * Math.abs(l.index - startIdx)

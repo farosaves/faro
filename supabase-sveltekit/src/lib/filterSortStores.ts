@@ -2,17 +2,33 @@ import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArra
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
 import { escapeHTML, replacer, type NoteEx } from "shared"
-import { derived, writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import { hostnameStr } from "./utils"
+import { persisted } from "svelte-persisted-store"
+import * as devalue from "devalue"
+import { z } from "zod"
 
+const _exclTagSets = {
+  ss: { "": new Set([]) } as Record<string, Set<string>>,
+  ui: "",
+}
+
+// type ExclTagSets = typeof _exclTagSet & { curr: () => Set<string> }
+
+export const currTagSet = (t: typeof _exclTagSets) => t.ss[t.ui]
+
+// export const exclTagSets = persisted("exclTagSets", _exclTagSets, { serializer: devalue })
+export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
+
+// const exclTagSet = derived(exclTagSets, ({ ss, ui }) => ss[O.getOrElse(() => "")(ui)])
+// const exclTagSet = derived(exclTagSets, ({ ss, ui }) => ss[ui])
 type _A = NoteEx & { priority: number }
-export const exclTagSet = writable(new Set<string>([]))
-export const tagFilter = derived(exclTagSet, (exclTagSet) => (n: _A) => ({
+export const tagFilter = derived(exclTagSets, ({ ss, ui }) => (n: _A) => ({
   ...n,
   priority: pipe(
     NA.fromArray(n.tags),
     O.getOrElse(() => [""]),
-    A.map((s) => !exclTagSet.has(s)),
+    A.map((s) => !ss[ui].has(s)),
     A.reduce(false, (x, y) => x || y),
   )
     ? n.priority
@@ -28,11 +44,13 @@ export const domainFilter = derived(uncheckedDomains, (d) => (n: _A) => {
 export const fzRes = writable<false | Fuzzysort.KeysResults<NoteEx>>(false)
 export const fzSelectedKeys = writable<string[]>([])
 
-const fuzzySortDef: (n: NoteEx) => NoteEx & { priority: number } = (n: NoteEx) => ({
+export const newestFirst = writable(true)
+
+const fuzzySortDef = (newestFirst: boolean) => (n: NoteEx): NoteEx & { priority: number } => ({
   ...n,
-  priority: Date.parse(n.created_at),
+  priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at)
 })
-export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer], ([res, selectedKeys, replacer]) => {
+export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
     return (n: NoteEx) => {
       let priority: number
@@ -67,7 +85,8 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer], ([res, selec
           O.getOrElse(() => n.sources.title),
         )
       } else {
-        priority = Date.parse(n.created_at)
+        const createdMilis = Date.parse(n.created_at)
+        priority = newestFirst ? createdMilis : Date.now() - createdMilis
         searchArt = O.none
         title = n.sources.title
       }
@@ -75,6 +94,6 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer], ([res, selec
       return { ...n, priority, searchArt, sources }
     }
   } else {
-    return fuzzySortDef
+    return fuzzySortDef(newestFirst)
   }
 })

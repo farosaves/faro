@@ -3,11 +3,14 @@ import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
+import type { LazyArg } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { Subject, Observable } from "rxjs"
 import type { Session } from "@supabase/supabase-js"
+import type { Draft, Patch } from "immer"
+// import { produceWithPatches as pWPimmer, enablePatches } from "immer"
+
 import {
-  type Patch,
   convertPatchesToStandard,
   applyPatchesMutatively as _applyPatches,
   type UnFreeze,
@@ -23,59 +26,48 @@ const colorScheme: ColorScheme = "dark"
 export const themeStore = writable<ColorScheme>(colorScheme)
 export const replacer = derived(
   themeStore,
-  (t) => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`,
+  t => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`,
 )
 export const updateTheme = () =>
   themeStore.set(
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme,
   )
 
-export const safeGet =
-  <T extends string | number | symbol, U>(record: {
-    [id in T]: U[]
-  }) =>
-  (idx: T) =>
-    idx in record ? record[idx] : ([] as U[])
-
-// export const unwrap_def = <T>(o: Option<T>, def: T) =>
-//   pipe(
-//     o,
-//     O.match(() => def, identity),
-//   )
+export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
 export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
 export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
-export function desc<T>(f: (t: T) => number): (t1: T, t2: T) => number {
-  return (t1, t2) => f(t2) - f(t1)
+export function desc<T>(first: (t: T) => number, second: (t: T) => number = (t) => 0): (t1: T, t2: T) => number {
+  return (t1, t2) => first(t2) - first(t1) || second(t2) - second(t1)
 }
-export const asc =
-  <T>(f: (t: T) => number) =>
-  (t1: T, t2: T) =>
-    f(t1) - f(t2)
+export const asc
+  = <T>(f: (t: T) => number) =>
+    (t1: T, t2: T) =>
+      f(t1) - f(t2)
 
-export const ifErr =
-  (f: (e: any) => void, is = true) =>
-  <T extends { error: any }>(r: T) => {
-    const { error } = r
-    if (!!error == is) f(error)
-    return r
-  }
-export const ifNError = (f: (e: any) => void) => ifErr(f, false)
+export const ifErr
+  = (f: (e: any) => void, is = true) =>
+    <T extends { error: any }>(r: T) => {
+      const { error } = r
+      if (!!error == is) f(error)
+      return r
+    }
+export const ifNErr = (f: (e: any) => void) => ifErr(f, false)
 export const logIfError = ifErr(console.log)
 
-export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const hostname = (s: string) => O.tryCatch(() => s && new URL(s).hostname)
 
-export const domain_title = (url: string, title: string) => O.map((s) => [s, title].join(";"))(hostname(url))
+export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
 
 // sort descendingly but for negative scores filter out
-export const filterSort =
-  <T>(f: (x: T) => number) =>
-  (xs: T[]) =>
-    xs.filter((x) => f(x) > 0).toSorted(desc(f))
+export const filterSort
+  = <T>(first: (x: T) => number, second = first) =>
+    (xs: T[]) =>
+      xs.filter(x => first(x) > 0).toSorted(desc(first, second))
 
 type T = {
   title: string | null
@@ -86,7 +78,7 @@ export const fillInTitleUrl = (v: T) => {
     pipe(
       u,
       O.fromNullable,
-      O.chain((v) => O.fromNullable(v[fld])),
+      O.chain(v => O.fromNullable(v[fld])),
       O.fold(() => missing, identity),
     )
   return { title: escapeHTML(_get(v, "title", "missing Title")), url: _get(v, "url", "") }
@@ -142,41 +134,40 @@ export async function getNotes(
 // }
 
 export const escapeHTML = (text: string) => {
-  var div = document.createElement("div")
+  const div = document.createElement("div")
   div.innerText = text
   return div.innerHTML
 }
 
-export const unwrapTo =
-  <T>(x: Option<T>) =>
-  (y: T) =>
-    O.getOrElse(() => y)(x)
+export const unwrapTo
+  = <T>(x: Option<T>) =>
+    (y: T) =>
+      O.getOrElse(() => y)(x)
 
 // curry
-export const applyPatches =
-  (ps: Patch[]) =>
-  <T>(s: T) => {
-    _applyPatches(s, ps)
-    console.log("applying patches")
-    return s
-  }
+export const applyPatches
+  = (ps: Patch[]) =>
+    <T>(s: T) => {
+      _applyPatches(s, ps)
+      console.log("applying patches")
+      return s
+    }
 
-export const updateStore =
-  <T>(store: Writable<T>) =>
-  // (up: (arg: Draft<T>) => void | Draft<T>) => {
-  (up: (arg: UnFreeze<T>) => void | T) => {
-    let [patches, inverse]: Patch[][] = [[], []]
-    store.update((storeVal) => {
-      const [result, ...pinv] = //
-        // pWPimmer(storeVal, up)
-        safeProduceWithPatches(storeVal, up)
-      ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv)
-      // ;[patches, inverse] = A.map(identity)(pinv)
-      return result as T
-    })
-    console.log(patches)
-    return { patches, inverse }
-  }
+export const updateStore
+  = <T>(store: Writable<T>) =>
+    // (up: (arg: Draft<T>) => void | Draft<T>) => {
+    (up: (arg: UnFreeze<T>) => void | T) => {
+      let [patches, inverse]: Patch[][] = [[], []]
+      store.update((storeVal) => {
+        // ;[result, patches, inverse] = pWPimmer(storeVal, up)  // immer doesnt fix here
+        const [result, ...pinv]
+          = safeProduceWithPatches(storeVal, up)
+          ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv) as Patch[][]
+        return result as T
+      })
+      console.log(patches)
+      return { patches, inverse }
+    }
 
 // export const updateStoreImmer =
 //   <T>(store: Writable<T>) =>

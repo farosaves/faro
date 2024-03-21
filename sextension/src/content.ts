@@ -11,7 +11,7 @@ if (DEBUG) console.log("hello")
 
 const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
-  links: [/* 👉 */ chromeLink({ port })],
+  links: [chromeLink({ port })],
 })
 
 if (DEBUG) console.log(T.add.query([1, 77]))

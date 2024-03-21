@@ -13,7 +13,7 @@ test("short", async () => {
   expect(prepostfixes(s)).toStrictEqual(["hey!", "hey!"])
 })
 const load = async (s: string): Promise<HTMLElement> =>
-  pipe(await readFile(__dirname + s, {}), (x) => new JSDOM(x.toString()).window.document.body)
+  pipe(await readFile(__dirname + s, {}), x => new JSDOM(x.toString()).window.document.body)
 
 test("adjIdxs html", async () => {
   const body = await load("/steg2.html")

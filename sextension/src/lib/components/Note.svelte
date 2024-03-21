@@ -5,10 +5,10 @@
   import { some, type Option } from "fp-ts/lib/Option"
   export let note_sync: NoteSync
   export let note_data: Notes & { searchArt: Option<never> } // no searching
-  export let showing_content: boolean
-  export let close_all_notes: () => void
+  export let isOpen: boolean
+  export let closeAll: () => void
   $: goto_function = () => gotoSnippet(note_data.snippet_uuid!)
   $: deleteCbOpt = some(() => deleteSnippet(note_data.snippet_uuid!, note_data.serialized_highlight!))
 </script>
 
-<Note {note_data} {note_sync} bind:showing_content {close_all_notes} {goto_function} {deleteCbOpt} />
+<Note {note_data} {note_sync} bind:isOpen {closeAll} {goto_function} {deleteCbOpt} />
