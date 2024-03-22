@@ -63,7 +63,7 @@
 </script>
 
 <div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
-  <div class="tooltip tooltip-right tooltip-primary carousel-item" data-tip="toggle all">
+  <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
@@ -72,7 +72,9 @@
     </button>
   </div>
   {#each $tags_counts as [tag, cnt]}
-    <div class="tooltip tooltip-right tooltip-primary carousel-item" data-tip={tag ? cnt : `${cnt} untagged`}>
+    <div
+      class="tooltip tooltip-right tooltip-secondary carousel-item"
+      data-tip={tag ? cnt : `${cnt} untagged`}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleSet(tag)}
