@@ -19,6 +19,8 @@ import {
 import type { Notes } from "./db/types"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested.. 
 
+export const browser = () => typeof window !== "undefined" && typeof document !== "undefined" // for SSR
+
 export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
@@ -103,11 +105,11 @@ export const curry2 = <A, B, C>(f: (a: A, b: B) => C) => (a: A) => (b: B) => f(a
 export const eq = <T>(a: T) => (b: T) => a == b
 export const neq = <T>(a: T) => (b: T) => a != b
 
-export const escapeHTML = (text: string) => {
+export const escapeHTML = browser() ? (text: string) => {
   const div = document.createElement("div")
   div.innerText = text
   return div.innerHTML
-}
+} : identity
 
 export const unwrapTo
   = <T>(x: Option<T>) =>

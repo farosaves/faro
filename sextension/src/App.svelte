@@ -43,7 +43,7 @@
         needToRefreshPage = true
       })
   }
-  const currUrl = RemoteStore("currUrl", "pending url")
+  const currSrcMutBg = RemoteStore("currSrcMutBg", "pending url")
 
   async function updateActive() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -135,7 +135,7 @@
 <a href={`${API_ADDRESS}/dashboard?search`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
   >go to dashboard / alfF</a>
 
-<!-- {$currUrl} -->
+{JSON.stringify($currSrcMutBg)}
 
 {#if needToRefreshPage}
   <div role="alert" class="alert alert-error">
