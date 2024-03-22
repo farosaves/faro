@@ -14,6 +14,7 @@ export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port })],
 })
 
+
 if (DEBUG) console.log(T.add.query([1, 77]))
 
 const ran2sel = (rann: Range) => {
@@ -64,7 +65,7 @@ const batchDeserialize = (uss: [string, string][]) =>
     console.log("prep", prepared)
     try {
       hl.deserialize(prepared)
-    } catch {}
+    } catch { }
   })
 
 const gotoText = (uuid: string) => {
@@ -112,6 +113,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     pendingNotes.send(note_data)
   }
   if (request.action === "goto") gotoText(request.uuid)
-  if (request.action === "deserialize") batchDeserialize(request.uss)
+  // if (request.action === "deserialize") batchDeserialize(request.uss)
   if (request.action === "delete") deleteSelection(request.uuid)
 })
+
+  ; (async () => { // here I can potentially skip loading if page has no highlights
+    await T.loadDeps.query()
+    console.log('loaded bg')
+    await T.serializedHighlights.query().then(batchDeserialize)
+    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+    if (goto) gotoText(goto)
+  })()
