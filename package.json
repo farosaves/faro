@@ -15,7 +15,7 @@
     "checkshared": "svelte-check --workspace=shared/",
     "checkss": "svelte-check --workspace=supabase-sveltekit/",
     "checksext": "svelte-check --workspace=sextension/",
-    "format": "#npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
+    "format": "# find */src/**/*.ts -mtime -5s -exec npx eslint --fix {} \\; #npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
     "b": "npm run b -w=sextension/ #&& npm run bz -w=sextension/ && npm run build -w=supabase-sveltekit/",
     "buildShared": "npm run build -w=shared/",
     "test": "npx playwright test",

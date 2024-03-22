@@ -17,7 +17,7 @@ import {
   safeProduceWithPatches,
 } from "structurajs"
 import type { Notes } from "./db/types"
-// setAutoFreeze(false)  only for perf reasons makes sense if tested.. 
+// setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 export const browser = () => typeof window !== "undefined" && typeof document !== "undefined" // for SSR
 
@@ -28,7 +28,7 @@ export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f)
 export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
 export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
-export function desc<T>(first: (t: T) => number, second: (t: T) => number = (t) => 0): (t1: T, t2: T) => number {
+export function desc<T>(first: (t: T) => number, second: (t: T) => number = t => 0): (t1: T, t2: T) => number {
   return (t1, t2) => first(t2) - first(t1) || second(t2) - second(t1)
 }
 export const asc
@@ -37,13 +37,13 @@ export const asc
       f(t1) - f(t2)
 
 export const ifErr
-  = (f: (e: any) => void, is = true) =>
-    <T extends { error: any }>(r: T) => {
+  = <U>(f: (e: U) => void, is = true) =>
+    <T extends { error: U }>(r: T) => {
       const { error } = r
       if (!!error == is) f(error)
       return r
     }
-export const ifNErr = (f: (e: any) => void) => ifErr(f, false)
+export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
 export const logIfError = ifErr(console.log)
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -105,11 +105,13 @@ export const curry2 = <A, B, C>(f: (a: A, b: B) => C) => (a: A) => (b: B) => f(a
 export const eq = <T>(a: T) => (b: T) => a == b
 export const neq = <T>(a: T) => (b: T) => a != b
 
-export const escapeHTML = browser() ? (text: string) => {
-  const div = document.createElement("div")
-  div.innerText = text
-  return div.innerHTML
-} : identity
+export const escapeHTML = browser()
+  ? (text: string) => {
+      const div = document.createElement("div")
+      div.innerText = text
+      return div.innerHTML
+    }
+  : identity
 
 export const unwrapTo
   = <T>(x: Option<T>) =>
