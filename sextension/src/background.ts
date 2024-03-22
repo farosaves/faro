@@ -13,7 +13,6 @@ import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
 
-
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 const DEBUG = import.meta.env.DEBUG || false
 
@@ -41,21 +40,21 @@ refresh()
 const addZ = z.tuple([z.number(), z.number()])
 type AddZ = z.infer<typeof addZ>
 const appRouter = t.router({
-  serializedHighlights: t.procedure.query(() => get(note_mut.panel).map((n) => [n.snippet_uuid, n.serialized_highlight] as [string, string])),  // !
+  serializedHighlights: t.procedure.query(() => get(note_mut.panel).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
   add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
   loadDeps: t.procedure.query(({ ctx: { tab } }) => {
     chrome.scripting.executeScript({
       target: { tabId: tab?.id! },
       files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
     })
-  })
+  }),
 })
 export type AppRouter = typeof appRouter
 
-// @ts-expect-error 
+// @ts-expect-error
 createChromeHandler({
   router: appRouter,
-  createContext
+  createContext,
 })
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -68,12 +67,11 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
   if (url) currUrl.set(url)
   console.log({ url, title })
-  let source_id = note_mut.localSrcId({ url: url || "", title: title || "" })
+  const source_id = note_mut.localSrcId({ url: url || "", title: title || "" })
   console.log(source_id, get(note_mut.curr_source))
   // O.map(currDomainTitle.set)(domain_title(tab.url || "", tab.title || ""))
   // console.log(get(currDomainTitle))
 }
-
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
@@ -88,7 +86,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 
 const tryn
   = (n: number, ms = 500) =>
-    async (f: any) => {
+    async <T>(f: () => Promise<T>) => {
       // TODO
       if (n < 1) return
       try {
@@ -106,7 +104,7 @@ pendingNotes.stream.subscribe(([note_data, sender]) => {
   tryn(5, 1000)(smr)
 })
 
-function onMessage(request: { action: any }, sender: chrome.runtime.MessageSender, sendResponse: any) {
+function onMessage(request: { action: string }, sender: chrome.runtime.MessageSender, sendResponse: unknown) {
   if (request.action === "loadDeps") {
     chrome.scripting.executeScript({
       target: { tabId: sender?.tab?.id! },

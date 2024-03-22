@@ -16,6 +16,8 @@ module.exports = {
     ...customized.rules,
     "@typescript-eslint/no-var-requires": "off", // or "warn" to turn it into a warning
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
     "@stylistic/quotes": [1, "double"],
   },
 }
