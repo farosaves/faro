@@ -72,7 +72,7 @@
   {$note_groups[0]} -->
 <!-- {showLoginPrompt} -->
 <LoginPrompt bind:showLoginPrompt />
-<Tabs {note_sync} />
+<!-- <Tabs {note_sync} /> -->
 <TagView {note_sync} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
 <div class="drawer md:drawer-open">

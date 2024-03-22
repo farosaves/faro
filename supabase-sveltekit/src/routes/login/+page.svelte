@@ -18,7 +18,9 @@
         console.log(session)
         if (session) $sessStore = O.some(session)
         setTimeout(() => {
-          $page.url.pathname == "login" && goto("/account?from=login")
+          // console.log("url", $page.url.pathname)
+          // $page.url.pathname == "/login" &&
+          goto("/account?from=login")
         }, 50)
       }
     }),

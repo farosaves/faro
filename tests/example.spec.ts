@@ -19,16 +19,20 @@ test("login flow", async ({ page }) => {
   await page.getByText("Account", { exact: true }).click()
   // await expect(page).toHaveTitle("Faros - Login")
   await expect(page).toHaveURL(/login/)
+  await page.waitForTimeout(50)
   const email = page.getByPlaceholder(/email/i)
   await email.fill("pawel.paradysz@protonmail.com")
   const password = page.getByPlaceholder(/password/i)
   await password.fill("test1234")
+
   await password.press("Enter")
+
   await expect(page).toHaveURL(/account/)
   await page.getByText("Dashboard", { exact: true }).click()
   await expect(page).toHaveURL(/dashboard/)
   // reactivity
-  await expect(page.locator("button.btn-sm").nth(1)).not.toHaveClass(/btn-outline/)
-  await page.locator("button.btn-sm").nth(0).click()
-  await expect(page.locator("button.btn-sm").nth(1)).toHaveClass(/btn-outline/)
+  const loc = page.locator("button.btn-sm", { hasNotText: /./ })
+  await expect(loc.nth(1)).not.toHaveClass(/btn-outline/)
+  await loc.nth(0).click()
+  await expect(loc.nth(1)).toHaveClass(/btn-outline/)
 })
