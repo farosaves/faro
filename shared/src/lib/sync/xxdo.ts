@@ -15,7 +15,7 @@ export type NotesOps = {
     op: "upsert" | "delete"
     note: Notes
 }[]
-const _getOp = (x: Patch): NotesOps[0]["op"] => x.op == "remove" ? "delete" : "upsert"
+const _getOp = (x: Patch): NotesOps[0]["op"] => (x.op == "remove" && x.path.length == 1) ? "delete" : "upsert"
 
 export const getNotesOps = (patches: Patch[], ns: Record<string, Notes>): NotesOps => patches
     // .filter(x => x.op != "remove")

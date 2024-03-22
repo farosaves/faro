@@ -8,7 +8,7 @@
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
   import { desc, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
-  import { currTagSet, exclTagSets as t, tagFilter } from "$lib/filterSortStores"
+  import { exclTagSet, exclTagSets, tagFilter } from "$lib/filterSortStores"
   import { modalOpenStore } from "shared"
   export let note_sync: NoteSync
   let noteStore = note_sync.noteStore
@@ -30,13 +30,13 @@
   $: console.log(!!$tagFilter, "tagFilter updated")
   const checkClick = () => {
     // assigns to trigger potential $:
-    if (currTagSet($t).size > 0) $t.ss[$t.ui] = new Set()
-    else $t.ss[$t.ui] = new Set($tags_counts.map(([x, y]) => x))
+    if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
+    else $exclTagSets.sets[$exclTagSets.currId] = new Set($tags_counts.map(([x, y]) => x))
   }
-  $: console.log(Array.from($t.ss[$t.ui]))
+  $: console.log(Array.from($exclTagSets.sets[$exclTagSets.currId]))
   const toggleSet = (tag: string) =>
-    t.update((s) => {
-      currTagSet(s).delete(tag) || currTagSet(s).add(tag)
+    exclTagSets.update((s) => {
+      s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
       return s
     })
 
@@ -45,7 +45,7 @@
   let currTag: string
   let newTag: string
   const updateTag = () => {
-    note_sync.tagUpdate(currTag, newTag)
+    note_sync.tagUpdate(currTag, O.some(newTag))
     currTag = newTag
     return true
   }
@@ -56,23 +56,18 @@
       $modalOpenStore = true
     }
   }
-  const deleteTag = () => myModal && myModal.close()
+  const deleteTag = () => {
+    myModal && myModal.close()
+    note_sync.tagUpdate(currTag, O.none)
+  }
 </script>
 
-<!-- <div
-  class="bg-base-100 sticky grid grid-flow-col top-0 z-20 justify-center overflow-x-auto overflow-y-hidden"> -->
-
-<!-- on:mouseenter={() => (modalPotential = true)}
-  on:mouseleave={() => (modalPotential = false)} -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
-  <!-- {modalPotential} -->
   <div class="tooltip tooltip-right tooltip-primary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
-      class:btn-outline={currTagSet($t).size == $tags_counts.length}>
-      <!-- <IconCheckbox size="26" /> -->
+      class:btn-outline={$exclTagSet.size == $tags_counts.length}>
       <IconCheckbox />
     </button>
   </div>
@@ -82,12 +77,9 @@
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleSet(tag)}
         on:contextmenu={onDblClick(tag)}
-        class:btn-outline={currTagSet($t).has(tag)}
+        class:btn-outline={$exclTagSet.has(tag)}
         >{#if tag}{tag}{:else}
           <IconTagOff />
-          <!-- <IconTagOff size="26" /> -->
-
-          <!-- <Icon size="26" src={ArchiveBoxXMark} /> -->
         {/if}
       </button>
     </div>

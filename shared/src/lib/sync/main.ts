@@ -7,6 +7,7 @@ import type { NoteEx, Notess, SourceData, SupabaseClient } from "../db/typeExtra
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
+  neq,
   fillInTitleUrl, // todo? lol
   filterSort,
   getNotes,
@@ -31,7 +32,8 @@ const allNotesR: ReturnType<typeof validateNs> = {}
 const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
 browser && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
 export const noteStore = persisted("notestore", allNotesR, { serializer: devalue })
-console.log(get(noteStore))
+console.log(devalue.stringify(get(noteStore)).length)
+// console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)
 // this block shall ensure local data gets overwritten on db schema changes
 noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
@@ -159,7 +161,7 @@ export class NoteSync {
     return pTInverted
   }
 
-  // undo = () => this.xxdo(undo_stack, redo_stack)
+  // undo = () => this.xxdo(undo_stack, redo_stack)  // can still refactor below but not sure if cleaner
   undo = () => xxdoStacks.update(({ undo, redo }) => {
     const pT = undo.pop()
     console.log("undo", pT)
@@ -192,11 +194,14 @@ export class NoteSync {
     this.action(x => x.update({ tags }).eq("id", note.id))(patchTup)
   }
 
-  tagUpdate = async (oldTag: string, newTag: string) => {
+  tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       Object.values(ns).forEach(n => {
         const i = n.tags.indexOf(oldTag)
-        if (~i) n.tags[i] = newTag
+        if (~i)
+          if (O.isSome(newTag))
+            n.tags[i] = newTag.value
+          else n.tags = n.tags.filter(neq(oldTag))
       })
     })
     this.act(patchTup, true)

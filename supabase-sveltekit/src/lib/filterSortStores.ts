@@ -6,26 +6,20 @@ import { derived, get, writable, type Writable } from "svelte/store"
 import { hostnameStr } from "./utils"
 
 const _exclTagSets = {
-  ss: { "": new Set([]) } as Record<string, Set<string>>,
-  ui: "",
+  sets: { "": new Set([]) } as Record<string, Set<string>>,
+  currId: "",
 }
 
-// type ExclTagSets = typeof _exclTagSet & { curr: () => Set<string> }
-
-export const currTagSet = (t: typeof _exclTagSets) => t.ss[t.ui]
-
-// export const exclTagSets = persisted("exclTagSets", _exclTagSets, { serializer: devalue })
 export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
+export const exclTagSet = derived(exclTagSets, ({ sets, currId }) => sets[currId])
 
-// const exclTagSet = derived(exclTagSets, ({ ss, ui }) => ss[O.getOrElse(() => "")(ui)])
-// const exclTagSet = derived(exclTagSets, ({ ss, ui }) => ss[ui])
 type _A = NoteEx & { priority: number }
-export const tagFilter = derived(exclTagSets, ({ ss, ui }) => (n: _A) => ({
+export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => ({
   ...n,
   priority: pipe(
     NA.fromArray(n.tags),
     O.getOrElse(() => [""]),
-    A.map((s) => !ss[ui].has(s)),
+    A.map((s) => !sets[currId].has(s)),
     A.reduce(false, (x, y) => x || y),
   )
     ? n.priority
