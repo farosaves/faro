@@ -99,25 +99,9 @@ export async function getNotes(
   return data
 }
 
-// type Idx<T> = Array<T> | Record<string | number | symbol, T>
-// export function idx(a: Array<T>, i: number): O.Option<T>
-// export function idx<A extends string | number | symbol>(a: Record<A, T>, i: A): O.Option<T>
-// export function idx(a: Idx<T>, i: any): O.Option<T> {
-//   return O.fromNullable(a[i])
-// }
-// export function idx<S extends string | number | symbol, T>(a: Record<S, T>, i: S): O.Option<T>
-// export function idx<T>(a: Array<T>, i: number): O.Option<T>
-
-// const x = [{ a: "hello" }]
-// const y: ReadonlyArray<{ a: string }> = [{ a: "hello" }]
-// const z: Record<string, number> = { hey: 3 }
-// I want these 3 to not give type error
-
-// export function idx<T>(a: { [key: number]: T }, i: number): O.Option<T>
-// export function idx<T>(a: { [key: symbol]: T }, i: symbol): O.Option<T>
-// export function idx<T>(a: Idx<T>, i: string | number | symbol): O.Option<T> {
-
-// }
+export const curry2 = <A, B, C>(f: (a: A, b: B) => C) => (a: A) => (b: B) => f(a, b)
+export const eq = <T>(a: T) => (b: T) => a == b
+export const neq = <T>(a: T) => (b: T) => a != b
 
 export const escapeHTML = (text: string) => {
   const div = document.createElement("div")
@@ -154,17 +138,3 @@ export const updateStore
       console.log(patches)
       return { patches, inverse }
     }
-
-// export const updateStoreImmer =
-//   <T>(store: Writable<T>) =>
-//   (up: (arg: UnFreeze<T>) => void) => {
-//     let [patches, inverse]: Patch[][] = [[], []]
-//     store.update((storeVal) => {
-//       let [result, ...pinv] = //
-//         pWPimmer(storeVal, up)
-//       ;[patches, inverse] = pinv
-//       return result as T
-//     })
-
-//     return { patches, inverse }
-//   }
