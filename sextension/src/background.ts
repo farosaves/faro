@@ -4,8 +4,7 @@ import { pushStore, pendingNotes } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
 import { NoteSync, domain_title, escapeRegExp, hostname, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
-import { loadSB } from "$lib/loadSB"
-import type { Session, SupportedStorage } from "@supabase/supabase-js"
+import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
 import { NoteMut } from "$lib/note_mut"
 
@@ -69,8 +68,6 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   console.log({ url, title })
   const source_id = note_mut.localSrcId({ url: url || "", title: title || "" })
   console.log(source_id, get(note_mut.curr_source))
-  // O.map(currDomainTitle.set)(domain_title(tab.url || "", tab.title || ""))
-  // console.log(get(currDomainTitle))
 }
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
@@ -98,29 +95,12 @@ const tryn
     }
 
 // to sidepanel
-
 pendingNotes.stream.subscribe(([note_data, sender]) => {
   const smr = () => chrome.runtime.sendMessage({ action: "uploadTextSB", note_data })
   tryn(5, 1000)(smr)
 })
 
-function onMessage(request: { action: string }, sender: chrome.runtime.MessageSender, sendResponse: unknown) {
-  if (request.action === "loadDeps") {
-    chrome.scripting.executeScript({
-      target: { tabId: sender?.tab?.id! },
-      files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
-    })
-    chrome.runtime.sendMessage({ action: "content_script_loaded" })
-  }
-}
-chrome.runtime.onMessage.addListener(onMessage)
-
-const getUuid = () => crypto.randomUUID()
-// try {
-//   return
-// } catch {
-//   console.log("uuid fallback, nonsecure context?")
-// }
+const getUuid = () => crypto.randomUUID() // bg is always asfe
 
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)

@@ -32,17 +32,7 @@
   })
 
   let needToRefreshPage = false
-  function getHighlight(source_id: string, tab_id: number) {
-    needToRefreshPage = false
-    chrome.tabs
-      .sendMessage(tab_id, {
-        action: "deserialize",
-        uss: get(note_mut.panel).map((n) => [n.snippet_uuid, n.serialized_highlight]),
-      })
-      .catch((e) => {
-        needToRefreshPage = true
-      })
-  }
+  function getHighlight(source_id: string, tab_id: number) {}
   const currSrcMutBg = RemoteStore("currSrcMutBg", "pending url")
 
   async function updateActive() {

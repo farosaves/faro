@@ -19,5 +19,6 @@ module.exports = {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
     "@stylistic/quotes": [1, "double"],
+    "@stylistic/no-multiple-empty-lines": 1,
   },
 }

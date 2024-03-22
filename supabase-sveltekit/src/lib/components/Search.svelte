@@ -35,25 +35,15 @@
       bind:value={query} />
     <button hidden on:click={() => console.log(query, $fzRes, selectedKeys, $notes.length)}></button>
   </form>
-  <div>
-    <div class="join w-full">
-      {#each entries as [ariaLabel, value] (value)}
-        <input
-          class="join-item btn grow"
-          type="checkbox"
-          name="options"
-          bind:group={selectedKeys}
-          {value}
-          aria-label={ariaLabel} />
-        <!-- <input
-          class="join-item btn grow"
-          type="radio"
-          name="options"
-          bind:group={selectedKey}
-          {value}
-          aria-label={ariaLabel}
-          on:click={() => (selectedKey = selectedKey == value ? "" : value)} /> -->
-      {/each}
-    </div>
+  <div class="join w-full">
+    {#each entries as [ariaLabel, value] (value)}
+      <input
+        class="join-item btn grow"
+        type="checkbox"
+        name="options"
+        bind:group={selectedKeys}
+        {value}
+        aria-label={ariaLabel} />
+    {/each}
   </div>
 </div>

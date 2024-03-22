@@ -66,11 +66,6 @@
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- <div tabindex="-1" on:keydown={handle_keydown}> -->
-<!-- {$na[0]?.quote}
-  {$note_groups[0]} -->
-<!-- {showLoginPrompt} -->
 <LoginPrompt bind:showLoginPrompt />
 <!-- <Tabs {note_sync} /> -->
 <TagView {note_sync} />
@@ -97,17 +92,11 @@
         </div>
       {/each}
     </div>
-    <!-- class:hidden={get(note_sync.note_del_queue).length == 0}> -->
-    <div class="toast toast-end z-10">
-      <!-- {$note_del_queue.length} -->
-      <!-- <div class="alert alert-info">
-          <button on:click={note_sync.restoredelete}>Undo last delete.</button>
-        </div> -->
-    </div>
+    <div class="toast toast-end z-10"></div>
   </div>
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content">
+    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content">
       <li>
         <button class="btn btn-sm" on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
@@ -123,4 +112,3 @@
     </ul>
   </div>
 </div>
-<!-- </div> -->
