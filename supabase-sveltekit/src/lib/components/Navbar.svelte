@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { updateTheme } from "shared"
+  import { replacer, updateTheme } from "shared"
   const themes = ["light", "dark", "retro", "cyberpunk", "aqua", "night"]
   import { onMount } from "svelte"
   import { themeChange } from "theme-change"
-
   onMount(() => {
     themeChange(false)
   })
@@ -11,7 +10,7 @@
 
 <div class="navbar z-30 relative">
   <div class="navbar-start">
-    <a class="btn btn-ghost text-xl" href="/">Faros</a>
+    <a class="btn btn-ghost text-xl" href="/">{@html $replacer("Faros")}</a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-lg">

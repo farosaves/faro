@@ -59,7 +59,7 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     A.filter(n => n.priority > 0),
     NA.groupBy(n => n.sources.title),
     R.toArray<string, (NoteEx & { priority: number })[]>,
-    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max),),  // !hacky + 1000
+    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max),), // !hacky + 1000
       ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max),)
     ),
   )
@@ -123,21 +123,21 @@ export class NoteSync {
 
   action
     = <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
-      (patchTup: PatchTup, userAction = true) =>  // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
-        f(this.sb.from("notes"))  // note that the stacks on failed update from xxdo don't get updated properly yet..
-          .then(logIfError)
-          .then((e) => {
-            console.log(patchTup)
-            return e
-          })
-          .then(ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
-          .then(
-            ifNErr(() => {
-              if (userAction) {
-                xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-              }
-            }),
-          )
+    (patchTup: PatchTup, userAction = true) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
+      f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
+        .then(logIfError)
+        .then((e) => {
+          console.log(patchTup)
+          return e
+        })
+        .then(ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
+        .then(
+          ifNErr(() => {
+            if (userAction) {
+              xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
+            }
+          }),
+        )
 
   act = (patchTup: PatchTup, userAction: boolean) => {
     // maps the operation with patchTup.patches to db update
@@ -151,12 +151,11 @@ export class NoteSync {
       this.action(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup, userAction)
   }
 
-
   xxdo = (patchTup: PatchTup) => {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
-    updateStore(this.noteStore)(applyPatches(inverse))  // ! redo by 'default'
+    updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
     this.act(pTInverted, false)
     return pTInverted
   }
@@ -181,7 +180,7 @@ export class NoteSync {
   }
 
   deleteit = async (note: Notes) => {
-    const patchTup = updateStore(this.noteStore)(ns => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
       delete ns[note.id]
     })
     await this.action(x => x.delete().eq("id", note.id))(patchTup)
@@ -196,7 +195,7 @@ export class NoteSync {
 
   tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).forEach(n => {
+      Object.values(ns).forEach((n) => {
         const i = n.tags.indexOf(oldTag)
         if (~i)
           if (O.isSome(newTag))
@@ -232,7 +231,7 @@ export class NoteSync {
               ns[nn.id] = nn
             })
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this.refresh_notes()  // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
+          } else this.refresh_notes() // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
         },
       )
       .subscribe()
