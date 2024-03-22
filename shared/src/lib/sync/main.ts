@@ -8,7 +8,7 @@ import { derived, get, writable, type Readable, type Writable } from "svelte/sto
 import {
   applyPatches,
   neq,
-  fillInTitleUrl, // todo? lol
+  fillInTitleUrl,
   filterSort,
   getNotes,
   ifErr,
@@ -16,7 +16,6 @@ import {
   logIfError,
   unwrapTo,
   updateStore,
-  browser,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
@@ -63,6 +62,8 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
       ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max),)
     ),
   )
+
+export type SyncLike = Pick<NoteSync, "alltags" | "tagChange" | "changePrioritised" | "deleteit">
 
 export class NoteSync {
   sb: SupabaseClient
@@ -121,8 +122,7 @@ export class NoteSync {
       this.noteStore.set(Object.fromEntries(nns.map(n => [n.id, n]))),
     ))
 
-  action
-    = <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
+  action = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
     (patchTup: PatchTup, userAction = true) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
       f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
         .then(logIfError)

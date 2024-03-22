@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
 
-  import type { NoteSync } from "./sync/main"
+  import type { NoteSync, SyncLike } from "./sync/main"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
@@ -13,7 +13,7 @@
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
-  export let note_sync: NoteSync
+  export let note_sync: SyncLike
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
