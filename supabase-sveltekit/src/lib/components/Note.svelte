@@ -10,7 +10,8 @@
 
   import type { NoteSync } from "shared"
   let goto_function = async () => {
-    const url = note_data.sources.url
+    const url = new URL(note_data.sources.url)
+    note_data.snippet_uuid && url.searchParams.set("highlightUuid", note_data.snippet_uuid)
     console.log(url)
     url && open(url)
   }

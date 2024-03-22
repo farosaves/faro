@@ -1,8 +1,5 @@
 import { API_ADDRESS, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
-import { initTRPC } from "@trpc/server"
-import { createChromeHandler } from "trpc-chrome/adapter"
-import { z } from "zod"
 import { pushStore, pendingNotes } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
 import { NoteSync, domain_title, escapeRegExp, hostname, type PendingNote } from "shared"
@@ -11,6 +8,11 @@ import { loadSB } from "$lib/loadSB"
 import type { Session, SupportedStorage } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
 import { NoteMut } from "$lib/note_mut"
+
+import { createChromeHandler } from "trpc-chrome/adapter"
+import { z } from "zod"
+import { createContext, t } from "./lib/chromey/trpc"
+
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
 const DEBUG = import.meta.env.DEBUG || false
@@ -36,21 +38,24 @@ const refresh = async () => {
 }
 refresh()
 
-const t = initTRPC.create({
-  isServer: false,
-  allowOutsideOfServer: true,
-})
-
 const addZ = z.tuple([z.number(), z.number()])
 type AddZ = z.infer<typeof addZ>
 const appRouter = t.router({
+  serializedHighlights: t.procedure.query(() => get(note_mut.panel).map((n) => [n.snippet_uuid, n.serialized_highlight] as [string, string])),  // !
   add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
+  loadDeps: t.procedure.query(({ ctx: { tab } }) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tab?.id! },
+      files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
+    })
+  })
 })
 export type AppRouter = typeof appRouter
 
-// @ts-expect-error namespace missings
+// @ts-expect-error 
 createChromeHandler({
   router: appRouter,
+  createContext
 })
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -59,7 +64,7 @@ const currUrl = writable("")
 pushStore("currSrcMutBg", note_mut.curr_source)
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e)) // used by sidebar
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log("no sidebar")) // used by sidebar
   const { url, title } = tab
   if (url) currUrl.set(url)
   console.log({ url, title })
@@ -68,6 +73,8 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   // O.map(currDomainTitle.set)(domain_title(tab.url || "", tab.title || ""))
   // console.log(get(currDomainTitle))
 }
+
+
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
   if (/farosapp\.com\/account/.test(tab.url || ""))
@@ -76,7 +83,6 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
