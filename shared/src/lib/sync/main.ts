@@ -16,6 +16,7 @@ import {
   logIfError,
   unwrapTo,
   updateStore,
+  browser,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
@@ -29,8 +30,7 @@ import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 const validateNs = z.record(z.string(), notesRowSchema).parse
 const allNotesR: ReturnType<typeof validateNs> = {}
 
-const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
-browser && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
+// browser() && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
 export const noteStore = persisted("notestore", allNotesR, { serializer: devalue })
 console.log(devalue.stringify(get(noteStore)).length)
 // console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)

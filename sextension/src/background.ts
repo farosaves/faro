@@ -5,7 +5,7 @@ import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { pushStore, pendingNotes } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteSync, escapeRegExp, hostname, type PendingNote } from "shared"
+import { NoteSync, domain_title, escapeRegExp, hostname, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import { loadSB } from "$lib/loadSB"
 import type { Session, SupportedStorage } from "@supabase/supabase-js"
@@ -17,18 +17,22 @@ const DEBUG = import.meta.env.DEBUG || false
 
 const T = trpc2()
 
-// const note_sync: NoteSync = new NoteSync(supabase, undefined)
-// const note_mut: NoteMut = new NoteMut(note_sync)
+const note_sync: NoteSync = new NoteSync(supabase, undefined)
+const note_mut: NoteMut = new NoteMut(note_sync)
 const sess = writable<O.Option<Session>>(O.none)
-// prettier-ignore
 const user_id = derived(sess, O.map(s => s.user.id))
-// user_id.subscribe(O.map(note_sync.setUid))
+// on user/session run:
+const onUser_idUpdate = O.map((user_id: string) => {
+  note_sync.setUid(user_id)
+  note_sync.refresh_sources()
+  note_sync.refresh_notes()
+})
+user_id.subscribe(onUser_idUpdate)
 
 const refresh = async () => {
   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.update(n => O.orElse(newSess, () => n))
-  console.log(get(user_id), newSess)
 }
 refresh()
 
@@ -51,14 +55,18 @@ createChromeHandler({
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
-const currUrl = writable("bebebobou")
+const currUrl = writable("")
+pushStore("currSrcMutBg", note_mut.curr_source)
 
-pushStore("currUrl", currUrl)
-
-const updateCurrUrl = (tab?: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
-  if (tab?.url) currUrl.set(tab?.url)
-  console.log(get(currUrl))
+const updateCurrUrl = (tab: chrome.tabs.Tab) => {
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e)) // used by sidebar
+  const { url, title } = tab
+  if (url) currUrl.set(url)
+  console.log({ url, title })
+  let source_id = note_mut.localSrcId({ url: url || "", title: title || "" })
+  console.log(source_id, get(note_mut.curr_source))
+  // O.map(currDomainTitle.set)(domain_title(tab.url || "", tab.title || ""))
+  // console.log(get(currDomainTitle))
 }
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
