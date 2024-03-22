@@ -15,6 +15,7 @@
   import { domainFilter, fuzzySort, newestFirst, tagFilter } from "$lib/filterSortStores.js"
   import Overview from "$lib/components/Overview.svelte"
   import { modalOpenStore } from "shared"
+  import Tabs from "$lib/components/Tabs.svelte"
   export let data
   $: ({ session: _session, supabase } = data)
   $: if (_session) $sessStore = O.some(_session)
@@ -71,7 +72,7 @@
   {$note_groups[0]} -->
 <!-- {showLoginPrompt} -->
 <LoginPrompt bind:showLoginPrompt />
-<!-- {Object.entries($flat_notes).flatMap(([a, b]) => b).length} -->
+<Tabs {note_sync} />
 <TagView {note_sync} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
 <div class="drawer md:drawer-open">
