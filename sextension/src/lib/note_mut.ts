@@ -5,19 +5,19 @@ import { option as O, record as R, string as S, array as A, tuple as T } from "f
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import { invertLast } from "fp-ts-std/Record"
-type Src = SourceData["sources"]
+export type Src = SourceData["sources"]
 
 const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync
-  curr_source: Writable<O.Option<[Src, string]>>
+  currSrcNId: Writable<O.Option<[Src, string]>>
   panel: Readable<Notes[]>
   source_idStore
   constructor(ns: NoteSync) {
     this.ns = ns
-    this.curr_source = writable(O.none)
-    this.panel = derived([this.ns.noteStore, this.curr_source], ([ns, ots]) =>
+    this.currSrcNId = writable(O.none)
+    this.panel = derived([this.ns.noteStore, this.currSrcNId], ([ns, ots]) =>
       pipe(
         ots,
         O.map(ts => Object.values(ns).filter(n => n.source_id == ts[1])),
@@ -35,7 +35,7 @@ export class NoteMut {
   }
 
   _updateSrc = (source: Src, id: string) => {
-    this.curr_source.set(O.some([source, id]))
+    this.currSrcNId.set(O.some([source, id]))
     const { title, url } = source
     this.ns.update_source(id, { sources: source })
     return id
@@ -50,7 +50,7 @@ export class NoteMut {
     )
     if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
     // stil we're on not inserted so set to none:
-    this.curr_source.set(O.none)
+    this.currSrcNId.set(O.none)
     return O.none
   }
 

@@ -6,7 +6,6 @@ import { flow, identity, pipe } from "fp-ts/lib/function"
 import type { LazyArg } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { Subject, Observable } from "rxjs"
-import type { Session } from "@supabase/supabase-js"
 import type { Draft, Patch } from "immer"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
@@ -18,6 +17,8 @@ import {
 } from "structurajs"
 import type { Notes } from "./db/types"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
+
+export const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
 export const browser = () => typeof window !== "undefined" && typeof document !== "undefined" // for SSR
 

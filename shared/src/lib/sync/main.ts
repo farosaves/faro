@@ -179,18 +179,18 @@ export class NoteSync {
     const n = { ...createMock(), note }
   }
 
-  deleteit = async (note: Notes) => {
+  deleteit = async (noteId: string) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      delete ns[note.id]
+      delete ns[noteId]
     })
-    await this.action(x => x.delete().eq("id", note.id))(patchTup)
+    await this.action(x => x.delete().eq("id", noteId))(patchTup)
   }
 
-  tagChange = (note: Notes) => async (tag: string, tags: string[]) => {
+  tagChange = (noteId: string) => async (tag: string, tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).filter(n => n.id == note.id)[0].tags = tags
+      Object.values(ns).filter(n => n.id == noteId)[0].tags = tags
     })
-    this.action(x => x.update({ tags }).eq("id", note.id))(patchTup)
+    this.action(x => x.update({ tags }).eq("id", noteId))(patchTup)
   }
 
   tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
@@ -206,11 +206,11 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
-  changePrioritised = (note: Notes) => async (prioritised: number) => {
+  changePrioritised = (noteId: string) => async (prioritised: number) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).filter(n => n.id == note.id)[0].prioritised = prioritised
+      Object.values(ns).filter(n => n.id == noteId)[0].prioritised = prioritised
     })
-    this.action(x => x.update({ prioritised }).eq("id", note.id))(patchTup)
+    this.action(x => x.update({ prioritised }).eq("id", noteId))(patchTup)
   }
 
   sub = () => {

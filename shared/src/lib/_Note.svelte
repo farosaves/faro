@@ -13,7 +13,7 @@
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
-  export let note_sync: SyncLike
+  export let syncLike: SyncLike
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
@@ -22,7 +22,7 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
-  let all_tags = note_sync.alltags
+  let all_tags = syncLike.alltags
 
   $: text = pipe(
     note_data.searchArt,
@@ -47,9 +47,9 @@
   )
   //.replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = note_sync.tagChange(note_data)
-  $: onTagRemoved = note_sync.tagChange(note_data)
-  $: changeP = note_sync.changePrioritised(note_data)
+  $: onTagAdded = syncLike.tagChange(note_data.id)
+  $: onTagRemoved = syncLike.tagChange(note_data.id)
+  $: changeP = syncLike.changePrioritised(note_data.id)
 
   let highlighting = false
   const highlightMe = () => {
@@ -115,7 +115,7 @@
         <button
           class="btn btn-xs text-error"
           on:click={() => {
-            note_sync.deleteit(note_data)
+            syncLike.deleteit(note_data.id)
             // prettier-ignore
             pipe(deleteCbOpt, O.map((f) => f()))
             closeAll()
