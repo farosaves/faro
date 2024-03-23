@@ -70,12 +70,10 @@ const currSrc = writable<Src>({ url: "", title: "" })
 pushStore("currSrcMutBg", note_mut.currSrcNId)
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log("no sidebar")) // used by sidebar
+  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => DEBUG && console.log("no sidebar")) // TODO: remove
   const { url, title } = tab
   if (url && title) currSrc.set({ url, title })
-  console.log({ url, title })
   const source_id = note_mut.localSrcId({ url: url || "", title: title || "" })
-  console.log(source_id, get(note_mut.currSrcNId))
 }
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
