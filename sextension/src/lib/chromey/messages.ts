@@ -21,7 +21,7 @@ import { get, writable, type Readable } from "svelte/store"
 
 type SharedStores = "currSrcMutBg" | "allTags" | "panel" | "needsRefresh"
 
-export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = console.log) => {
+export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = () => {}) => {
   const _idStart = idStart ?? id + "__start"
   const msg = gmWrap<T>(id)
   store.subscribe(async x => await msg.send(x).catch(errCb))
