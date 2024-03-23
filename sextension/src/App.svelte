@@ -16,6 +16,7 @@
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
   import { pendingNotes, RemoteStore } from "$lib/chromey/messages"
+  import { getBgSync } from "$lib/bgSync"
   let login_url = API_ADDRESS + "/login"
   let title = "Kalanchoe"
   let url = ""
@@ -31,9 +32,12 @@
     links: [/* 👉 */ chromeLink({ port })],
   })
 
+  const bgSync = getBgSync(TB)
+
   let needToRefreshPage = false
   function getHighlight(source_id: string, tab_id: number) {}
   const currSrcMutBg = RemoteStore("currSrcMutBg", "pending url")
+  const needsRefresh = RemoteStore("needsRefresh", false)
 
   async function updateActive() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -74,8 +78,9 @@
   }
 
   onMount(async () => {
-    pendingNotes.stream.subscribe(([x, { tab }]) => {
-      console.log("note data directly", tab?.id, x)
+    pendingNotes.stream.subscribe(([x]) => {
+      optimistic = O.some(x)
+      setTimeout(() => (optimistic = O.none), 1000)
     })
     const _session = await getSessionTok()
     if (_session) session = _session
@@ -92,19 +97,6 @@
       chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         if (request.action == "update_curr_url") updateActive()
         if (request.action == "content_script_loaded" && needToRefreshPage) updateActive()
-        if (request.action === "uploadTextSB") {
-          const { note_data } = request as {
-            action: string
-            note_data: PendingNote
-          }
-          console.log("got data", note_data)
-          if (note_data) {
-            optimistic = O.some(note_data)
-            note_mut.addNote(note_data, { title, url })
-            // supa_update()(supabase, note_data).then((v) => v && T.note2card.mutate({ note_id: v.id }))
-            setTimeout(() => (optimistic = O.none), 1000)
-          }
-        }
       })
     } catch {
       console.log("dev?")
@@ -125,9 +117,9 @@
 <a href={`${API_ADDRESS}/dashboard?search`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
   >go to dashboard / alfF</a>
 
-{JSON.stringify($currSrcMutBg)}
+{session?.user?.id}
 
-{#if needToRefreshPage}
+{#if $needsRefresh}
   <div role="alert" class="alert alert-error">
     <div class="flex flex-row">
       <!-- prettier-ignore -->
@@ -148,7 +140,7 @@
 
 <div class="max-w-xs mx-auto space-y-4">
   <div class=" text-xl text-center w-full italic">{title}</div>
-  <NotePanel bind:optimistic {note_sync} {note_mut} />
+  <NotePanel bind:optimistic syncLike={bgSync} />
 
   <textarea
     placeholder="scratchy scratch scratch"

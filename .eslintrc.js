@@ -20,5 +20,6 @@ module.exports = {
     "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
     "@stylistic/quotes": [1, "double"],
     "@stylistic/no-multiple-empty-lines": 1,
+    "@stylistic/no-trailing-spaces": 1,
   },
 }

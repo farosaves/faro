@@ -18,5 +18,5 @@
 </script>
 
 <div class="relative" style="max-width: {w_rem}rem; min-width: {w_rem}rem ">
-  <Note {note_data} bind:isOpen {closeAll} {note_sync} {goto_function} />
+  <Note {note_data} bind:isOpen {closeAll} syncLike={note_sync} {goto_function} />
 </div>

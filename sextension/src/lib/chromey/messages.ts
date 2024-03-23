@@ -1,4 +1,5 @@
 import type { PendingNote } from "shared"
+import type { UUID } from "crypto"
 import { getMessage } from "@extend-chrome/messages"
 
 export const gmWrap = <T>(s: string) => {
@@ -10,11 +11,15 @@ export const gmWrap = <T>(s: string) => {
 
 export const pendingNotes = gmWrap<PendingNote>("STATS")
 
+export const getHighlightedText = gmWrap<UUID>("getHighlightedText")
+export const gotoSnippetMsg = gmWrap<UUID>("gotoSnippet")
+export const deleteSnippetMsg = gmWrap<UUID>("deleteSnippet")
+
 // export const loadDeps = gmWrap<void>("load deps")
 
 import { get, writable, type Readable } from "svelte/store"
 
-type SharedStores = "currSrcMutBg"
+type SharedStores = "currSrcMutBg" | "allTags" | "panel" | "needsRefresh"
 
 export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = console.log) => {
   const _idStart = idStart ?? id + "__start"
