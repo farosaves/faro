@@ -5,6 +5,7 @@ export const persisted = <T>(key: string, d: T, o?: Options<T>): Writable<T> => 
   try {
     return _persisted(key, d, o)
   } catch {
+    console.log("stale data?", localStorage.getItem(key))
     localStorage.setItem(key, "")
     return _persisted(key, d, o)
   }
