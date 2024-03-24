@@ -22,8 +22,7 @@ export const actions = {
     const { fileToUpload } = formData as { fileToUpload: File }
     if (
       !(fileToUpload as File).name ||
-      (fileToUpload as File).name === "undefined" ||
-      fileToUpload.type !== "application/pdf"
+      (fileToUpload as File).name === "undefined" // handle html here
     ) {
       return fail(400, {
         error: true,
