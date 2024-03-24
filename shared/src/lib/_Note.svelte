@@ -6,7 +6,7 @@
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, replacer } from "./stores"
-  import { MyTags, type NoteEx, type SourceData } from "./index"
+  import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { identity, pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
@@ -123,6 +123,11 @@
       </StarArchive>
     </div>
   </div>
+  <button
+    hidden
+    on:click={() =>
+      hovered && navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)}
+    use:shortcut={{ alt: true, code: "KeyC" }} />
   {#if modalPotential}
     <dialog
       id="modal${note_data.id}"
