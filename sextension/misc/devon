@@ -1,2 +1,1 @@
 perl -pi -e 's/("Faros)"/\1Dev"/g' manifest.json
-# "name": "Faros",
