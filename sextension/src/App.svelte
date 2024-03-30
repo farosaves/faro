@@ -15,6 +15,7 @@
   import { chromeLink } from "trpc-chrome/link"
   import { pendingNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
+  import { get } from "svelte/store"
   let login_url = API_ADDRESS + "/login"
   let curr_domain_title = ""
   $: T = trpc2()
@@ -31,7 +32,7 @@
   let logged_in = true
   let optimistic: O.Option<PendingNote> = O.none
   setTimeout(() => {
-    logged_in = !!session
+    logged_in = O.isSome(get(session))
   }, 1000)
 
   onMount(async () => {

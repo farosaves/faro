@@ -65,6 +65,10 @@
   let Xview = false
 </script>
 
+<svelte:head>
+  <title>Faros - Dashboard</title>
+</svelte:head>
+
 <svelte:window on:keydown={handle_keydown} />
 <LoginPrompt bind:showLoginPrompt />
 <!-- <Tabs {note_sync} /> -->
