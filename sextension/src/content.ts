@@ -1,11 +1,11 @@
 // import 'chrome';
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
-import { elemsOfClass, makeQCH } from "shared"
+import { elemsOfClass, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
 import { getHighlightedText, pendingNotes } from "$lib/chromey/messages"
-const DEBUG = import.meta.env.VITE_DEBUG || false
+import { DEBUG } from "$lib/utils"
 
 if (DEBUG) console.log("hello")
 
@@ -13,9 +13,6 @@ const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port })],
 })
-
-
-if (DEBUG) console.log(T.add.query([1, 77]))
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
@@ -116,6 +113,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 ; (async () => { // here I can potentially skip loading if page has no highlights
   await T.loadDeps.query()
   console.log("loaded bg")
+  sleep(50)
   await T.serializedHighlights.query().then(batchDeserialize)
   const goto = new URLSearchParams(window.location.search).get("highlightUuid")
   if (goto) gotoText(goto)

@@ -19,7 +19,7 @@ export const deleteSnippetMsg = gmWrap<UUID>("deleteSnippet")
 
 import { get, writable, type Readable } from "svelte/store"
 
-type SharedStores = "currSrcMutBg" | "allTags" | "panel" | "needsRefresh"
+type SharedStores = "currSrc" | "allTags" | "panel" | "needsRefresh" | "session"
 
 export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = () => {}) => {
   const _idStart = idStart ?? id + "__start"

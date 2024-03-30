@@ -75,9 +75,6 @@
   <div class="drawer-content z-0">
     <!-- my main here -->
     <div class="flex flex-row flex-wrap">
-      {#if Xview}
-        <Overview {note_sync} />
-      {/if}
       {#each $note_groups as [title, note_group], i}
         <div
           class="border-2 text-center rounded-lg border-neutral flex flex-col"

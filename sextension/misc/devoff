@@ -1,0 +1,1 @@
+perl -pi -e 's/("Faros)Dev"/\1"/g' manifest.json

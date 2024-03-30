@@ -1,4 +1,4 @@
-import { API_ADDRESS, getSession } from "$lib/utils"
+import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, pendingNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
@@ -13,15 +13,16 @@ import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
 
 const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
-const DEBUG = import.meta.env.DEBUG || false
 
 const T = trpc2()
 
 const note_sync: NoteSync = new NoteSync(supabase, undefined)
 pushStore("allTags", note_sync.alltags)
+note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
 pushStore("panel", note_mut.panel)
 const sess = writable<O.Option<Session>>(O.none)
+pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
 // on user/session run:
 const onUser_idUpdate = O.map((user_id: string) => {
@@ -35,13 +36,21 @@ user_id.subscribe(onUser_idUpdate)
 const refresh = async () => {
   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
   const newSess = O.fromNullable(await getSession(supabase, toks))
-  sess.update(n => O.orElse(newSess, () => n))
+  sess.set(newSess)
+  return newSess
 }
 refresh()
+// const refreshIfNew = async () => {  // premature opt
+//   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
+//   const newSess = O.fromNullable(await getSession(supabase, toks))
+//   const optMail = O.match<Session, string>(() => "", x => x.user.email || "")
+//   optMail(get(sess)) != optMail(newSess) && sess.set(newSess)
+//   return newSess
+// }
 
 const appRouter = (() => {
   const addZ = z.tuple([z.number(), z.number()])
-  const tagChangeInput = z.tuple([z.string(), z.string(), z.array(z.string())])
+  const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
 
   return t.router({
@@ -49,13 +58,17 @@ const appRouter = (() => {
     add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       chrome.scripting.executeScript({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
         target: { tabId: tab?.id! },
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
     }),
-    tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1], input[2])),
+    tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
     changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
+    refresh: t.procedure.query(refresh),
+    undo: t.procedure.query(note_sync.undo),
+    redo: t.procedure.query(note_sync.redo),
   })
 })()
 export type AppRouter = typeof appRouter
@@ -67,18 +80,20 @@ createChromeHandler({
 })
 
 const currSrc = writable<Src>({ url: "", title: "" })
-pushStore("currSrcMutBg", note_mut.currSrcNId)
+pushStore("currSrc", currSrc)
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => DEBUG && console.log("no sidebar")) // TODO: remove
+  // chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => DEBUG && console.log("no sidebar")) // TODO: remove
   const { url, title } = tab
   if (url && title) currSrc.set({ url, title })
-  const source_id = note_mut.localSrcId({ url: url || "", title: title || "" })
+  const source_id = note_mut.setLocalSrcId({ url: url || "", title: title || "" })
+  console.log("new src&id:", get(note_mut.currSrcnId))
 }
+
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  if (/farosapp\.com\/account/.test(tab.url || ""))
+  if (RegExp(API_ADDRESS + "/account").test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)
 })
@@ -91,6 +106,7 @@ pendingNotes.stream.subscribe(([note_data, sender]) => {
   const newNote = note_mut.addNote(note_data, get(currSrc))
   console.log("added", newNote)
 })
+
 
 const needsRefresh = writable(false)
 pushStore("needsRefresh", needsRefresh)
