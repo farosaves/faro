@@ -10,7 +10,7 @@ type BgSync = SyncLike & Pick<NoteMut, "panel">
 export const getBgSync = (t: ReturnType<typeof createTRPCProxyClient<AppRouter>>): BgSync => ({
   alltags: RemoteStore("allTags", []),
   panel: RemoteStore("panel", []),
-  tagChange: nid => (x, xs) => t.tagChange.mutate([nid, x, xs]),
+  tagChange: nid => xs => t.tagChange.mutate([nid, xs]),
   changePrioritised: nid => p => t.changePrioritised.mutate([nid, p]),
   deleteit: nid => t.deleteit.mutate(nid),
 })

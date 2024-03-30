@@ -75,6 +75,7 @@ export class NoteSync {
   alltags: Readable<string[]>
   transformStore: Writable<(x: NoteEx) => NoteEx & { priority: number }>
   groupStore: Readable<ReturnType<typeof applyTransform>>
+  DEBUG: boolean
 
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
@@ -90,6 +91,7 @@ export class NoteSync {
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
+    this.DEBUG = import.meta.env.DEBUG || false
   }
 
   inited = () => this.user_id !== undefined
@@ -186,7 +188,7 @@ export class NoteSync {
     await this.action(x => x.delete().eq("id", noteId))(patchTup)
   }
 
-  tagChange = (noteId: string) => async (tag: string, tags: string[]) => {
+  tagChange = (noteId: string) => async (tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       Object.values(ns).filter(n => n.id == noteId)[0].tags = tags
     })
@@ -214,6 +216,7 @@ export class NoteSync {
   }
 
   sub = () => {
+    console.log("debug", this.DEBUG)
     this.sb
       .channel("notes")
       .on(
@@ -234,6 +237,16 @@ export class NoteSync {
           } else this.refresh_notes() // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
         },
       )
-      .subscribe()
+      .subscribe((status) => {
+        this.DEBUG && console.log("status change- ", status)
+        if (status !== "SUBSCRIBED") {
+          // this.sb.realtime.disconnect()
+          // setTimeout(async () => {
+          //   await this.refresh_sources()
+          //   await this.refresh_notes()
+          //   this.sub()
+          // }, 200)
+        }
+      })
   }
 }

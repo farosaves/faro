@@ -4,7 +4,9 @@ import { logIfError, type Notes } from "shared"
 import { deleteSnippetMsg } from "./chromey/messages"
 import type { UUID } from "crypto"
 
-export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
+/**  STRIPS TRAILING '/' */
+export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "") as string
+export const DEBUG = import.meta.env.VITE_DEBUG || false
 
 // console.log("API_ADDRESS", API_ADDRESS)
 

@@ -11,16 +11,18 @@
   import { option as O } from "fp-ts"
   import type { SupabaseClient } from "@supabase/supabase-js"
   import { page } from "$app/stores"
+  import { get } from "svelte/store"
   // let providers = ["github"]
+  const DEBUG = import.meta.env.DEBUG || false
+
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
         console.log(session)
         if (session) $sessStore = O.some(session)
         setTimeout(() => {
-          // console.log("url", $page.url.pathname)
-          // $page.url.pathname == "/login" &&
-          goto("/account?from=login")
+          DEBUG && console.log("url", $page.url.pathname) // omfg $page binds immediately, and get(page) on call
+          get(page).url.pathname == "/login" && goto("/account?from=login")
         }, 50)
       }
     }),

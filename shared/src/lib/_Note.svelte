@@ -47,8 +47,8 @@
   )
   //.replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = syncLike.tagChange(note_data.id)
-  $: onTagRemoved = syncLike.tagChange(note_data.id)
+  $: onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  $: onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
   $: changeP = syncLike.changePrioritised(note_data.id)
 
   let highlighting = false

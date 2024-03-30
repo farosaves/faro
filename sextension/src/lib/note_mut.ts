@@ -1,7 +1,7 @@
 import { NoteSync, domain_title, hostname, logIfError, type Notes, type SourceData } from "shared"
 import { createMock } from "shared"
 import type { InsertNotes, PendingNote } from "shared"
-import { option as O, record as R, string as S, array as A, tuple as T } from "fp-ts"
+import { option as O, record as R, string as S, array as A, tuple as T, nonEmptyArray as NA } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import { invertLast } from "fp-ts-std/Record"
@@ -11,13 +11,13 @@ const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync
-  currSrcNId: Writable<O.Option<[Src, string]>>
+  currSrcnId: Writable<O.Option<[Src, string]>>
   panel: Readable<Notes[]>
   source_idStore
   constructor(ns: NoteSync) {
     this.ns = ns
-    this.currSrcNId = writable(O.none)
-    this.panel = derived([this.ns.noteStore, this.currSrcNId], ([ns, ots]) =>
+    this.currSrcnId = writable(O.none)
+    this.panel = derived([this.ns.noteStore, this.currSrcnId], ([ns, ots]) =>
       pipe(
         ots,
         O.map(ts => Object.values(ns).filter(n => n.source_id == ts[1])),
@@ -35,14 +35,14 @@ export class NoteMut {
   }
 
   _updateSrc = (source: Src, id: string) => {
-    this.currSrcNId.set(O.some([source, id]))
+    this.currSrcnId.set(O.some([source, id]))
     const { title, url } = source
     this.ns.update_source(id, { sources: source })
     return id
   }
 
   // get source if already present locally
-  localSrcId = (source: Src) => {
+  setLocalSrcId = (source: Src) => {
     // get store
     const { url, title } = source
     const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore)[dt]))(
@@ -50,13 +50,13 @@ export class NoteMut {
     )
     if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
     // stil we're on not inserted so set to none:
-    this.currSrcNId.set(O.none)
+    this.currSrcnId.set(O.none)
     return O.none
   }
 
   // get locally or db
   private _updatedSrcId = async (source: Src) => {
-    const localId = this.localSrcId(source)
+    const localId = this.setLocalSrcId(source)
     if (O.isSome(localId)) return localId
     const { data } = await this.ns.sb
       .from("sources")
@@ -85,12 +85,19 @@ export class NoteMut {
   }
 
   addNote = async (n: PendingNote, source: Src) => {
+    const source_id = await this.upSetSrcId(source)
+    // get common tags
+    // const currNotes = get(this.panel)
+    // const tags = pipe(currNotes.flatMap(n => n.tags),
+    //   NA.groupBy(identity),
+    //   R.map(A.size),
+    //   R.filter(x => x == currNotes.length),
+    //   R.keys)
+
     const id = crypto.randomUUID()
     const { ...note } = { ...n, id }
     // optimistic
 
-    //
-    const source_id = await this.upSetSrcId(source)
 
     const { data: newNote } = await this.ns.sb
       .from("notes")
