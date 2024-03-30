@@ -2,7 +2,7 @@ import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, pendingNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteSync, domain_title, escapeRegExp, schemas, type NoteEx } from "shared"
+import { NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -90,10 +90,10 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   console.log("new src&id:", get(note_mut.currSrcnId))
 }
 
-
+const apiHostname = O.getOrElse(() => "")(hostname(API_ADDRESS))
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  if (RegExp(API_ADDRESS + "/account").test(tab.url || ""))
+  if (RegExp(escapeRegExp(apiHostname) + "/account").test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)
 })
