@@ -12,8 +12,6 @@ import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
 
-const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
-
 const T = trpc2()
 
 const note_sync: NoteSync = new NoteSync(supabase, undefined)
@@ -63,10 +61,12 @@ const appRouter = (() => {
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
     }),
+
+    refresh: t.procedure.query(refresh),
+    // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
     changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
-    refresh: t.procedure.query(refresh),
     undo: t.procedure.query(note_sync.undo),
     redo: t.procedure.query(note_sync.redo),
   })
