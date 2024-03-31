@@ -8,11 +8,11 @@
   export let note_sync: NoteSync
   // const notestore = note_sync.notestore
   const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
-  const domains = derived(note_sync.noteArr, (x) =>
+  const domains = derived(note_sync.noteArr, x =>
     pipe(
       x,
       NA.groupBy(hostnameStr),
-      R.map((ns) => ns.length),
+      R.map(ns => ns.length),
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),
   )

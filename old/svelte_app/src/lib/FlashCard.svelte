@@ -1,10 +1,10 @@
 <script>
-  import { Icon, PencilSquare } from "svelte-hero-icons";
-  import AnswerButton from "./AnswerButton.svelte";
-  let editing = false;
-  let show_prev_sentence = false;
-  let show_next_sentence = false;
-  let showing_answer = false;
+  import { Icon, PencilSquare } from "svelte-hero-icons"
+  import AnswerButton from "./AnswerButton.svelte"
+  let editing = false
+  let show_prev_sentence = false
+  let show_next_sentence = false
+  let showing_answer = false
 </script>
 
 <div
@@ -48,7 +48,7 @@
         ><br />
         <button
           on:click={() => {
-            editing = !editing;
+            editing = !editing
           }}
         >
           <!--  @click="editing=!editing" -->

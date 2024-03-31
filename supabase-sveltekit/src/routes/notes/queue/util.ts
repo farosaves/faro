@@ -7,10 +7,10 @@ import type { SupabaseClient } from "shared"
 import { logIfError } from "shared"
 const fstr = "yyyy-MM-dd"
 export const day = (hr = 5) => flow(fd.subHours(hr), fd.format(fstr))
-export const fromDay =
-  (hr = 5) =>
-  (x: string) =>
-    fd.addHours(hr)(parse(x, fstr, new Date()))
+export const fromDay
+  = (hr = 5) =>
+    (x: string) =>
+      fd.addHours(hr)(parse(x, fstr, new Date()))
 
 export const nextIntervals = (card: Cards) => {
   const mins = [1, 3, 9] // days
@@ -20,7 +20,7 @@ export const nextIntervals = (card: Cards) => {
   }
   const lastInterval = fd.differenceInCalendarDays(day()(Date.parse(card.last_review)))(today)
   const mults = [1.5, 2, 3]
-  return mults.map((m) => Math.floor(m * lastInterval))
+  return mults.map(m => Math.floor(m * lastInterval))
 }
 
 export const schedule$ = (sb: SupabaseClient) => (card: Cards, n: number) => {

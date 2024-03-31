@@ -29,13 +29,13 @@
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
+        return note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
       }, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,
-          A.findIndex((n) => n == "quote"),
-          O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
+          A.findIndex(n => n == "quote"),
+          O.chain(i => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map((r) => {
             const target = escapeHTML(r.target)
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
@@ -45,7 +45,7 @@
         ),
     ),
   )
-  //.replace(note_data.quote, quoteBoldReplace)
+  // .replace(note_data.quote, quoteBoldReplace)
 
   $: onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
   $: onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
@@ -59,10 +59,10 @@
     return true
   }
   onMount(() => {
-    "highlightOnMount" in note_data &&
-      note_data["highlightOnMount"] &&
-      highlightMe() &&
-      (note_data["highlightOnMount"] = false)
+    "highlightOnMount" in note_data
+    && note_data["highlightOnMount"]
+    && highlightMe()
+    && (note_data["highlightOnMount"] = false)
   })
 
   let myModal: HTMLDialogElement | null = null
@@ -117,7 +117,7 @@
           on:click={() => {
             syncLike.deleteit(note_data.id)
             // prettier-ignore
-            pipe(deleteCbOpt, O.map((f) => f()))
+            pipe(deleteCbOpt, O.map(f => f()))
             closeAll()
           }}>DELETE</button>
       </StarArchive>

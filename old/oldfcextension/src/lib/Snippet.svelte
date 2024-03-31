@@ -1,61 +1,61 @@
 <script>
-  const DOMAIN = "http://localhost:5173";
-  let n_cards = 2;
+  const DOMAIN = "http://localhost:5173"
+  let n_cards = 2
   let qas = [
     ["Kto ty jestes? ", "Polak maly"],
     ["Jaki znak twoj?", "Orzel bialy"],
-  ];
-  let qas_accepted = [false, false];
-  let qas_rejected = [false, false];
-  let card_ids = [null, null];
-  export let text =
-    "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.";
+  ]
+  let qas_accepted = [false, false]
+  let qas_rejected = [false, false]
+  let card_ids = [null, null]
+  export let text
+    = "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women."
 
-  export let data = {};
-  let session = data.session;
-  let supabase = data.supabase;
-  let snippet_id = undefined;
+  export let data = {}
+  let session = data.session
+  let supabase = data.supabase
+  let snippet_id = undefined
 
   async function callapi() {
     const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
       method: "POST",
       body: JSON.stringify({ n_cards, text, website_title, link, session }),
       headers: { "content-type": "application/json" },
-    });
-    let ret = await response.json();
-    qas = ret.qas;
-    snippet_id = ret.snippet_id;
-    card_ids = ret.card_ids;
-    qas_accepted = card_ids.map((x) => false);
-    qas_rejected = card_ids.map((x) => false);
-    console.log(qas);
+    })
+    let ret = await response.json()
+    qas = ret.qas
+    snippet_id = ret.snippet_id
+    card_ids = ret.card_ids
+    qas_accepted = card_ids.map(x => false)
+    qas_rejected = card_ids.map(x => false)
+    console.log(qas)
   }
   function reject(n) {
     return () => {
-      qas_rejected[n] = true;
-      qas_accepted[n] = false;
-    };
+      qas_rejected[n] = true
+      qas_accepted[n] = false
+    }
   }
   function accept(n) {
     return async () => {
-      const { error } = await supabase.from("cards").update({ is_active: true }).eq("id", card_ids[n]);
-      console.log(error);
-      qas_rejected[n] = false;
-      qas_accepted[n] = true;
-    };
+      const { error } = await supabase.from("cards").update({ is_active: true }).eq("id", card_ids[n])
+      console.log(error)
+      qas_rejected[n] = false
+      qas_accepted[n] = true
+    }
   }
   function accept_reject_undo(n) {
     return async () => {
-      const { error } = await supabase.from("cards").update({ is_active: false }).eq("id", card_ids[n]);
-      console.log(error);
-      qas_rejected[n] = false;
-      qas_accepted[n] = false;
-    };
+      const { error } = await supabase.from("cards").update({ is_active: false }).eq("id", card_ids[n])
+      console.log(error)
+      qas_rejected[n] = false
+      qas_accepted[n] = false
+    }
   }
   // export let showing_contents = [false, false];
   // export let id = 0;
-  export let showing_content;
-  export let fun;
+  export let showing_content
+  export let fun
 </script>
 
 <div class="collapse bg-base-200">
@@ -72,7 +72,7 @@
     </ul>
   </div>
 </div>
-<!-- 
+<!--
 <span
   class="block p-4 my-2 bg-blue-500 text-white hover:bg-blue-600 rounded-md"
   on:click={() => {

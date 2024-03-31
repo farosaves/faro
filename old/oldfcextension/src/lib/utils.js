@@ -3,7 +3,7 @@
  * of calling `const { data: { session } } = await supabase.auth.getSession()`
  * you just call this `await getSession()`
  */
-const DOMAIN = "http://localhost:5173";
+const DOMAIN = "http://localhost:5173"
 
 export let getSession = async (supabase) => {
   let resp = await fetch(`${DOMAIN}/api/my-email`, {
@@ -13,12 +13,12 @@ export let getSession = async (supabase) => {
     headers: {
       Accept: "application/json",
     },
-  });
-  const { access_token, refresh_token } = await resp.json();
-  await supabase.auth.setSession({ access_token, refresh_token });
+  })
+  const { access_token, refresh_token } = await resp.json()
+  await supabase.auth.setSession({ access_token, refresh_token })
 
   const {
     data: { session },
-  } = await supabase.auth.getSession();
-  return session;
-};
+  } = await supabase.auth.getSession()
+  return session
+}

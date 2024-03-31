@@ -11,8 +11,23 @@ const customized = stylistic.configs.customize({
 /** @type { import("eslint").Linter.Config } */
 // eslint-disable-next-line no-undef
 module.exports = {
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-  plugins: ["@stylistic"],
+
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:svelte/recommended"],
+
+  plugins: ["@stylistic", "@typescript-eslint"],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    sourceType: "module",
+    ecmaVersion: 2020,
+    extraFileExtensions: [".svelte"],
+  },
+  env: {
+    browser: true,
+    es2017: true,
+    node: true,
+  },
+
+
   rules: {
     ...customized.rules,
     "@typescript-eslint/no-var-requires": "off", // or "warn" to turn it into a warning
@@ -23,4 +38,15 @@ module.exports = {
     "@stylistic/no-multiple-empty-lines": 1,
     "@stylistic/no-trailing-spaces": 1,
   },
+  overrides: [
+    {
+      files: ["*.svelte"],
+      parser: "svelte-eslint-parser",
+      parserOptions: {
+        parser: "@typescript-eslint/parser",
+      },
+    },
+  ],
+
 }
+
