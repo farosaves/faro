@@ -11,26 +11,26 @@
 
   export let optimistic: O.Option<PendingNote> = O.none
   // prettier-ignore
-  $: mocked = pipe(optimistic, O.map(r => {return {...r, ...createMock()}}))
+  $: mocked = pipe(optimistic, O.map((r) => { return { ...r, ...createMock() } }))
 
   $: optimistic = pipe(
     optimistic,
-    O.chain((mn) =>
+    O.chain(mn =>
       pipe(
         Object.values($note_panel || []),
-        A.findFirst((r) => r.snippet_uuid == mn.snippet_uuid),
+        A.findFirst(r => r.snippet_uuid == mn.snippet_uuid),
         O.match(
           () => O.some(mn),
-          (a) => O.none,
+          a => O.none,
         ),
       ),
     ),
   )
 
   // if (!(source_id in $note_store)) $note_store = []
-  let noteOpens = Object.values($note_panel).map((_) => false)
+  let noteOpens = Object.values($note_panel).map(_ => false)
   let closeAll = () => {
-    noteOpens = noteOpens.map((_) => false)
+    noteOpens = noteOpens.map(_ => false)
   }
   // $: console.log($note_store, source_id)
 </script>

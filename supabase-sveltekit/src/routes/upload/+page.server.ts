@@ -21,8 +21,8 @@ export const actions = {
     // console.log(totallyS3);
     const { fileToUpload } = formData as { fileToUpload: File }
     if (
-      !(fileToUpload as File).name ||
-      (fileToUpload as File).name === "undefined" // handle html here
+      !(fileToUpload as File).name
+      || (fileToUpload as File).name === "undefined" // handle html here
     ) {
       return fail(400, {
         error: true,
@@ -31,7 +31,7 @@ export const actions = {
     }
 
     // prettier-ignore
-    type T = {pdf_id: string, error: string}
+    type T = { pdf_id: string, error: string }
     const { pdf_id, error }: T = await (
       await fetch("http://127.0.0.1:2227/", {
         method: "POST",

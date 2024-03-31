@@ -10,13 +10,13 @@ import { resolveHTTPResponse } from "@trpc/server/http"
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
-      get: (key) => event.cookies.get(key),
+      get: key => event.cookies.get(key),
       set: (key, value, options) => {
-        //@ts-expect-error
+        // @ts-expect-error
         event.cookies.set(key, value, options)
       },
       remove: (key, options) => {
-        //@ts-expect-error
+        // @ts-expect-error
         event.cookies.delete(key, options)
       },
     },

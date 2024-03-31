@@ -12,7 +12,7 @@ type ColorScheme = "light" | "dark"
 const colorScheme: ColorScheme = "dark"
 export const themeStore = writable<ColorScheme>(colorScheme)
 export const replacer = derived(themeStore,
-  t => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + `</b>`)
+  t => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + "</b>")
 
 const a = ""
 export const updateTheme = () =>

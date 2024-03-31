@@ -58,8 +58,8 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     A.filter(n => n.priority > 0),
     NA.groupBy(n => n.sources.title),
     R.toArray<string, (NoteEx & { priority: number })[]>,
-    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max),), // !hacky + 1000
-      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max),)
+    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
+      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
     ),
   )
 

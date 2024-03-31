@@ -1,56 +1,56 @@
 <script>
-	import { confetti } from '@neoconfetti/svelte';
-	import { enhance } from '$app/forms';
+	import { confetti } from "@neoconfetti/svelte"
+	import { enhance } from "$app/forms"
 
-	import { reduced_motion } from './reduced-motion';
+	import { reduced_motion } from "./reduced-motion"
 
-	export let data;
+	export let data
 
-	export let form;
+	export let form
 
 	/** Whether or not the user has won */
-	$: won = data.answers.at(-1) === 'xxxxx';
+	$: won = data.answers.at(-1) === "xxxxx"
 
 	/** The index of the current guess */
-	$: i = won ? -1 : data.answers.length;
+	$: i = won ? -1 : data.answers.length
 
 	/** The current guess */
-	$: currentGuess = data.guesses[i] || '';
+	$: currentGuess = data.guesses[i] || ""
 
 	/** Whether the current guess can be submitted */
-	$: submittable = currentGuess.length === 5;
+	$: submittable = currentGuess.length === 5
 
 	/**
 	 * A map of classnames for all letters that have been guessed,
 	 * used for styling the keyboard
 	 */
-	let classnames;
+	let classnames
 
 	/**
 	 * A map of descriptions for all letters that have been guessed,
 	 * used for adding text for assistive technology (e.g. screen readers)
 	 */
-	let description;
+	let description
 
 	$: {
-		classnames = {};
-		description = {};
+	  classnames = {}
+	  description = {}
 
-		data.answers.forEach((answer, i) => {
-			const guess = data.guesses[i];
+	  data.answers.forEach((answer, i) => {
+	    const guess = data.guesses[i]
 
-			for (let i = 0; i < 5; i += 1) {
-				const letter = guess[i];
+	    for (let i = 0; i < 5; i += 1) {
+	      const letter = guess[i]
 
-				if (answer[i] === 'x') {
-					classnames[letter] = 'exact';
-					description[letter] = 'correct';
-				} else if (!classnames[letter]) {
-					classnames[letter] = answer[i] === 'c' ? 'close' : 'missing';
-					description[letter] = answer[i] === 'c' ? 'present' : 'absent';
-				}
-			}
-		});
+	      if (answer[i] === "x") {
+	        classnames[letter] = "exact"
+	        description[letter] = "correct"
+	      } else if (!classnames[letter]) {
+	        classnames[letter] = answer[i] === "c" ? "close" : "missing"
+	        description[letter] = answer[i] === "c" ? "present" : "absent"
+	      }
+	    }
+	  })
 	}
 
 	/**
@@ -58,14 +58,14 @@
 	 * if client-side JavaScript is enabled
 	 */
 	function update(event) {
-		const key = (event.target).getAttribute('data-key');
+	  const key = (event.target).getAttribute("data-key")
 
-		if (key === 'backspace') {
-			currentGuess = currentGuess.slice(0, -1);
-			if (form?.badGuess) form.badGuess = false;
-		} else if (currentGuess.length < 5) {
-			currentGuess += key;
-		}
+	  if (key === "backspace") {
+	    currentGuess = currentGuess.slice(0, -1)
+	    if (form?.badGuess) form.badGuess = false
+	  } else if (currentGuess.length < 5) {
+	    currentGuess += key
+	  }
 	}
 
 	/**
@@ -73,13 +73,13 @@
 	 * desktop users can use the keyboard to play the game
 	 */
 	function keydown(event) {
-		if (event.metaKey) return;
+	  if (event.metaKey) return
 
-		if (event.key === 'Enter' && !submittable) return;
+	  if (event.key === "Enter" && !submittable) return
 
-		document
-			.querySelector(`[data-key="${event.key}" i]`)
-			?.dispatchEvent(new MouseEvent('click', { cancelable: true }));
+	  document
+	    .querySelector(`[data-key="${event.key}" i]`)
+	    ?.dispatchEvent(new MouseEvent("click", { cancelable: true }))
 	}
 </script>
 
@@ -96,10 +96,10 @@
 	method="POST"
 	action="?/enter"
 	use:enhance={() => {
-		// prevent default callback from resetting the form
-		return ({ update }) => {
-			update({ reset: false });
-		};
+	  // prevent default callback from resetting the form
+	  return ({ update }) => {
+	    update({ reset: false })
+	  }
 	}}
 >
 	<a class="how-to-play" href="/sverdle/how-to-play">How to play</a>
@@ -112,11 +112,11 @@
 				{#each Array.from(Array(5).keys()) as column (column)}
 					{@const guess = current ? currentGuess : data.guesses[row]}
 					{@const answer = data.answers[row]?.[column]}
-					{@const value = guess?.[column] ?? ''}
+					{@const value = guess?.[column] ?? ""}
 					{@const selected = current && column === guess.length}
-					{@const exact = answer === 'x'}
-					{@const close = answer === 'c'}
-					{@const missing = answer === '_'}
+					{@const exact = answer === "x"}
+					{@const close = answer === "c"}
+					{@const missing = answer === "_"}
 					<div class="letter" class:exact class:close class:missing class:selected>
 						{value}
 						<span class="visually-hidden">
@@ -143,7 +143,7 @@
 				<p>the answer was "{data.answer}"</p>
 			{/if}
 			<button data-key="enter" class="restart selected" formaction="?/restart">
-				{won ? 'you won :)' : `game over :(`} play again?
+				{won ? "you won :)" : "game over :("} play again?
 			</button>
 		{:else}
 			<div class="keyboard">
@@ -159,7 +159,7 @@
 					back
 				</button>
 
-				{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row}
+				{#each ["qwertyuiop", "asdfghjkl", "zxcvbnm"] as row}
 					<div class="row">
 						{#each row as letter}
 							<button
@@ -170,7 +170,7 @@
 								formaction="?/update"
 								name="key"
 								value={letter}
-								aria-label="{letter} {description[letter] || ''}"
+								aria-label="{letter} {description[letter] || ""}"
 							>
 								{letter}
 							</button>
@@ -186,11 +186,11 @@
 	<div
 		style="position: absolute; left: 50%; top: 30%"
 		use:confetti={{
-			particleCount: $reduced_motion ? 0 : undefined,
-			force: 0.7,
-			stageWidth: window.innerWidth,
-			stageHeight: window.innerHeight,
-			colors: ['#ff3e00', '#40b3ff', '#676778']
+		  particleCount: $reduced_motion ? 0 : undefined,
+		  force: 0.7,
+		  stageWidth: window.innerWidth,
+		  stageHeight: window.innerHeight,
+		  colors: ["#ff3e00", "#40b3ff", "#676778"],
 		}}
 	/>
 {/if}

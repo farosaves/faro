@@ -12,17 +12,17 @@
   import { modalOpenStore } from "shared"
   export let note_sync: NoteSync
   let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteStore, (x) =>
+  const tags_counts = derived(noteStore, x =>
     pipe(
       Object.values(x),
-      A.flatMap((note) => note.tags || []),
+      A.flatMap(note => note.tags || []),
       NA.groupBy(identity),
-      R.map((x) => x.length),
+      R.map(x => x.length),
       R.toArray,
     )
       .concat(
         // prettier-ignore
-        [["", pipe(x, R.filter((note) => !note.tags.length), R.size)]],
+        [["", pipe(x, R.filter(note => !note.tags.length), R.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
   )

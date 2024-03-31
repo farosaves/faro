@@ -1,5 +1,5 @@
 <script>
-  import FlashCard from "../../lib/FlashCard.svelte";
+  import FlashCard from "../../lib/FlashCard.svelte"
 </script>
 
 <svelte:head>

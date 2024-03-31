@@ -21,7 +21,7 @@
   $: T = trpc2()
   const port = chrome.runtime.connect()
   export const TB = createTRPCProxyClient<AppRouter>({
-    links: [/* 👉 */ chromeLink({ port })],
+    links: [chromeLink({ port })],
   })
 
   const bgSync = getBgSync(TB)

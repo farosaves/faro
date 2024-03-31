@@ -31,7 +31,7 @@
             data-set-theme={value}
             data-act-class="ACTIVECLASS"
             on:click={() => setTimeout(updateTheme, 100)}
-            >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+            >{value.replace(/\b\w/g, s => s.toUpperCase())}</button>
         {/each}
       </div>
     </div>
