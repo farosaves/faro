@@ -240,6 +240,7 @@ export class NoteSync {
       .subscribe((status) => {
         this.DEBUG && console.log("status change- ", status)
         if (status !== "SUBSCRIBED") {
+          this.refresh_sources().then(() => this.refresh_notes())
           // this.sb.realtime.disconnect()
           // setTimeout(async () => {
           //   await this.refresh_sources()

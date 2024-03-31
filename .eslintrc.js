@@ -8,6 +8,7 @@ const customized = stylistic.configs.customize({
   blockSpacing: true,
   braceStyle: "1tbs",
 })
+/** @type { import("eslint").Linter.Config } */
 // eslint-disable-next-line no-undef
 module.exports = {
   extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
