@@ -17,7 +17,7 @@ import {
   unwrapTo,
   updateStore,
 } from "$lib/utils"
-import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
+import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
@@ -26,22 +26,23 @@ import * as devalue from "devalue"
 import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 // import * as lzString from "lz-string"
 
-const validateNs = z.record(z.string(), notesRowSchema).parse
-const allNotesR: ReturnType<typeof validateNs> = {}
+const validateNs = z.map(z.string(), notesRowSchema).parse
+const allNotesR: ReturnType<typeof validateNs> = new Map()
 
 // browser() && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
-export const noteStore = persisted("notestore", allNotesR, { serializer: devalue })
+export const noteStore = persisted<ReturnType<typeof validateNs>>("notestore", allNotesR, { serializer: devalue }) // TODO: dont export
 // console.log(devalue.stringify(get(noteStore)).length)
 // console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)
 // this block shall ensure local data gets overwritten on db schema changes
 noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
-const validateSTUMap = z.record(z.string(), z.object({ title: z.string(), url: z.string() })).parse
+const validateSTUMap = z.map(z.string(), z.object({ title: z.string(), url: z.string() })).parse
 type STUMap = ReturnType<typeof validateSTUMap>
-const stuMap: STUMap = {}
-const stuMapStore = persisted("stuMapStore", stuMap)
+const stuMap: STUMap = new Map()
+const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue })
 // prettier-ignore
 stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+// stuMapStore.update(validateSTUMap)
 // stuMapStore.set(stuMap)  // need to add it when changing dashboard/+page.server.ts
 
 const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
@@ -49,9 +50,9 @@ const transformStore = writable(defTransform)
 
 // each patch may need validation if persisted..
 
-const recordDefaults = (flds: string[]) => <U>(r: Record<string, U[]>) => {
+const recordDefaults = <T extends string>(flds: T[]) => <U>(r: Record<string, U[]>) => {
   flds.forEach(s => R.has(s, r) || (r[s] = []))
-  return r
+  return r as Record<T, U[]>
 }
 
 const __f = (sb: SupabaseClient) => sb.from("notes")
@@ -68,18 +69,13 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     R.map(filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
       ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
     )),
-    // NA.groupBy(n => n.sources.title),
-    // R.toArray<string, (NoteEx & { priority: number })[]>,
-    // filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
-    //   ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
-    // ),
   )
 
 export type SyncLike = Pick<NoteSync, "alltags" | "tagChange" | "changePrioritised" | "deleteit">
 
 export class NoteSync {
   sb: SupabaseClient
-  noteStore: Writable<Record<string, Notes>>
+  noteStore: Writable<Map<string, Notes>>
   noteArr: Readable<NoteEx[]>
   _user_id: string | undefined
   // note_del_queue: Writable<Notess>
@@ -96,8 +92,8 @@ export class NoteSync {
     this._user_id = user_id
     // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
-      const vals = Object.values(n)
-      return vals.map(n => ({ ...n, sources: fillInTitleUrl(s[n.source_id]), searchArt: O.none }))
+      const vals = [...n.values()]
+      return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id)), searchArt: O.none }))
     })
     this.alltags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
     this.transformStore = transformStore
@@ -110,7 +106,7 @@ export class NoteSync {
 
   setUid = (user_id: string) => {
     this._user_id = user_id
-    this.noteStore.update(R.filter(n => n.user_id == user_id))
+    this.noteStore.update(M.filter(n => n.user_id == user_id))
   }
 
   refresh_sources = async () =>
@@ -120,21 +116,22 @@ export class NoteSync {
         pipe(
           (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
           O.fromNullable,
-          O.map(data => Object.fromEntries(data.map(n => [n.id, fillInTitleUrl(n)]))),
+          O.map(data => new Map(data.map(n => [n.id, fillInTitleUrl(n)]))),
         ),
       ),
     )
 
   update_source = async (id: string, { sources }: SourceData) =>
-    this.stuMapStore.update(R.upsertAt(id, sources))
+    this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources))
 
   reset_transform = () => this.transformStore.set(defTransform)
 
   refresh_notes = async (id: O.Option<string> = O.none) =>
     this._user_id !== undefined
-    && (await getNotes(this.sb, id, this._user_id).then(nns =>
-      this.noteStore.set(Object.fromEntries(nns.map(n => [n.id, n]))),
-    ))
+    && (await getNotes(this.sb, id, this._user_id).then((nns) => {
+      console.log(new Map(nns.map(n => [n.id, n])))
+      this.noteStore.set(new Map(nns.map(n => [n.id, n])))
+    }))
 
   action = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
     (patchTup: PatchTup, userAction = true) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
@@ -195,21 +192,21 @@ export class NoteSync {
 
   deleteit = async (noteId: string) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      delete ns[noteId]
+      ns.delete(noteId)
     })
     await this.action(x => x.delete().eq("id", noteId))(patchTup)
   }
 
   tagChange = (noteId: string) => async (tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).filter(n => n.id == noteId)[0].tags = tags
+      ns.get(noteId)!.tags = tags
     })
     this.action(x => x.update({ tags }).eq("id", noteId))(patchTup)
   }
 
   tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).forEach((n) => {
+      ns.forEach((n) => {
         const i = n.tags.indexOf(oldTag)
         if (~i)
           if (O.isSome(newTag))
@@ -222,7 +219,7 @@ export class NoteSync {
 
   changePrioritised = (noteId: string) => async (prioritised: number) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).filter(n => n.id == noteId)[0].prioritised = prioritised
+      ns.get(noteId)!.prioritised = prioritised
     })
     this.action(x => x.update({ prioritised }).eq("id", noteId))(patchTup)
   }
@@ -243,7 +240,7 @@ export class NoteSync {
           if ("id" in payload.new) {
             const nn = payload.new
             updateStore(this.noteStore)((ns) => {
-              ns[nn.id] = nn
+              ns.set(nn.id, nn)
             })
             if (!(nn.source_id in get(this.stuMapStore)))
               this.refresh_sources()

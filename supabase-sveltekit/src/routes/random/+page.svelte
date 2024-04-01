@@ -1,16 +1,29 @@
 <script lang="ts">
   // import { pipeline } from '@xenova/transformers';
   import { onMount } from "svelte"
-  import { Observable, fromEvent, map, Subject } from "rxjs"
+  import { Observable, fromEvent, Subject } from "rxjs"
   import fuzzysort from "fuzzysort"
   import * as tok from "sbd"
   import { writable, type Subscriber } from "svelte/store"
   import { flow } from "fp-ts/lib/function"
   import { StarArchive, toStore } from "shared"
+  import { convertPatchesToStandard, produceWithPatches } from "structurajs"
 
   let alltext: string[]
-  let mousePosition: Observable<{ x: number, y: number }> | null = null
+  let mousePosition: Observable<{ x: number; y: number }> | null = null
   const Sub = new Subject<string>()
+
+  const map = new Map([[1, 2]])
+  const [aa, patch, inv] = produceWithPatches(map, (n) => {
+    n.set(2, 3)
+  })
+  console.log(convertPatchesToStandard(patch))
+  const rec = { 1: 2 } as Record<number, number>
+  const [aa2, patch2, inv2] = produceWithPatches(rec, (n) => {
+    n[2] = 3
+  })
+  console.log(convertPatchesToStandard(patch2))
+
   // const toObservable = (store) => new Observable((observer) => store.subscribe(observer.next))
   // const ff = query.subscribe(x)
   // console.log(ff)
@@ -27,7 +40,7 @@
   console.log(Sub.subscribe(() => {}))
   console.log(query.subscribe(() => {}))
   Sub.next("omg1")
-  Sub.pipe(map(a => a.length)).subscribe(console.log)
+  // Sub.pipe(map((a) => a.length)).subscribe(console.log)
 
   // const O = toObservable(query)
   const obs = onMount(async () => {
@@ -41,15 +54,16 @@
     // alltext = dom.body.innerText.replaceAll(/(\s*\n\s*)+/gm, '\n');
     alltext = dom.body.innerText
       .split("\n")
-      .map(s => s.trim())
-      .filter(x => x.split(" ").length > 0)
-      .map(s => tok.sentences(s))
+      .map((s) => s.trim())
+      .filter((x) => x.split(" ").length > 0)
+      .map((s) => tok.sentences(s))
       .flat()
     // console.log(alltext)
 
-    const mousePosition = fromEvent<MouseEvent>(document, "click").pipe(
-      map(event => ({ x: event.clientX, y: event.clientY })),
-    )
+    const mousePosition = fromEvent<MouseEvent>(document, "click")
+      .pipe
+      // map((event) => ({ x: event.clientX, y: event.clientY })),
+      ()
     // console.log()
     // mousePosition.forEach(console.log)
     mousePosition.subscribe(flow(JSON.stringify, query.set))
@@ -61,7 +75,7 @@
   let res = ""
   let f = () => {
     const x = fuzzysort.go($query, alltext, { limit: 5 })
-    res = x.map(x => fuzzysort.highlight(x, "<b class=\"text-yellow-300\"\">", "</b>")).join("<br/><br/>")
+    res = x.map((x) => fuzzysort.highlight(x, '<b class="text-yellow-300"">', "</b>")).join("<br/><br/>")
     // console.log(x.map((x) => x.score));
   }
   // console.log(O)

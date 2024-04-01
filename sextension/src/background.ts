@@ -121,11 +121,11 @@ async function activate(tab: chrome.tabs.Tab) {
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })
 chrome.action.onClicked.addListener(activate)
 
-chrome.commands.onCommand.addListener((command) => {
-  const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
-  if (command == "search" && !api_regexp.test(get(currSrc).url)) {
-    chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
-  }
-})
+// chrome.commands.onCommand.addListener((command) => {
+//   const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
+//   if (command == "search" && !api_regexp.test(get(currSrc).url)) {
+//     chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
+//   }
+// })
 
 if (DEBUG) console.log("loaded all background")
