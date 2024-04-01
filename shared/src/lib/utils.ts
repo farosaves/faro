@@ -70,7 +70,7 @@ export const fillInTitleUrl = (v: T) => {
       O.chain(v => O.fromNullable(v[fld])),
       O.fold(() => missing, identity),
     )
-  return { title: escapeHTML(_get(v, "title", "missing Title")), url: _get(v, "url", "") }
+  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
 }
 
 // https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
