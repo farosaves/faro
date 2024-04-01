@@ -12,7 +12,11 @@ export const DEBUG = import.meta.env.VITE_DEBUG || false
 
 export type ATokens = { access_token: string, refresh_token: string } | undefined
 export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
-  if (!tokens) return null
+  if (!tokens) {
+    // here log me out
+    supabase.auth.signOut().then(logIfError)
+    return null
+  }
   const { access_token, refresh_token } = tokens
   // set session
   await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError)

@@ -25,8 +25,7 @@
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
   $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
-  const note_groups = note_sync.groupStore
-  console.log($note_groups.length)
+  const note_groupss = note_sync.groupStore
 
   let showLoginPrompt = false
   onMount(async () => {
@@ -35,8 +34,8 @@
         const mock = data.mock
         showLoginPrompt = R.size({ ...get(note_sync.noteStore), ...mock.notes }) > R.size(mock.notes)
         if (!showLoginPrompt) {
-          note_sync.noteStore.update(n => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
-          note_sync.stuMapStore.update(n => ({ ...mock.stuMap }))
+          note_sync.noteStore.update((n) => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
+          note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
         }
       }
     } else {
@@ -48,7 +47,7 @@
   })
 
   let closeAll = () => {
-    noteOpens = R.map(v => false)(noteOpens)
+    noteOpens = R.map((v) => false)(noteOpens)
   }
   closeAll()
 
@@ -63,6 +62,8 @@
   // const na = note_sync.noteArr
 
   let Xview = false
+  const priorities = [5, 0, -5].map((x) => x.toString())
+  $: console.log($note_groupss)
 </script>
 
 <svelte:head>
@@ -78,21 +79,24 @@
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content z-0">
     <!-- my main here -->
-    <div class="flex flex-row flex-wrap">
-      {#each $note_groups as [title, note_group], i}
-        <div
-          class="border-2 text-center rounded-lg border-neutral flex flex-col"
-          style="max-width: {w_rem * note_group.length + 0.25}rem;
+    {#each priorities as priority}
+      <div class="flex flex-row flex-wrap border-secondary border-b-2 pb-2 pt-2">
+        {#each $note_groupss[priority] as [title, note_group], i}
+          <div
+            class="border-2 text-center rounded-lg border-neutral flex flex-col"
+            style="max-width: {w_rem * note_group.length + 0.25}rem;
           min-width: {w_rem + 0.15}rem">
-          <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
-          <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
-            {#each note_group as note, j}
-              <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {note_sync} {w_rem} />
-            {/each}
+            <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
+            <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
+              {#each note_group as note, j}
+                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {note_sync} {w_rem} />
+              {/each}
+            </div>
           </div>
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {/each}
+
     <div class="toast toast-end z-10"></div>
   </div>
   <div class="drawer-side z-10">

@@ -31,7 +31,7 @@ const allNotesR: ReturnType<typeof validateNs> = {}
 
 // browser() && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
 export const noteStore = persisted("notestore", allNotesR, { serializer: devalue })
-console.log(devalue.stringify(get(noteStore)).length)
+// console.log(devalue.stringify(get(noteStore)).length)
 // console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)
 // this block shall ensure local data gets overwritten on db schema changes
 noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
@@ -49,6 +49,11 @@ const transformStore = writable(defTransform)
 
 // each patch may need validation if persisted..
 
+const recordDefaults = (flds: string[]) => <U>(r: Record<string, U[]>) => {
+  flds.forEach(s => R.has(s, r) || (r[s] = []))
+  return r
+}
+
 const __f = (sb: SupabaseClient) => sb.from("notes")
 type NQ = ReturnType<typeof __f>
 const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
@@ -56,11 +61,18 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     ns,
     A.map(transform),
     A.filter(n => n.priority > 0),
-    NA.groupBy(n => n.sources.title),
-    R.toArray<string, (NoteEx & { priority: number })[]>,
-    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
+    NA.groupBy(n => n.prioritised.toString()),
+    recordDefaults(["5", "0", "-5"]),
+    R.map(NA.groupBy(n => n.sources.title)),
+    R.map(R.toArray<string, (NoteEx & { priority: number })[]>),
+    R.map(filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
       ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
-    ),
+    )),
+    // NA.groupBy(n => n.sources.title),
+    // R.toArray<string, (NoteEx & { priority: number })[]>,
+    // filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
+    //   ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
+    // ),
   )
 
 export type SyncLike = Pick<NoteSync, "alltags" | "tagChange" | "changePrioritised" | "deleteit">
@@ -69,7 +81,7 @@ export class NoteSync {
   sb: SupabaseClient
   noteStore: Writable<Record<string, Notes>>
   noteArr: Readable<NoteEx[]>
-  private user_id: string | undefined
+  _user_id: string | undefined
   // note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
   alltags: Readable<string[]>
@@ -81,7 +93,7 @@ export class NoteSync {
     this.sb = sb
     this.noteStore = noteStore
     this.stuMapStore = stuMapStore
-    this.user_id = user_id
+    this._user_id = user_id
     // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
       const vals = Object.values(n)
@@ -94,19 +106,19 @@ export class NoteSync {
     this.DEBUG = import.meta.env.DEBUG || false
   }
 
-  inited = () => this.user_id !== undefined
+  inited = () => this._user_id !== undefined
 
   setUid = (user_id: string) => {
-    this.user_id = user_id
+    this._user_id = user_id
     this.noteStore.update(R.filter(n => n.user_id == user_id))
   }
 
   refresh_sources = async () =>
-    this.user_id !== undefined
+    this._user_id !== undefined
     && this.stuMapStore.update(
       unwrapTo(
         pipe(
-          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this.user_id)).data,
+          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
           O.fromNullable,
           O.map(data => Object.fromEntries(data.map(n => [n.id, fillInTitleUrl(n)]))),
         ),
@@ -119,8 +131,8 @@ export class NoteSync {
   reset_transform = () => this.transformStore.set(defTransform)
 
   refresh_notes = async (id: O.Option<string> = O.none) =>
-    this.user_id !== undefined
-    && (await getNotes(this.sb, id, this.user_id).then(nns =>
+    this._user_id !== undefined
+    && (await getNotes(this.sb, id, this._user_id).then(nns =>
       this.noteStore.set(Object.fromEntries(nns.map(n => [n.id, n]))),
     ))
 
@@ -153,7 +165,7 @@ export class NoteSync {
       this.action(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup, userAction)
   }
 
-  xxdo = (patchTup: PatchTup) => {
+  _xxdo = (patchTup: PatchTup) => {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
@@ -167,14 +179,14 @@ export class NoteSync {
     const pT = undo.pop()
     console.log("undo", pT)
     if (!pT) return ({ undo, redo })
-    return ({ undo, redo: [...redo, this.xxdo(pT)] })
+    return ({ undo, redo: [...redo, this._xxdo(pT)] })
   })
 
   redo = () => xxdoStacks.update(({ undo, redo }) => {
     const pT = redo.pop()
     console.log("redo", pT)
     if (!pT) return ({ undo, redo })
-    return ({ redo, undo: [...undo, this.xxdo(pT)] })
+    return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
   add = async (note: InsertNotes, source_id: string) => {
@@ -225,7 +237,7 @@ export class NoteSync {
           event: "*",
           schema: "public",
           table: "notes",
-          filter: `user_id=eq.${this.user_id}`,
+          filter: `user_id=eq.${this._user_id}`,
         },
         (payload: { new: Notes | object }) => {
           if ("id" in payload.new) {
@@ -233,6 +245,8 @@ export class NoteSync {
             updateStore(this.noteStore)((ns) => {
               ns[nn.id] = nn
             })
+            if (!(nn.source_id in get(this.stuMapStore)))
+              this.refresh_sources()
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
           } else this.refresh_notes() // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
         },
@@ -240,13 +254,7 @@ export class NoteSync {
       .subscribe((status) => {
         this.DEBUG && console.log("status change- ", status)
         if (status !== "SUBSCRIBED") {
-          this.refresh_sources().then(() => this.refresh_notes())
-          // this.sb.realtime.disconnect()
-          // setTimeout(async () => {
-          //   await this.refresh_sources()
-          //   await this.refresh_notes()
-          //   this.sub()
-          // }, 200)
+          // this.refresh_sources().then(() => this.refresh_notes())
         }
       })
   }

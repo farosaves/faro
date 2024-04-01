@@ -13,7 +13,7 @@
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
-  import { pendingNotes, RemoteStore } from "$lib/chromey/messages"
+  import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
   import { get } from "svelte/store"
   let login_url = API_ADDRESS + "/login"
@@ -36,7 +36,7 @@
   }, 1000)
 
   onMount(async () => {
-    pendingNotes.stream.subscribe(([x]) => {
+    optimisticNotes.stream.subscribe(([x]) => {
       optimistic = O.some(x)
       setTimeout(() => (optimistic = O.none), 1000)
     })
