@@ -9,7 +9,7 @@ export const gmWrap = <T>(s: string) => {
   return { send, stream, wait, sub: <A extends Constr<T>>(x: A) => stream.subscribe(x) }
 }
 
-export const pendingNotes = gmWrap<PendingNote>("STATS")
+export const optimisticNotes = gmWrap<PendingNote>("STATS")
 
 export const getHighlightedText = gmWrap<UUID>("getHighlightedText")
 export const gotoSnippetMsg = gmWrap<UUID>("gotoSnippet")

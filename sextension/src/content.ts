@@ -4,7 +4,7 @@ import { elemsOfClass, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
-import { getHighlightedText, pendingNotes } from "$lib/chromey/messages"
+import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
 import { DEBUG } from "$lib/utils"
 
 if (DEBUG) console.log("hello")
@@ -36,6 +36,7 @@ function wrapSelectedText(uuid: string) {
   const _rangy = rangy as any
   const classname = "_" + uuid
   const app = _rangy.createClassApplier(classname, applierOptions)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
   const ran = document.getSelection()?.getRangeAt(0)!
   const rangeText = reserialize(ran)
   const selection = ran2sel(ran)
@@ -88,7 +89,7 @@ getHighlightedText.sub(([uuid]) => {
   DEBUG && console.log("uploading...:", { selectedText })
   // makeQCH grabs text around the highlighted bit:
   // quote: will try to grab the full sentence
-  // context: will try to grab like a <p> tag
+  // context: will try to grab a <p> tag etc
   // quote is what's displayed on the note
   // context is displayed in the dialog on right click
   const { quote, highlights, context: _context } = makeQCH(htmlstr2body)(document, uuid, selectedText)
@@ -102,7 +103,8 @@ getHighlightedText.sub(([uuid]) => {
     snippet_uuid: uuid,
     serialized_highlight: serialized,
   }
-  pendingNotes.send(note_data)
+  optimisticNotes.send(note_data)
+  T.addNote.mutate(note_data)
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -113,7 +115,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 ; (async () => { // here I can potentially skip loading if page has no highlights
   await T.loadDeps.query()
   console.log("loaded bg")
-  sleep(50)
+  sleep(100)
   await T.serializedHighlights.query().then(batchDeserialize)
   const goto = new URLSearchParams(window.location.search).get("highlightUuid")
   if (goto) gotoText(goto)

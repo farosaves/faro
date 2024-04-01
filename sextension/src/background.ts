@@ -1,8 +1,8 @@
 import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
-import { pushStore, pendingNotes, getHighlightedText } from "$lib/chromey/messages"
+import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx } from "shared"
+import { NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -45,7 +45,7 @@ refresh()
 //   optMail(get(sess)) != optMail(newSess) && sess.set(newSess)
 //   return newSess
 // }
-
+const typeCast = <T>(input: unknown) => input as T
 const appRouter = (() => {
   const addZ = z.tuple([z.number(), z.number()])
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
@@ -53,7 +53,6 @@ const appRouter = (() => {
 
   return t.router({
     serializedHighlights: t.procedure.query(() => get(note_mut.panel).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
-    add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       chrome.scripting.executeScript({
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
@@ -69,6 +68,10 @@ const appRouter = (() => {
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
     undo: t.procedure.query(note_sync.undo),
     redo: t.procedure.query(note_sync.redo),
+
+    // forward note_mut
+    addNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_mut.addNote(input, get(currSrc))),
+
   })
 })()
 export type AppRouter = typeof appRouter
@@ -87,7 +90,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
   if (url && title) currSrc.set({ url, title })
   const source_id = note_mut.setLocalSrcId({ url: url || "", title: title || "" })
-  console.log("new src&id:", get(note_mut.currSrcnId))
+  // console.log("new src&id:", get(note_mut.currSrcnId))
 }
 
 const apiHostname = O.getOrElse(() => "")(hostname(API_ADDRESS))
@@ -100,11 +103,6 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.get(tabId).then(updateCurrUrl)
-})
-
-pendingNotes.stream.subscribe(([note_data, sender]) => {
-  const newNote = note_mut.addNote(note_data, get(currSrc))
-  console.log("added", newNote)
 })
 
 

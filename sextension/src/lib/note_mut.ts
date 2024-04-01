@@ -99,11 +99,12 @@ export class NoteMut {
     // optimistic
 
 
-    const { data: newNote } = await this.ns.sb
+    const { data: newNote, error } = await this.ns.sb
       .from("notes")
       .insert({ ...note, source_id })
       .select()
       .maybeSingle()
+    console.log(newNote, error, this.ns._user_id)
     return newNote
   }
 }
