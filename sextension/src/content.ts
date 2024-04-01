@@ -77,7 +77,7 @@ const gotoText = (uuid: string) => {
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
 // type Req = { action: "getHighlightedText" | "goto" | "deserialize" | "delete" }
-getHighlightedText.sub(([uuid]) => {
+getHighlightedText.sub(async ([uuid]) => {
   const selectedText = window.getSelection()?.toString()
   if (!selectedText) return
   DEBUG && console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
@@ -104,7 +104,10 @@ getHighlightedText.sub(([uuid]) => {
     serialized_highlight: serialized,
   }
   optimisticNotes.send(note_data)
-  T.addNote.mutate(note_data)
+  const newNote = await T.addNote.mutate(note_data)
+  if (newNote == null) {
+    deleteSelection(uuid)
+  }
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

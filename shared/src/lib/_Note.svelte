@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
 
-  import type { NoteSync, SyncLike } from "./sync/main"
+  import type { SyncLike } from "./sync/sync"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, replacer } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
-  import { identity, pipe } from "fp-ts/lib/function"
+  import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
   export let note_data: Omit<NoteEx, keyof SourceData>
@@ -34,8 +34,8 @@
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,
-          A.findIndex(n => n == "quote"),
-          O.chain(i => O.fromNullable(optKR[i])), // here I check that quote has a highlight
+          A.findIndex((n) => n == "quote"),
+          O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map((r) => {
             const target = escapeHTML(r.target)
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
@@ -59,10 +59,10 @@
     return true
   }
   onMount(() => {
-    "highlightOnMount" in note_data
-    && note_data["highlightOnMount"]
-    && highlightMe()
-    && (note_data["highlightOnMount"] = false)
+    "highlightOnMount" in note_data &&
+      note_data["highlightOnMount"] &&
+      highlightMe() &&
+      (note_data["highlightOnMount"] = false)
   })
 
   let myModal: HTMLDialogElement | null = null
