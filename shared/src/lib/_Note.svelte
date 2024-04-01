@@ -79,15 +79,15 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- on:mouseenter={loadModalText} -->
 <div
-  class="collapse bg-base-200 border-primary"
+  class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
   on:mouseenter={() => (modalPotential = hovered = true)}
   on:mouseleave={() => (hovered = false)}
+  class:highlighting
   on:contextmenu|preventDefault={() => {
     if (myModal) myModal.showModal()
     loadModalText()
     $modalOpenStore = true
-  }}
-  style="border-width: {1 + 5 * +highlighting}px; position: static;">
+  }}>
   <input type="checkbox" class="-z-10" bind:checked={isOpen} />
   <div
     class="collapse-title text-center"
@@ -148,3 +148,9 @@
     </dialog>
   {/if}
 </div>
+
+<style>
+  .highlighting {
+    border-width: 5px;
+  }
+</style>

@@ -78,7 +78,7 @@
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleSet(tag)}
-        on:contextmenu={onDblClick(tag)}
+        on:contextmenu|preventDefault={onDblClick(tag)}
         class:btn-outline={$exclTagSet.has(tag)}
         >{#if tag}{tag}{:else}
           <IconTagOff />
