@@ -61,7 +61,7 @@ export const filterSort
 type T = {
   title: string | null
   url: string | null
-} | null
+} | undefined
 export const fillInTitleUrl = (v: T) => {
   const _get = (u: typeof v, fld: "title" | "url", missing: string) =>
     pipe(
@@ -119,6 +119,7 @@ export const unwrapTo
     (y: T) =>
       O.getOrElse(() => y)(x)
 
+export const invertMap = <K, V>(m: Map<K, V>) => new Map(Array.from(m, ([a, b]) => [b, a]))
 // curry
 export const applyPatches
   = (ps: Patch[]) =>

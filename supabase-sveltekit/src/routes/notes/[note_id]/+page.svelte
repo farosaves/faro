@@ -14,4 +14,4 @@
   //   R.lookup(noteId,
 </script>
 
-{JSON.stringify(R.keys(get(noteStore)))}
+<!-- {JSON.stringify(R.keys(get(noteStore)))} -->

@@ -5,24 +5,24 @@
   import IconTagOff from "~icons/tabler/tag-off"
 
   import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
+  import { array as A, record as R, nonEmptyArray as NA, option as O, map as M, string as S } from "fp-ts"
   import { desc, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
   import { exclTagSet, exclTagSets, tagFilter } from "$lib/filterSortStores"
   import { modalOpenStore } from "shared"
   export let note_sync: NoteSync
   let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteStore, x =>
+  const tags_counts = derived(noteStore, (x) =>
     pipe(
-      Object.values(x),
-      A.flatMap(note => note.tags || []),
+      [...x.values()],
+      A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
-      R.map(x => x.length),
+      R.map((x) => x.length),
       R.toArray,
     )
       .concat(
         // prettier-ignore
-        [["", pipe(x, R.filter(note => !note.tags.length), R.size)]],
+        [["", pipe(x, M.filter(note => !note.tags.length), M.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
   )

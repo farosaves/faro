@@ -35,7 +35,7 @@
         showLoginPrompt = R.size({ ...get(note_sync.noteStore), ...mock.notes }) > R.size(mock.notes)
         if (!showLoginPrompt) {
           note_sync.noteStore.update((n) => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
-          note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
+          note_sync.stuMapStore.update((n) => new Map(Object.entries(mock.stuMap)))
         }
       }
     } else {
@@ -62,8 +62,8 @@
   // const na = note_sync.noteArr
 
   let Xview = false
-  const priorities = [5, 0, -5].map((x) => x.toString())
-  $: console.log($note_groupss)
+  const priorities = ["5", "0", "-5"] as const
+  $: console.log("ns", get(note_sync.noteStore))
 </script>
 
 <svelte:head>
@@ -80,7 +80,9 @@
   <div class="drawer-content z-0">
     <!-- my main here -->
     {#each priorities as priority}
-      <div class="flex flex-row flex-wrap border-secondary border-b-2 pb-2 pt-2">
+      <div
+        class="flex flex-row flex-wrap border-secondary pb-2 pt-2"
+        class:border-b-2={!!$note_groupss[priority].length}>
         {#each $note_groupss[priority] as [title, note_group], i}
           <div
             class="border-2 text-center rounded-lg border-neutral flex flex-col"

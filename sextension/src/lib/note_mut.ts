@@ -1,10 +1,9 @@
-import { NoteSync, domain_title, hostname, logIfError, type Notes, type SourceData } from "shared"
+import { NoteSync, domain_title, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
 import { createMock } from "shared"
 import type { InsertNotes, PendingNote } from "shared"
-import { option as O, record as R, string as S, array as A, tuple as T, nonEmptyArray as NA } from "fp-ts"
+import { option as O, record as R, string as S, map as M } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
-import { invertLast } from "fp-ts-std/Record"
 export type Src = SourceData["sources"]
 
 const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
@@ -27,9 +26,9 @@ export class NoteMut {
     this.source_idStore = derived(
       ns.stuMapStore,
       flow(
-        R.map(({ url, title }) => domain_title(url, title)),
-        R.compact,
-        invertLast(identity),
+        M.map(({ url, title }) => domain_title(url, title)),
+        M.compact,
+        invertMap,
       ),
     )
   }
@@ -45,7 +44,7 @@ export class NoteMut {
   setLocalSrcId = (source: Src) => {
     // get store
     const { url, title } = source
-    const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore)[dt]))(
+    const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore).get(dt)))(
       domain_title(url, title),
     )
     if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
