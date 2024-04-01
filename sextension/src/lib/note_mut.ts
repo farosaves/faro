@@ -19,7 +19,7 @@ export class NoteMut {
     this.panel = derived([this.ns.noteStore, this.currSrcnId], ([ns, ots]) =>
       pipe(
         ots,
-        O.map(ts => Object.values(ns).filter(n => n.source_id == ts[1])),
+        O.map(ts => [...ns.values()].filter(n => n.source_id == ts[1])),
         O.getOrElse<Notes[]>(() => []),
       ),
     )

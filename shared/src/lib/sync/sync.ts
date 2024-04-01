@@ -242,10 +242,10 @@ export class NoteSync {
             updateStore(this.noteStore)((ns) => {
               ns.set(nn.id, nn)
             })
-            if (!(nn.source_id in get(this.stuMapStore)))
+            if (!(get(this.stuMapStore).has(nn.source_id)))
               this.refresh_sources()
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this.refresh_notes() // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
+          } else this.refresh_notes() // TODO: this is to run on deletions: but if I just exectued deletion manually i could skip it
         },
       )
       .subscribe((status) => {
