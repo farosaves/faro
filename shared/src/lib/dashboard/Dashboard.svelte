@@ -1,12 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import Note from "./components/Note.svelte"
-  import { NoteSync, type SourceData, type SupabaseClient } from "shared"
+  import { NoteSync, type SourceData, type SupabaseClient, type SyncLike } from "shared"
   import Search from "./components/Search.svelte"
   import { type NoteEx, Tags } from "shared"
   import DomainFilter from "./components/DomainFilter.svelte"
   import { identity, flow, pipe } from "fp-ts/lib/function"
-  // import LoginPrompt from "./components/LoginPrompt.svelte"
   import { option as O, record as R } from "fp-ts"
   import { sessStore } from "shared"
   import TagView from "./components/TagView.svelte"
@@ -15,38 +14,32 @@
   import Overview from "./components/Overview.svelte"
   import { modalOpenStore } from "shared"
   import Tabs from "./components/Tabs.svelte"
-  import type { Session } from "@supabase/supabase-js"
-  export let data: {
-    session: Session | null
-    supabase: SupabaseClient
-    mock: { notes: Record<string, NoteEx>; stuMap: Record<string, SourceData["sources"]> } | undefined
-  }
-  $: ({ session: _session, supabase } = data)
-  $: if (_session) $sessStore = O.some(_session)
+  import type { Notes } from "$lib/db/types"
+  export let mock: { notes: Record<string, Notes>; stuMap: Record<string, SourceData["sources"]> } | undefined
+
+  export let note_sync: NoteSync
 
   // let showing_contents: boolean[][]
   let noteOpens: Record<string, boolean> = {}
-  const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
-
+  // export let note_sync: SyncLike
   $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
   const note_groupss = note_sync.groupStore
 
   let showLoginPrompt = false
   onMount(async () => {
     if (O.isNone($sessStore)) {
-      if (data.mock) {
-        const mock = data.mock
+      if (mock) {
         showLoginPrompt = R.size({ ...get(note_sync.noteStore), ...mock.notes }) > R.size(mock.notes)
         if (!showLoginPrompt) {
-          note_sync.noteStore.update((n) => new Map([...n, ...Object.entries(mock.notes)])) // use user changes to mock notes or just use them
-          note_sync.stuMapStore.update((n) => new Map(Object.entries(mock.stuMap)))
+          note_sync.noteStore.update((n) => new Map([...n, ...Object.entries(mock!.notes)])) // use user changes to mock notes or just use them
+          note_sync.stuMapStore.update((n) => new Map(Object.entries(mock!.stuMap)))
         }
       }
     } else {
       note_sync.setUid($sessStore.value.user.id) // in case updated
-      note_sync.sb = supabase // in case updated
+      // note_sync.sb = supabase // in case updated
       note_sync.sub()
-      setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 2000)
+      setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 200)
     }
   })
 
@@ -67,7 +60,7 @@
 
   let Xview = false
   const priorities = ["5", "0", "-5"] as const
-  $: console.log("ns", get(note_sync.noteStore))
+  // $: console.log("ns", get(note_sync.noteStore))
 </script>
 
 <svelte:head>

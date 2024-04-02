@@ -85,7 +85,7 @@ export class NoteSync {
     this._user_id = user_id
     // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
-      console.log("note store", n)
+      // console.log("note store", n)
       const vals = [...n.values()]
       return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id)), searchArt: O.none }))
     })
