@@ -18,3 +18,5 @@ const a = ""
 export const updateTheme = () =>
   themeStore.set(
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme)
+
+export const modalStore = writable("")

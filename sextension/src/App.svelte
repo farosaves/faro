@@ -84,13 +84,13 @@
   </div>
 {/if}
 
-<div class="max-w-xs mx-auto space-y-4">
+<div class="max-w-xs mx-auto space-y-4 border-2">
   <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
   <NotePanel bind:optimistic syncLike={bgSync} />
 
   <textarea
     placeholder="scratchy scratch scratch"
-    class="w-full"
+    class="max-w-xs w-full bottom-0 left-0 absolute"
     bind:value={$scratches[curr_domain_title]} />
   <!-- <button on:click={() => console.log(peccatoribus(2.5))}> pls</button> -->
 </div>

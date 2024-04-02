@@ -11,12 +11,13 @@ export * from "./db/types"
 export * from "./shortcut"
 export * from "./db/mock"
 import { makeQCH } from "./snippetiser/main"
+import { persisted } from "./sync/persisted-store"
 import * as dbtypes from "./db/types"
 import * as schemas from "./db/schemas"
 export * from "./stores"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
-export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, StarArchive, Dashboard }
+export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, persisted, StarArchive, Dashboard }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
 
