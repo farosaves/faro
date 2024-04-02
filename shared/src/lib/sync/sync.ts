@@ -18,7 +18,7 @@ import {
   updateStore,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
-import { flip, flow, identity, pipe } from "fp-ts/lib/function"
+import { pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock } from "../db/mock"
@@ -71,6 +71,7 @@ export class NoteSync {
   alltags: Readable<string[]>
   transformStore: Writable<(x: NoteEx) => NoteEx & { priority: number }>
   groupStore: Readable<ReturnType<typeof applyTransform>>
+  xxdoStacks: ReturnType<typeof xxdoStacks>
   DEBUG: boolean
 
   constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
@@ -81,6 +82,8 @@ export class NoteSync {
 
     this.stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
     this.stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+
+    this.xxdoStacks = xxdoStacks(storage)
 
     this._user_id = user_id
     // this.note_del_queue = note_del_queue
@@ -98,7 +101,7 @@ export class NoteSync {
 
   inited = () => this._user_id !== undefined
 
-  setUid = (user_id: string) => {
+  setUser_id = (user_id: string) => {
     this._user_id = user_id
     this.noteStore.update(M.filter(n => n.user_id == user_id))
   }
@@ -139,7 +142,7 @@ export class NoteSync {
         .then(
           ifNErr(() => {
             if (userAction) {
-              xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
+              this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
             }
           }),
         )
@@ -166,14 +169,14 @@ export class NoteSync {
   }
 
   // undo = () => this.xxdo(undo_stack, redo_stack)  // can still refactor below but not sure if cleaner
-  undo = () => xxdoStacks.update(({ undo, redo }) => {
+  undo = () => this.xxdoStacks.update(({ undo, redo }) => {
     const pT = undo.pop()
     console.log("undo", pT)
     if (!pT) return ({ undo, redo })
     return ({ undo, redo: [...redo, this._xxdo(pT)] })
   })
 
-  redo = () => xxdoStacks.update(({ undo, redo }) => {
+  redo = () => this.xxdoStacks.update(({ undo, redo }) => {
     const pT = redo.pop()
     console.log("redo", pT)
     if (!pT) return ({ undo, redo })

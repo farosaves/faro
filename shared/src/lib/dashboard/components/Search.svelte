@@ -2,8 +2,6 @@
   import fuzzysort from "fuzzysort"
   import { shortcut, type NoteEx, type NoteSync } from "shared"
   import { array as A, option as O, readonlyArray as RA } from "fp-ts"
-  import { onMount } from "svelte"
-  import { page } from "$app/stores"
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
 
   export let note_sync: NoteSync

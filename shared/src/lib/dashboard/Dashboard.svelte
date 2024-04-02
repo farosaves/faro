@@ -36,7 +36,7 @@
         }
       }
     } else {
-      note_sync.setUid($sessStore.value.user.id) // in case updated
+      note_sync.setUser_id($sessStore.value.user.id) // in case updated
       // note_sync.sb = supabase // in case updated
       note_sync.sub()
       setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 200)

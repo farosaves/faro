@@ -5,7 +5,7 @@
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
-  import { modalOpenStore, replacer } from "./stores"
+  import { modalOpenStore, modalStore, replacer } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -84,6 +84,7 @@
   on:mouseleave={() => (hovered = false)}
   class:highlighting
   on:contextmenu|preventDefault={() => {
+    // $modalStore = "Created at: " + note_data.created_at
     if (myModal) myModal.showModal()
     loadModalText()
     $modalOpenStore = true
