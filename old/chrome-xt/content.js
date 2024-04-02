@@ -3,15 +3,15 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       function: sendHighlightedText,
-    });
-  });
-});
+    })
+  })
+})
 
 function sendHighlightedText() {
-  const text = window.getSelection().toString();
+  const text = window.getSelection().toString()
   if (text) {
-    chrome.runtime.sendMessage({ text: text });
+    chrome.runtime.sendMessage({ text: text })
   } else {
-    chrome.runtime.sendMessage({ error: "No text selected." });
+    chrome.runtime.sendMessage({ error: "No text selected." })
   }
 }

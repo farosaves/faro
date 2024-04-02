@@ -10,11 +10,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   if (sess == null) {
     // redirect(302, "/login")
     const stuMap: STUMap = {
-      "0": { title: "Hey you!", url: url.origin + "/login" },
-      "1": { title: "Tips", url: url.origin },
-      "2": { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" },
-      "3": { title: "Also check out!", url: url.origin + "/ext.zip" },
-      "4": { title: "Contact", url: url.origin + "/random/mail-redirect" },
+      0: { title: "Hey you!", url: url.origin + "/login" },
+      1: { title: "Tips", url: url.origin },
+      2: { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" },
+      3: { title: "Also check out!", url: url.origin + "/ext.zip" },
+      4: { title: "Contact", url: url.origin + "/random/mail-redirect" },
     }
     console.log(stuMap)
     let id = 0

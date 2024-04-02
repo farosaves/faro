@@ -13,7 +13,7 @@
   let tags = writable<string[]>([])
 
   // as long as open read from the top
-  $: if ($isOpen) $tags = $allTags.filter((x) => !$exclTagSet.has(x))
+  $: if ($isOpen) $tags = $allTags.filter(x => !$exclTagSet.has(x))
   const toggleOpen = async (e: MouseEvent) => {
     const _isOpen = $isOpen
     // close_all_notes()

@@ -12,5 +12,5 @@ export const createMock = () => ({
   user_id: "",
   user_note: "",
   context_html: "",
-  prioritised: 5
+  prioritised: 5,
 })

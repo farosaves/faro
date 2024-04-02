@@ -1,47 +1,45 @@
 <script lang="ts">
-  import type { NoteSync } from "shared"
+  import type { SyncLike } from "shared"
   import Note from "$lib/components/Note.svelte"
   import { option as O, array as A } from "fp-ts"
   import { createMock, type PendingNote } from "shared"
   import { pipe } from "fp-ts/lib/function"
   import type { NoteMut } from "$lib/note_mut"
 
-  export let note_sync: NoteSync
-  export let note_mut: NoteMut
-  const note_panel = note_mut.panel
+  export let syncLike: SyncLike & Pick<NoteMut, "panel">
+  const note_panel = syncLike.panel
 
   export let optimistic: O.Option<PendingNote> = O.none
   // prettier-ignore
-  $: mocked = pipe(optimistic, O.map(r => {return {...r, ...createMock()}}))
+  $: mocked = pipe(optimistic, O.map((r) => { return { ...r, ...createMock() } }))
 
   $: optimistic = pipe(
     optimistic,
-    O.chain((mn) =>
+    O.chain(mn =>
       pipe(
         Object.values($note_panel || []),
-        A.findFirst((r) => r.snippet_uuid == mn.snippet_uuid),
+        A.findFirst(r => r.snippet_uuid == mn.snippet_uuid),
         O.match(
           () => O.some(mn),
-          (a) => O.none,
+          a => O.none,
         ),
       ),
     ),
   )
 
   // if (!(source_id in $note_store)) $note_store = []
-  let noteOpens = Object.values($note_panel).map((_) => false)
+  let noteOpens = Object.values($note_panel).map(_ => false)
   let closeAll = () => {
-    noteOpens = noteOpens.map((_) => false)
+    noteOpens = noteOpens.map(_ => false)
   }
   // $: console.log($note_store, source_id)
-  const curr_source = note_mut.curr_source
 </script>
 
 <!-- {$note_panel.length}<br />{JSON.stringify($curr_source)} -->
 <!-- I had to add || [] here... ofc $note_store wasnt guaranteed to be T[]..., is it time to refactor? -->
 <!-- I definitely shouldn't "just index" and expect it to work -->
 {#each [...(Object.values($note_panel) || []), ...A.fromOption(mocked)] as note_data, i}
-  <Note note_data={{ ...note_data, searchArt: O.none }} bind:isOpen={noteOpens[i]} {closeAll} {note_sync} />
+  <Note note_data={{ ...note_data, searchArt: O.none }} bind:isOpen={noteOpens[i]} {closeAll} {syncLike} />
 {:else}
   No notes yet...
 {/each}

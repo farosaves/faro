@@ -1,19 +1,19 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
 
-  import type { NoteSync } from "./sync/main"
+  import type { SyncLike } from "./sync/sync"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, replacer } from "./stores"
-  import { MyTags, type NoteEx, type SourceData } from "./index"
-  import { identity, pipe } from "fp-ts/lib/function"
+  import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
+  import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
-  export let note_sync: NoteSync
+  export let syncLike: SyncLike
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
@@ -22,14 +22,14 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
-  let all_tags = note_sync.alltags
+  let all_tags = syncLike.alltags
 
   $: text = pipe(
     note_data.searchArt,
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
+        return note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
       }, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
@@ -45,11 +45,11 @@
         ),
     ),
   )
-  //.replace(note_data.quote, quoteBoldReplace)
+  // .replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = note_sync.tagChange(note_data)
-  $: onTagRemoved = note_sync.tagChange(note_data)
-  $: changeP = note_sync.changePrioritised(note_data)
+  $: onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  $: onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  $: changeP = syncLike.changePrioritised(note_data.id)
 
   let highlighting = false
   const highlightMe = () => {
@@ -79,15 +79,15 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- on:mouseenter={loadModalText} -->
 <div
-  class="collapse bg-base-200 border-primary"
+  class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
   on:mouseenter={() => (modalPotential = hovered = true)}
   on:mouseleave={() => (hovered = false)}
+  class:highlighting
   on:contextmenu|preventDefault={() => {
     if (myModal) myModal.showModal()
     loadModalText()
     $modalOpenStore = true
-  }}
-  style="border-width: {1 + 5 * +highlighting}px; position: static;">
+  }}>
   <input type="checkbox" class="-z-10" bind:checked={isOpen} />
   <div
     class="collapse-title text-center"
@@ -115,14 +115,19 @@
         <button
           class="btn btn-xs text-error"
           on:click={() => {
-            note_sync.deleteit(note_data)
+            syncLike.deleteit(note_data.id)
             // prettier-ignore
-            pipe(deleteCbOpt, O.map((f) => f()))
+            pipe(deleteCbOpt, O.map(f => f()))
             closeAll()
           }}>DELETE</button>
       </StarArchive>
     </div>
   </div>
+  <button
+    hidden
+    on:click={() =>
+      hovered && navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)}
+    use:shortcut={{ alt: true, code: "KeyC" }} />
   {#if modalPotential}
     <dialog
       id="modal${note_data.id}"
@@ -143,3 +148,9 @@
     </dialog>
   {/if}
 </div>
+
+<style>
+  .highlighting {
+    border-width: 5px;
+  }
+</style>

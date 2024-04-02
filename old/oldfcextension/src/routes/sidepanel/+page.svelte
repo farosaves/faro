@@ -1,61 +1,61 @@
 <script lang="ts">
-  export let data;
-  import { onMount } from "svelte";
-  import { getSession } from "$lib/utils.js";
-  import Snippet from "$lib/Snippet.svelte";
+  export let data
+  import { onMount } from "svelte"
+  import { getSession } from "$lib/utils.js"
+  import Snippet from "$lib/Snippet.svelte"
   // import type { Database } from "$lib/supabase.js";
 
-  let { supabase } = data;
+  let { supabase } = data
 
-  let session;
+  let session
   async function getSnippets() {
-    supabase;
-    return;
+    supabase
+    return
   }
   onMount(async () => {
-    session = await getSession(supabase);
-    console.log(session.user.email);
-  });
-  $: email = session ? session.user.email : "none@none";
+    session = await getSession(supabase)
+    console.log(session.user.email)
+  })
+  $: email = session ? session.user.email : "none@none"
 
-  const DOMAIN = "http://localhost:5173";
+  const DOMAIN = "http://localhost:5173"
 
-  let showing_contents = [false, false];
+  let showing_contents = [false, false]
   let fun = () => {
-    showing_contents = showing_contents.map((_) => false);
-  };
+    showing_contents = showing_contents.map(_ => false)
+  }
 
-  let website_title = "Chick flick";
-  let link = "https://en.wikipedia.org/wiki/Chick_flick";
-  let text =
-    "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women.";
+  let website_title = "Chick flick"
+  let link = "https://en.wikipedia.org/wiki/Chick_flick"
+  let text
+    = "Women are typically portrayed in chick flicks as sassy, noble victims, or klutzy twentysomethings. Romantic comedies (rom-coms) are often also chick flicks. However, rom-coms are typically respected more than chick flicks because they are designed to appeal to men and women."
 
   async function process_snippet() {
-    let n_cards = text.split(".").length;
+    let n_cards = text.split(".").length
     const response = await fetch(`${DOMAIN}/api/make-flashcard`, {
       method: "POST",
       body: JSON.stringify({ n_cards, text, website_title, link, session }),
       headers: {
         "content-type": "application/json",
       },
-    });
-    let ret = await response.json();
-    console.log(ret);
-    qas = ret.qas;
-    snippet_id = ret.snippet_id;
-    card_ids = ret.card_ids;
-    qas_accepted = card_ids.map((x) => false);
-    qas_rejected = card_ids.map((x) => false);
-    console.log(qas);
+    })
+    let ret = await response.json()
+    console.log(ret)
+    qas = ret.qas
+    snippet_id = ret.snippet_id
+    card_ids = ret.card_ids
+    qas_accepted = card_ids.map(x => false)
+    qas_rejected = card_ids.map(x => false)
+    console.log(qas)
   }
   const handleInserts = (payload) => {
-    console.log("Change received!", payload);
-  };
+    console.log("Change received!", payload)
+  }
 
   supabase
     .channel("snippets")
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "todos" }, handleInserts)
-    .subscribe();
+    .subscribe()
 </script>
 
 {email}<br />
