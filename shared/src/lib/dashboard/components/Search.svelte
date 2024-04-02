@@ -3,9 +3,10 @@
   import { shortcut, type NoteEx, type NoteSync } from "shared"
   import { array as A, option as O, readonlyArray as RA } from "fp-ts"
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
+  import type { NoteDeri } from "$lib/sync/deri"
 
-  export let note_sync: NoteSync
-  const notes = note_sync.noteArr
+  export let noteDeri: NoteDeri
+  const notes = noteDeri.noteArr
   let query = ""
   const possibleSelections = ["sources.title", "quote"]
   const texts = ["Titles", "Text"]

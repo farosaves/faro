@@ -6,15 +6,15 @@
 
   import { identity, pipe } from "fp-ts/lib/function"
   import { array as A, record as R, nonEmptyArray as NA, option as O, map as M, string as S } from "fp-ts"
-  import { desc, type NoteEx, type NoteSync } from "shared"
+  import { desc, NoteDeri, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
   import { exclTagSet, exclTagSets, tagFilter } from "../filterSortStores"
   import { modalOpenStore } from "shared"
-  export let note_sync: NoteSync
-  let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteStore, (x) =>
+  export let noteDeri: NoteDeri
+  // let noteStore = note_sync.noteStore
+  const tags_counts = derived(noteDeri.noteArr, (x) =>
     pipe(
-      [...x.values()],
+      x,
       A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
       R.map((x) => x.length),
@@ -22,7 +22,7 @@
     )
       .concat(
         // prettier-ignore
-        [["", pipe(x, M.filter(note => !note.tags.length), M.size)]],
+        [["", pipe(x, A.filter(note => !note.tags.length), A.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
   )
@@ -45,7 +45,7 @@
   let currTag: string
   let newTag: string
   const updateTag = () => {
-    note_sync.tagUpdate(currTag, O.some(newTag))
+    noteDeri.sync.tagUpdate(currTag, O.some(newTag))
     currTag = newTag
     return true
   }
@@ -58,7 +58,7 @@
   }
   const deleteTag = () => {
     myModal && myModal.close()
-    note_sync.tagUpdate(currTag, O.none)
+    noteDeri.sync.tagUpdate(currTag, O.none)
   }
 </script>
 

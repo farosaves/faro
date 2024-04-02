@@ -15,33 +15,16 @@
   import Tabs from "./components/Tabs.svelte"
   import type { Notes } from "$lib/db/types"
   import { modalOpenStore, modalStore } from "$lib"
-  export let mock: { notes: Record<string, Notes>; stuMap: Record<string, SourceData["sources"]> } | undefined
+  import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
 
-  export let note_sync: NoteSync
+  export let noteSync: SyncLikeNStores
+  const noteDeri = new NoteDeri(noteSync)
 
   // let showing_contents: boolean[][]
   let noteOpens: Record<string, boolean> = {}
   // export let note_sync: SyncLike
-  $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
-  const note_groupss = note_sync.groupStore
-
-  let showLoginPrompt = false
-  onMount(async () => {
-    if (O.isNone($sessStore)) {
-      if (mock) {
-        showLoginPrompt = R.size({ ...get(note_sync.noteStore), ...mock.notes }) > R.size(mock.notes)
-        if (!showLoginPrompt) {
-          note_sync.noteStore.update((n) => new Map([...n, ...Object.entries(mock!.notes)])) // use user changes to mock notes or just use them
-          note_sync.stuMapStore.update((n) => new Map(Object.entries(mock!.stuMap)))
-        }
-      }
-    } else {
-      note_sync.setUser_id($sessStore.value.user.id) // in case updated
-      // note_sync.sb = supabase // in case updated
-      note_sync.sub()
-      setTimeout(() => note_sync.refresh_sources().then(() => note_sync.refresh_notes()), 200)
-    }
-  })
+  $: noteDeri.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
+  const note_groupss = noteDeri.groupStore
 
   let closeAll = () => {
     noteOpens = R.map((v) => false)(noteOpens)
@@ -52,7 +35,7 @@
   const handle_keydown = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore) {
       e.preventDefault()
-      ;(e.shiftKey ? note_sync.redo : note_sync.undo)()
+      ;(e.shiftKey ? noteDeri.sync.redo : noteDeri.sync.undo)()
     }
   }
 
@@ -69,7 +52,7 @@
 <!-- <LoginPrompt bind:showLoginPrompt /> -->
 <svelte:window on:keydown={handle_keydown} />
 <!-- <Tabs {note_sync} /> -->
-<TagView {note_sync} />
+<TagView {noteDeri} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
 <div class="drawer md:drawer-open">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
@@ -87,7 +70,7 @@
             <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
               {#each note_group as note, j}
-                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {note_sync} {w_rem} />
+                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {noteSync} {w_rem} />
               {/each}
             </div>
           </div>
@@ -105,10 +88,10 @@
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
       <li>
-        <Search {note_sync} />
+        <Search {noteDeri} />
       </li>
       <li></li>
-      <li><DomainFilter {note_sync} /></li>
+      <li><DomainFilter {noteDeri} /></li>
       <li hidden>
         <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
       </li>

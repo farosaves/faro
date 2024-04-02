@@ -9,7 +9,6 @@ import {
   applyPatches,
   neq,
   fillInTitleUrl,
-  filterSort,
   getNotes,
   ifErr,
   ifNErr,
@@ -27,50 +26,25 @@ import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
+export type NoteStoreR = Readable<ReturnType<typeof validateNs>>
 const allNotesR: ReturnType<typeof validateNs> = new Map()
 
 const validateSTUMap = z.map(z.string(), z.object({ title: z.string(), url: z.string() })).parse
 type STUMap = ReturnType<typeof validateSTUMap>
+export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
-
-const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
-const transformStore = writable(defTransform)
-
-// each patch may need validation if persisted..
-
-const recordDefaults = <T extends string>(flds: T[]) => <U>(r: Record<string, U[]>) => {
-  flds.forEach(s => R.has(s, r) || (r[s] = []))
-  return r as Record<T, U[]>
-}
 
 const __f = (sb: SupabaseClient) => sb.from("notes")
 type NQ = ReturnType<typeof __f>
-const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
-  pipe(
-    ns,
-    A.map(transform),
-    A.filter(n => n.priority > 0),
-    NA.groupBy(n => n.prioritised.toString()),
-    recordDefaults(["5", "0", "-5"]),
-    R.map(NA.groupBy(n => n.sources.title)),
-    R.map(R.toArray<string, (NoteEx & { priority: number })[]>),
-    R.map(filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
-      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
-    )),
-  )
 
-export type SyncLike = Pick<NoteSync, "alltags" | "tagChange" | "changePrioritised" | "deleteit">
+export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePrioritised" | "deleteit" | "undo" | "redo">
 
 export class NoteSync {
   sb: SupabaseClient
   noteStore: Writable<Map<string, Notes>>
-  noteArr: Readable<NoteEx[]>
   _user_id: string | undefined
   // note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
-  alltags: Readable<string[]>
-  transformStore: Writable<(x: NoteEx) => NoteEx & { priority: number }>
-  groupStore: Readable<ReturnType<typeof applyTransform>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   DEBUG: boolean
 
@@ -87,15 +61,6 @@ export class NoteSync {
 
     this._user_id = user_id
     // this.note_del_queue = note_del_queue
-    this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
-      // console.log("note store", n)
-      const vals = [...n.values()]
-      return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id)), searchArt: O.none }))
-    })
-    this.alltags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
-    this.transformStore = transformStore
-    // this.nq = this.sb.from("notes")
-    this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
     this.DEBUG = import.meta.env.DEBUG || false
   }
 
@@ -120,8 +85,6 @@ export class NoteSync {
 
   update_source = async (id: string, { sources }: SourceData) =>
     this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources))
-
-  reset_transform = () => this.transformStore.set(defTransform)
 
   refresh_notes = async (id: O.Option<string> = O.none) =>
     this._user_id !== undefined

@@ -5,9 +5,10 @@
   import { pipe } from "fp-ts/lib/function"
   import { desc, hostname } from "shared"
   import { uncheckedDomains } from "../filterSortStores"
-  export let note_sync: NoteSync
+  import type { NoteDeri } from "$lib/sync/deri"
+  export let noteDeri: NoteDeri
   const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
-  const domains = derived(note_sync.noteArr, (x) =>
+  const domains = derived(noteDeri.noteArr, (x) =>
     pipe(
       x,
       NA.groupBy(hostnameStr),

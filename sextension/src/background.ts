@@ -2,7 +2,7 @@ import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx, type PendingNote } from "shared"
+import { NoteDeri, NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -14,8 +14,11 @@ import { createContext, t } from "./lib/chromey/trpc"
 
 const T = trpc2()
 
-const note_sync: NoteSync = new NoteSync(supabase, undefined, "chrome")
-pushStore("allTags", note_sync.alltags)
+const note_sync = new NoteSync(supabase, undefined, "chrome")
+pushStore("noteStore", note_sync.noteStore)
+pushStore("stuMapStore", note_sync.stuMapStore)
+const noteDeri = new NoteDeri(note_sync)
+pushStore("allTags", noteDeri.alltags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
 pushStore("panel", note_mut.panel)
@@ -65,6 +68,7 @@ const appRouter = (() => {
     refresh: t.procedure.query(refresh),
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
+    tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
     changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
     undo: t.procedure.query(note_sync.undo),
