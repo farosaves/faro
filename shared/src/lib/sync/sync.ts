@@ -1,7 +1,7 @@
 // note-sync with structura
 
 // @ts-ignore
-import { persisted } from "./persisted"
+import { persisted, type StorageType } from "./persisted-store"
 import type { InsertNotes, Notes } from "../db/types"
 import type { NoteEx, Notess, SourceData, SupabaseClient } from "../db/typeExtras"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
@@ -29,22 +29,9 @@ import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 const validateNs = z.map(z.string(), notesRowSchema).parse
 const allNotesR: ReturnType<typeof validateNs> = new Map()
 
-// browser() && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
-export const noteStore = persisted<ReturnType<typeof validateNs>>("notestore", allNotesR, { serializer: devalue }) // TODO: dont export
-noteStore.subscribe(console.log)
-// console.log(devalue.stringify(get(noteStore)).length)
-// console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)
-// this block shall ensure local data gets overwritten on db schema changes
-noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
-
 const validateSTUMap = z.map(z.string(), z.object({ title: z.string(), url: z.string() })).parse
 type STUMap = ReturnType<typeof validateSTUMap>
 const stuMap: STUMap = new Map()
-const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue })
-// prettier-ignore
-stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
-// stuMapStore.update(validateSTUMap)
-// stuMapStore.set(stuMap)  // need to add it when changing dashboard/+page.server.ts
 
 const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
 const transformStore = writable(defTransform)
@@ -86,14 +73,19 @@ export class NoteSync {
   groupStore: Readable<ReturnType<typeof applyTransform>>
   DEBUG: boolean
 
-  constructor(sb: SupabaseClient, user_id: string | undefined) {
+  constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
     this.sb = sb
-    this.noteStore = noteStore
-    this.stuMapStore = stuMapStore
+    this.noteStore = persisted<ReturnType<typeof validateNs>>("notestore", allNotesR, { serializer: devalue, storage })
+    // this block shall ensure local data gets overwritten on db schema changes
+    this.noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
+
+    this.stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
+    this.stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+
     this._user_id = user_id
     // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
-      console.log(n)
+      console.log("note store", n)
       const vals = [...n.values()]
       return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id)), searchArt: O.none }))
     })
@@ -131,7 +123,7 @@ export class NoteSync {
   refresh_notes = async (id: O.Option<string> = O.none) =>
     this._user_id !== undefined
     && (await getNotes(this.sb, id, this._user_id).then((nns) => {
-      console.log(new Map(nns.map(n => [n.id, n])))
+      // console.log(new Map(nns.map(n => [n.id, n])))
       this.noteStore.set(new Map(nns.map(n => [n.id, n])))
     }))
 

@@ -2,4 +2,4 @@
   console.log("henlo")
 </script>
 
-<a href="" class="btn btn-primary">whao</a>
+<a href="dashboard" class="btn btn-primary">whao</a>
