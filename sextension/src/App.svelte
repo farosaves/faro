@@ -35,7 +35,9 @@
     logged_in = O.isSome(get(session))
   }, 1000)
 
+  const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
+    console.log("dashboardURL", dashboardURL)
     optimisticNotes.stream.subscribe(([x]) => {
       optimistic = O.some(x)
       setTimeout(() => (optimistic = O.none), 1000)
@@ -61,6 +63,7 @@
   on:click={() => TB.refresh.query().then(console.log)}>
   <IconRefresh />
 </button>
+<a href={dashboardURL}>welcome?</a>
 
 {#if $needsRefresh}
   <div role="alert" class="alert alert-error">
