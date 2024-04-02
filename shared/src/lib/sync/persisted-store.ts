@@ -1,6 +1,7 @@
 import { writable as internal, type Writable } from "svelte/store"
 import { option as O, either as E } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
+import type { ArgType } from "$lib/semaphore"
 
 declare type Updater<T> = (value: T) => T
 declare type StoreDict<T> = { [key: string]: Writable<T> }
@@ -78,6 +79,18 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
         window.addEventListener("storage", handleStorage)
 
         return () => window.removeEventListener("storage", handleStorage)
+      } else if (storageType == "chrome" && syncTabs) {
+        type T = ArgType<typeof chrome.storage.onChanged.addListener>[0]
+        const handleStorage: T = (changes, namespace) => {
+          for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
+            console.log(
+              `Storage key "${key}" in namespace "${namespace}" changed.`,
+              `Old value was "${oldValue}", new value is "${newValue}".`,
+            )
+          }
+        }
+        chrome.storage.onChanged.addListener(handleStorage)
+        return () => chrome.storage.onChanged.removeListener(handleStorage)
       }
     })
 
@@ -87,13 +100,13 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
     stores[storageType][key] = {
       set(value: T) {
         set(value)
-        updateStorage(key, value).then(() => console.log("updated", key, value))
+        updateStorage(key, value) // .then(() => console.log("updated", key, value))
       },
       update(callback: Updater<T>) {
         return store.update((last) => {
           const value = callback(last)
 
-          updateStorage(key, value).then(() => console.log("updated", key, value))
+          updateStorage(key, value) // .then(() => console.log("updated", key, value))
 
           return value
         })
