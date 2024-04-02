@@ -63,7 +63,7 @@
   on:click={() => TB.refresh.query().then(console.log)}>
   <IconRefresh />
 </button>
-<a href={dashboardURL}>welcome?</a>
+<a target="_blank" href={dashboardURL}>welcome?</a>
 
 {#if $needsRefresh}
   <div role="alert" class="alert alert-error">

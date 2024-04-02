@@ -31,6 +31,7 @@ const allNotesR: ReturnType<typeof validateNs> = new Map()
 
 // browser() && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
 export const noteStore = persisted<ReturnType<typeof validateNs>>("notestore", allNotesR, { serializer: devalue }) // TODO: dont export
+noteStore.subscribe(console.log)
 // console.log(devalue.stringify(get(noteStore)).length)
 // console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)
 // this block shall ensure local data gets overwritten on db schema changes
@@ -92,6 +93,7 @@ export class NoteSync {
     this._user_id = user_id
     // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
+      console.log(n)
       const vals = [...n.values()]
       return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id)), searchArt: O.none }))
     })
