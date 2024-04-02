@@ -17,7 +17,7 @@
   import Tabs from "./components/Tabs.svelte"
   import type { Session } from "@supabase/supabase-js"
   export let data: {
-    session: Session
+    session: Session | null
     supabase: SupabaseClient
     mock: { notes: Record<string, NoteEx>; stuMap: Record<string, SourceData["sources"]> } | undefined
   }

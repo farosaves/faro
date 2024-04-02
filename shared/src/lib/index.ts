@@ -4,6 +4,7 @@ import _Note from "./_Note.svelte"
 import Tags from "./Tags.svelte"
 import MyTags from "./MyTags.svelte"
 import StarArchive from "./StarArchive.svelte"
+import Dashboard from "./dashboard/Dashboard.svelte"
 export * from "./sync/sync"
 export * from "./utils"
 export * from "./db/types"
@@ -15,7 +16,8 @@ import * as schemas from "./db/schemas"
 export * from "./stores"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
-export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, StarArchive }
+export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, StarArchive, Dashboard }
+// export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
 
 // import _Note from "./_Note.svelte"
