@@ -65,13 +65,10 @@
       (note_data["highlightOnMount"] = false)
   })
 
-  let myModal: HTMLDialogElement | null = null
-  let modalPotential = false
-  let modalText = ""
   const loadModalText = () =>
-    (modalText = note_data.highlights
+    note_data.highlights
       ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
-      : escapeHTML(note_data.context || ""))
+      : escapeHTML(note_data.context || "")
 
   let hovered = false
 </script>
@@ -80,13 +77,13 @@
 <!-- on:mouseenter={loadModalText} -->
 <div
   class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
-  on:mouseenter={() => (modalPotential = hovered = true)}
+  on:mouseenter={() => (hovered = true)}
   on:mouseleave={() => (hovered = false)}
   class:highlighting
   on:contextmenu|preventDefault={() => {
-    // $modalStore = "Created at: " + note_data.created_at
-    if (myModal) myModal.showModal()
-    loadModalText()
+    $modalStore = "Created at: " + note_data.created_at
+    // if (myModal) myModal.showModal()
+    // loadModalText()
     $modalOpenStore = true
   }}>
   <input type="checkbox" class="-z-10" bind:checked={isOpen} />
@@ -129,25 +126,6 @@
     on:click={() =>
       hovered && navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)}
     use:shortcut={{ alt: true, code: "KeyC" }} />
-  {#if modalPotential}
-    <dialog
-      id="modal${note_data.id}"
-      class="modal"
-      bind:this={myModal}
-      on:close={() => ($modalOpenStore = false)}>
-      <div class="modal-box">
-        <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
-        <p class="py-4">
-          {@html note_data.highlights
-            ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
-            : escapeHTML(note_data.context || "")}
-        </p>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
-  {/if}
 </div>
 
 <style>

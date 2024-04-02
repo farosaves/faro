@@ -12,9 +12,9 @@
   import { get } from "svelte/store"
   import { domainFilter, fuzzySort, newestFirst, tagFilter } from "./filterSortStores"
   import Overview from "./components/Overview.svelte"
-  import { modalOpenStore } from "shared"
   import Tabs from "./components/Tabs.svelte"
   import type { Notes } from "$lib/db/types"
+  import { modalOpenStore, modalStore } from "$lib"
   export let mock: { notes: Record<string, Notes>; stuMap: Record<string, SourceData["sources"]> } | undefined
 
   export let note_sync: NoteSync
@@ -55,12 +55,11 @@
       ;(e.shiftKey ? note_sync.redo : note_sync.undo)()
     }
   }
-  // const ns = note_sync.noteStore
-  // const na = note_sync.noteArr
 
   let Xview = false
   const priorities = ["5", "0", "-5"] as const
-  // $: console.log("ns", get(note_sync.noteStore))
+  let modal: HTMLDialogElement
+  modalOpenStore.subscribe((n) => n && modal.showModal())
 </script>
 
 <svelte:head>
@@ -116,3 +115,15 @@
     </ul>
   </div>
 </div>
+
+<dialog id="modal$" class="modal" bind:this={modal} on:close={() => ($modalOpenStore = false)}>
+  <div class="modal-box">
+    <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
+    <p class="py-4">
+      {$modalStore}
+    </p>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
