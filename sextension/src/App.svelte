@@ -15,9 +15,8 @@
   import { chromeLink } from "trpc-chrome/link"
   import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
-  import { get } from "svelte/store"
+  import { derived, get } from "svelte/store"
   let login_url = API_ADDRESS + "/login"
-  let curr_domain_title = ""
   $: T = trpc2()
   const port = chrome.runtime.connect()
   export const TB = createTRPCProxyClient<AppRouter>({
@@ -26,6 +25,9 @@
 
   const bgSync = getBgSync(TB)
   const currSrc = RemoteStore("currSrc", { title: "", url: "" })
+  const currDomainTitle = derived(currSrc, ({ title, url }) =>
+    O.getOrElse(() => "")(domain_title(url, title)),
+  )
   const needsRefresh = RemoteStore("needsRefresh", false)
   const session = RemoteStore("session", O.none as O.Option<Session>)
 
@@ -84,13 +86,12 @@
   </div>
 {/if}
 
-<div class="max-w-xs mx-auto space-y-4 border-2">
+<div class="max-w-xs mx-auto space-y-4">
   <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
   <NotePanel bind:optimistic syncLike={bgSync} />
-
+  <!-- {JSON.stringify($currSrc)}{$currDomainTitle} -->
   <textarea
     placeholder="scratchy scratch scratch"
     class="max-w-xs w-full bottom-0 left-0 absolute"
-    bind:value={$scratches[curr_domain_title]} />
-  <!-- <button on:click={() => console.log(peccatoribus(2.5))}> pls</button> -->
+    bind:value={$scratches[$currDomainTitle]} />
 </div>
