@@ -10,12 +10,14 @@
 
   import type { NoteSync } from "shared"
   let goto_function = async () => {
-    const url = note_data.sources.url
+    const url = new URL(note_data.sources.url)
+    console.log("title", note_data.sources.title)
+    note_data.snippet_uuid && url.searchParams.set("highlightUuid", note_data.snippet_uuid)
     console.log(url)
     url && open(url)
   }
 </script>
 
 <div class="relative" style="max-width: {w_rem}rem; min-width: {w_rem}rem ">
-  <Note {note_data} bind:isOpen {closeAll} {note_sync} {goto_function} />
+  <Note {note_data} bind:isOpen {closeAll} syncLike={note_sync} {goto_function} />
 </div>

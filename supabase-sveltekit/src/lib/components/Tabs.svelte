@@ -12,7 +12,7 @@
   const tab_ids = ["1", "2"]
   const tab_titles = ["tab one", "tab two"]
   const tab_actives = [new Set<string>(), new Set<string>()]
-  let active_tab = -1 //Option<number> = O.none
+  let active_tab = -1 // Option<number> = O.none
   const onClick = (newActive: number) => () => {
     const lastActive = active_tab
     const allTagSet = new Set(get(note_sync.alltags)).add("")
@@ -50,7 +50,7 @@
 
 <div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] flex">
   {#each tab_titles as title, i}
-    <div class="tooltip tooltip-right tooltip-primary carousel-item grow" data-tip={`?? untagged`}>
+    <div class="tooltip tooltip-right tooltip-primary carousel-item grow" data-tip={"?? untagged"}>
       <button
         class="btn btn-neutral btn-sm text-nowrap w-full"
         class:btn-outline={active_tab != i}

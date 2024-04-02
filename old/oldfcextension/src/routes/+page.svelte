@@ -1,14 +1,14 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from "svelte"
 
-  let isLoggedIn = false;
-  let loginStatusMessage = "Please click login below to continue.";
-  let highlightedText = "";
-  const DOMAIN = "http://localhost:5173";
-  
+  let isLoggedIn = false
+  let loginStatusMessage = "Please click login below to continue."
+  let highlightedText = ""
+  const DOMAIN = "http://localhost:5173"
+
 
   onMount(async () => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return
 
     try {
       const response = await fetch(`${DOMAIN}/api/check-login`, {
@@ -17,15 +17,15 @@
         headers: {
           Accept: "application/json",
         },
-      });
+      })
       if (response.ok) {
-        const data = await response.json();
-        isLoggedIn = data.isLoggedIn;
+        const data = await response.json()
+        isLoggedIn = data.isLoggedIn
         // If logged in, send highlighted text to backend
       }
     } catch (error) {
-      console.error("Error:", error);
-      loginStatusMessage = "Failed to check login status.";
+      console.error("Error:", error)
+      loginStatusMessage = "Failed to check login status."
     }
 
     try {
@@ -35,27 +35,27 @@
         headers: {
           Accept: "application/json",
         },
-      });
+      })
       if (response.ok) {
-        const data = await response.json();
-        isLoggedIn = data.isLoggedIn;
-        loginStatusMessage = isLoggedIn ? "Logged in successfully." : loginStatusMessage;
+        const data = await response.json()
+        isLoggedIn = data.isLoggedIn
+        loginStatusMessage = isLoggedIn ? "Logged in successfully." : loginStatusMessage
       } else {
-        loginStatusMessage = "Error checking login status.";
+        loginStatusMessage = "Error checking login status."
       }
     } catch (error) {
-      console.error("Error:", error);
-      loginStatusMessage = "Failed to check login status.";
+      console.error("Error:", error)
+      loginStatusMessage = "Failed to check login status."
     }
 
     // Add logic to listen for messages from the content script
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === "highlightedText") {
-        console.log(request.text);
-        highlightedText = request.text;
+        console.log(request.text)
+        highlightedText = request.text
       }
-    });
-  });
+    })
+  })
 
   async function handleLogin() {
     // Logic for login

@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-auto";
+import adapter from "@sveltejs/adapter-auto"
 // import adapter from '@sveltejs/adapter-static';
 // import adapter from 'sveltekit-adapter-chrome-extension'
 
@@ -11,6 +11,6 @@ const config = {
     adapter: adapter(),
     appDir: "app",
   },
-};
+}
 
-export default config;
+export default config

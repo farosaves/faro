@@ -25,8 +25,7 @@
   const note_sync: NoteSync = new NoteSync(supabase, data.session?.user.id)
 
   $: note_sync.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
-  const note_groups = note_sync.groupStore
-  console.log($note_groups.length)
+  const note_groupss = note_sync.groupStore
 
   let showLoginPrompt = false
   onMount(async () => {
@@ -36,7 +35,7 @@
         showLoginPrompt = R.size({ ...get(note_sync.noteStore), ...mock.notes }) > R.size(mock.notes)
         if (!showLoginPrompt) {
           note_sync.noteStore.update((n) => ({ ...n, ...mock.notes })) // use user changes to mock notes or just use them
-          note_sync.stuMapStore.update((n) => ({ ...mock.stuMap }))
+          note_sync.stuMapStore.update((n) => new Map(Object.entries(mock.stuMap)))
         }
       }
     } else {
@@ -63,14 +62,15 @@
   // const na = note_sync.noteArr
 
   let Xview = false
+  const priorities = ["5", "0", "-5"] as const
+  $: console.log("ns", get(note_sync.noteStore))
 </script>
 
+<svelte:head>
+  <title>Faros - Dashboard</title>
+</svelte:head>
+
 <svelte:window on:keydown={handle_keydown} />
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- <div tabindex="-1" on:keydown={handle_keydown}> -->
-<!-- {$na[0]?.quote}
-  {$note_groups[0]} -->
-<!-- {showLoginPrompt} -->
 <LoginPrompt bind:showLoginPrompt />
 <!-- <Tabs {note_sync} /> -->
 <TagView {note_sync} />
@@ -79,35 +79,31 @@
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content z-0">
     <!-- my main here -->
-    <div class="flex flex-row flex-wrap">
-      {#if Xview}
-        <Overview {note_sync} />
-      {/if}
-      {#each $note_groups as [title, note_group], i}
-        <div
-          class="border-2 text-center rounded-lg border-neutral flex flex-col"
-          style="max-width: {w_rem * note_group.length + 0.25}rem;
+    {#each priorities as priority}
+      <div
+        class="flex flex-row flex-wrap border-secondary pb-2 pt-2"
+        class:border-b-2={!!$note_groupss[priority].length}>
+        {#each $note_groupss[priority] as [title, note_group], i}
+          <div
+            class="border-2 text-center rounded-lg border-neutral flex flex-col"
+            style="max-width: {w_rem * note_group.length + 0.25}rem;
           min-width: {w_rem + 0.15}rem">
-          <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
-          <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
-            {#each note_group as note, j}
-              <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {note_sync} {w_rem} />
-            {/each}
+            <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
+            <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
+              {#each note_group as note, j}
+                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {note_sync} {w_rem} />
+              {/each}
+            </div>
           </div>
-        </div>
-      {/each}
-    </div>
-    <!-- class:hidden={get(note_sync.note_del_queue).length == 0}> -->
-    <div class="toast toast-end z-10">
-      <!-- {$note_del_queue.length} -->
-      <!-- <div class="alert alert-info">
-          <button on:click={note_sync.restoredelete}>Undo last delete.</button>
-        </div> -->
-    </div>
+        {/each}
+      </div>
+    {/each}
+
+    <div class="toast toast-end z-10"></div>
   </div>
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content">
+    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content">
       <li>
         <button class="btn btn-sm" on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
@@ -123,4 +119,3 @@
     </ul>
   </div>
 </div>
-<!-- </div> -->

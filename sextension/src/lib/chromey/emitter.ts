@@ -7,6 +7,7 @@ function createName(name: string) {
   return `$ ${name}`
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TODO = any
 export class Emitter<T> {
   subjects: Record<string, Rx.Subject<T>> = {}

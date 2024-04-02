@@ -6,7 +6,6 @@ import { flow, identity, pipe } from "fp-ts/lib/function"
 import type { LazyArg } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { Subject, Observable } from "rxjs"
-import type { Session } from "@supabase/supabase-js"
 import type { Draft, Patch } from "immer"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
@@ -17,7 +16,11 @@ import {
   safeProduceWithPatches,
 } from "structurajs"
 import type { Notes } from "./db/types"
-// setAutoFreeze(false)  only for perf reasons makes sense if tested.. 
+// setAutoFreeze(false)  only for perf reasons makes sense if tested..
+
+export const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
+
+export const browser = () => typeof window !== "undefined" && typeof document !== "undefined" // for SSR
 
 export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 
@@ -26,7 +29,7 @@ export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f)
 export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
 export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
-export function desc<T>(first: (t: T) => number, second: (t: T) => number = (t) => 0): (t1: T, t2: T) => number {
+export function desc<T>(first: (t: T) => number, second: (t: T) => number = t => 0): (t1: T, t2: T) => number {
   return (t1, t2) => first(t2) - first(t1) || second(t2) - second(t1)
 }
 export const asc
@@ -35,13 +38,13 @@ export const asc
       f(t1) - f(t2)
 
 export const ifErr
-  = (f: (e: any) => void, is = true) =>
-    <T extends { error: any }>(r: T) => {
+  = <U>(f: (e: U) => void, is = true) =>
+    <T extends { error: U }>(r: T) => {
       const { error } = r
       if (!!error == is) f(error)
       return r
     }
-export const ifNErr = (f: (e: any) => void) => ifErr(f, false)
+export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
 export const logIfError = ifErr(console.log)
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -58,7 +61,7 @@ export const filterSort
 type T = {
   title: string | null
   url: string | null
-} | null
+} | undefined
 export const fillInTitleUrl = (v: T) => {
   const _get = (u: typeof v, fld: "title" | "url", missing: string) =>
     pipe(
@@ -67,7 +70,7 @@ export const fillInTitleUrl = (v: T) => {
       O.chain(v => O.fromNullable(v[fld])),
       O.fold(() => missing, identity),
     )
-  return { title: escapeHTML(_get(v, "title", "missing Title")), url: _get(v, "url", "") }
+  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
 }
 
 // https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
@@ -103,17 +106,20 @@ export const curry2 = <A, B, C>(f: (a: A, b: B) => C) => (a: A) => (b: B) => f(a
 export const eq = <T>(a: T) => (b: T) => a == b
 export const neq = <T>(a: T) => (b: T) => a != b
 
-export const escapeHTML = (text: string) => {
-  const div = document.createElement("div")
-  div.innerText = text
-  return div.innerHTML
-}
+export const escapeHTML = browser()
+  ? (text: string) => {
+      const div = document.createElement("div")
+      div.innerText = text
+      return div.innerHTML
+    }
+  : identity
 
 export const unwrapTo
   = <T>(x: Option<T>) =>
     (y: T) =>
       O.getOrElse(() => y)(x)
 
+export const invertMap = <K, V>(m: Map<K, V>) => new Map(Array.from(m, ([a, b]) => [b, a]))
 // curry
 export const applyPatches
   = (ps: Patch[]) =>

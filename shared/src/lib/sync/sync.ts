@@ -8,7 +8,7 @@ import { derived, get, writable, type Readable, type Writable } from "svelte/sto
 import {
   applyPatches,
   neq,
-  fillInTitleUrl, // todo? lol
+  fillInTitleUrl,
   filterSort,
   getNotes,
   ifErr,
@@ -17,7 +17,7 @@ import {
   unwrapTo,
   updateStore,
 } from "$lib/utils"
-import { option as O, record as R, string as S, array as A, nonEmptyArray as NA } from "fp-ts"
+import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
 import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
@@ -26,29 +26,34 @@ import * as devalue from "devalue"
 import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 // import * as lzString from "lz-string"
 
-const validateNs = z.record(z.string(), notesRowSchema).parse
-const allNotesR: ReturnType<typeof validateNs> = {}
+const validateNs = z.map(z.string(), notesRowSchema).parse
+const allNotesR: ReturnType<typeof validateNs> = new Map()
 
-const browser = typeof window !== "undefined" && typeof document !== "undefined" // for SSR
-browser && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
-export const noteStore = persisted("notestore", allNotesR, { serializer: devalue })
-console.log(devalue.stringify(get(noteStore)).length)
+// browser() && (localStorage.getItem("notestore") == "{}") && localStorage.setItem("notestore", "") // ! hack
+export const noteStore = persisted<ReturnType<typeof validateNs>>("notestore", allNotesR, { serializer: devalue }) // TODO: dont export
+// console.log(devalue.stringify(get(noteStore)).length)
 // console.log(devalue.stringify(pipe(get(noteStore), R.map(x=>x.))).length)
 // this block shall ensure local data gets overwritten on db schema changes
 noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
-const validateSTUMap = z.record(z.string(), z.object({ title: z.string(), url: z.string() })).parse
+const validateSTUMap = z.map(z.string(), z.object({ title: z.string(), url: z.string() })).parse
 type STUMap = ReturnType<typeof validateSTUMap>
-const stuMap: STUMap = {}
-const stuMapStore = persisted("stuMapStore", stuMap)
+const stuMap: STUMap = new Map()
+const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue })
 // prettier-ignore
 stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+// stuMapStore.update(validateSTUMap)
 // stuMapStore.set(stuMap)  // need to add it when changing dashboard/+page.server.ts
 
 const defTransform = (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) })
 const transformStore = writable(defTransform)
 
 // each patch may need validation if persisted..
+
+const recordDefaults = <T extends string>(flds: T[]) => <U>(r: Record<string, U[]>) => {
+  flds.forEach(s => R.has(s, r) || (r[s] = []))
+  return r as Record<T, U[]>
+}
 
 const __f = (sb: SupabaseClient) => sb.from("notes")
 type NQ = ReturnType<typeof __f>
@@ -57,87 +62,93 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     ns,
     A.map(transform),
     A.filter(n => n.priority > 0),
-    NA.groupBy(n => n.sources.title),
-    R.toArray<string, (NoteEx & { priority: number })[]>,
-    filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max),),  // !hacky + 1000
-      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max),)
-    ),
+    NA.groupBy(n => n.prioritised.toString()),
+    recordDefaults(["5", "0", "-5"]),
+    R.map(NA.groupBy(n => n.sources.title)),
+    R.map(R.toArray<string, (NoteEx & { priority: number })[]>),
+    R.map(filterSort(([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // !hacky + 1000
+      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
+    )),
   )
+
+export type SyncLike = Pick<NoteSync, "alltags" | "tagChange" | "changePrioritised" | "deleteit">
 
 export class NoteSync {
   sb: SupabaseClient
-  noteStore: Writable<Record<string, Notes>>
+  noteStore: Writable<Map<string, Notes>>
   noteArr: Readable<NoteEx[]>
-  private user_id: string | undefined
+  _user_id: string | undefined
   // note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
   alltags: Readable<string[]>
   transformStore: Writable<(x: NoteEx) => NoteEx & { priority: number }>
   groupStore: Readable<ReturnType<typeof applyTransform>>
+  DEBUG: boolean
 
   constructor(sb: SupabaseClient, user_id: string | undefined) {
     this.sb = sb
     this.noteStore = noteStore
     this.stuMapStore = stuMapStore
-    this.user_id = user_id
+    this._user_id = user_id
     // this.note_del_queue = note_del_queue
     this.noteArr = derived([this.noteStore, this.stuMapStore], ([n, s]) => {
-      const vals = Object.values(n)
-      return vals.map(n => ({ ...n, sources: fillInTitleUrl(s[n.source_id]), searchArt: O.none }))
+      const vals = [...n.values()]
+      return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id)), searchArt: O.none }))
     })
     this.alltags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
+    this.DEBUG = import.meta.env.DEBUG || false
   }
 
-  inited = () => this.user_id !== undefined
+  inited = () => this._user_id !== undefined
 
   setUid = (user_id: string) => {
-    this.user_id = user_id
-    this.noteStore.update(R.filter(n => n.user_id == user_id))
+    this._user_id = user_id
+    this.noteStore.update(M.filter(n => n.user_id == user_id))
   }
 
   refresh_sources = async () =>
-    this.user_id !== undefined
+    this._user_id !== undefined
     && this.stuMapStore.update(
       unwrapTo(
         pipe(
-          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this.user_id)).data,
+          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
           O.fromNullable,
-          O.map(data => Object.fromEntries(data.map(n => [n.id, fillInTitleUrl(n)]))),
+          O.map(data => new Map(data.map(n => [n.id, fillInTitleUrl(n)]))),
         ),
       ),
     )
 
   update_source = async (id: string, { sources }: SourceData) =>
-    this.stuMapStore.update(R.upsertAt(id, sources))
+    this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources))
 
   reset_transform = () => this.transformStore.set(defTransform)
 
   refresh_notes = async (id: O.Option<string> = O.none) =>
-    this.user_id !== undefined
-    && (await getNotes(this.sb, id, this.user_id).then(nns =>
-      this.noteStore.set(Object.fromEntries(nns.map(n => [n.id, n]))),
-    ))
+    this._user_id !== undefined
+    && (await getNotes(this.sb, id, this._user_id).then((nns) => {
+      console.log(new Map(nns.map(n => [n.id, n])))
+      this.noteStore.set(new Map(nns.map(n => [n.id, n])))
+    }))
 
-  action
-    = <T extends PromiseLike<{ error: any }>>(f: (a: NQ) => T) =>
-      (patchTup: PatchTup, userAction = true) =>  // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
-        f(this.sb.from("notes"))  // note that the stacks on failed update from xxdo don't get updated properly yet..
-          .then(logIfError)
-          .then((e) => {
-            console.log(patchTup)
-            return e
-          })
-          .then(ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
-          .then(
-            ifNErr(() => {
-              if (userAction) {
-                xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-              }
-            }),
-          )
+  action = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
+    (patchTup: PatchTup, userAction = true) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
+      f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
+        .then(logIfError)
+        .then((e) => {
+          console.log(patchTup)
+          return e
+        })
+        .then(ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
+        .then(
+          ifNErr(() => {
+            if (userAction) {
+              xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
+            }
+          }),
+        )
 
   act = (patchTup: PatchTup, userAction: boolean) => {
     // maps the operation with patchTup.patches to db update
@@ -151,12 +162,11 @@ export class NoteSync {
       this.action(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup, userAction)
   }
 
-
-  xxdo = (patchTup: PatchTup) => {
+  _xxdo = (patchTup: PatchTup) => {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
-    updateStore(this.noteStore)(applyPatches(inverse))  // ! redo by 'default'
+    updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
     this.act(pTInverted, false)
     return pTInverted
   }
@@ -166,37 +176,37 @@ export class NoteSync {
     const pT = undo.pop()
     console.log("undo", pT)
     if (!pT) return ({ undo, redo })
-    return ({ undo, redo: [...redo, this.xxdo(pT)] })
+    return ({ undo, redo: [...redo, this._xxdo(pT)] })
   })
 
   redo = () => xxdoStacks.update(({ undo, redo }) => {
     const pT = redo.pop()
     console.log("redo", pT)
     if (!pT) return ({ undo, redo })
-    return ({ redo, undo: [...undo, this.xxdo(pT)] })
+    return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
   add = async (note: InsertNotes, source_id: string) => {
     const n = { ...createMock(), note }
   }
 
-  deleteit = async (note: Notes) => {
-    const patchTup = updateStore(this.noteStore)(ns => {
-      delete ns[note.id]
+  deleteit = async (noteId: string) => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
+      ns.delete(noteId)
     })
-    await this.action(x => x.delete().eq("id", note.id))(patchTup)
+    await this.action(x => x.delete().eq("id", noteId))(patchTup)
   }
 
-  tagChange = (note: Notes) => async (tag: string, tags: string[]) => {
+  tagChange = (noteId: string) => async (tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).filter(n => n.id == note.id)[0].tags = tags
+      ns.get(noteId)!.tags = tags
     })
-    this.action(x => x.update({ tags }).eq("id", note.id))(patchTup)
+    this.action(x => x.update({ tags }).eq("id", noteId))(patchTup)
   }
 
   tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).forEach(n => {
+      ns.forEach((n) => {
         const i = n.tags.indexOf(oldTag)
         if (~i)
           if (O.isSome(newTag))
@@ -207,14 +217,15 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
-  changePrioritised = (note: Notes) => async (prioritised: number) => {
+  changePrioritised = (noteId: string) => async (prioritised: number) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
-      Object.values(ns).filter(n => n.id == note.id)[0].prioritised = prioritised
+      ns.get(noteId)!.prioritised = prioritised
     })
-    this.action(x => x.update({ prioritised }).eq("id", note.id))(patchTup)
+    this.action(x => x.update({ prioritised }).eq("id", noteId))(patchTup)
   }
 
   sub = () => {
+    console.log("debug", this.DEBUG)
     this.sb
       .channel("notes")
       .on(
@@ -223,18 +234,25 @@ export class NoteSync {
           event: "*",
           schema: "public",
           table: "notes",
-          filter: `user_id=eq.${this.user_id}`,
+          filter: `user_id=eq.${this._user_id}`,
         },
         (payload: { new: Notes | object }) => {
           if ("id" in payload.new) {
             const nn = payload.new
             updateStore(this.noteStore)((ns) => {
-              ns[nn.id] = nn
+              ns.set(nn.id, nn)
             })
+            if (!(get(this.stuMapStore).has(nn.source_id)))
+              this.refresh_sources()
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this.refresh_notes()  // TODO: this is to run on deletions: but if I exectued deletion manually i could skip it
+          } else this.refresh_notes() // TODO: this is to run on deletions: but if I just exectued deletion manually i could skip it
         },
       )
-      .subscribe()
+      .subscribe((status) => {
+        this.DEBUG && console.log("status change- ", status)
+        if (status !== "SUBSCRIBED") {
+          // this.refresh_sources().then(() => this.refresh_notes())
+        }
+      })
   }
 }

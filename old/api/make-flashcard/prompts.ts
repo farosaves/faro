@@ -1,5 +1,5 @@
-export function make_prompt1(website_title, text) { 
-	return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function make_prompt1(website_title, text) {
+  return `I will give you a piece of text which is taken from the website titled "${website_title}".
 	The text is as follows: "${text}"
 	Here the text ends.
 	First identify the broad topic that the reader is interested in.
@@ -9,8 +9,8 @@ export function make_prompt1(website_title, text) {
 	Only return sentences following the specified format.`
 }
 
-export function make_prompt1_1(website_title, text) { 
-	return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function make_prompt1_1(website_title, text) {
+  return `I will give you a piece of text which is taken from the website titled "${website_title}".
 	The text is as follows: "${text}"
 	Here the text ends.
 	First identify the broad topic that the reader is interested in.
@@ -21,8 +21,8 @@ export function make_prompt1_1(website_title, text) {
 }
 
 
-export function make_prompt2(website_title, text) { 
-	return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function make_prompt2(website_title, text) {
+  return `I will give you a piece of text which is taken from the website titled "${website_title}".
 	The text is as follows: "${text}"
 	Here the text ends.
 	For each sentence we want to have a deletion cloze flashcard where the piece of information is  like this:
@@ -31,8 +31,8 @@ export function make_prompt2(website_title, text) {
 	Only return sentences like this and they need to follow the specified format.`
 }
 
-export function make_prompt3(website_title, text) { 
-	return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function make_prompt3(website_title, text) {
+  return `I will give you a piece of text which is taken from the website titled "${website_title}".
 	The text is as follows: "${text}"
 	Here the text ends.
 	We want to have a deletion cloze flashcards where the piece of information is  like this:
@@ -40,8 +40,8 @@ export function make_prompt3(website_title, text) {
 	"The 16th president of the United States was {{Abraham Lincoln}}"
 	Only return sentences like this and they need to follow the specified format.`
 }
-export function make_prompt4(website_title, text) { 
-	return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function make_prompt4(website_title, text) {
+  return `I will give you a piece of text which is taken from the website titled "${website_title}".
 	The text is as follows: "${text}"
 	Here the text ends.
 	First give me the topic that the raeder is interested in.
@@ -58,7 +58,8 @@ export function make_prompt4(website_title, text) {
 	`
 }
 
-export function QA_prompt1(n_cards, website_title, text) {return `I will give you a piece of text which is taken from the website titled "${website_title}".
+export function QA_prompt1(n_cards, website_title, text) {
+  return `I will give you a piece of text which is taken from the website titled "${website_title}".
 The text is as follows: "${text}"
 Here the text ends.
 Give me the broad topic in which the reader is interested, that it is about.
@@ -69,14 +70,14 @@ Then based on that text, give me exactly ${n_cards} questions and answers to the
 
 
 export function QA_prompt_response1() {
-	return `Here is the topic and the question answer pairs separated by a dash like you specified.\nTopic:`
+  return "Here is the topic and the question answer pairs separated by a dash like you specified.\nTopic:"
 }
 
 
 export function prompt_response0() {
-	return ""
+  return ""
 }
 
 export function prompt_response1() {
-	return `Here is the topic and the sentences where the information is surrounded by double braces like you specified.\nTopic:`
+  return "Here is the topic and the sentences where the information is surrounded by double braces like you specified.\nTopic:"
 }
