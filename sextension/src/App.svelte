@@ -92,6 +92,6 @@
   <!-- {JSON.stringify($currSrc)}{$currDomainTitle} -->
   <textarea
     placeholder="scratchy scratch scratch"
-    class="max-w-xs w-full bottom-0 left-0 absolute"
+    class="max-w-xs w-full bottom-0 left-0 absolute textarea p-1"
     bind:value={$scratches[$currDomainTitle]} />
 </div>
