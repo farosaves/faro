@@ -6,7 +6,6 @@
   import { desc, hostname } from "shared"
   import { uncheckedDomains } from "../filterSortStores"
   export let note_sync: NoteSync
-  // const notestore = note_sync.notestore
   const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
   const domains = derived(note_sync.noteArr, (x) =>
     pipe(

@@ -1,6 +1,6 @@
 <script>
   export let data
-  import Dashboard from "$lib/components/Dashboard.svelte"
+  import { Dashboard } from "shared"
 </script>
 
 <Dashboard {data} />
