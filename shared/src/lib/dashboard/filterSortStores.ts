@@ -1,6 +1,6 @@
 import type { NoteEx, SourceData } from "$lib/db/typeExtras"
 import { replacer } from "$lib/stores"
-import { escapeHTML, hostname } from "$lib/utils"
+import { chainN, escapeHTML, hostname } from "$lib/utils"
 import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
@@ -68,12 +68,11 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
             pipe(
               selectedKeys,
               A.findIndex(n => n == "sources.title"),
-              O.chain(i => O.fromNullable(optKR[i])),
-              O.map((r) => {
+              chainN(i => optKR[i]),
+              chainN((r) => {
                 const target = escapeHTML(r.target)
                 return fuzzysort.highlight({ ...r, target }, replacer)?.join("")
               }),
-              O.chain(O.fromNullable),
             ),
           ),
           O.getOrElse(() => n.sources.title),

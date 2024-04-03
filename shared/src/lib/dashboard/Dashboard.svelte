@@ -19,6 +19,7 @@
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
+  const allTags = noteDeri.allTags
 
   // let showing_contents: boolean[][]
   let noteOpens: Record<string, boolean> = {}
@@ -70,7 +71,7 @@
             <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
               {#each note_group as note, j}
-                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {noteSync} {w_rem} />
+                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {noteSync} {w_rem} {allTags} />
               {/each}
             </div>
           </div>

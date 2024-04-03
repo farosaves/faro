@@ -1,7 +1,7 @@
 // import 'chrome';
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
-import { elemsOfClass, makeQCH, sleep } from "shared"
-import { createTRPCProxyClient } from "@trpc/client"
+import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
+import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
 import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
@@ -11,7 +11,7 @@ if (DEBUG) console.log("hello")
 
 const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
-  links: [chromeLink({ port })],
+  links: [chromeLink({ port }), loggerLink()],
 })
 
 const ran2sel = (rann: Range) => {
@@ -104,7 +104,7 @@ getHighlightedText.sub(async ([uuid]) => {
     serialized_highlight: serialized,
   }
   optimisticNotes.send(note_data)
-  const newNote = await T.addNote.mutate(note_data)
+  const newNote = await T.newNote.mutate(note_data).catch(funLog("newNote"))
   if (newNote == null) {
     deleteSelection(uuid)
   }

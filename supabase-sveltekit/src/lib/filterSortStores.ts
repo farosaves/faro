@@ -1,7 +1,7 @@
 import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
-import { escapeHTML, replacer, type NoteEx } from "shared"
+import { chainN, escapeHTML, replacer, type NoteEx } from "shared"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { hostnameStr } from "./utils"
 
@@ -66,11 +66,10 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
               selectedKeys,
               A.findIndex(n => n == "sources.title"),
               O.chain(i => O.fromNullable(optKR[i])),
-              O.map((r) => {
+              chainN((r) => {
                 const target = escapeHTML(r.target)
                 return fuzzysort.highlight({ ...r, target }, replacer)?.join("")
               }),
-              O.chain(O.fromNullable),
             ),
           ),
           O.getOrElse(() => n.sources.title),

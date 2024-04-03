@@ -10,10 +10,12 @@
   import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
+  import type { Readable } from "svelte/motion"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
   export let syncLike: SyncLike
+  export let allTags: Readable<string[]>
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
@@ -22,7 +24,6 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
-  let all_tags = syncLike.alltags
 
   $: text = pipe(
     note_data.searchArt,
@@ -103,7 +104,7 @@
       on:dblclick={goto_function}>
       {@html text}
     </button>
-    <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
+    <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
   </div>
   <div class="collapse-content z-40" style="grid-row-start: 2">
     <div class="join w-full">

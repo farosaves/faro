@@ -39,4 +39,4 @@ export const enqueue$ = (sb: SupabaseClient) => (card: Cards) => {
   updateCard(sb)(card)
 }
 
-const updateCard = (sb: SupabaseClient) => (card: Cards) => sb.from("cards").update(card).then(logIfError)
+const updateCard = (sb: SupabaseClient) => (card: Cards) => sb.from("cards").update(card).then(logIfError("cards"))
