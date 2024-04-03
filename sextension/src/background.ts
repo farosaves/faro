@@ -18,7 +18,7 @@ const note_sync = new NoteSync(supabase, undefined, "chrome")
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
-pushStore("allTags", noteDeri.alltags)
+pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
 pushStore("panel", note_mut.panel)
@@ -28,7 +28,7 @@ const user_id = derived(sess, O.map(s => s.user.id))
 // on user/session run:
 const onUser_idUpdate = O.match(
   () => note_sync.setUser_id(undefined),
-  (user_id: string) => {
+  async (user_id: string) => {
     note_sync.setUser_id(user_id)
     note_sync.refresh_sources()
     note_sync.refresh_notes()
@@ -74,9 +74,9 @@ const appRouter = (() => {
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
     undo: t.procedure.query(note_sync.undo),
     redo: t.procedure.query(note_sync.redo),
+    newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
 
     // forward note_mut
-    addNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_mut.addNote(input, get(currSrc))),
 
   })
 })()

@@ -28,7 +28,7 @@ export async function add_card(s: {
       .insert({ card_content_id: card_content.id, ...ts(card) })
       .select()
       .maybeSingle()
-      .then(logIfError)
+      .then(logIfError("cards"))
   ).data
   console.log(saved_card)
 

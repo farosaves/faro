@@ -78,33 +78,9 @@ export class NoteMut {
     const { error } = await this.ns.sb
       .from("sources")
       .insert({ id, domain: hostnameStr(url), url, title })
-      .then(logIfError)
+      .then(logIfError("upSetSrcId"))
     if (!error) return this._updateSrc(source, id)
     return null
     // throw error // TODO: if doing offline needs to be options
-  }
-
-  addNote = async (n: PendingNote, source: Src) => {
-    const source_id = await this.upSetSrcId(source)
-    if (source_id === null) return null
-    // get common tags
-    // const currNotes = get(this.panel)
-    // const tags = pipe(currNotes.flatMap(n => n.tags),
-    //   NA.groupBy(identity),
-    //   R.map(A.size),
-    //   R.filter(x => x == currNotes.length),
-    //   R.keys)
-
-    const id = crypto.randomUUID()
-    const { ...note } = { ...n, id }
-    // optimistic
-
-    const { data: newNote, error } = await this.ns.sb
-      .from("notes")
-      .insert({ ...note, source_id })
-      .select()
-      .maybeSingle()
-    console.log(newNote, error, this.ns._user_id)
-    return newNote
   }
 }

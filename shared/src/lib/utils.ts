@@ -47,18 +47,22 @@ export const ifErr
       return r
     }
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
-export const logIfError = ifErr(console.log)
+export const funLog = (where = "") => (n: unknown) => console.log("logIfError log", n, where && ("at" + where))
+export const logIfError = (where = "") => ifErr(funLog(where))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const hostname = (s: string) => O.tryCatch(() => new URL(s).hostname)
 
 export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
+export const domainTitle = (src: Src) => O.map(s => [s, src.title].join(";"))(hostname(src.url))
 
 // sort descendingly but for negative scores filter out
 export const filterSort
   = <T>(first: (x: T) => number, second = first) =>
     (xs: T[]) =>
       xs.filter(x => first(x) > 0).toSorted(desc(first, second))
+
+export const chainN = <T, U>(f: (a: T) => U | undefined | null) => O.chain(flow(f, O.fromNullable))
 
 type T = {
   title: string | null
@@ -69,7 +73,7 @@ export const fillInTitleUrl = (v: T) => {
     pipe(
       u,
       O.fromNullable,
-      O.chain(v => O.fromNullable(v[fld])),
+      chainN(v => v[fld]),
       O.fold(() => missing, identity),
     )
   return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }

@@ -9,4 +9,6 @@ export type NoteEx = Notes &
   SourceData & {
     searchArt: Option<{ selectedKeys: string[], optKR: Fuzzysort.KeysResult<NoteEx> }>
   }
+
+export type Note = Omit<Notes, "id" | "source_id"> & { id: UUID, source_id: UUID }
 export type Notess = NoteEx[]

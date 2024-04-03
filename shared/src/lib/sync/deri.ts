@@ -35,7 +35,7 @@ export class NoteDeri {
   groupStore: Readable<ReturnType<typeof applyTransform>>
   transformStore: Writable<(x: NoteEx) => NoteEx & { priority: number }>
   noteArr: Readable<NoteEx[]>
-  alltags: Readable<string[]>
+  allTags: Readable<string[]>
   constructor(noteSync: SyncLikeNStores) {
     this.sync = noteSync
     this.transformStore = transformStore
@@ -47,7 +47,7 @@ export class NoteDeri {
     })
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
-    this.alltags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
+    this.allTags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
   }
 
   reset_transform = () => this.transformStore.set(defTransform)

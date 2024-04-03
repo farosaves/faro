@@ -27,7 +27,7 @@
     data.supabase.auth
       // @ts-ignore
       .updateUser({ password: $password.value })
-      .then(logIfError)
+      .then(logIfError("reset password"))
       .then(() => goto("/account?from=passwordreset"))
 </script>
 
