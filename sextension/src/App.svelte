@@ -24,7 +24,6 @@
   })
 
   const bgSync = getBgSync(TB)
-  const allTags = bgSync.allTags
   const currSrc = RemoteStore("currSrc", { title: "", url: "" })
   const currDomainTitle = derived(currSrc, ({ title, url }) =>
     O.getOrElse(() => "")(domain_title(url, title)),
@@ -40,7 +39,6 @@
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
-    console.log("dashboardURL", dashboardURL)
     optimisticNotes.stream.subscribe(([x]) => {
       optimistic = O.some(x)
       setTimeout(() => (optimistic = O.none), 1000)

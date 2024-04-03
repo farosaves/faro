@@ -2,10 +2,9 @@
   import type { NoteDeri, SyncLike } from "shared"
   import Note from "$lib/components/Note.svelte"
   import { option as O, array as A } from "fp-ts"
-  import { createMock, type PendingNote } from "shared"
+  import { createMock, funLog, type PendingNote } from "shared"
   import { pipe } from "fp-ts/lib/function"
   import type { NoteMut } from "$lib/note_mut"
-  import type { Readable } from "svelte/store"
 
   export let syncLike: SyncLike & Pick<NoteMut, "panel"> & Pick<NoteDeri, "allTags">
   const note_panel = syncLike.panel
