@@ -1,10 +1,9 @@
 import { NoteSync, domain_title, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
 import { createMock } from "shared"
-import type { InsertNotes, PendingNote } from "shared"
+import type { InsertNotes, PendingNote, Src } from "shared"
 import { option as O, record as R, string as S, map as M } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
-export type Src = SourceData["sources"]
 
 const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
@@ -12,7 +11,7 @@ export class NoteMut {
   ns: NoteSync
   currSrcnId: Writable<O.Option<[Src, string]>>
   panel: Readable<Notes[]>
-  source_idStore
+  source_idStore: Readable<Map<string, string>>
   constructor(ns: NoteSync) {
     this.ns = ns
     this.currSrcnId = writable(O.none)
@@ -57,6 +56,7 @@ export class NoteMut {
   private _updatedSrcId = async (source: Src) => {
     const localId = this.setLocalSrcId(source)
     if (O.isSome(localId)) return localId
+    if (!this.ns.online()) return O.none
     const { data } = await this.ns.sb
       .from("sources")
       .select("id")
@@ -71,15 +71,15 @@ export class NoteMut {
   upSetSrcId = async (source: Src) => {
     const oid = await this._updatedSrcId(source)
     if (O.isSome(oid)) return oid.value
+
     const { url, title } = source
     const id = crypto.randomUUID()
-    const { data } = await this.ns.sb
+    // don't select in general
+    const { error } = await this.ns.sb
       .from("sources")
       .insert({ id, domain: hostnameStr(url), url, title })
-      .select("id")
-      .maybeSingle()
       .then(logIfError)
-    if (data) return this._updateSrc(source, data.id)
+    if (!error) return this._updateSrc(source, id)
     return null
     // throw error // TODO: if doing offline needs to be options
   }

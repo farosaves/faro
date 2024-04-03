@@ -15,6 +15,8 @@ import {
   logIfError,
   unwrapTo,
   updateStore,
+  invertMap,
+  type Src,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
@@ -23,6 +25,7 @@ import { z } from "zod"
 import { createMock } from "../db/mock"
 import * as devalue from "devalue"
 import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
+// import from "crypto"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -33,11 +36,22 @@ const validateSTUMap = z.map(z.string(), z.object({ title: z.string(), url: z.st
 type STUMap = ReturnType<typeof validateSTUMap>
 export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
+type InvSTUMap = Map<NonNullable<ReturnType<STUMap["get"]>>, string>
 
 const __f = (sb: SupabaseClient) => sb.from("notes")
 type NQ = ReturnType<typeof __f>
 
 export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePrioritised" | "deleteit" | "undo" | "redo">
+
+// another patch stack for queued actions - Either stumap- or note-store
+// for note store patchtups I can just call act later
+// for stumap store need an analogous act OR make inserts take note, domain, title lol
+
+// so queued action stack is: notestore patchtup & Src ({domain, title})
+// before uploading queued action stack i need to first refresh sources to make stumapstore synced
+
+// so on offline add I get from invstumap store or add a temporary entry, but I don't keep that entry later
+// on online ...
 
 export class NoteSync {
   sb: SupabaseClient
@@ -45,6 +59,7 @@ export class NoteSync {
   _user_id: string | undefined
   // note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
+  invStuMapStore: Readable<InvSTUMap>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   DEBUG: boolean
 
@@ -56,6 +71,7 @@ export class NoteSync {
 
     this.stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
     this.stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+    this.invStuMapStore = derived(this.stuMapStore, invertMap)
 
     this.xxdoStacks = xxdoStacks(storage)
 
@@ -64,7 +80,7 @@ export class NoteSync {
     this.DEBUG = import.meta.env.DEBUG || false
   }
 
-  inited = () => this._user_id !== undefined
+  online = () => this._user_id !== undefined
 
   setUser_id = (user_id: string | undefined) => {
     this._user_id = user_id
@@ -147,22 +163,35 @@ export class NoteSync {
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
-  add = async (note: InsertNotes, source_id: string) => {
-    const n = { ...createMock(), note }
+  insertSrc = async (src: Src) => {
+    const id = crypto.randomUUID()
+    this.stuMapStore.update(n => n.set(id, src))
+    //
+  }
+
+  newNote = async (note: InsertNotes, src: Src) => {
+    if (!get(this.invStuMapStore).has(src))
+      this.insertSrc(src)
+    const n = { ...createMock(), ...note }
+
+    // const patchTup = updateStore(this.noteStore)((ns) => {
+    //   ns.delete(n.id)
+    // })
+    // await this.action(x => x.delete().eq("id", n.id))(patchTup)
   }
 
   deleteit = async (noteId: string) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.delete(noteId)
     })
-    await this.action(x => x.delete().eq("id", noteId))(patchTup)
+    this.act(patchTup, true)
   }
 
   tagChange = (noteId: string) => async (tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.get(noteId)!.tags = tags
     })
-    this.action(x => x.update({ tags }).eq("id", noteId))(patchTup)
+    this.act(patchTup, true)
   }
 
   tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
@@ -182,7 +211,8 @@ export class NoteSync {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.get(noteId)!.prioritised = prioritised
     })
-    this.action(x => x.update({ prioritised }).eq("id", noteId))(patchTup)
+    this.act(patchTup, true)
+    // this.action(x => x.update({ prioritised }).eq("id", noteId))(patchTup)
   }
 
   sub = () => {

@@ -1,4 +1,4 @@
-import type { Notess, SupabaseClient } from "./db/typeExtras"
+import type { Notess, SourceData, SupabaseClient } from "./db/typeExtras"
 import { array as A, task as T } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O, record as R, number as N } from "fp-ts"
@@ -17,6 +17,8 @@ import {
 } from "structurajs"
 import type { Notes } from "./db/types"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
+
+export type Src = SourceData["sources"]
 
 export const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
