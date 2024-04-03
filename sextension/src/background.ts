@@ -2,7 +2,7 @@ import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteDeri, NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
+import { NoteDeri, NoteSync, domain_title, escapeRegExp, funLog, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -21,6 +21,7 @@ const noteDeri = new NoteDeri(note_sync)
 pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
+note_mut.panel.subscribe(funLog("note_panel"))
 pushStore("panel", note_mut.panel)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
@@ -37,7 +38,7 @@ const onUser_idUpdate = O.match(
 user_id.subscribe(onUser_idUpdate)
 
 const refresh = async () => {
-  const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
+  const toks = await T.my_tokens.query().catch(funLog("toks")) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
@@ -72,11 +73,10 @@ const appRouter = (() => {
     tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
     changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
-    undo: t.procedure.query(note_sync.undo),
-    redo: t.procedure.query(note_sync.redo),
+    undo: t.procedure.query(() => note_sync.undo()),
+    redo: t.procedure.query(() => note_sync.redo()),
     newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
 
-    // forward note_mut
 
   })
 })()

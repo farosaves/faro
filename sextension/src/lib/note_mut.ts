@@ -1,4 +1,4 @@
-import { NoteSync, domain_title, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
+import { NoteSync, chainN, domainTitle, domain_title, funLog, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
 import { createMock } from "shared"
 import type { InsertNotes, PendingNote, Src } from "shared"
 import { option as O, record as R, string as S, map as M } from "fp-ts"
@@ -11,10 +11,11 @@ export class NoteMut {
   ns: NoteSync
   currSrcnId: Writable<O.Option<[Src, string]>>
   panel: Readable<Notes[]>
-  source_idStore: Readable<Map<string, string>>
   constructor(ns: NoteSync) {
     this.ns = ns
     this.currSrcnId = writable(O.none)
+    // this.ns.stuMapStore
+    // this.currSrcnId.subscribe(funLog("currSrcnId"))
     this.panel = derived([this.ns.noteStore, this.currSrcnId], ([ns, ots]) =>
       pipe(
         ots,
@@ -22,31 +23,17 @@ export class NoteMut {
         O.getOrElse<Notes[]>(() => []),
       ),
     )
-    this.source_idStore = derived(
-      ns.stuMapStore,
-      flow(
-        M.map(({ url, title }) => domain_title(url, title)),
-        M.compact,
-        invertMap,
-      ),
-    )
   }
 
   _updateSrc = (source: Src, id: string) => {
     this.currSrcnId.set(O.some([source, id]))
-    const { title, url } = source
-    this.ns.update_source(id, { sources: source })
     return id
   }
 
   // get source if already present locally
-  setLocalSrcId = (source: Src) => {
-    // get store
-    const { url, title } = source
-    const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore).get(dt)))(
-      domain_title(url, title),
-    )
-    if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
+  setLocalSrcId = (src: Src) => {
+    const optId = this.ns.getSource_id(src)
+    if (O.isSome(optId)) return O.some(this._updateSrc(src, optId.value))
     // stil we're on not inserted so set to none:
     this.currSrcnId.set(O.none)
     return O.none

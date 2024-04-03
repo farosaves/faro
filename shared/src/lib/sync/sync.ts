@@ -19,6 +19,7 @@ import {
   type Src,
   domainTitle,
   chainN,
+  funLog,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
 import { flip, flow, pipe } from "fp-ts/lib/function"
@@ -117,8 +118,8 @@ export class NoteSync {
       ),
     )
 
-  update_source = async (id: string, { sources }: SourceData) =>
-    this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources) as Updater<STUMap>)
+  // update_source = async (id: string, { sources }: SourceData) =>
+  //   this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources) as Updater<STUMap>)
 
   refresh_notes = async (id: O.Option<string> = O.none) =>
     this._user_id !== undefined
@@ -181,20 +182,34 @@ export class NoteSync {
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
+
+  // getset for inserting
+  // TODO: this needs to add Src to supabase? or no?
+
   getsetSource_id = (src: Src) => {
     const dt = domainTitle(src)
-    return pipe(dt,
-      // chainN(get(this.invStuMapStore).get), DOESNT WORK
-      chainN(n => get(this.invStuMapStore).get(n)), // works fine
-      O.orElse(() => pipe(dt, O.map(s => uuidv5(s, namespaceUuid) as UUID))))
+    const local = this.getSource_id(src)
+    if (O.isSome(local)) return local
+    const newId = pipe(dt, O.map(s => uuidv5(s, namespaceUuid) as UUID))
+    pipe(newId, O.map(id => this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))))
+    return newId
   }
+
+  getSource_id = flow(domainTitle, dt => pipe(dt,
+    // chainN(get(this.invStuMapStore).get), DOESNT WORK
+    chainN(n => get(this.invStuMapStore).get(n)), // works fine
+  ))
 
   newNote = async (note: PendingNote, src: Src) => {
     const source_idOpt = this.getsetSource_id(src)
     if (O.isNone(source_idOpt)) throw new Error("probably not correct url..")
     const source_id = source_idOpt.value
     const n: Note = { ...createMock(), ...note, source_id }
-    const patchTup: PatchTup = updateStore(this.noteStore)(M.upsertAt(S.Eq)(n.id, n))
+    funLog("noteStore")(get(this.noteStore))
+    // const patchTup: PatchTup = updateStore(this.noteStore)(M.upsertAt(S.Eq)(n.id, n))
+    const patchTup: PatchTup = updateStore(this.noteStore)((map) => {
+      map.set(n.id, n)
+    })
     this.act(patchTup, true, src)
 
     // const patchTup = updateStore(this.noteStore)((ns) => {
