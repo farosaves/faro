@@ -66,9 +66,10 @@ export class NoteSync {
 
   inited = () => this._user_id !== undefined
 
-  setUser_id = (user_id: string) => {
+  setUser_id = (user_id: string | undefined) => {
     this._user_id = user_id
-    this.noteStore.update(M.filter(n => n.user_id == user_id))
+    if (user_id !== undefined)
+      this.noteStore.update(M.filter(n => n.user_id == user_id))
   }
 
   refresh_sources = async () =>
