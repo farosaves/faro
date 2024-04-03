@@ -26,13 +26,14 @@ const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
 // on user/session run:
-const onUser_idUpdate = O.map((user_id: string) => {
-  // ! it's not properly logging out - the id persists in note_sync field
-  note_sync.setUser_id(user_id)
-  note_sync.refresh_sources()
-  note_sync.refresh_notes()
-  note_sync.sub()
-})
+const onUser_idUpdate = O.match(
+  () => note_sync.setUser_id(undefined),
+  (user_id: string) => {
+    note_sync.setUser_id(user_id)
+    note_sync.refresh_sources()
+    note_sync.refresh_notes()
+    note_sync.sub()
+  })
 user_id.subscribe(onUser_idUpdate)
 
 const refresh = async () => {
