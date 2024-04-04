@@ -20,6 +20,7 @@ import {
   domainTitle,
   chainN,
   funLog,
+  hostname,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
 import { flip, flow, pipe } from "fp-ts/lib/function"
@@ -129,7 +130,7 @@ export class NoteSync {
     }))
 
 
-  pushAction = async (patchTup: PatchTup) => {
+  pushAction = async (patchTup: PatchTup, src?: Src) => {
     console.log("puuushing")
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
@@ -147,6 +148,18 @@ export class NoteSync {
     for (const { note } of notesOps)
       note.user_id = this._user_id
 
+    console.log("src", src)
+    if (src) console.log(this.getSource_id(src))
+    if (src && O.isNone(this.getSource_id(src))) { // not in store
+      const { note } = notesOps[0]
+      console.log("stumap b4 update: ", get(this.stuMapStore))
+      this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(note.source_id, src))
+      console.log("stumap after update: ", get(this.stuMapStore))
+      const domain = O.toUndefined(hostname(src.url))
+      await this.sb.from("sources").insert({ id: note.source_id, ...src, domain: domain }).then(logIfError("insert sources"))
+      console.log("added source")
+    }
+
     console.log("notesOps: ", notesOps)
     if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
 
@@ -159,33 +172,10 @@ export class NoteSync {
 
   act = (patchTup: PatchTup, userAction: boolean, src?: Src) => {
     if (userAction) this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-    if (this.online()) this.pushAction(patchTup)
+    if (this.online()) this.pushAction(patchTup, src)
     else this.actionQueue.update(A.append(({ ...patchTup, src })))
     console.log("AQ", get(this.actionQueue))
   }
-
-  _xxdo = (patchTup: PatchTup) => {
-    const { patches, inverse } = patchTup
-    const pTInverted = { inverse: patches, patches: inverse }
-    console.log("patches:", patchTup)
-    updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
-    this.pushAction(pTInverted)
-    return pTInverted
-  }
-
-  undo = () => this.xxdoStacks.update(({ undo, redo }) => {
-    const pT = undo.pop()
-    console.log("undo", pT)
-    if (!pT) return ({ undo, redo })
-    return ({ undo, redo: [...redo, this._xxdo(pT)] })
-  })
-
-  redo = () => this.xxdoStacks.update(({ undo, redo }) => {
-    const pT = redo.pop()
-    console.log("redo", pT)
-    if (!pT) return ({ undo, redo })
-    return ({ redo, undo: [...undo, this._xxdo(pT)] })
-  })
 
   getsetSource_id = (src: Src) => {
     const dt = domainTitle(src)
@@ -218,6 +208,30 @@ export class NoteSync {
     // })
     // await this.action(x => x.delete().eq("id", n.id))(patchTup)
   }
+
+  _xxdo = (patchTup: PatchTup) => {
+    const { patches, inverse } = patchTup
+    const pTInverted = { inverse: patches, patches: inverse }
+    console.log("patches:", patchTup)
+    updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
+    this.pushAction(pTInverted)
+    return pTInverted
+  }
+
+  undo = () => this.xxdoStacks.update(({ undo, redo }) => {
+    const pT = undo.pop()
+    console.log("undo", pT)
+    if (!pT) return ({ undo, redo })
+    return ({ undo, redo: [...redo, this._xxdo(pT)] })
+  })
+
+  redo = () => this.xxdoStacks.update(({ undo, redo }) => {
+    const pT = redo.pop()
+    console.log("redo", pT)
+    if (!pT) return ({ undo, redo })
+    return ({ redo, undo: [...undo, this._xxdo(pT)] })
+  })
+
 
   deleteit = async (noteId: string) => {
     const patchTup = updateStore(this.noteStore)((ns) => {

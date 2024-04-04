@@ -83,10 +83,10 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
         type T = ArgType<typeof chrome.storage.onChanged.addListener>[0]
         const handleStorage: T = (changes, namespace) => {
           for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-            console.log(
-              `Storage key "${key}" in namespace "${namespace}" changed.`,
-              // `Old value was "${oldValue}", new value is "${newValue}".`,
-            )
+            // console.log(
+            //   // `Storage key "${key}" in namespace "${namespace}" changed.`,
+            //   // `Old value was "${oldValue}", new value is "${newValue}".`,
+            // )
           }
         }
         chrome.storage.onChanged.addListener(handleStorage)
