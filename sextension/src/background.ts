@@ -21,7 +21,7 @@ const noteDeri = new NoteDeri(note_sync)
 pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
-note_mut.panel.subscribe(funLog("note_panel"))
+// note_mut.panel.subscribe(funLog("note_panel"))
 pushStore("panel", note_mut.panel)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
@@ -37,8 +37,8 @@ const onUser_idUpdate = O.match(
   })
 user_id.subscribe(onUser_idUpdate)
 
-const refresh = async () => {
-  const toks = await T.my_tokens.query().catch(funLog("toks")) || undefined
+const refresh = async (online = true) => {
+  const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
@@ -67,7 +67,8 @@ const appRouter = (() => {
       })
     }),
 
-    refresh: t.procedure.query(refresh),
+    refresh: t.procedure.query(() => refresh()),
+    disconnect: t.procedure.query(() => refresh(false)),
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
     tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
