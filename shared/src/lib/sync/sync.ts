@@ -22,7 +22,9 @@ import {
   funLog,
   hostname,
 } from "$lib/utils"
-import { option as O, record as R, string as S, array as A, nonEmptyArray as NA, map as M } from "fp-ts"
+import { option as O, record as R, string as S, array as A, either as E, map as M } from "fp-ts"
+import { match, P } from "ts-pattern"
+
 import { flip, flow, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { v5 as uuidv5 } from "uuid"
@@ -59,6 +61,9 @@ export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePriorit
 // so on offline add I get from invstumap store or add a temporary entry, but I don't keep that entry later
 // on online ...
 
+// type Action = PatchTup & { action: "patches" } | { src: Src, id: UUID, action: "source" }
+type Action = E.Either<Src & { id: UUID }, PatchTup>
+
 export class NoteSync {
   sb: SupabaseClient
   noteStore: Writable<Map<string, Notes>>
@@ -67,7 +72,7 @@ export class NoteSync {
   stuMapStore: Writable<STUMap>
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
-  actionQueue: Writable<(PatchTup & { src: Src | undefined })[]>
+  actionQueue: Writable<Action[]>
   DEBUG: boolean
 
   constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
@@ -102,8 +107,8 @@ export class NoteSync {
     const actionQueue = get(this.actionQueue)
     // TODO: here not updating when I go back online
     for (const action of actionQueue) {
-      console.log(action.patches, "action patches")
-      await this.pushAction(action)
+      console.log(action, "action in queue")
+      // await this.pushAction(action)
     }
   }
 
@@ -130,7 +135,7 @@ export class NoteSync {
     }))
 
 
-  pushAction = async (patchTup: PatchTup, src?: Src) => {
+  pushAction = async (patchTup: PatchTup) => {
     console.log("puuushing")
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
@@ -148,18 +153,6 @@ export class NoteSync {
     for (const { note } of notesOps)
       note.user_id = this._user_id
 
-    console.log("src", src)
-    if (src) console.log(this.getSource_id(src))
-    if (src && O.isNone(this.getSource_id(src))) { // not in store
-      const { note } = notesOps[0]
-      console.log("stumap b4 update: ", get(this.stuMapStore))
-      this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(note.source_id, src))
-      console.log("stumap after update: ", get(this.stuMapStore))
-      const domain = O.toUndefined(hostname(src.url))
-      await this.sb.from("sources").insert({ id: note.source_id, ...src, domain: domain }).then(logIfError("insert sources"))
-      console.log("added source")
-    }
-
     console.log("notesOps: ", notesOps)
     if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
 
@@ -170,11 +163,25 @@ export class NoteSync {
       await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)
   }
 
-  act = (patchTup: PatchTup, userAction: boolean, src?: Src) => {
+  act = (patchTup: PatchTup, userAction: boolean) => {
     if (userAction) this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-    if (this.online()) this.pushAction(patchTup, src)
-    else this.actionQueue.update(A.append(({ ...patchTup, src })))
+    if (this.online()) this.pushAction(patchTup)
+    else this.actionQueue.update(A.append(E.right(patchTup)))
     console.log("AQ", get(this.actionQueue))
+  }
+
+  pushActionSrc = async (src: Src, id: UUID) => {
+    // console.log("stumap b4 update: ", get(this.stuMapStore))
+    this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
+    // console.log("stumap after update: ", get(this.stuMapStore))
+    const domain = O.toUndefined(hostname(src.url))
+    await this.sb.from("sources").insert({ ...src, id, domain: domain }).then(logIfError("insert sources"))
+    console.log("pushed source")
+  }
+
+  actSrc = async (src: Src & { id: UUID }) => {
+    if (this.online()) await this.pushActionSrc(src, src.id)
+    else this.actionQueue.update(A.append(E.left(src)))
   }
 
   getsetSource_id = (src: Src) => {
@@ -183,6 +190,7 @@ export class NoteSync {
     if (O.isSome(local)) return local
     const newId = pipe(dt, O.map(s => uuidv5(s, namespaceUuid) as UUID))
     pipe(newId, O.map(id => this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))))
+    if (O.isSome(newId)) this.actSrc({ ...src, id: newId.value })
     return newId
   }
 
@@ -191,22 +199,13 @@ export class NoteSync {
 
   newNote = async (note: PendingNote, src: Src) => {
     const source_idOpt = this.getsetSource_id(src)
-
-    console.log("src id", this.getSource_id(src))
     if (O.isNone(source_idOpt)) throw new Error("probably not correct url..")
     const source_id = source_idOpt.value
     const n: Note = { ...createMock(), ...note, source_id }
-    // funLog("noteStore")(get(this.noteStore))
     const patchTup: PatchTup = updateStore(this.noteStore)((map) => {
       map.set(n.id, n)
     })
-    this.act(patchTup, true, src)
-    setTimeout(() => console.log("src id later", this.getSource_id(src)), 1000)
-
-    // const patchTup = updateStore(this.noteStore)((ns) => {
-    //   ns.delete(n.id)
-    // })
-    // await this.action(x => x.delete().eq("id", n.id))(patchTup)
+    this.act(patchTup, true)
   }
 
   _xxdo = (patchTup: PatchTup) => {
