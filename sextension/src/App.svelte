@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconRefresh from "~icons/tabler/refresh"
+  import IconRefreshOff from "~icons/tabler/refresh-off"
 
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
@@ -63,6 +64,9 @@
   data-tip={"logged in as: \n" + (O.toNullable($session)?.user?.email || "...not logged in")}
   on:click={() => TB.refresh.query().then(console.log)}>
   <IconRefresh />
+</button>
+<button class="tooltip tooltip-bottom" on:click={() => TB.disconnect.query()}>
+  <IconRefreshOff />
 </button>
 <a target="_blank" href={dashboardURL}>welcome?</a>
 

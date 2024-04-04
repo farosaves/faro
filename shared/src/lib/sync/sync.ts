@@ -100,10 +100,10 @@ export class NoteSync {
     await this.refresh_notes()
     const actionQueue = get(this.actionQueue)
     // TODO: here not updating when I go back online
-    actionQueue.forEach((n) => {
-      console.log(n)
-      this.pushAction(n)
-    })
+    for (const action of actionQueue) {
+      console.log(action.patches, "action patches")
+      await this.pushAction(action)
+    }
   }
 
   refresh_sources = async () =>
@@ -129,7 +129,7 @@ export class NoteSync {
     }))
 
 
-  pushAction = (patchTup: PatchTup) => {
+  pushAction = async (patchTup: PatchTup) => {
     console.log("puuushing")
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
@@ -142,14 +142,19 @@ export class NoteSync {
           .then(
             ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
     // maps the operation with patchTup.patches to db update
+    if (this._user_id === undefined) throw new Error("tried pushing while not logged in")
     const notesOps = getNotesOps(patchTup.patches, get(this.noteStore))
+    for (const { note } of notesOps)
+      note.user_id = this._user_id
+
     console.log("notesOps: ", notesOps)
     if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
+
     const op = notesOps.map(x => x.op)[0]
     if (op == "upsert")
-      _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)
+      await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)
     if (op == "delete")
-      _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)
+      await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)
   }
 
   act = (patchTup: PatchTup, userAction: boolean, src?: Src) => {
@@ -182,10 +187,6 @@ export class NoteSync {
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
-
-  // getset for inserting
-  // TODO: this needs to add Src to supabase? or no?
-
   getsetSource_id = (src: Src) => {
     const dt = domainTitle(src)
     const local = this.getSource_id(src)
@@ -195,22 +196,22 @@ export class NoteSync {
     return newId
   }
 
-  getSource_id = flow(domainTitle, dt => pipe(dt,
-    // chainN(get(this.invStuMapStore).get), DOESNT WORK
-    chainN(n => get(this.invStuMapStore).get(n)), // works fine
-  ))
+  // chainN(get(this.invStuMapStore).get), DOESNT WORK
+  getSource_id = flow(domainTitle, chainN(n => get(this.invStuMapStore).get(n)))
 
   newNote = async (note: PendingNote, src: Src) => {
     const source_idOpt = this.getsetSource_id(src)
+
+    console.log("src id", this.getSource_id(src))
     if (O.isNone(source_idOpt)) throw new Error("probably not correct url..")
     const source_id = source_idOpt.value
     const n: Note = { ...createMock(), ...note, source_id }
-    funLog("noteStore")(get(this.noteStore))
-    // const patchTup: PatchTup = updateStore(this.noteStore)(M.upsertAt(S.Eq)(n.id, n))
+    // funLog("noteStore")(get(this.noteStore))
     const patchTup: PatchTup = updateStore(this.noteStore)((map) => {
       map.set(n.id, n)
     })
     this.act(patchTup, true, src)
+    setTimeout(() => console.log("src id later", this.getSource_id(src)), 1000)
 
     // const patchTup = updateStore(this.noteStore)((ns) => {
     //   ns.delete(n.id)
