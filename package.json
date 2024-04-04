@@ -9,6 +9,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.2",
     "svelte-persisted-store": "^0.9.1",
+    "ts-pattern": "^5.1.0",
     "uuid": "^9.0.1"
   },
   "scripts": {
