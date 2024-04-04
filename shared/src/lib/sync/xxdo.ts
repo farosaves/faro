@@ -4,6 +4,7 @@ import type { Notes } from "$lib/db/types"
 import type { Patch } from "immer"
 import { getOrElse } from "$lib/utils"
 import { persisted, type StorageType } from "./persisted-store"
+import type { Note } from "$lib/db/typeExtras"
 
 export type PatchTup = { patches: Patch[], inverse: Patch[] }
 
@@ -13,7 +14,7 @@ export const xxdoStacks = (storage: StorageType) => persisted("xxdoStacks", { un
 
 export type NotesOps = {
   op: "upsert" | "delete"
-  note: Notes
+  note: Note
 }[]
 const _getOp = (x: Patch): NotesOps[0]["op"] => (x.op == "remove" && x.path.length == 1) ? "delete" : "upsert"
 
