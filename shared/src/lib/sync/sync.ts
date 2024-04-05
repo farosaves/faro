@@ -35,6 +35,7 @@ import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 import { namespaceUuid } from "$lib"
 import type { UUID } from "crypto"
 import type { Patch } from "immer"
+import { ActionQueue } from "./queue"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -46,8 +47,6 @@ const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.str
 export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
 
-const __f = (sb: SupabaseClient) => sb.from("notes")
-type NQ = ReturnType<typeof __f>
 
 export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePrioritised" | "deleteit" | "undo" | "redo">
 
@@ -62,17 +61,16 @@ export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePriorit
 // on online ...
 
 // type Action = PatchTup & { action: "patches" } | { src: Src, id: UUID, action: "source" }
-type Action = E.Either<Src & { id: UUID }, PatchTup>
 
 export class NoteSync {
   sb: SupabaseClient
   noteStore: Writable<Map<string, Notes>>
-  _user_id: string | undefined
+  _user_id: UUID | undefined
   // note_del_queue: Writable<Notess>
   stuMapStore: Writable<STUMap>
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
-  actionQueue: Writable<Action[]>
+  actionQueue: ActionQueue
   DEBUG: boolean
 
   constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
@@ -88,28 +86,23 @@ export class NoteSync {
 
     this.xxdoStacks = xxdoStacks(storage)
 
-    this.actionQueue = writable([])
+    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore)
 
-    this._user_id = user_id
-    // this.note_del_queue = note_del_queue
+    this._user_id = user_id as UUID | undefined // TODO: here
+
     this.DEBUG = import.meta.env.DEBUG || false
   }
 
   online = () => this._user_id !== undefined
 
   setUser_id = async (user_id: string | undefined) => {
-    this._user_id = user_id
+    this._user_id = user_id as UUID | undefined // TODO: here
     if (user_id === undefined) return
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
     await this.refresh_sources()
     await this.refresh_notes()
-    const actionQueue = get(this.actionQueue)
-    // TODO: here not updating when I go back online
-    for (const action of actionQueue) {
-      console.log(action, "action in queue")
-      // await this.pushAction(action)
-    }
+    await this.actionQueue.goOnline(user_id as UUID)
   }
 
   refresh_sources = async () =>
@@ -135,77 +128,29 @@ export class NoteSync {
     }))
 
 
-  pushAction = async (patchTup: PatchTup) => {
-    console.log("puuushing")
-    const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
-      (patchTup: PatchTup) => // userAction distinguishes between xxdo (which doesnt reset redo stack) and action which does
-        f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
-          .then(logIfError("pushAction"))
-          .then((e) => {
-            console.log(patchTup)
-            return e
-          })
-          .then(
-            ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
-    // maps the operation with patchTup.patches to db update
-    if (this._user_id === undefined) throw new Error("tried pushing while not logged in")
-    const notesOps = getNotesOps(patchTup.patches, get(this.noteStore))
-    for (const { note } of notesOps)
-      note.user_id = this._user_id
-
-    console.log("notesOps: ", notesOps)
-    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
-
-    const op = notesOps.map(x => x.op)[0]
-    if (op == "upsert")
-      await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)
-    if (op == "delete")
-      await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)
-  }
-
-  act = (patchTup: PatchTup, userAction: boolean) => {
-    if (userAction) this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-    if (this.online()) this.pushAction(patchTup)
-    else this.actionQueue.update(A.append(E.right(patchTup)))
-    console.log("AQ", get(this.actionQueue))
-  }
-
-  pushActionSrc = async (src: Src, id: UUID) => {
-    // console.log("stumap b4 update: ", get(this.stuMapStore))
-    this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
-    // console.log("stumap after update: ", get(this.stuMapStore))
-    const domain = O.toUndefined(hostname(src.url))
-    await this.sb.from("sources").insert({ ...src, id, domain: domain }).then(logIfError("insert sources"))
-    console.log("pushed source")
-  }
-
-  actSrc = async (src: Src & { id: UUID }) => {
-    if (this.online()) await this.pushActionSrc(src, src.id)
-    else this.actionQueue.update(A.append(E.left(src)))
-  }
-
-  getsetSource_id = (src: Src) => {
-    const dt = domainTitle(src)
+  getsetSource_id = async (src: Src) => {
     const local = this.getSource_id(src)
-    if (O.isSome(local)) return local
-    const newId = pipe(dt, O.map(s => uuidv5(s, namespaceUuid) as UUID))
-    pipe(newId, O.map(id => this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))))
-    if (O.isSome(newId)) this.actSrc({ ...src, id: newId.value })
-    return newId
+    if (O.isSome(local)) return local.value
+    const newId = pipe(domainTitle(src), O.map(s => uuidv5(s, namespaceUuid) as UUID))
+    if (O.isNone(newId)) throw new Error("coudlnt create source id for source: " + JSON.stringify(src))
+    const id = newId.value
+    this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
+    await this.actionQueue.actSrc({ ...src, id })
+    return id
   }
 
   // chainN(get(this.invStuMapStore).get), DOESNT WORK
   getSource_id = flow(domainTitle, chainN(n => get(this.invStuMapStore).get(n)))
 
   newNote = async (note: PendingNote, src: Src) => {
-    const source_idOpt = this.getsetSource_id(src)
-    if (O.isNone(source_idOpt)) throw new Error("probably not correct url..")
-    const source_id = source_idOpt.value
-    const n: Note = { ...createMock(), ...note, source_id }
+    const source_id = await this.getsetSource_id(src)
+    const n = { ...createMock(), ...note, source_id }
     const patchTup: PatchTup = updateStore(this.noteStore)((map) => {
       map.set(n.id, n)
     })
-    this.act(patchTup, true)
+
+    await this.act(patchTup, true)
+    return n
   }
 
   _xxdo = (patchTup: PatchTup) => {
@@ -213,7 +158,7 @@ export class NoteSync {
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
     updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
-    this.pushAction(pTInverted)
+    this.actionQueue.pushAction(this._user_id!)(pTInverted)
     return pTInverted
   }
 
@@ -231,6 +176,10 @@ export class NoteSync {
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
+  act = async (patchTup: PatchTup, userAction = true) => {
+    if (userAction) this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
+    await this.actionQueue.act(this._user_id!)(patchTup)
+  }
 
   deleteit = async (noteId: string) => {
     const patchTup = updateStore(this.noteStore)((ns) => {

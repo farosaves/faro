@@ -1,5 +1,7 @@
 // import type { SupabaseClient } from "@supabase/supabase-js";
 import { fail } from "@sveltejs/kit"
+import { namespaceUuid } from "shared"
+import { v5 as uuidv5 } from "uuid"
 // import type { SupabaseClient } from "shared";
 // import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "$env/static/private";
 // import { writeFileSync } from 'fs';
@@ -50,6 +52,7 @@ export const actions = {
       url: pdf_id + ".html",
       domain: "pdf",
       title: fileToUpload.name,
+      id: uuidv5("pdf;" + fileToUpload.name, namespaceUuid),
     })
 
     return { success: true, pdf_id }

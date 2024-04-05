@@ -23,10 +23,6 @@
   })
 </script>
 
-<svelte:head>
-  <title>Faros</title>
-</svelte:head>
-
 <Navbar />
 <div>
   <slot />
