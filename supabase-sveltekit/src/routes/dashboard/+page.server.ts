@@ -1,21 +1,21 @@
 export const ssr = false
+import type { UUID } from "crypto"
 import type { PageServerLoad } from "./$types"
-import type { Notes } from "shared"
-import { z } from "zod"
-const validateSTUMap = z.record(z.number(), z.object({ title: z.string(), url: z.string() })).parse
-type STUMap = ReturnType<typeof validateSTUMap>
+import type { Notes, Src } from "shared"
+type STUMap = Map<UUID, Src>
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   const sess = await locals.getSession()
   if (sess == null) {
     // redirect(302, "/login")
-    const stuMap: STUMap = {
-      0: { title: "Hey you!", url: url.origin + "/login" },
-      1: { title: "Tips", url: url.origin },
-      2: { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" },
-      3: { title: "Also check out!", url: url.origin + "/ext.zip" },
-      4: { title: "Contact", url: url.origin + "/random/mail-redirect" },
-    }
+    const ids = [0, 0, 0, 0, 0].map(_ => crypto.randomUUID())
+    const stuMap: STUMap = new Map([
+      [ids[0], { title: "Hey you!", url: url.origin + "/login" }],
+      [ids[1], { title: "Tips", url: url.origin }],
+      [ids[2], { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" }],
+      [ids[3], { title: "Also check out!", url: url.origin + "/ext.zip" }],
+      [ids[4], { title: "Contact", url: url.origin + "/random/mail-redirect" }],
+    ])
     console.log(stuMap)
     let id = 0
     const defs = () => ({
@@ -34,52 +34,52 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     })
     const mocknoteArr: Notes[] = [
       {
-        source_id: "0",
+        source_id: ids[0],
         quote: "You're not logged in! Double click me!",
         tags: ["!!!"],
         ...defs(),
         highlights: ["not logged in!"],
       },
       {
-        source_id: "1",
+        source_id: ids[1],
         quote: "You can play around with the tags.\nAdd one clicking below",
         tags: [],
         ...defs(),
       },
       {
-        source_id: "1",
+        source_id: ids[1],
         quote: "the tags you've added will appear just above",
         tags: ["tip"],
         ...defs(),
       },
       {
-        source_id: "1",
+        source_id: ids[1],
         quote: "clicking them will toggle display of tagged elements",
         tags: ["tip"],
         ...defs(),
       },
       {
-        source_id: "2",
+        source_id: ids[2],
         quote:
           "This links to a wikipedia page about a plant. Normally content of a note would be a snippet taken from the page.",
         tags: ["plants"],
         ...defs(),
       },
       {
-        source_id: "3",
+        source_id: ids[3],
         quote: "The chrome extension! To save stuff. I'll add it to marketplace soon..",
         tags: [],
         ...defs(),
         highlights: ["chrome extension"],
       },
       {
-        source_id: "3",
+        source_id: ids[3],
         quote: "and the search bar on the left.",
         tags: ["features"],
         ...defs(),
       },
       {
-        source_id: "4",
+        source_id: ids[4],
         quote: "for any reason",
         tags: [],
         ...defs(),
