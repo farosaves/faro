@@ -153,7 +153,7 @@ export const sourcesInsertSchema = z.object({
   created_at: z.string().optional(),
   DOI: z.string().optional().nullable(),
   domain: z.string().optional().nullable(),
-  id: z.string().optional(),
+  id: z.string(),
   title: z.string().optional().nullable(),
   url: z.string().optional().nullable(),
 })

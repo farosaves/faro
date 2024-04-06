@@ -2,11 +2,11 @@ import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteSync, domain_title, escapeRegExp, hostname, schemas, type NoteEx, type PendingNote } from "shared"
+import { NoteDeri, NoteSync, domain_title, escapeRegExp, funLog, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
-import { NoteMut, type Src } from "$lib/note_mut"
+import { NoteMut } from "$lib/note_mut"
 
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
@@ -14,26 +14,31 @@ import { createContext, t } from "./lib/chromey/trpc"
 
 const T = trpc2()
 
-const note_sync: NoteSync = new NoteSync(supabase, undefined)
-pushStore("allTags", note_sync.alltags)
+const note_sync = new NoteSync(supabase, undefined, "chrome")
+pushStore("noteStore", note_sync.noteStore)
+pushStore("stuMapStore", note_sync.stuMapStore)
+const noteDeri = new NoteDeri(note_sync)
+pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
+// note_mut.panel.subscribe(funLog("note_panel"))
 pushStore("panel", note_mut.panel)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
 // on user/session run:
-const onUser_idUpdate = O.map((user_id: string) => {
-  // ! it's not properly logging out - the id persists in note_sync field
-  note_sync.setUid(user_id)
-  note_sync.refresh_sources()
-  note_sync.refresh_notes()
-  note_sync.sub()
-})
+const onUser_idUpdate = O.match(
+  () => note_sync.setUser_id(undefined),
+  async (user_id: string) => {
+    note_sync.setUser_id(user_id)
+    note_sync.refresh_sources()
+    note_sync.refresh_notes()
+    note_sync.sub()
+  })
 user_id.subscribe(onUser_idUpdate)
 
-const refresh = async () => {
-  const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
+const refresh = async (online = true) => {
+  const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
@@ -62,16 +67,17 @@ const appRouter = (() => {
       })
     }),
 
-    refresh: t.procedure.query(refresh),
+    refresh: t.procedure.query(() => refresh()),
+    disconnect: t.procedure.query(() => refresh(false)),
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
+    tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
     changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
-    undo: t.procedure.query(note_sync.undo),
-    redo: t.procedure.query(note_sync.redo),
+    undo: t.procedure.query(() => note_sync.undo()),
+    redo: t.procedure.query(() => note_sync.redo()),
+    newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
 
-    // forward note_mut
-    addNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_mut.addNote(input, get(currSrc))),
 
   })
 })()

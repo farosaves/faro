@@ -1,9 +1,11 @@
+import type { NoteEx, SourceData } from "$lib/db/typeExtras"
+import { replacer } from "$lib/stores"
+import { chainN, escapeHTML, hostname } from "$lib/utils"
 import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
-import { chainN, escapeHTML, replacer, type NoteEx } from "shared"
 import { derived, get, writable, type Writable } from "svelte/store"
-import { hostnameStr } from "./utils"
+const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
 
 const _exclTagSets = {
   sets: { "": new Set([]) } as Record<string, Set<string>>,
@@ -41,6 +43,7 @@ const fuzzySortDef = (newestFirst: boolean) => (n: NoteEx): NoteEx & { priority:
   ...n,
   priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
 })
+console.log([fzRes, fzSelectedKeys, replacer, newestFirst])
 export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
     return (n: NoteEx) => {
@@ -65,7 +68,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
             pipe(
               selectedKeys,
               A.findIndex(n => n == "sources.title"),
-              O.chain(i => O.fromNullable(optKR[i])),
+              chainN(i => optKR[i]),
               chainN((r) => {
                 const target = escapeHTML(r.target)
                 return fuzzysort.highlight({ ...r, target }, replacer)?.join("")

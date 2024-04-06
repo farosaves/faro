@@ -7,10 +7,11 @@ export const createMock = () => ({
   id: crypto.randomUUID(),
   source_id: "",
   predicted_topic: "",
-  created_at: "",
+  created_at: new Date().toUTCString(),
   tags: [],
   user_id: "",
   user_note: "",
   context_html: "",
-  prioritised: 5,
+  context: "",
+  prioritised: 0,
 })
