@@ -7,6 +7,7 @@ import type { LazyArg } from "fp-ts/lib/function"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { Subject, Observable } from "rxjs"
 import type { Draft, Patch } from "immer"
+import { v5 } from "uuid"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
 import {
@@ -16,9 +17,13 @@ import {
   safeProduceWithPatches,
 } from "structurajs"
 import type { Notes } from "./db/types"
+import type { UUID } from "crypto"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 export type Src = SourceData["sources"]
+
+export const namespaceUuid: UUID = "0646f4ce-17c9-4a66-963e-280982b6ac8a"
+export const uuidv5 = (s: string) => v5(s, namespaceUuid) as UUID
 
 export const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
