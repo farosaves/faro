@@ -53,7 +53,6 @@ refresh()
 // }
 const typeCast = <T>(input: unknown) => input as T
 const appRouter = (() => {
-  const addZ = z.tuple([z.number(), z.number()])
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
 
