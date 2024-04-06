@@ -89,22 +89,19 @@ getHighlightedText.sub(async ([uuid]) => {
   DEBUG && console.log("uploading...:", { selectedText })
   // makeQCH grabs text around the highlighted bit:
   // quote: will try to grab the full sentence
-  // context: will try to grab a <p> tag etc
+  // context: will try to grab a <p> tag etc - useful for debugging
   // quote is what's displayed on the note
-  // context is displayed in the dialog on right click
-  const { quote, highlights, context: _context } = makeQCH(htmlstr2body)(document, uuid, selectedText)
-  // sometimes context is too much
-  const context = _context.length < 1e4 ? _context : quote
+  const { quote, highlights } = makeQCH(htmlstr2body)(document, uuid, selectedText)
   if (!quote) return { note_data: null }
   const note_data = {
     quote,
     highlights,
-    context,
+    context: "",
     snippet_uuid: uuid,
     serialized_highlight: serialized,
   }
   optimisticNotes.send(note_data)
-  const newNote = await T.newNote.mutate(note_data).catch(funLog("newNote"))
+  const newNote = await T.newNote.mutate(note_data) // .catch(funLog("newNote"))
   if (newNote == null) {
     deleteSelection(uuid)
   }
