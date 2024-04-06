@@ -1,6 +1,6 @@
 <script lang="ts">
   import IconRefresh from "~icons/tabler/refresh"
-  import IconRefreshOff from "~icons/tabler/refresh-off"
+  import IconLayoutDashboard from "~icons/tabler/layout-dashboard"
 
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
@@ -17,6 +17,7 @@
   import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
   import { derived, get } from "svelte/store"
+  import { isNone } from "fp-ts/lib/Option"
   let login_url = API_ADDRESS + "/login"
   $: T = trpc2()
   const port = chrome.runtime.connect()
@@ -53,22 +54,12 @@
       ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
     }
   }
+  const iconSize = 15
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
 
-<a href={`${API_ADDRESS}/dashboard?search`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
-  >go to dashboard / alfF</a>
-<button
-  class="tooltip tooltip-bottom"
-  data-tip={"logged in as: \n" + (O.toNullable($session)?.user?.email || "...not logged in")}
-  on:click={() => TB.refresh.query().then(console.log)}>
-  <IconRefresh />
-</button>
-<button class="tooltip tooltip-bottom" on:click={() => TB.disconnect.query()}>
-  <IconRefreshOff />
-</button>
-<a target="_blank" href={dashboardURL}>welcome?</a>
+<!-- <a target="_blank" href={dashboardURL}>welcome?</a> -->
 
 {#if $needsRefresh}
   <div role="alert" class="alert alert-error">
@@ -90,7 +81,28 @@
 {/if}
 
 <div class="max-w-xs mx-auto space-y-4">
-  <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
+  <div class="flex">
+    <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
+
+    <div class="grid h-min">
+      <a
+        href={O.isNone($session) ? dashboardURL : `${API_ADDRESS}/dashboard`}
+        target="_blank"
+        class="tooltip tooltip-left"
+        data-tip="Go to dashboard (alt+F)"
+        use:shortcut={{ alt: true, code: "KeyF" }}
+        ><IconLayoutDashboard transform="rotate(90)" font-size={iconSize} /></a>
+
+      <button
+        class="tooltip tooltip-left"
+        data-tip={"Logged in as: \n" + (O.toNullable($session)?.user?.email || "...not logged in")}
+        on:click={() => TB.refresh.query().then(console.log)}
+        on:contextmenu|preventDefault={() => TB.disconnect.query()}>
+        <IconRefresh font-size={iconSize} />
+      </button>
+    </div>
+  </div>
+
   <NotePanel bind:optimistic syncLike={bgSync} />
   <!-- <textarea
     placeholder="scratchy scratch scratch"
