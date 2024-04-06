@@ -17,9 +17,7 @@ import * as dbtypes from "./db/types"
 import * as schemas from "./db/schemas"
 export * from "./stores"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
-import type { UUID } from "crypto"
 
-export const namespaceUuid: UUID = "0646f4ce-17c9-4a66-963e-280982b6ac8a"
 export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, persisted, StarArchive, Dashboard }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }

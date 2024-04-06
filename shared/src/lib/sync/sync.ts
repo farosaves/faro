@@ -3,38 +3,31 @@
 // @ts-ignore
 import { persisted, type StorageType } from "./persisted-store"
 import type { InsertNotes, Notes } from "../db/types"
-import type { Note, NoteEx, Notess, SourceData, SupabaseClient } from "../db/typeExtras"
+import type { Note, SupabaseClient } from "../db/typeExtras"
 import { derived, get, writable, type Readable, type Updater, type Writable } from "svelte/store"
 import {
   applyPatches,
   neq,
   fillInTitleUrl,
   getNotes,
-  ifErr,
-  ifNErr,
-  logIfError,
   unwrapTo,
   updateStore,
   invertMap,
   type Src,
   domainTitle,
   chainN,
-  funLog,
-  hostname,
+  uuidv5,
 } from "$lib/utils"
 import { option as O, record as R, string as S, array as A, either as E, map as M } from "fp-ts"
-import { match, P } from "ts-pattern"
 
 import { flip, flow, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
-import { v5 as uuidv5 } from "uuid"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
 import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
 import { namespaceUuid } from "$lib"
 import type { UUID } from "crypto"
-import type { Patch } from "immer"
 import { ActionQueue } from "./queue"
 // import * as lzString from "lz-string"
 
@@ -131,7 +124,7 @@ export class NoteSync {
   getsetSource_id = async (src: Src) => {
     const local = this.getSource_id(src)
     if (O.isSome(local)) return local.value
-    const newId = pipe(domainTitle(src), O.map(s => uuidv5(s, namespaceUuid) as UUID))
+    const newId = pipe(domainTitle(src), O.map(uuidv5))
     if (O.isNone(newId)) throw new Error("coudlnt create source id for source: " + JSON.stringify(src))
     const id = newId.value
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))

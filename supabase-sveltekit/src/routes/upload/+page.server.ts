@@ -1,14 +1,13 @@
 // import type { SupabaseClient } from "@supabase/supabase-js";
 import { fail } from "@sveltejs/kit"
-import { namespaceUuid } from "shared"
-import { v5 as uuidv5 } from "uuid"
-// import type { SupabaseClient } from "shared";
+import { uuidv5 } from "shared"
+// import type { SupabaseClient } from x"shared";
 // import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "$env/static/private";
 // import { writeFileSync } from 'fs';
 
 export const actions = {
   default: async ({ request, locals }) => {
-    // const endpoint =
+    // const endpoint =xw
     //   "https://362e2d4a4b780aab43b3c82f2a779a47.r2.cloudflarestorage.com";
 
     const formData = Object.fromEntries(await request.formData())
@@ -52,7 +51,7 @@ export const actions = {
       url: pdf_id + ".html",
       domain: "pdf",
       title: fileToUpload.name,
-      id: uuidv5("pdf;" + fileToUpload.name, namespaceUuid),
+      id: uuidv5("pdf;" + fileToUpload.name),
     })
 
     return { success: true, pdf_id }
