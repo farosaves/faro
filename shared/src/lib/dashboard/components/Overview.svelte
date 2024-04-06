@@ -1,13 +1,13 @@
 <script lang="ts">
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   import { option as O, array as A, string as S } from "fp-ts"
-  import { MyTags, sleep, type NoteSync } from "shared"
+  import { MyTags, sleep, type NoteSync, NoteDeri } from "shared"
   import { derived, get, writable } from "svelte/store"
 
   // type OptionValueType<T> = T extends O.Option<infer R> ? R : never
   const id = "a"
-  export let note_sync: NoteSync
-  const allTags = note_sync.alltags
+  export let noteDeri: NoteDeri
+  const allTags = noteDeri.allTags
   let this_element: Element
   const isOpen = writable(false)
   let tags = writable<string[]>([])

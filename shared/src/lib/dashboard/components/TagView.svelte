@@ -62,7 +62,7 @@
   }
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
+<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] border-b-2 border-t-2 border-neutral">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"

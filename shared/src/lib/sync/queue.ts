@@ -18,12 +18,12 @@ const __f = (sb: SupabaseClient) => sb.from("notes")
 type NQ = ReturnType<typeof __f>
 
 export class ActionQueue {
-  store: Writable<Action[]>
+  queueStore: Writable<Action[]>
   sb: SupabaseClient
   online: () => boolean
   noteStore: Writable<Map<string, Notes>>
   constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>) {
-    this.store = persisted("actionQueue", [], { serializer: devalue })
+    this.queueStore = persisted("actionQueue", [], { serializer: devalue })
     this.sb = sb
     this.online = online
     this.noteStore = noteStore
@@ -31,14 +31,14 @@ export class ActionQueue {
   }
 
   goOnline = async (user_id: UUID) => {
-    for (const action of get(this.store)) {
+    for (const action of get(this.queueStore)) {
       //   await match(action)  // if ever more than 2 e.g. tabs
       //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
       //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
       //     .exhaustive()
       await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion)
     }
-    this.store.set([])
+    this.queueStore.set([])
   }
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
@@ -68,7 +68,7 @@ export class ActionQueue {
 
   act = (user_id: UUID) => async (patchTup: PatchTup) => {
     if (this.online()) await this.pushAction(user_id)(patchTup)
-    else this.store.update(A.append(E.right(patchTup)))
+    else this.queueStore.update(A.append(E.right(patchTup)))
     // console.log("AQ", get(this.actionQueue))
     // else throw new Error("only online for now")
   }
@@ -82,6 +82,6 @@ export class ActionQueue {
 
   actSrc = async (src: Src & { id: UUID }) => {
     if (this.online()) await this.pushActionSrc(src)
-    else this.store.update(A.append(E.left(src)))
+    else this.queueStore.update(A.append(E.left(src)))
   }
 }
