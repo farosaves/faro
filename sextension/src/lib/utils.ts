@@ -14,16 +14,16 @@ export type ATokens = { access_token: string, refresh_token: string } | undefine
 export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) {
     // here log me out
-    supabase.auth.signOut().then(logIfError)
+    supabase.auth.signOut().then(logIfError("getSession"))
     return null
   }
   const { access_token, refresh_token } = tokens
   // set session
-  await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError)
+  await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError("getSession"))
 
   const {
     data: { session },
-  } = await supabase.auth.getSession().then(logIfError)
+  } = await supabase.auth.getSession().then(logIfError("getSession"))
   return session
 }
 

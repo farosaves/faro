@@ -3,17 +3,18 @@ import { flip, flow, identity, pipe } from "fp-ts/lib/function"
 import type { Notes } from "$lib/db/types"
 import type { Patch } from "immer"
 import { getOrElse } from "$lib/utils"
-import { persisted } from "svelte-persisted-store"
+import { persisted, type StorageType } from "./persisted-store"
+import type { Note } from "$lib/db/typeExtras"
 
 export type PatchTup = { patches: Patch[], inverse: Patch[] }
 
 const _undo_stack: PatchTup[] = []
 const _redo_stack: PatchTup[] = []
-export const xxdoStacks = persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack })
+export const xxdoStacks = (storage: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage })
 
 export type NotesOps = {
   op: "upsert" | "delete"
-  note: Notes
+  note: Note
 }[]
 const _getOp = (x: Patch): NotesOps[0]["op"] => (x.op == "remove" && x.path.length == 1) ? "delete" : "upsert"
 

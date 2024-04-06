@@ -22,7 +22,11 @@
   const [aa2, patch2, inv2] = produceWithPatches(rec, (n) => {
     n[2] = 3
   })
+
   console.log(convertPatchesToStandard(patch2))
+
+  const map2 = new Map([[{ 1: 2 }, 3]])
+  console.log(map2.get({ 1: 2 }))
 
   // const toObservable = (store) => new Observable((observer) => store.subscribe(observer.next))
   // const ff = query.subscribe(x)

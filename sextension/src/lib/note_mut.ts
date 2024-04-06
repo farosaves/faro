@@ -1,110 +1,32 @@
-import { NoteSync, domain_title, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
+import { NoteSync, chainN, domainTitle, domain_title, funLog, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
 import { createMock } from "shared"
-import type { InsertNotes, PendingNote } from "shared"
+import type { InsertNotes, PendingNote, Src } from "shared"
 import { option as O, record as R, string as S, map as M } from "fp-ts"
 import { pipe, flow, flip, identity } from "fp-ts/lib/function"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
-export type Src = SourceData["sources"]
 
 const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync
-  currSrcnId: Writable<O.Option<[Src, string]>>
+  currSrc: Writable<O.Option<Src>>
   panel: Readable<Notes[]>
-  source_idStore
   constructor(ns: NoteSync) {
     this.ns = ns
-    this.currSrcnId = writable(O.none)
-    this.panel = derived([this.ns.noteStore, this.currSrcnId], ([ns, ots]) =>
+    this.currSrc = writable(O.none)
+    // this.ns.stuMapStore
+    // this.currSrcnId.subscribe(funLog("currSrcnId"))
+    this.panel = derived([this.ns.noteStore, this.currSrc, this.ns.invStuMapStore], ([ns, srcOpt, isms]) =>
       pipe(
-        ots,
-        O.map(ts => [...ns.values()].filter(n => n.source_id == ts[1])),
-        O.getOrElse<Notes[]>(() => []),
-      ),
-    )
-    this.source_idStore = derived(
-      ns.stuMapStore,
-      flow(
-        M.map(({ url, title }) => domain_title(url, title)),
-        M.compact,
-        invertMap,
-      ),
+        srcOpt,
+        O.chain(domainTitle),
+        chainN(n => isms.get(n)),
+        O.map(source_id => [...ns.values()].filter(n => n.source_id == source_id)),
+        O.getOrElse<Notes[]>(() => [])),
     )
   }
 
-  _updateSrc = (source: Src, id: string) => {
-    this.currSrcnId.set(O.some([source, id]))
-    const { title, url } = source
-    this.ns.update_source(id, { sources: source })
-    return id
-  }
-
-  // get source if already present locally
-  setLocalSrcId = (source: Src) => {
-    // get store
-    const { url, title } = source
-    const optId = O.chain((dt: string) => O.fromNullable(get(this.source_idStore).get(dt)))(
-      domain_title(url, title),
-    )
-    if (O.isSome(optId)) return O.some(this._updateSrc(source, optId.value))
-    // stil we're on not inserted so set to none:
-    this.currSrcnId.set(O.none)
-    return O.none
-  }
-
-  // get locally or db
-  private _updatedSrcId = async (source: Src) => {
-    const localId = this.setLocalSrcId(source)
-    if (O.isSome(localId)) return localId
-    const { data } = await this.ns.sb
-      .from("sources")
-      .select("id")
-      .eq("domain", hostnameStr(source.url))
-      .eq("title", source.title)
-      .maybeSingle()
-    if (data) return O.some(this._updateSrc(source, data.id))
-    return O.none
-  }
-
-  // get locally or db or insert: to be called when adding note
-  upSetSrcId = async (source: Src) => {
-    const oid = await this._updatedSrcId(source)
-    if (O.isSome(oid)) return oid.value
-    const { url, title } = source
-    const id = crypto.randomUUID()
-    const { data } = await this.ns.sb
-      .from("sources")
-      .insert({ id, domain: hostnameStr(url), url, title })
-      .select("id")
-      .maybeSingle()
-      .then(logIfError)
-    if (data) return this._updateSrc(source, data.id)
-    return null
-    // throw error // TODO: if doing offline needs to be options
-  }
-
-  addNote = async (n: PendingNote, source: Src) => {
-    const source_id = await this.upSetSrcId(source)
-    if (source_id === null) return null
-    // get common tags
-    // const currNotes = get(this.panel)
-    // const tags = pipe(currNotes.flatMap(n => n.tags),
-    //   NA.groupBy(identity),
-    //   R.map(A.size),
-    //   R.filter(x => x == currNotes.length),
-    //   R.keys)
-
-    const id = crypto.randomUUID()
-    const { ...note } = { ...n, id }
-    // optimistic
-
-    const { data: newNote, error } = await this.ns.sb
-      .from("notes")
-      .insert({ ...note, source_id })
-      .select()
-      .maybeSingle()
-    console.log(newNote, error, this.ns._user_id)
-    return newNote
+  setLocalSrcId = (src: Src) => {
+    this.currSrc.set(O.some(src))
   }
 }
