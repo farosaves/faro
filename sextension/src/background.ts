@@ -93,17 +93,17 @@ const currSrc = writable<Src>({ url: "", title: "" })
 pushStore("currSrc", currSrc)
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
-  // chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => DEBUG && console.log("no sidebar")) // TODO: remove
   const { url, title } = tab
   if (url && title) currSrc.set({ url, title })
   const source_id = note_mut.setLocalSrcId({ url: url || "", title: title || "" })
-  // console.log("new src&id:", get(note_mut.currSrcnId))
 }
 
-const apiHostname = O.getOrElse(() => "")(hostname(API_ADDRESS))
+const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
+const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  if (RegExp(escapeRegExp(apiHostname) + "/account").test(tab.url || ""))
+  console.log(homeRegexp)
+  if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)
 })
