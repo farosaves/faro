@@ -92,9 +92,8 @@
 <div class="max-w-xs mx-auto space-y-4">
   <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
   <NotePanel bind:optimistic syncLike={bgSync} />
-  <!-- {JSON.stringify($currSrc)}{$currDomainTitle} -->
-  <textarea
+  <!-- <textarea
     placeholder="scratchy scratch scratch"
     class="max-w-xs w-full bottom-0 left-0 absolute textarea p-1"
-    bind:value={$scratches[$currDomainTitle]} />
+    bind:value={$scratches[$currDomainTitle]} /> -->
 </div>
