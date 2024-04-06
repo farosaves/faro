@@ -1,7 +1,7 @@
 <script>
   export let data
   const { supabase, session } = data
-  import { option as O, record as R } from "fp-ts"
+  import { option as O, map as M } from "fp-ts"
   import { Dashboard, NoteSync, sessStore } from "shared"
   import { onMount } from "svelte"
   import { get } from "svelte/store"
@@ -14,7 +14,7 @@
     if (O.isNone($sessStore)) {
       if (data.mock) {
         const mock = data.mock
-        showLoginPrompt = R.size({ ...get(noteSync.noteStore), ...mock.notes }) > R.size(mock.notes)
+        showLoginPrompt = M.size(new Map([...get(noteSync.noteStore), ...mock.notes])) > M.size(mock.notes)
         if (!showLoginPrompt) {
           noteSync.noteStore.update((n) => new Map([...n, ...Object.entries(mock.notes)])) // use user changes to mock notes or just use them
           noteSync.stuMapStore.update((n) => mock.stuMap)

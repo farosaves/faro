@@ -85,8 +85,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         ...defs(),
       },
     ]
-    const notes: Record<number, (typeof mocknoteArr)[0]> = {}
-    mocknoteArr.forEach((n, i) => (notes[i] = n))
+    const notes: Map<UUID, Notes> = new Map(mocknoteArr.map((n) => {
+      const id = crypto.randomUUID()
+      return [id, { ...n, id }]
+    }))
     return { mock: { notes, stuMap } }
   }
 }
