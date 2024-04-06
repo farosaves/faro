@@ -1,13 +1,12 @@
 <script lang="ts">
   import { identity, pipe } from "fp-ts/lib/function"
   import { array as A, record as R, nonEmptyArray as NA, option as O, set as S, string as Str } from "fp-ts"
-  import { desc, type NoteEx, type NoteSync } from "shared"
+  import { desc, NoteDeri, type NoteEx, type NoteSync } from "shared"
   import { derived, get, writable } from "svelte/store"
   import { exclTagSets, exclTagSets as t, tagFilter } from "../filterSortStores"
   import { modalOpenStore } from "shared"
   import type { Option } from "fp-ts/lib/Option"
-  export let note_sync: NoteSync
-  let noteStore = note_sync.noteStore
+  export let noteDeri: NoteDeri
   $: console.log(Array.from($t.sets[$t.currId]))
   const tab_ids = ["1", "2"]
   const tab_titles = ["tab one", "tab two"]
@@ -15,7 +14,7 @@
   let active_tab = -1 // Option<number> = O.none
   const onClick = (newActive: number) => () => {
     const lastActive = active_tab
-    const allTagSet = new Set(get(note_sync.alltags)).add("")
+    const allTagSet = new Set(get(noteDeri.allTags)).add("")
     if (lastActive == -1) {
       // turning on tab
       exclTagSets.update((s) => {

@@ -39,14 +39,14 @@ export const fzSelectedKeys = writable<string[]>([])
 
 export const newestFirst = writable(true)
 
-const fuzzySortDef = (newestFirst: boolean) => (n: NoteEx): NoteEx & { priority: number } => ({
+const fuzzySortDef = (newestFirst: boolean) => ({ f: (n: NoteEx): NoteEx & { priority: number } => ({
   ...n,
   priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
-})
+}), overrideGroups: false })
 console.log([fzRes, fzSelectedKeys, replacer, newestFirst])
 export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
-    return (n: NoteEx) => {
+    return ({ f: (n: NoteEx) => {
       let priority: number
       let searchArt
       let title: string
@@ -85,7 +85,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
       }
       const sources = { url: n.sources.url, title }
       return { ...n, priority, searchArt, sources }
-    }
+    }, overrideGroups: true })
   } else {
     return fuzzySortDef(newestFirst)
   }

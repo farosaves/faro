@@ -24,7 +24,10 @@
   // let showing_contents: boolean[][]
   let noteOpens: Record<string, boolean> = {}
   // export let note_sync: SyncLike
-  $: noteDeri.transformStore.set(flow($fuzzySort, $tagFilter, $domainFilter))
+  $: noteDeri.transformStore.set({
+    f: flow($fuzzySort.f, $tagFilter, $domainFilter),
+    overrideGroups: $fuzzySort.overrideGroups,
+  })
   const note_groupss = noteDeri.groupStore
 
   let closeAll = () => {
