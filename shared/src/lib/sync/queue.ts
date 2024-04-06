@@ -1,0 +1,87 @@
+import { hostname, ifErr, logIfError, updateStore, type Src, applyPatches } from "$lib/utils"
+import type { UUID } from "crypto"
+import { getNotesOps, type PatchTup } from "./xxdo"
+import { either as E, option as O, array as A, string as S, map as M } from "fp-ts"
+import { type Writable, get } from "svelte/store"
+import { persisted } from "./persisted-store"
+import * as devalue from "devalue"
+import type { SupabaseClient } from "$lib/db/typeExtras"
+import type { Notes } from "$lib/db/types"
+import { pipe } from "fp-ts/lib/function"
+import { match } from "ts-pattern"
+
+
+export type Action = E.Either<Src & { id: UUID }, PatchTup>
+// export type Action = { type: "src", data: Src & { id: UUID } } | { type: "patchTup", data: PatchTup }
+
+const __f = (sb: SupabaseClient) => sb.from("notes")
+type NQ = ReturnType<typeof __f>
+
+export class ActionQueue {
+  queueStore: Writable<Action[]>
+  sb: SupabaseClient
+  online: () => boolean
+  noteStore: Writable<Map<string, Notes>>
+  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>) {
+    this.queueStore = persisted("actionQueue", [], { serializer: devalue })
+    this.sb = sb
+    this.online = online
+    this.noteStore = noteStore
+    // this.stuMapStore = stuMapStore
+  }
+
+  goOnline = async (user_id: UUID) => {
+    for (const action of get(this.queueStore)) {
+      //   await match(action)  // if ever more than 2 e.g. tabs
+      //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
+      //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
+      //     .exhaustive()
+      await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion)
+    }
+    this.queueStore.set([])
+  }
+
+  pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
+    updateStore(this.noteStore)(applyPatches(patchTup.patches))
+    console.log("puuushing")
+    const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
+      (patchTup: PatchTup) =>
+        f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
+          .then(logIfError("pushAction"))
+          .then(
+            ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
+    // maps the operation with patchTup.patches to db update
+    if (user_id === undefined) throw new Error("tried pushing while not logged in")
+    const notesOps = getNotesOps(patchTup.patches, get(this.noteStore))
+    for (const { note } of notesOps)
+      note.user_id = user_id
+
+    console.log("notesOps: ", notesOps)
+    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
+
+    const op = notesOps.map(x => x.op)[0]
+    if (op == "upsert")
+      await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)
+    if (op == "delete")
+      await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)
+  }
+
+  act = (user_id: UUID) => async (patchTup: PatchTup) => {
+    if (this.online()) await this.pushAction(user_id)(patchTup)
+    else this.queueStore.update(A.append(E.right(patchTup)))
+    // console.log("AQ", get(this.actionQueue))
+    // else throw new Error("only online for now")
+  }
+
+  pushActionSrc = async (src: Src & { id: UUID }) => {
+    // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
+    const domain = O.toNullable(hostname(src.url))
+    await this.sb.from("sources").insert({ ...src, domain: domain }).then(logIfError("insert sources"))
+    console.log("pushed source")
+  }
+
+  actSrc = async (src: Src & { id: UUID }) => {
+    if (this.online()) await this.pushActionSrc(src)
+    else this.queueStore.update(A.append(E.left(src)))
+  }
+}

@@ -1,5 +1,7 @@
 <script lang="ts">
-  // import { page } from "$app/stores"
+  import IconRefresh from "~icons/tabler/refresh"
+  import IconLayoutDashboard from "~icons/tabler/layout-dashboard"
+
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
@@ -7,137 +9,59 @@
   import type { PendingNote } from "shared"
   import { scratches } from "$lib/stores"
   import { NoteSync, domain_title, shortcut } from "shared"
-  import { get, type Readable } from "svelte/store"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O, record as R } from "fp-ts"
-  import { loadSB } from "$lib/loadSB"
-  import { NoteMut } from "$lib/note_mut"
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
-  import { pendingNotes, RemoteStore } from "$lib/chromey/messages"
+  import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
+  import { getBgSync } from "$lib/bgSync"
+  import { derived, get } from "svelte/store"
+  import { isNone } from "fp-ts/lib/Option"
   let login_url = API_ADDRESS + "/login"
-  let title = "Kalanchoe"
-  let url = ""
-  const loadResult = loadSB()
-  const { supabase } = loadResult
-  let session: Session
-  let note_sync: NoteSync = new NoteSync(supabase, undefined)
-  const note_mut: NoteMut = new NoteMut(note_sync)
-  let curr_domain_title = ""
   $: T = trpc2()
   const port = chrome.runtime.connect()
   export const TB = createTRPCProxyClient<AppRouter>({
-    links: [/* 👉 */ chromeLink({ port })],
+    links: [chromeLink({ port })],
   })
 
-  let needToRefreshPage = false
-  function getHighlight(source_id: string, tab_id: number) {
-    needToRefreshPage = false
-    chrome.tabs
-      .sendMessage(tab_id, {
-        action: "deserialize",
-        uss: get(note_mut.panel).map((n) => [n.snippet_uuid, n.serialized_highlight]),
-      })
-      .catch((e) => {
-        needToRefreshPage = true
-      })
-  }
-  const currUrl = RemoteStore("currUrl", "pending url")
+  const bgSync = getBgSync(TB)
+  const currSrc = RemoteStore("currSrc", { title: "", url: "" })
+  const currDomainTitle = derived(currSrc, ({ title, url }) =>
+    O.getOrElse(() => "")(domain_title(url, title)),
+  )
+  const needsRefresh = RemoteStore("needsRefresh", false)
+  const session = RemoteStore("session", O.none as O.Option<Session>)
 
-  async function updateActive() {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (!tab.url || !tab.title || !tab.id) return
-    ;({ url, title } = tab)
-
-    curr_domain_title = O.getOrElse(() => "")(domain_title(url, title))
-    if (!(curr_domain_title in $scratches))
-      scratches.update((t) => {
-        t[curr_domain_title] = ""
-        return t
-      })
-
-    let source_id = note_mut.localSrcId({ url, title })
-    if (!O.isSome(source_id)) {
-      await note_sync.refresh_sources()
-      source_id = note_mut.localSrcId({ url, title })
-    }
-    await note_sync.refresh_notes(source_id)
-
-    getHighlight(O.getOrElse(() => "")(source_id), tab.id)
-  }
-  let logged_in = true
   let optimistic: O.Option<PendingNote> = O.none
-  setTimeout(() => {
-    logged_in = !!session
-    // if (!logged_in) optimistic = O.none
-  }, 1000)
-  const getSessionTok = async () => {
-    let atokens = await T.my_tokens.query()
-    const session = await getSession(supabase, atokens)
-    if (session) return session
-    const { data } = await supabase.auth.getSession()
-    if (data.session) return data.session
-    console.log("no session!")
-    window.open(login_url) // irc doesnt work
-    return null
-  }
+  // let logged_in = true
+  // setTimeout(() => {
+  //   logged_in = O.isSome(get(session))
+  // }, 1000)
 
+  const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
-    pendingNotes.stream.subscribe(([x, { tab }]) => {
-      console.log("note data directly", tab?.id, x)
+    optimisticNotes.stream.subscribe(([x]) => {
+      optimistic = O.some(x)
+      setTimeout(() => (optimistic = O.none), 1000)
     })
-    const _session = await getSessionTok()
-    if (_session) session = _session
-    console.log("session is", session)
-    note_sync.setUid(session.user.id)
-    // note_sync.refresh_sources()
-    // note_sync.refresh_notes()
-    logged_in = !!session
-    await updateActive()
-    note_sync.sub()
-    console.log(get(note_sync.noteStore))
-
-    try {
-      chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-        if (request.action == "update_curr_url") updateActive()
-        if (request.action == "content_script_loaded" && needToRefreshPage) updateActive()
-        if (request.action === "uploadTextSB") {
-          const { note_data } = request as {
-            action: string
-            note_data: PendingNote
-          }
-          console.log("got data", note_data)
-          if (note_data) {
-            optimistic = O.some(note_data)
-            note_mut.addNote(note_data, { title, url })
-            // supa_update()(supabase, note_data).then((v) => v && T.note2card.mutate({ note_id: v.id }))
-            setTimeout(() => (optimistic = O.none), 1000)
-          }
-        }
-      })
-    } catch {
-      console.log("dev?")
-    }
+    TB.refresh.query().then(console.log)
   })
 
   const handle_keydown = (e: KeyboardEvent) => {
     if (e.metaKey && e.key === "z") {
       e.preventDefault()
-      // note_sync.restoredelete()
-      // (e.shiftKey ? redo : undo)();
+      ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
     }
   }
+  const iconSize = 15
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
 
-<a href={`${API_ADDRESS}/dashboard?search`} target="_blank" use:shortcut={{ alt: true, code: "KeyF" }}
-  >go to dashboard / alfF</a>
+<!-- <a target="_blank" href={dashboardURL}>welcome?</a> -->
 
-<!-- {$currUrl} -->
-
-{#if needToRefreshPage}
+{#if $needsRefresh}
   <div role="alert" class="alert alert-error">
     <div class="flex flex-row">
       <!-- prettier-ignore -->
@@ -148,8 +72,8 @@
 {/if}
 
 <!-- {$source_id} {session} -->
-{#if !logged_in}
-  <div role="alert" class="alert alert-error">
+{#if O.isNone($session)}
+  <div role="alert" class="alert alert-error grid-flow-col justify-items-start text-start">
     <!-- prettier-ignore -->
     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
     <span>Not logged in! <a href={login_url} target="_blank">click here</a></span>
@@ -157,12 +81,31 @@
 {/if}
 
 <div class="max-w-xs mx-auto space-y-4">
-  <div class=" text-xl text-center w-full italic">{title}</div>
-  <NotePanel bind:optimistic {note_sync} {note_mut} />
+  <div class="flex">
+    <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
 
-  <textarea
+    <div class="grid h-min">
+      <a
+        href={O.isNone($session) ? dashboardURL : `${API_ADDRESS}/dashboard`}
+        target="_blank"
+        class="tooltip tooltip-left"
+        data-tip="Go to dashboard (alt+F)"
+        use:shortcut={{ alt: true, code: "KeyF" }}
+        ><IconLayoutDashboard transform="rotate(90)" font-size={iconSize} /></a>
+
+      <button
+        class="tooltip tooltip-left"
+        data-tip={"Logged in as: \n" + (O.toNullable($session)?.user?.email || "...not logged in")}
+        on:click={() => TB.refresh.query().then(console.log)}
+        on:contextmenu|preventDefault={() => TB.disconnect.query()}>
+        <IconRefresh font-size={iconSize} />
+      </button>
+    </div>
+  </div>
+
+  <NotePanel bind:optimistic syncLike={bgSync} />
+  <!-- <textarea
     placeholder="scratchy scratch scratch"
-    class="w-full"
-    bind:value={$scratches[curr_domain_title]} />
-  <!-- <button on:click={() => console.log(peccatoribus(2.5))}> pls</button> -->
+    class="max-w-xs w-full bottom-0 left-0 absolute textarea p-1"
+    bind:value={$scratches[$currDomainTitle]} /> -->
 </div>

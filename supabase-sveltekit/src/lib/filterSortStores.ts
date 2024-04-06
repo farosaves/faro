@@ -1,7 +1,7 @@
 import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
-import { escapeHTML, replacer, type NoteEx } from "shared"
+import { chainN, escapeHTML, replacer, type NoteEx } from "shared"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { hostnameStr } from "./utils"
 
@@ -19,7 +19,7 @@ export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => (
   priority: pipe(
     NA.fromArray(n.tags),
     O.getOrElse(() => [""]),
-    A.map((s) => !sets[currId].has(s)),
+    A.map(s => !sets[currId].has(s)),
     A.reduce(false, (x, y) => x || y),
   )
     ? n.priority
@@ -27,7 +27,7 @@ export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => (
 }))
 
 export const uncheckedDomains = writable(new Set<string>())
-export const domainFilter = derived(uncheckedDomains, (d) => (n: _A) => {
+export const domainFilter = derived(uncheckedDomains, d => (n: _A) => {
   if (d.has(hostnameStr(n))) n.priority = 0
   return n
 })
@@ -39,7 +39,7 @@ export const newestFirst = writable(true)
 
 const fuzzySortDef = (newestFirst: boolean) => (n: NoteEx): NoteEx & { priority: number } => ({
   ...n,
-  priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at)
+  priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
 })
 export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
@@ -50,13 +50,13 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
       if (res && res.length) {
         priority = pipe(
           Array.from(res),
-          A.findFirstMap((r) => (r.obj.id == n.id ? O.some(r.score + 1_000_000) : O.none)),
+          A.findFirstMap(r => (r.obj.id == n.id ? O.some(r.score + 1_000_000) : O.none)),
           O.match(() => 0, identity),
         )
         searchArt = pipe(
           Array.from(res),
-          A.findFirst((r) => r.obj.id == n.id),
-          O.map((optKR) => ({ selectedKeys, optKR })),
+          A.findFirst(r => r.obj.id == n.id),
+          O.map(optKR => ({ selectedKeys, optKR })),
         )
         // todo this is almost the same as one in shared _Note
         title = pipe(
@@ -64,13 +64,12 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
           O.chain(({ selectedKeys, optKR }) =>
             pipe(
               selectedKeys,
-              A.findIndex((n) => n == "sources.title"),
-              O.chain((i) => O.fromNullable(optKR[i])),
-              O.map((r) => {
+              A.findIndex(n => n == "sources.title"),
+              O.chain(i => O.fromNullable(optKR[i])),
+              chainN((r) => {
                 const target = escapeHTML(r.target)
                 return fuzzysort.highlight({ ...r, target }, replacer)?.join("")
               }),
-              O.chain(O.fromNullable),
             ),
           ),
           O.getOrElse(() => n.sources.title),

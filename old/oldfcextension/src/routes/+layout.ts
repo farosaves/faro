@@ -1,14 +1,14 @@
-export const prerender = true;
+export const prerender = true
 
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public'
+import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public"
 
 
-import { createBrowserClient, isBrowser, parse } from '@supabase/ssr'
+import { createBrowserClient, isBrowser, parse } from "@supabase/ssr"
 // import type { Database } from '$lib/supabase';
-let url = "http://localhost:5173/"
+const url = "http://localhost:5173/"
 // /** @type {import('./$types').Pa} */
 export const load = async ({ fetch, data, depends }) => {
-  depends('supabase:auth')
+  depends("supabase:auth")
 
   const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     global: {
@@ -25,7 +25,7 @@ export const load = async ({ fetch, data, depends }) => {
       },
     },
   })
-  let a = await supabase.from("snippets").select("*")
+  const a = await supabase.from("snippets").select("*")
 
   const {
     data: { session },

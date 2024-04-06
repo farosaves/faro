@@ -5,16 +5,16 @@
   import IconTagOff from "~icons/tabler/tag-off"
 
   import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
-  import { desc, type NoteEx, type NoteSync } from "shared"
+  import { array as A, record as R, nonEmptyArray as NA, option as O, map as M, string as S } from "fp-ts"
+  import { desc, NoteDeri, type NoteEx, type NoteSync } from "shared"
   import { derived, writable } from "svelte/store"
-  import { exclTagSet, exclTagSets, tagFilter } from "$lib/filterSortStores"
+  import { exclTagSet, exclTagSets, tagFilter } from "../filterSortStores"
   import { modalOpenStore } from "shared"
-  export let note_sync: NoteSync
-  let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteStore, (x) =>
+  export let noteDeri: NoteDeri
+  // let noteStore = note_sync.noteStore
+  const tags_counts = derived(noteDeri.noteArr, (x) =>
     pipe(
-      Object.values(x),
+      x,
       A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
       R.map((x) => x.length),
@@ -22,7 +22,7 @@
     )
       .concat(
         // prettier-ignore
-        [["", pipe(x, R.filter((note) => !note.tags.length), R.size)]],
+        [["", pipe(x, A.filter(note => !note.tags.length), A.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
   )
@@ -45,7 +45,7 @@
   let currTag: string
   let newTag: string
   const updateTag = () => {
-    note_sync.tagUpdate(currTag, O.some(newTag))
+    noteDeri.sync.tagUpdate(currTag, O.some(newTag))
     currTag = newTag
     return true
   }
@@ -58,12 +58,12 @@
   }
   const deleteTag = () => {
     myModal && myModal.close()
-    note_sync.tagUpdate(currTag, O.none)
+    noteDeri.sync.tagUpdate(currTag, O.none)
   }
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
-  <div class="tooltip tooltip-right tooltip-primary carousel-item" data-tip="toggle all">
+<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] border-b-2 border-t-2 border-neutral">
+  <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
@@ -72,11 +72,13 @@
     </button>
   </div>
   {#each $tags_counts as [tag, cnt]}
-    <div class="tooltip tooltip-right tooltip-primary carousel-item" data-tip={tag ? cnt : `${cnt} untagged`}>
+    <div
+      class="tooltip tooltip-right tooltip-secondary carousel-item"
+      data-tip={tag ? cnt : `${cnt} untagged`}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleSet(tag)}
-        on:contextmenu={onDblClick(tag)}
+        on:contextmenu|preventDefault={onDblClick(tag)}
         class:btn-outline={$exclTagSet.has(tag)}
         >{#if tag}{tag}{:else}
           <IconTagOff />

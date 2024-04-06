@@ -173,7 +173,7 @@ export type Database = {
           created_at?: string
           DOI?: string | null
           domain?: string | null
-          id?: string
+          id: string
           title?: string | null
           url?: string | null
         }

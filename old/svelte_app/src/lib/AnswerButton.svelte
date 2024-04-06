@@ -1,7 +1,7 @@
 <script>
-  export let showing_answer = false;
-  let show_answer = () => (showing_answer = true);
-  export let intervals = ["<5m", "10m", "1d", "4d"];
+  export let showing_answer = false
+  let show_answer = () => (showing_answer = true)
+  export let intervals = ["<5m", "10m", "1d", "4d"]
 </script>
 
 {#if !showing_answer}

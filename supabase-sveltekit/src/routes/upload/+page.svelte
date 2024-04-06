@@ -23,7 +23,7 @@
       <form method="post" class="card-body" enctype="multipart/form-data">
         <input
           type="file"
-          accept=".pdf"
+          accept=".pdf,.html"
           name="fileToUpload"
           required
           bind:files

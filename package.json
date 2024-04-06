@@ -8,33 +8,38 @@
     "playwright": "^1.42.1",
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.2",
-    "svelte-persisted-store": "^0.9.1"
+    "svelte-persisted-store": "^0.9.1",
+    "ts-pattern": "^5.1.0",
+    "uuid": "^9.0.1"
   },
   "scripts": {
-    "watch": "npm-watch",
+    "watch": "npm-watch buildShared",
+    "watchf": "npm-watch ",
     "checkshared": "svelte-check --workspace=shared/",
     "checkss": "svelte-check --workspace=supabase-sveltekit/",
     "checksext": "svelte-check --workspace=sextension/",
-    "format": "#npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
-    "b": "npm run b -w=sextension/ #&& npm run bz -w=sextension/ && npm run build -w=supabase-sveltekit/",
+    "format": "# find */src/**/*.ts -mtime -5s -exec npx eslint --fix {} \\; #npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
+    "b": "npm run bnr -w=sextension/   #&& npm run bz -w=sextension/ && npm run build -w=supabase-sveltekit/",
     "buildShared": "npm run build -w=shared/",
     "test": "npx playwright test",
+    "icons": "svgexport icon.svg supabase-sveltekit/static/favicon.png 128:128; svgexport icon.svg sextension/public/icons/icon16.png 16:16; svgexport icon.svg sextension/public/icons/icon48.png 48:48; svgexport icon.svg sextension/public/icons/icon128.png 128:128",
     "testdocker": "docker run --env-file=.testenv -e COMMIT_UUID=$COMMIT_UUID --ipc=host --init -ti -v ./tests:/usr/src/tests mcr.microsoft.com/playwright:v1.42.1 /bin/bash -c 'cd /usr/src && npm install -D @playwright/test && npx playwright test'"
   },
   "watch": {
-    "format": {
-      "patterns": [
-        "shared/src",
-        "fcextension/src",
-        "supabase-sveltekit/src"
-      ],
-      "extensions": [
-        "ts"
-      ]
-    },
     "buildShared": {
       "patterns": [
         "shared/src/lib"
+      ],
+      "extensions": [
+        "ts",
+        "js",
+        "svelte"
+      ]
+    },
+    "b": {
+      "patterns": [
+        "sextension/src/",
+        "shared/dist"
       ],
       "extensions": [
         "ts",
@@ -49,10 +54,12 @@
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.11.25",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
     "immer": "^10.0.4",
+    "svgexport": "^0.4.2",
     "typescript": "^5.4.2",
     "typescript-eslint": "^7.3.1"
   },

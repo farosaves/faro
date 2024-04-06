@@ -1,135 +1,136 @@
-import { API_ADDRESS, getSession } from "$lib/utils"
+import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
-import { initTRPC } from "@trpc/server"
-import { createChromeHandler } from "trpc-chrome/adapter"
-import { z } from "zod"
-import { pushStore, pendingNotes } from "$lib/chromey/messages"
+import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteSync, escapeRegExp, hostname, type PendingNote } from "shared"
+import { NoteDeri, NoteSync, domain_title, escapeRegExp, funLog, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
-import { loadSB } from "$lib/loadSB"
-import type { Session, SupportedStorage } from "@supabase/supabase-js"
+import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
 import { NoteMut } from "$lib/note_mut"
 
-const DOMAIN = import.meta.env.VITE_PI_IP.replace(/\/$/, "")
-const DEBUG = import.meta.env.DEBUG || false
+import { createChromeHandler } from "trpc-chrome/adapter"
+import { z } from "zod"
+import { createContext, t } from "./lib/chromey/trpc"
 
 const T = trpc2()
 
-// const note_sync: NoteSync = new NoteSync(supabase, undefined)
-// const note_mut: NoteMut = new NoteMut(note_sync)
+const note_sync = new NoteSync(supabase, undefined, "chrome")
+pushStore("noteStore", note_sync.noteStore)
+pushStore("stuMapStore", note_sync.stuMapStore)
+const noteDeri = new NoteDeri(note_sync)
+pushStore("allTags", noteDeri.allTags)
+note_sync.DEBUG = DEBUG
+const note_mut: NoteMut = new NoteMut(note_sync)
+// note_mut.panel.subscribe(funLog("note_panel"))
+pushStore("panel", note_mut.panel)
 const sess = writable<O.Option<Session>>(O.none)
-// prettier-ignore
+pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
-// user_id.subscribe(O.map(note_sync.setUid))
+// on user/session run:
+const onUser_idUpdate = O.match(
+  () => note_sync.setUser_id(undefined),
+  async (user_id: string) => {
+    note_sync.setUser_id(user_id)
+    note_sync.refresh_sources()
+    note_sync.refresh_notes()
+    note_sync.sub()
+  })
+user_id.subscribe(onUser_idUpdate)
 
-const refresh = async () => {
-  const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
+const refresh = async (online = true) => {
+  const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
-  sess.update(n => O.orElse(newSess, () => n))
-  console.log(get(user_id), newSess)
+  sess.set(newSess)
+  return newSess
 }
 refresh()
+// const refreshIfNew = async () => {  // premature opt
+//   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
+//   const newSess = O.fromNullable(await getSession(supabase, toks))
+//   const optMail = O.match<Session, string>(() => "", x => x.user.email || "")
+//   optMail(get(sess)) != optMail(newSess) && sess.set(newSess)
+//   return newSess
+// }
+const typeCast = <T>(input: unknown) => input as T
+const appRouter = (() => {
+  const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
+  const changePInput = z.tuple([z.string(), z.number()])
 
-const t = initTRPC.create({
-  isServer: false,
-  allowOutsideOfServer: true,
-})
+  return t.router({
+    serializedHighlights: t.procedure.query(() => get(note_mut.panel).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
+    loadDeps: t.procedure.query(({ ctx: { tab } }) => {
+      chrome.scripting.executeScript({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+        target: { tabId: tab?.id! },
+        files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
+      })
+    }),
 
-const addZ = z.tuple([z.number(), z.number()])
-type AddZ = z.infer<typeof addZ>
-const appRouter = t.router({
-  add: t.procedure.input(addZ).query(({ input }) => input[0] + input[1]),
-})
+    refresh: t.procedure.query(() => refresh()),
+    disconnect: t.procedure.query(() => refresh(false)),
+    // forward note_sync
+    tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
+    tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
+    changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
+    deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
+    undo: t.procedure.query(() => note_sync.undo()),
+    redo: t.procedure.query(() => note_sync.redo()),
+    newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
+
+
+  })
+})()
 export type AppRouter = typeof appRouter
 
-// @ts-expect-error namespace missings
+// @ts-expect-error
 createChromeHandler({
   router: appRouter,
+  createContext,
 })
 
-const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+const currSrc = writable<Src>({ url: "", title: "" })
+pushStore("currSrc", currSrc)
 
-const currUrl = writable("bebebobou")
-
-pushStore("currUrl", currUrl)
-
-const updateCurrUrl = (tab?: chrome.tabs.Tab) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
-  if (tab?.url) currUrl.set(tab?.url)
-  console.log(get(currUrl))
+const updateCurrUrl = (tab: chrome.tabs.Tab) => {
+  const { url, title } = tab
+  if (url && title) currSrc.set({ url, title })
+  const source_id = note_mut.setLocalSrcId({ url: url || "", title: title || "" })
 }
+
+const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
+const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  if (/farosapp\.com\/account/.test(tab.url || ""))
+  console.log(homeRegexp)
+  if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  chrome.runtime.sendMessage({ action: "update_curr_url" }).catch(e => console.log(e))
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
-const tryn
-  = (n: number, ms = 500) =>
-    async (f: any) => {
-      // TODO
-      if (n < 1) return
-      try {
-        await f()
-      } catch {
-        await sleep(ms)
-        await tryn(n - 1, ms)(f)
-      }
-    }
 
-// to sidepanel
-
-pendingNotes.stream.subscribe(([note_data, sender]) => {
-  const smr = () => chrome.runtime.sendMessage({ action: "uploadTextSB", note_data })
-  tryn(5, 1000)(smr)
-})
-
-function onMessage(request: { action: any }, sender: chrome.runtime.MessageSender, sendResponse: any) {
-  if (request.action === "loadDeps") {
-    chrome.scripting.executeScript({
-      target: { tabId: sender?.tab?.id! },
-      files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
-    })
-    chrome.runtime.sendMessage({ action: "content_script_loaded" })
-  }
+const needsRefresh = writable(false)
+pushStore("needsRefresh", needsRefresh)
+const signalRefresh = (ms = 2000) => {
+  needsRefresh.set(true)
+  setTimeout(() => needsRefresh.set(false), ms)
 }
-chrome.runtime.onMessage.addListener(onMessage)
-
-const getUuid = () => crypto.randomUUID()
-// try {
-//   return
-// } catch {
-//   console.log("uuid fallback, nonsecure context?")
-// }
-
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)
-  chrome.tabs
-    .sendMessage(tab.id!, {
-      action: "getHighlightedText",
-      website_title: tab.title,
-      website_url: tab.url,
-      uuid: getUuid(),
-    })
-    .catch(e => console.log(e))
+  getHighlightedText.send(crypto.randomUUID(), { tabId: tab.id }).catch(() => signalRefresh())
 }
 // this makes it *not close* - it opens from the function above
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })
 chrome.action.onClicked.addListener(activate)
 
-chrome.commands.onCommand.addListener((command) => {
-  const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
-  if (command == "search" && !api_regexp.test(get(currUrl))) {
-    chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
-  }
-})
+// chrome.commands.onCommand.addListener((command) => {
+//   const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
+//   if (command == "search" && !api_regexp.test(get(currSrc).url)) {
+//     chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
+//   }
+// })
 
 if (DEBUG) console.log("loaded all background")

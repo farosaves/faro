@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "open http://localhost:5173/ & vite dev",
+    "dev": "open http://localhost:5173/ & VITE_PI_IP=http://localhost:5173 vite dev",
     "build": "vite build",
     "b": "npm install --prefix ../shared && npm run build --prefix ../shared && npm run build",
     "preview": "vite preview",
@@ -12,7 +12,6 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "prebuild": "test -f .env && (sed -i  '' '/^CF_PAGES_COMMIT_SHA=/d' .env && echo CF_PAGES_COMMIT_SHA=$(git rev-parse HEAD) >> .env) || :",
-    "update-types": "(npx supabase gen types typescript --project-id \"hspfduumtusknleyjeoi\" --schema public > src/lib/dbtypes.ts) && (npx better-supabase-types -i src/lib/dbtypes.ts -f)",
     "test": "vitest",
     "sync": "cd ..; julia --project=oxygen oxygen/syncer.jl",
     "diff": "diff --color -bur ../fcextension/src/lib/shared src/lib/shared"

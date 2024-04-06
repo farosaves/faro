@@ -1,19 +1,21 @@
 <script lang="ts">
   import type { MouseEventHandler } from "svelte/elements"
 
-  import type { NoteSync } from "./sync/main"
+  import type { SyncLike } from "./sync/sync"
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
-  import { modalOpenStore, replacer } from "./stores"
-  import { MyTags, type NoteEx, type SourceData } from "./index"
-  import { identity, pipe } from "fp-ts/lib/function"
+  import { modalOpenStore, modalStore, replacer } from "./stores"
+  import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
+  import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
+  import type { Readable } from "svelte/motion"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
-  export let note_sync: NoteSync
+  export let syncLike: SyncLike
+  export let allTags: Readable<string[]>
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
@@ -22,14 +24,13 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
-  let all_tags = note_sync.alltags
 
   $: text = pipe(
     note_data.searchArt,
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return !!note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
+        return note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
       }, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
@@ -45,11 +46,11 @@
         ),
     ),
   )
-  //.replace(note_data.quote, quoteBoldReplace)
+  // .replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = note_sync.tagChange(note_data)
-  $: onTagRemoved = note_sync.tagChange(note_data)
-  $: changeP = note_sync.changePrioritised(note_data)
+  $: onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  $: onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  $: changeP = syncLike.changePrioritised(note_data.id)
 
   let highlighting = false
   const highlightMe = () => {
@@ -65,13 +66,10 @@
       (note_data["highlightOnMount"] = false)
   })
 
-  let myModal: HTMLDialogElement | null = null
-  let modalPotential = false
-  let modalText = ""
   const loadModalText = () =>
-    (modalText = note_data.highlights
+    note_data.highlights
       ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
-      : escapeHTML(note_data.context || ""))
+      : escapeHTML(note_data.context || "")
 
   let hovered = false
 </script>
@@ -79,15 +77,16 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- on:mouseenter={loadModalText} -->
 <div
-  class="collapse bg-base-200 border-primary"
-  on:mouseenter={() => (modalPotential = hovered = true)}
+  class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
+  on:mouseenter={() => (hovered = true)}
   on:mouseleave={() => (hovered = false)}
+  class:highlighting
   on:contextmenu|preventDefault={() => {
-    if (myModal) myModal.showModal()
-    loadModalText()
+    $modalStore = "Created at: " + note_data.created_at
+    // if (myModal) myModal.showModal()
+    // loadModalText()
     $modalOpenStore = true
-  }}
-  style="border-width: {1 + 5 * +highlighting}px; position: static;">
+  }}>
   <input type="checkbox" class="-z-10" bind:checked={isOpen} />
   <div
     class="collapse-title text-center"
@@ -105,7 +104,7 @@
       on:dblclick={goto_function}>
       {@html text}
     </button>
-    <MyTags tags={[...tags]} autoComplete={$all_tags} {onTagAdded} {onTagRemoved} />
+    <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
   </div>
   <div class="collapse-content z-40" style="grid-row-start: 2">
     <div class="join w-full">
@@ -115,31 +114,23 @@
         <button
           class="btn btn-xs text-error"
           on:click={() => {
-            note_sync.deleteit(note_data)
+            syncLike.deleteit(note_data.id)
             // prettier-ignore
-            pipe(deleteCbOpt, O.map((f) => f()))
+            pipe(deleteCbOpt, O.map(f => f()))
             closeAll()
           }}>DELETE</button>
       </StarArchive>
     </div>
   </div>
-  {#if modalPotential}
-    <dialog
-      id="modal${note_data.id}"
-      class="modal"
-      bind:this={myModal}
-      on:close={() => ($modalOpenStore = false)}>
-      <div class="modal-box">
-        <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
-        <p class="py-4">
-          {@html note_data.highlights
-            ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
-            : escapeHTML(note_data.context || "")}
-        </p>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
-  {/if}
+  <button
+    hidden
+    on:click={() =>
+      hovered && navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)}
+    use:shortcut={{ alt: true, code: "KeyC" }} />
 </div>
+
+<style>
+  .highlighting {
+    border-width: 5px;
+  }
+</style>

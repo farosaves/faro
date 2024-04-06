@@ -1,12 +1,13 @@
 // import type { SupabaseClient } from "@supabase/supabase-js";
 import { fail } from "@sveltejs/kit"
-// import type { SupabaseClient } from "shared";
+import { uuidv5 } from "shared"
+// import type { SupabaseClient } from x"shared";
 // import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "$env/static/private";
 // import { writeFileSync } from 'fs';
 
 export const actions = {
   default: async ({ request, locals }) => {
-    // const endpoint =
+    // const endpoint =xw
     //   "https://362e2d4a4b780aab43b3c82f2a779a47.r2.cloudflarestorage.com";
 
     const formData = Object.fromEntries(await request.formData())
@@ -21,9 +22,8 @@ export const actions = {
     // console.log(totallyS3);
     const { fileToUpload } = formData as { fileToUpload: File }
     if (
-      !(fileToUpload as File).name ||
-      (fileToUpload as File).name === "undefined" ||
-      fileToUpload.type !== "application/pdf"
+      !(fileToUpload as File).name
+      || (fileToUpload as File).name === "undefined" // handle html here
     ) {
       return fail(400, {
         error: true,
@@ -32,7 +32,7 @@ export const actions = {
     }
 
     // prettier-ignore
-    type T = {pdf_id: string, error: string}
+    type T = { pdf_id: string, error: string }
     const { pdf_id, error }: T = await (
       await fetch("http://127.0.0.1:2227/", {
         method: "POST",
@@ -51,6 +51,7 @@ export const actions = {
       url: pdf_id + ".html",
       domain: "pdf",
       title: fileToUpload.name,
+      id: uuidv5("pdf;" + fileToUpload.name),
     })
 
     return { success: true, pdf_id }

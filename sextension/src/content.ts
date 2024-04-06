@@ -1,28 +1,24 @@
 // import 'chrome';
 import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
-import { makeQCH } from "shared"
-import { createTRPCProxyClient } from "@trpc/client"
+import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
+import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
-import { pendingNotes } from "$lib/chromey/messages"
-const DEBUG = import.meta.env.VITE_DEBUG || false
+import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
+import { DEBUG } from "$lib/utils"
 
 if (DEBUG) console.log("hello")
 
 const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
-  links: [chromeLink({ port })],
+  links: [chromeLink({ port }), loggerLink()],
 })
-
-if (DEBUG) console.log(T.add.query([1, 77]))
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
   sel.setSingleRange(rann as RangyRange)
   return sel
 }
-
-chrome.runtime.sendMessage({ action: "loadDeps" })
 
 const applierOptions = {
   elementProperties: {
@@ -31,17 +27,16 @@ const applierOptions = {
   },
 }
 const deleteSelection = (uuid: string) => {
-  // let createClassApplier = rangy.createClassApplier;
-  const classname = "_" + uuid
-  const elements = document.querySelectorAll(`.${classname}`)
+  const elements = elemsOfClass("_" + uuid)
   if (DEBUG) console.log("deleting", uuid, elements.length)
-  // note this needs to be in sync with applier options above
-  elements.forEach((e: any) => (e.style.textDecoration = ""))
+  elements.forEach(e => (e.style.textDecoration = ""))
 }
 function wrapSelectedText(uuid: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _rangy = rangy as any
   const classname = "_" + uuid
   const app = _rangy.createClassApplier(classname, applierOptions)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
   const ran = document.getSelection()?.getRangeAt(0)!
   const rangeText = reserialize(ran)
   const selection = ran2sel(ran)
@@ -55,6 +50,7 @@ function wrapSelectedText(uuid: string) {
 const batchDeserialize = (uss: [string, string][]) =>
   uss.forEach(([uuid, serialized]) => {
     if (!serialized) return
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _rangy = rangy as any
     console.log("deserializeing", uuid, serialized)
     const hl = _rangy.createHighlighter()
@@ -64,13 +60,13 @@ const batchDeserialize = (uss: [string, string][]) =>
     console.log("prep", prepared)
     try {
       hl.deserialize(prepared)
-    } catch {}
+    } catch { return }
   })
 
 const gotoText = (uuid: string) => {
-  const elems = document.getElementsByClassName("_" + uuid)
+  const elems = elemsOfClass("_" + uuid)
   elems.item(0)!.scrollIntoView({ block: "center" })
-  Array.from(elems).forEach((elem: any) => {
+  elems.forEach((elem) => {
     const sc = elem.style.backgroundColor
     elem.style.backgroundColor = "#fff200"
     setTimeout(() => {
@@ -81,37 +77,47 @@ const gotoText = (uuid: string) => {
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
 // type Req = { action: "getHighlightedText" | "goto" | "deserialize" | "delete" }
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "getHighlightedText") {
-    const { website_title, website_url, uuid } = request
-    const selectedText = window.getSelection()?.toString()
-    if (!selectedText) return
-    console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
-    console.log(rangy.createRange())
-    const serialized = wrapSelectedText(uuid)
-    console.log(window.getSelection()?.anchorNode)
-    gotoText(uuid)
+getHighlightedText.sub(async ([uuid]) => {
+  const selectedText = window.getSelection()?.toString()
+  if (!selectedText) return
+  DEBUG && console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
+  DEBUG && console.log(rangy.createRange())
+  const serialized = wrapSelectedText(uuid)
+  DEBUG && console.log(window.getSelection()?.anchorNode)
+  gotoText(uuid)
 
-    DEBUG && console.log("uploading...:", { selectedText, website_url })
-    // makeQCH grabs text around the highlighted bit:
-    // quote: will try to grab the full sentence
-    // context: will try to grab like a <p> tag
-    // quote is what's displayed on the note
-    // context is displayed in the dialog on right click
-    const { quote, highlights, context: _context } = makeQCH(htmlstr2body)(document, uuid, selectedText)
-    // sometimes context is too much
-    const context = _context.length < 1e4 ? _context : quote
-    if (!quote) return { note_data: null }
-    const note_data = {
-      quote,
-      highlights,
-      context,
-      snippet_uuid: uuid,
-      serialized_highlight: serialized,
-    }
-    pendingNotes.send(note_data)
+  DEBUG && console.log("uploading...:", { selectedText })
+  // makeQCH grabs text around the highlighted bit:
+  // quote: will try to grab the full sentence
+  // context: will try to grab a <p> tag etc - useful for debugging
+  // quote is what's displayed on the note
+  const { quote, highlights } = makeQCH(htmlstr2body)(document, uuid, selectedText)
+  if (!quote) return { note_data: null }
+  const note_data = {
+    quote,
+    highlights,
+    context: "",
+    snippet_uuid: uuid,
+    serialized_highlight: serialized,
   }
+  optimisticNotes.send(note_data)
+  const newNote = await T.newNote.mutate(note_data) // .catch(funLog("newNote"))
+  if (newNote == null) {
+    deleteSelection(uuid)
+  }
+})
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "goto") gotoText(request.uuid)
-  if (request.action === "deserialize") batchDeserialize(request.uss)
   if (request.action === "delete") deleteSelection(request.uuid)
 })
+
+; (async () => { // here I can potentially skip loading if page has no highlights
+  await T.loadDeps.query()
+  console.log("loaded bg")
+  sleep(100)
+  await T.serializedHighlights.query().then(batchDeserialize)
+  const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+  if (goto) gotoText(goto)
+  console.log("goto", goto)
+})()
