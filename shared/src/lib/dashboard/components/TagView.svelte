@@ -34,11 +34,15 @@
     else $exclTagSets.sets[$exclTagSets.currId] = new Set($tags_counts.map(([x, y]) => x))
   }
   $: console.log(Array.from($exclTagSets.sets[$exclTagSets.currId]))
-  const toggleSet = (tag: string) =>
+  const toggleTag = (tag: string) =>
     exclTagSets.update((s) => {
       s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
       return s
     })
+  const onDblClick = (tag: string) => () =>
+    ($exclTagSets.sets[$exclTagSets.currId] = new Set(
+      $tags_counts.map(([x, y]) => x).filter((t) => t != tag),
+    ))
 
   // let modalPotential: boolean
   let myModal: HTMLDialogElement | null = null
@@ -49,7 +53,7 @@
     currTag = newTag
     return true
   }
-  const onDblClick = (tag: string) => () => {
+  const onContextMenu = (tag: string) => () => {
     if (myModal) {
       currTag = newTag = tag
       myModal.showModal()
@@ -77,8 +81,9 @@
       data-tip={tag ? cnt : `${cnt} untagged`}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
-        on:click={() => toggleSet(tag)}
-        on:contextmenu|preventDefault={onDblClick(tag)}
+        on:click={() => toggleTag(tag)}
+        on:contextmenu|preventDefault={onContextMenu(tag)}
+        on:dblclick={onDblClick(tag)}
         class:btn-outline={$exclTagSet.has(tag)}
         >{#if tag}{tag}{:else}
           <IconTagOff />
