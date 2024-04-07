@@ -1,9 +1,8 @@
 import { hostname } from "shared"
 
 export const GET = async ({ url }) => {
-//   const pageUrl = JSON.parse(url.searchParams.get("url") || "{}")
-  const pageUrl = JSON.parse(url.searchParams.get("url") || "{}") as string
-  console.log("page url", pageUrl)
+  const pageUrl = (url.searchParams.get("url") || "") as string
+  //   const pageUrl = JSON.parse(url.searchParams.get("url") || "{}") as string
   const mainLoad = url.searchParams.get("main") || false
   if (!mainLoad) {
     const fetched = await fetch(pageUrl)
@@ -17,8 +16,12 @@ export const GET = async ({ url }) => {
   //   console.log(text)
   //   const text2 = text.replaceAll(/="\/(?=\w)/g, "=\"/api/forward/?url=" + host)
   //   const text3 = text2.replaceAll(/="\/api\/forward\/\?url=/g, "a")
-  const text3 = text.replaceAll(/(?<=="\/)/g, s => "api/forward/?url=" + JSON.stringify(host + s))
-  //   console.log(text2)
+
+  const text3 = text.replaceAll(/(?<=="\/)[^"]+/g, (s) => {
+    console.log("capture:", s)
+    // return "api/forward/?url=" + JSON.stringify(host + s)
+    return "api/forward/?url=" + (host + s)
+  })
   return new Response(text3)
 }
 

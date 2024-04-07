@@ -19,7 +19,8 @@
   //   R.lookup(noteId,
   let div: HTMLDivElement
   onMount(async () => {
-    const url = JSON.stringify("https://en.wikipedia.org/wiki/Kalanchoe")
+    // const url = JSON.stringify("https://en.wikipedia.org/wiki/Kalanchoe")
+    const url = "https://en.wikipedia.org/wiki/Kalanchoe"
     div.innerHTML = await fetch(`/api/forward/?url=${url}&main=true`).then((x) => x.text())
     const stylesheetLinks = Array.from(div.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[]
 
@@ -33,8 +34,8 @@
     sleep(100)
     console.log("ps", document.getElementsByTagName("p").length)
     for (const link of stylesheetLinks) {
-      const resp = await fetch(JSON.stringify(link.href)).then()
-      resp.text().then(funLog("reps text"))
+      // const resp = await fetch(JSON.stringify(link.href)).then()
+      // resp.text().then(funLog("reps text"))
     }
 
     // fetch("https://en.wikipedia.org/wiki/Kalanchoe")
