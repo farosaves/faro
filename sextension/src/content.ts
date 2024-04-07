@@ -115,9 +115,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 ; (async () => { // here I can potentially skip loading if page has no highlights
   await T.loadDeps.query()
   console.log("loaded bg")
-  sleep(100)
+  sleep(200)
   await T.serializedHighlights.query().then(batchDeserialize)
   const goto = new URLSearchParams(window.location.search).get("highlightUuid")
   if (goto) gotoText(goto)
-  console.log("goto", goto)
+  DEBUG && console.log("goto", goto)
 })()
