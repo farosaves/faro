@@ -1,10 +1,25 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
 // originally from shared
+const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
+
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
 
 function desc<T>(first: (t: T) => number): (t1: T, t2: T) => number {
   return (t1, t2) => first(t2) - first(t1)
 }
+
+export const gotoText = (uuid: string) => {
+  const elems = elemsOfClass("_" + uuid)
+  elems.item(0)!.scrollIntoView({ block: "center" })
+  elems.forEach((elem) => {
+    const sc = elem.style.backgroundColor
+    elem.style.backgroundColor = "#fff200"
+    setTimeout(() => {
+      elem.style.backgroundColor = sc
+    }, 1000)
+  })
+}
+
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
 export const normalize = (s: string | null) => s || ""

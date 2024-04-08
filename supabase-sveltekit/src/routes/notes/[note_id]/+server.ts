@@ -24,10 +24,18 @@ export const GET = async ({ params }) => {
         elem.setAttribute(attr, host + oldLink)
     }
   }
-  for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js", "/deserializer.js"])
+  for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js"])
     dom.window.document.head.appendChild(JSDOM.fragment(`<script src="${module}"></script>`))
+  // dom.window.document.head.appendChild(JSDOM.fragment("<script src=\"/deserializer.js\" type=\"module\"></script>"))
   // dom.window.document.head.appendChild(JSDOM.fragment(`<script></script>`))
-  dom.window.document.head.appendChild(JSDOM.fragment(`<script>window.addEventListener("load", () => deserialize(applierOptions)([${data.snippet_uuid}, ${data.serialized_highlight}]))</script>`))
+  dom.window.document.head.appendChild(JSDOM.fragment(
+  `<script type="module">
+    import {deserialize, gotoText} from "/deserializer.js"
+    window.addEventListener("load", () => {
+      deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight}"])
+      gotoText("${data.snippet_uuid}")
+    })
+  </script>`))
 
   return new Response(dom.serialize(), { headers: { "Content-Type": "text/html" } })
 }
