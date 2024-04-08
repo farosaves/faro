@@ -7,6 +7,7 @@
   import { record as R, map as M } from "fp-ts"
   import type { UUID } from "crypto"
   import { onMount } from "svelte"
+  import * as mhtml2html from "mhtml2html"
 
   let noteId: string
 
@@ -20,8 +21,13 @@
   let div: HTMLDivElement
   onMount(async () => {
     // const url = JSON.stringify("https://en.wikipedia.org/wiki/Kalanchoe")
-    const url = "https://en.wikipedia.org/wiki/Kalanchoe"
-    div.innerHTML = await fetch(`/api/forward/?url=${url}&main=true`).then((x) => x.text())
+    const url = encodeURIComponent("https://en.wikipedia.org/wiki/Kalanchoe")
+    // div.innerHTML = await fetch(`/api/forward/?url=${url}&main=true`).then((x) => x.text())
+
+    const htmlstr = mhtml2html.convert(await fetch(`/sveltekit.mht`).then((x) => x.text())).toString()
+
+    // div.innerHTML = html2.innerHTML
+    console.log(htmlstr)
     const stylesheetLinks = Array.from(div.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[]
 
     //   fetch('http://www.example.com/external-styles.css')
@@ -34,8 +40,11 @@
     sleep(100)
     console.log("ps", document.getElementsByTagName("p").length)
     for (const link of stylesheetLinks) {
-      // const resp = await fetch(JSON.stringify(link.href)).then()
-      // resp.text().then(funLog("reps text"))
+      const p = new DOMParser()
+      const src = p.parseFromString(link.href, "text/html").body.innerText
+      console.log(link.href, "\n", src)
+      const resp = await fetch(src)
+      resp.text().then(funLog("reps text"))
     }
 
     // fetch("https://en.wikipedia.org/wiki/Kalanchoe")
