@@ -1,5 +1,5 @@
 // import 'chrome';
-import { deserialize, reserialize } from "$lib/serialiser/util"
+import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
 import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
@@ -49,17 +49,6 @@ function wrapSelectedText(uuid: string) {
 
 const batchDeserialize = (uss: [string, string][]) => uss.forEach(deserialize(applierOptions))
 
-const gotoText = (uuid: string) => {
-  const elems = elemsOfClass("_" + uuid)
-  elems.item(0)!.scrollIntoView({ block: "center" })
-  elems.forEach((elem) => {
-    const sc = elem.style.backgroundColor
-    elem.style.backgroundColor = "#fff200"
-    setTimeout(() => {
-      elem.style.backgroundColor = sc
-    }, 1000)
-  })
-}
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
 // type Req = { action: "getHighlightedText" | "goto" | "deserialize" | "delete" }
@@ -108,10 +97,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // DEBUG && console.log("goto", goto)
 })()
 
+let loaded = false
 window.addEventListener("load", async () => {
-  DEBUG && console.log("loaded")
-  await T.serializedHighlights.query().then(batchDeserialize)
-  const goto = new URLSearchParams(window.location.search).get("highlightUuid")
-  if (goto) gotoText(goto)
-  DEBUG && console.log("goto", goto)
+  if (!loaded) { // extra check in case it took more than 500ms to load..
+    loaded = true
+    DEBUG && console.log("loaded")
+    await T.serializedHighlights.query().then(batchDeserialize)
+    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+    if (goto) gotoText(goto)
+    DEBUG && console.log("goto", goto)
+  }
 })
+
+setTimeout(async () => {
+  if (!loaded) {
+    DEBUG && console.log("fallback loaded")
+    await T.serializedHighlights.query().then(batchDeserialize)
+    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+    if (goto) gotoText(goto)
+    DEBUG && console.log("goto", goto)
+    loaded = true
+  }
+}, 500) // wait half a second

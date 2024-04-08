@@ -12,7 +12,7 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "test": "vitest",
-    "bundleDeserializer": "npx tsc -p ../sextension/src/lib/serialiser/util.ts --outDir static --esModuleInterop; rm static/util.test.js; mv static/util.js static/deserializer.js"
+    "bundleDeserializer": "npx tsc --module ES6 -p ../sextension/src/lib/serialiser/util.ts --outDir static ; rm static/util.test.js; mv static/util.js static/deserializer.js"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.1.109",

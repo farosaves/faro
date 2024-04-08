@@ -61,13 +61,15 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
 
     response = new Response(body, { status, headers })
-  } // DEFAULT
-  else
+  } else // DEFAULT
     response = await resolve(event, {
       filterSerializedResponseHeaders(name) {
         return name === "content-range"
       },
     })
+
+  if (event.url.pathname.endsWith(".mjs") || event.url.pathname.endsWith(".js"))
+    response.headers.set("Content-Type", "application/javascript")
 
   // console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174
   const origin = event.request.headers.get("origin")
