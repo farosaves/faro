@@ -36,10 +36,10 @@ export const prepare2deserialize = (textContent: string, s: string) =>
     : stripQuote(s)
 
 export const deserialize = (applierOptions: unknown) => ([uuid, serialized]: [string, string]) => {
+  console.log("deserializeing", uuid, serialized)
   if (!serialized) return
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _rangy = rangy as any
-  console.log("deserializeing", uuid, serialized)
   const hl = _rangy.createHighlighter()
   const app = _rangy.createClassApplier("_" + uuid, applierOptions)
   hl.addClassApplier(app)

@@ -54,11 +54,11 @@ var prepare2deserialize = function (textContent, s) {
 exports.prepare2deserialize = prepare2deserialize;
 var deserialize = function (applierOptions) { return function (_a) {
     var uuid = _a[0], serialized = _a[1];
+    console.log("deserializeing", uuid, serialized);
     if (!serialized)
         return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     var _rangy = rangy;
-    console.log("deserializeing", uuid, serialized);
     var hl = _rangy.createHighlighter();
     var app = _rangy.createClassApplier("_" + uuid, applierOptions);
     hl.addClassApplier(app);

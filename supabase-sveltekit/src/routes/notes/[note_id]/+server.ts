@@ -24,9 +24,10 @@ export const GET = async ({ params }) => {
         elem.setAttribute(attr, host + oldLink)
     }
   }
-  for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js"])
+  for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js", "/deserializer.js"])
     dom.window.document.head.appendChild(JSDOM.fragment(`<script src="${module}"></script>`))
-  dom.window.document.head.appendChild(JSDOM.fragment("<script>console.log(applierOptions)</script>"))
+  // dom.window.document.head.appendChild(JSDOM.fragment(`<script></script>`))
+  dom.window.document.head.appendChild(JSDOM.fragment(`<script>window.addEventListener("load", () => deserialize(applierOptions)([${data.snippet_uuid}, ${data.serialized_highlight}]))</script>`))
 
   return new Response(dom.serialize(), { headers: { "Content-Type": "text/html" } })
 }
