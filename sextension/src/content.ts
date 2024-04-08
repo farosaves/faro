@@ -1,5 +1,5 @@
 // import 'chrome';
-import { deserialize, prepare2deserialize, reserialize } from "$lib/serialiser/util"
+import { deserialize, reserialize } from "$lib/serialiser/util"
 import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
@@ -101,9 +101,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 ; (async () => { // here I can potentially skip loading if page has no highlights
   await T.loadDeps.query()
   console.log("loaded bg")
-  sleep(200)
+  // await sleep(500)
+  // await T.serializedHighlights.query().then(batchDeserialize)
+  // const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+  // if (goto) gotoText(goto)
+  // DEBUG && console.log("goto", goto)
+})()
+
+window.addEventListener("load", async () => {
+  DEBUG && console.log("loaded")
   await T.serializedHighlights.query().then(batchDeserialize)
   const goto = new URLSearchParams(window.location.search).get("highlightUuid")
   if (goto) gotoText(goto)
   DEBUG && console.log("goto", goto)
-})()
+})
