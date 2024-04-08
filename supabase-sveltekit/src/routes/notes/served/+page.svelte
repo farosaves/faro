@@ -7,7 +7,6 @@
   import { record as R, map as M } from "fp-ts"
   import type { UUID } from "crypto"
   import { onMount } from "svelte"
-  import * as mhtml2html from "mhtml2html"
 
   let noteId: string
 
@@ -24,10 +23,7 @@
     const url = encodeURIComponent("https://en.wikipedia.org/wiki/Kalanchoe")
     // div.innerHTML = await fetch(`/api/forward/?url=${url}&main=true`).then((x) => x.text())
 
-    const htmlstr = mhtml2html.convert(await fetch(`/sveltekit.mht`).then((x) => x.text())).toString()
-
     // div.innerHTML = html2.innerHTML
-    console.log(htmlstr)
     const stylesheetLinks = Array.from(div.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[]
 
     //   fetch('http://www.example.com/external-styles.css')

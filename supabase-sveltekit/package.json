@@ -11,10 +11,8 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "prebuild": "test -f .env && (sed -i  '' '/^CF_PAGES_COMMIT_SHA=/d' .env && echo CF_PAGES_COMMIT_SHA=$(git rev-parse HEAD) >> .env) || :",
     "test": "vitest",
-    "sync": "cd ..; julia --project=oxygen oxygen/syncer.jl",
-    "diff": "diff --color -bur ../fcextension/src/lib/shared src/lib/shared"
+    "bundleDeserializer": "npx tsc -p ../sextension/src/lib/serialiser/util.ts --outDir static; rm static/util.test.js; mv static/util.js static/deserializer.js"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.1.109",
@@ -59,7 +57,6 @@
     "fsrs.js": "^1.2.0",
     "fuzzysort": "^2.0.4",
     "jsdom": "^24.0.0",
-    "mhtml2html": "^3.0.0",
     "rxjs": "^7.8.1",
     "sbd": "^1.0.19",
     "shared": "file:../shared",
