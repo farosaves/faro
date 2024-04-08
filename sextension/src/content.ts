@@ -1,5 +1,5 @@
 // import 'chrome';
-import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
+import { deserialize, prepare2deserialize, reserialize } from "$lib/serialiser/util"
 import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
@@ -47,21 +47,7 @@ function wrapSelectedText(uuid: string) {
   return hl.serialize(selection) + rangeText
 }
 
-const batchDeserialize = (uss: [string, string][]) =>
-  uss.forEach(([uuid, serialized]) => {
-    if (!serialized) return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const _rangy = rangy as any
-    console.log("deserializeing", uuid, serialized)
-    const hl = _rangy.createHighlighter()
-    const app = _rangy.createClassApplier("_" + uuid, applierOptions)
-    hl.addClassApplier(app)
-    const prepared = prepare2deserialize(document.body.textContent || "", serialized)
-    console.log("prep", prepared)
-    try {
-      hl.deserialize(prepared)
-    } catch { return }
-  })
+const batchDeserialize = (uss: [string, string][]) => uss.forEach(deserialize(applierOptions))
 
 const gotoText = (uuid: string) => {
   const elems = elemsOfClass("_" + uuid)

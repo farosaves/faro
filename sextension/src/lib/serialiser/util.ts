@@ -1,6 +1,10 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
+// originally from shared
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
 
-import { desc, escapeRegExp } from "shared"
+function desc<T>(first: (t: T) => number): (t1: T, t2: T) => number {
+  return (t1, t2) => first(t2) - first(t1)
+}
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
 export const normalize = (s: string | null) => s || ""
@@ -30,6 +34,21 @@ export const prepare2deserialize = (textContent: string, s: string) =>
   extractPrePost(s).length == 2
     ? subIdxs(stripQuote(s), ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)))
     : stripQuote(s)
+
+export const deserialize = (applierOptions: unknown) => ([uuid, serialized]: [string, string]) => {
+  if (!serialized) return
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _rangy = rangy as any
+  console.log("deserializeing", uuid, serialized)
+  const hl = _rangy.createHighlighter()
+  const app = _rangy.createClassApplier("_" + uuid, applierOptions)
+  hl.addClassApplier(app)
+  const prepared = prepare2deserialize(document.body.textContent || "", serialized)
+  console.log("prep", prepared)
+  try {
+    hl.deserialize(prepared)
+  } catch { return }
+}
 
 export const adjIdxs = (
   textContent: string,
