@@ -67,6 +67,7 @@
     "vitest": "^1.4.0"
   },
   "optionalDependencies": {
+    "@cloudflare/workerd-linux-64": "^1.20240405.0",
     "@rollup/rollup-linux-x64-gnu": "4.6.1"
   },
   "version": "1.0.0",
