@@ -86,7 +86,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "delete") deleteSelection(request.uuid)
 })
 
-; (async () => { // here I can potentially skip loading if page has no highlights
+; (async () => { // here I can potentially defer loading if page has no highlights - but would delay creating one on click
   await T.loadDeps.query()
   console.log("loaded bg")
   // await sleep(500)
