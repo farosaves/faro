@@ -13,7 +13,7 @@ export type ATokens = { access_token: string, refresh_token: string } | undefine
 export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) {
     // here log me out
-    supabase.auth.signOut().then(logIfError("getSession"))
+    supabase.auth.signOut({ scope: "local" }).then(logIfError("getSession"))
     return null
   }
   const { access_token, refresh_token } = tokens

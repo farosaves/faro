@@ -5,12 +5,13 @@ import type { Patch } from "immer"
 import { getOrElse } from "$lib/utils"
 import { persisted, type StorageType } from "./persisted-store"
 import type { Note } from "$lib/db/typeExtras"
+import * as devalue from "devalue"
 
 export type PatchTup = { patches: Patch[], inverse: Patch[] }
 
 const _undo_stack: PatchTup[] = []
 const _redo_stack: PatchTup[] = []
-export const xxdoStacks = (storage: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage })
+export const xxdoStacks = (storage: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage, serializer: devalue })
 
 export type NotesOps = {
   op: "upsert" | "delete"
