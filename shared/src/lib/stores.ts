@@ -1,6 +1,6 @@
 import type { Session } from "@supabase/supabase-js"
 import { derived, writable } from "svelte/store"
-import { option as O } from "fp-ts"
+import { option as O, array as A } from "fp-ts"
 
 export const modalOpenStore = writable(false)
 
@@ -14,9 +14,15 @@ export const themeStore = writable<ColorScheme>(colorScheme)
 export const replacer = derived(themeStore,
   t => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + "</b>")
 
-const a = ""
 export const updateTheme = () =>
   themeStore.set(
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme)
 
 export const modalStore = writable("")
+
+let nToast = 0
+export const toastStore = writable<[string, number][]>([])
+export const toastNotify = (msg: string) => {
+  toastStore.update(A.append([msg, nToast += 1]))
+  setTimeout(() => toastStore.update(A.dropLeft(1)), 2000)
+}
