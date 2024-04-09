@@ -1,5 +1,3 @@
-import { JSDOM } from "jsdom"
-
 export const GET = async ({ url }) => {
   const pageUrl = decodeURIComponent(url.searchParams.get("url") || "")
   // console.log("page url", pageUrl)
