@@ -8,8 +8,8 @@
   import { ActionQueue } from "../../../../shared/dist/sync/queue.js"
   sessStore.set(O.fromNullable(session))
   const noteSync = new NoteSync(supabase, session?.user.id)
-  console.log(session?.user.id)
-  console.log(noteSync.noteStore)
+  // console.log(session?.user.id)
+  // console.log(noteSync.noteStore)
   let showLoginPrompt = false
   onMount(async () => {
     showLoginPrompt = O.isNone($sessStore)

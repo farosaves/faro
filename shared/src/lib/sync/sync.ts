@@ -82,7 +82,7 @@ export class NoteSync {
 
     this._user_id = user_id as UUID | undefined // TODO: here
 
-    this.DEBUG = import.meta.env.DEBUG || false
+    this.DEBUG = import.meta.env.VITE_DEBUG || false
   }
 
   online = () => this._user_id !== undefined
@@ -208,7 +208,6 @@ export class NoteSync {
   }
 
   sub = () => {
-    console.log("debug", this.DEBUG)
     this.sb
       .channel("notes")
       .on(
