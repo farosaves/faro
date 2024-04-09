@@ -51,7 +51,7 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
   const storageType = options?.storage ?? "indexedDB"
   const syncTabs = options?.syncTabs ?? true
   const onError = options?.onError ?? (e => console.error(`Error when writing value from persisted store "${key}" to ${storageType}`, e))
-  const browser = (typeof (window) !== "undefined" && typeof (document) !== "undefined") || storageType == "indexedDB"
+  const browser = (typeof (window) !== "undefined" && typeof (document) !== "undefined") || (storageType == "indexedDB" && typeof (indexedDB) !== "undefined")
   const storage = browser ? getStorage(storageType) : null
 
   async function updateStorage(key: string, value: T) {
@@ -84,17 +84,17 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
 
         return () => window.removeEventListener("storage", handleStorage)
       } else if (storageType == "indexedDB" && syncTabs) {
-        type T = ArgType<typeof chrome.storage.onChanged.addListener>[0]
-        const handleStorage: T = (changes, namespace) => {
-          for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-            // console.log(
-            //   // `Storage key "${key}" in namespace "${namespace}" changed.`,
-            //   // `Old value was "${oldValue}", new value is "${newValue}".`,
-            // )
-          }
-        }
-        chrome.storage.onChanged.addListener(handleStorage)
-        return () => chrome.storage.onChanged.removeListener(handleStorage)
+        // type T = ArgType<typeof chrome.storage.onChanged.addListener>[0]
+        // const handleStorage: T = (changes, namespace) => {
+        //   for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
+        //     // console.log(
+        //     //   // `Storage key "${key}" in namespace "${namespace}" changed.`,
+        //     //   // `Old value was "${oldValue}", new value is "${newValue}".`,
+        //     // )
+        //   }
+        // }
+        // chrome.storage.onChanged.addListener(handleStorage)
+        // return () => chrome.storage.onChanged.removeListener(handleStorage)
       }
     })
 
