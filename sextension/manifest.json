@@ -7,7 +7,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "description": "Save & organise snippets from pages - use them like bookmarks",
+  "description": "Save & organize snippets - use like bookmarks",
   "action": {
     "default_icon": "icons/icon48.png"
   },
