@@ -1,11 +1,10 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
+import { DEBUG, elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
 import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
-import { DEBUG } from "$lib/utils"
 
 if (DEBUG) console.log("hello")
 

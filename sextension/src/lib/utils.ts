@@ -1,14 +1,13 @@
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logIfError, type Notes } from "shared"
+import { DEBUG, logIfError, type Notes } from "shared"
 import { deleteSnippetMsg } from "./chromey/messages"
 import type { UUID } from "crypto"
 
 /**  STRIPS TRAILING '/' */
 export const API_ADDRESS = import.meta.env.VITE_PI_IP.replace(/\/$/, "") as string
-export const DEBUG = import.meta.env.VITE_DEBUG || false
 
-// console.log("API_ADDRESS", API_ADDRESS)
+DEBUG && console.log("API_ADDRESS", API_ADDRESS)
 
 export type ATokens = { access_token: string, refresh_token: string } | undefined
 export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
@@ -39,3 +38,5 @@ export async function deleteSnippet(uuid: UUID, serialized: string) {
   const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
 }
+export { DEBUG }
+
