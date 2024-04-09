@@ -4,8 +4,6 @@
   import { option as O, map as M } from "fp-ts"
   import { Dashboard, NoteSync, sessStore } from "shared"
   import { onMount } from "svelte"
-  import { get } from "svelte/store"
-  import { ActionQueue } from "../../../../shared/dist/sync/queue.js"
   sessStore.set(O.fromNullable(session))
   const noteSync = new NoteSync(supabase, session?.user.id)
   // console.log(session?.user.id)

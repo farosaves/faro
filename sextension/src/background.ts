@@ -14,7 +14,7 @@ import { createContext, t } from "./lib/chromey/trpc"
 
 const T = trpc2()
 
-const note_sync = new NoteSync(supabase, undefined, "chrome")
+const note_sync = new NoteSync(supabase, undefined)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)

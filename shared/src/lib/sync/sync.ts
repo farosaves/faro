@@ -67,7 +67,7 @@ export class NoteSync {
 
   constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
     this.sb = sb
-    this.noteStore = persisted<ReturnType<typeof validateNs>>("notestore", allNotesR, { serializer: devalue, storage })
+    this.noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
     // this block shall ensure local data gets overwritten on db schema changes
     this.noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 
