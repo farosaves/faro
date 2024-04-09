@@ -11,11 +11,12 @@
   import TagView from "./components/TagView.svelte"
   import { get } from "svelte/store"
   import { domainFilter, fuzzySort, newestFirst, tagFilter } from "./filterSortStores"
-  import Overview from "./components/Overview.svelte"
-  import Tabs from "./components/Tabs.svelte"
-  import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, modalStore } from "$lib"
+  // import Overview from "./components/Overview.svelte"
+  // import Tabs from "./components/Tabs.svelte"
+  // import type { Notes } from "$lib/db/types"
+  import { modalOpenStore, modalStore, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
+  import { fade } from "svelte/transition"
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
@@ -46,7 +47,11 @@
   let Xview = false
   const priorities = ["5", "0", "-5"] as const
   let modal: HTMLDialogElement
-  modalOpenStore.subscribe((n) => n && modal.showModal())
+  onMount(() => {
+    modalOpenStore.subscribe((n) => n && modal.showModal())
+    // I think doing sub in onMount is enough..
+    // (n) => n && O.getOrElse(() => modalOpenStore.set(false))(O.tryCatch(modal.showModal)),
+  })
 </script>
 
 <svelte:head>
@@ -114,3 +119,11 @@
     <button>close</button>
   </form>
 </dialog>
+
+<div class="toast">
+  {#each $toastStore as [toastMsg, n] (n)}
+    <div out:fade class="alert alert-info">
+      <span>{toastMsg}</span>
+    </div>
+  {/each}
+</div>

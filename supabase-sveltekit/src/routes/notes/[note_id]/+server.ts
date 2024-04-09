@@ -32,7 +32,8 @@ export const GET = async ({ params }) => {
   `<script type="module">
     import {deserialize, gotoText} from "/deserializer.js"
     window.addEventListener("load", () => {
-      deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight}"])
+      console.log(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
+      deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
       gotoText("${data.snippet_uuid}")
     })
   </script>`))

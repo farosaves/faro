@@ -5,7 +5,7 @@
   import { option as O, array as A, readonlyArray as RA } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
-  import { modalOpenStore, modalStore, replacer } from "./stores"
+  import { modalOpenStore, modalStore, replacer, toastNotify } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -124,9 +124,13 @@
   </div>
   <button
     hidden
-    on:click={() =>
-      hovered && navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)}
-    use:shortcut={{ alt: true, code: "KeyC" }} />
+    on:click={() => {
+      if (hovered) {
+        navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
+        toastNotify("Copied to clipboard.")
+      }
+    }}
+    use:shortcut={{ control: true, code: "KeyC" }} />
 </div>
 
 <style>
