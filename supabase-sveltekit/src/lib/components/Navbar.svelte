@@ -1,6 +1,6 @@
 <script lang="ts">
   import { replacer, updateTheme } from "shared"
-  const themes = ["mytheme", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
+  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
   import { onMount } from "svelte"
   import { themeChange } from "theme-change"
   onMount(() => {
@@ -31,7 +31,7 @@
             data-set-theme={value}
             data-act-class="ACTIVECLASS"
             on:click={() => setTimeout(updateTheme, 100)}
-            >{value.replace(/\b\w/g, s => s.toUpperCase())}</button>
+            >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
         {/each}
       </div>
     </div>
