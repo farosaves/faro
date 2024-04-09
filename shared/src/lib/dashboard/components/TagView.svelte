@@ -27,13 +27,13 @@
       .toSorted(desc(([x, y]) => y)),
   )
 
-  $: console.log(!!$tagFilter, "tagFilter updated")
+  // $: console.log(!!$tagFilter, "tagFilter updated")
   const checkClick = () => {
     // assigns to trigger potential $:
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
     else $exclTagSets.sets[$exclTagSets.currId] = new Set($tags_counts.map(([x, y]) => x))
   }
-  $: console.log(Array.from($exclTagSets.sets[$exclTagSets.currId]))
+  // $: console.log(Array.from($exclTagSets.sets[$exclTagSets.currId]))
   const toggleTag = (tag: string) =>
     exclTagSets.update((s) => {
       s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
