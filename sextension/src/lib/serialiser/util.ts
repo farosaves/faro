@@ -1,6 +1,25 @@
 // export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
+// originally from shared
+const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
-import { desc, escapeRegExp } from "shared"
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
+
+function desc<T>(first: (t: T) => number): (t1: T, t2: T) => number {
+  return (t1, t2) => first(t2) - first(t1)
+}
+
+export const gotoText = (uuid: string) => {
+  const elems = elemsOfClass("_" + uuid)
+  elems.item(0)!.scrollIntoView({ block: "center" })
+  elems.forEach((elem) => {
+    const sc = elem.style.backgroundColor
+    elem.style.backgroundColor = "#fff200"
+    setTimeout(() => {
+      elem.style.backgroundColor = sc
+    }, 1000)
+  })
+}
+
 
 // export let normalize = (s: string) => s.replaceAll(/[\s+\p{P}\s+]/gu, " ");
 export const normalize = (s: string | null) => s || ""
@@ -30,6 +49,21 @@ export const prepare2deserialize = (textContent: string, s: string) =>
   extractPrePost(s).length == 2
     ? subIdxs(stripQuote(s), ...adjIdxs(textContent, extractPrePost(s), start(s), end(s)))
     : stripQuote(s)
+
+export const deserialize = (applierOptions: unknown) => ([uuid, serialized]: [string, string]) => {
+  console.log("deserializeing", uuid, serialized)
+  if (!serialized) return
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _rangy = rangy as any
+  const hl = _rangy.createHighlighter()
+  const app = _rangy.createClassApplier("_" + uuid, applierOptions)
+  hl.addClassApplier(app)
+  const prepared = prepare2deserialize(document.body.textContent || "", serialized)
+  console.log("prep", prepared)
+  try {
+    hl.deserialize(prepared)
+  } catch { return }
+}
 
 export const adjIdxs = (
   textContent: string,

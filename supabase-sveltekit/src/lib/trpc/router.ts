@@ -18,9 +18,6 @@ const cardInput = z.object({
 })
 
 export const router = t.router({
-  greeting: t.procedure.query(async () => {
-    return `Hello tRPC v10 @ ${new Date().toLocaleTimeString()}`
-  }),
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
     const sess = await locals.getSession()
     if (sess) {
@@ -37,5 +34,6 @@ export const router = t.router({
     .mutation(({ input: { note_id }, ctx: { locals } }) =>
       add_card({ note_id, supabase: locals.supabase, front: null, back: null }),
     ),
+
 })
 export type Router = typeof router

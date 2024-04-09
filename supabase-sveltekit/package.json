@@ -11,10 +11,8 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "prebuild": "test -f .env && (sed -i  '' '/^CF_PAGES_COMMIT_SHA=/d' .env && echo CF_PAGES_COMMIT_SHA=$(git rev-parse HEAD) >> .env) || :",
     "test": "vitest",
-    "sync": "cd ..; julia --project=oxygen oxygen/syncer.jl",
-    "diff": "diff --color -bur ../fcextension/src/lib/shared src/lib/shared"
+    "bundleDeserializer": "npx tsc --module ES6 -p ../sextension/src/lib/serialiser/util.ts --outDir static ; rm static/util.test.js; mv static/util.js static/deserializer.js"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.1.109",
@@ -22,7 +20,6 @@
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/eslint": "8.56.0",
-    "@types/jsdom": "^21.1.6",
     "@types/rangy": "^0.0.38",
     "@types/sbd": "^1.0.5",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -42,8 +39,7 @@
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
     "unplugin-icons": "^0.18.5",
-    "vite": "^5.0.3",
-    "vitest": "^1.1.3"
+    "vite": "^5.0.3"
   },
   "type": "module",
   "dependencies": {
@@ -54,11 +50,11 @@
     "@sveltejs/adapter-cloudflare": "^4.1.0",
     "@trpc/client": "^10.45.0",
     "@trpc/server": "^10.45.0",
+    "cheerio": "^1.0.0-rc.12",
     "date-fns": "^3.3.1",
     "fp-ts": "^2.16.2",
     "fsrs.js": "^1.2.0",
     "fuzzysort": "^2.0.4",
-    "jsdom": "^24.0.0",
     "rxjs": "^7.8.1",
     "sbd": "^1.0.19",
     "shared": "file:../shared",

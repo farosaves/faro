@@ -1,5 +1,5 @@
 // import 'chrome';
-import { prepare2deserialize, reserialize } from "$lib/serialiser/util"
+import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
 import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
@@ -47,33 +47,8 @@ function wrapSelectedText(uuid: string) {
   return hl.serialize(selection) + rangeText
 }
 
-const batchDeserialize = (uss: [string, string][]) =>
-  uss.forEach(([uuid, serialized]) => {
-    if (!serialized) return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const _rangy = rangy as any
-    console.log("deserializeing", uuid, serialized)
-    const hl = _rangy.createHighlighter()
-    const app = _rangy.createClassApplier("_" + uuid, applierOptions)
-    hl.addClassApplier(app)
-    const prepared = prepare2deserialize(document.body.textContent || "", serialized)
-    console.log("prep", prepared)
-    try {
-      hl.deserialize(prepared)
-    } catch { return }
-  })
+const batchDeserialize = (uss: [string, string][]) => uss.forEach(deserialize(applierOptions))
 
-const gotoText = (uuid: string) => {
-  const elems = elemsOfClass("_" + uuid)
-  elems.item(0)!.scrollIntoView({ block: "center" })
-  elems.forEach((elem) => {
-    const sc = elem.style.backgroundColor
-    elem.style.backgroundColor = "#fff200"
-    setTimeout(() => {
-      elem.style.backgroundColor = sc
-    }, 1000)
-  })
-}
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
 // type Req = { action: "getHighlightedText" | "goto" | "deserialize" | "delete" }
@@ -115,9 +90,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 ; (async () => { // here I can potentially skip loading if page has no highlights
   await T.loadDeps.query()
   console.log("loaded bg")
-  sleep(100)
-  await T.serializedHighlights.query().then(batchDeserialize)
-  const goto = new URLSearchParams(window.location.search).get("highlightUuid")
-  if (goto) gotoText(goto)
-  console.log("goto", goto)
+  // await sleep(500)
+  // await T.serializedHighlights.query().then(batchDeserialize)
+  // const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+  // if (goto) gotoText(goto)
+  // DEBUG && console.log("goto", goto)
 })()
+
+let loaded = false
+window.addEventListener("load", async () => {
+  if (!loaded) { // extra check in case it took more than 500ms to load..
+    loaded = true
+    DEBUG && console.log("loaded")
+    await T.serializedHighlights.query().then(batchDeserialize)
+    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+    if (goto) gotoText(goto)
+    DEBUG && console.log("goto", goto)
+  }
+})
+
+setTimeout(async () => {
+  if (!loaded) {
+    DEBUG && console.log("fallback loaded")
+    await T.serializedHighlights.query().then(batchDeserialize)
+    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+    if (goto) gotoText(goto)
+    DEBUG && console.log("goto", goto)
+    loaded = true
+  }
+}, 500) // wait half a second

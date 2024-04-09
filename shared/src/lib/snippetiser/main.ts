@@ -155,7 +155,7 @@ export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selec
     .map(s => s.trim())
     .map(preSpaceIfNotPunct)
     // .map((s) => s.replace(/\P{Pe}+$/u, (s) => s + "."))
-    .map(s => s.replace(/[^!\?\.;]+$/u, s => s + "."))
+    .map(s => s.replace(/[^!?.;]+$/u, s => s + "."))
     .join("")
     .trim()
 

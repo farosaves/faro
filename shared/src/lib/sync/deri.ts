@@ -3,7 +3,7 @@ import { record as R, array as A, nonEmptyArray as NA, string as S, option as O 
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, NoteSync, STUMapStoreR, SyncLike } from "./sync"
 import { pipe } from "fp-ts/lib/function"
-import { fillInTitleUrl, filterSort } from "$lib"
+import { fillInTitleUrl, filterSort, funLog } from "$lib"
 import type { UUID } from "crypto"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
@@ -44,6 +44,7 @@ export class NoteDeri {
     this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([n, s]) => {
       // console.log("note store", n)
       const vals = [...n.values()]
+      funLog("noteArr deri")(vals)
       return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id as UUID)), searchArt: O.none }))
     })
 

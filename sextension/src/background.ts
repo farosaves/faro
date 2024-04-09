@@ -126,6 +126,18 @@ async function activate(tab: chrome.tabs.Tab) {
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false })
 chrome.action.onClicked.addListener(activate)
 
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "save",
+    title: "Faros save",
+    contexts: ["all"],
+    documentUrlPatterns: ["<all_urls>"],
+  })
+})
+
+chrome.contextMenus.onClicked.addListener((info, tab) =>
+  info.menuItemId == "save" && tab && activate(tab))
+
 // chrome.commands.onCommand.addListener((command) => {
 //   const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
 //   if (command == "search" && !api_regexp.test(get(currSrc).url)) {

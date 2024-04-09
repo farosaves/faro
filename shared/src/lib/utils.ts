@@ -52,8 +52,8 @@ export const ifErr
       return r
     }
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
-export const funLog = (where = "") => (n: unknown) => console.log("logIfError log", n, where && ("at" + where))
-export const logIfError = (where = "") => ifErr(funLog(where))
+export const funLog = (where = "", from = "") => (n: unknown) => console.log(from, n, where && ("at" + where))
+export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const hostname = (s: string) => O.tryCatch(() => new URL(s).hostname)
