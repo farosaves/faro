@@ -38,6 +38,7 @@ test("input4", async () => {
   const r = await l("/input4.json")
   console.log(r.selectedText)
   expect(makeQCH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe(
+    // eslint-disable-next-line @stylistic/no-tabs
     "Hydrazine (combusted to N2+H2O)	19.5	19.3	5,416.7	5,361.1".replaceAll(/\s+/g, " "),
   )
 })
