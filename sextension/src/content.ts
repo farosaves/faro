@@ -96,6 +96,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // DEBUG && console.log("goto", goto)
 })()
 
+// see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
 window.addEventListener("load", async () => {
   if (!loaded) { // extra check in case it took more than 500ms to load..
