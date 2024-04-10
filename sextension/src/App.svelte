@@ -6,8 +6,8 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import { API_ADDRESS } from "$lib/utils"
-  import type { PendingNote } from "shared"
-  import { domain_title, shortcut } from "shared"
+  import { type PendingNote, modalOpenStore, modalStore, CmModal } from "shared"
+  import { domain_title, modalSub, shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
   import { createTRPCProxyClient } from "@trpc/client"
@@ -102,6 +102,8 @@
   </div>
 
   <NotePanel bind:optimistic syncLike={bgSync} />
+
+  <CmModal />
   <!-- <textarea
     placeholder="scratchy scratch scratch"
     class="max-w-xs w-full bottom-0 left-0 absolute textarea p-1"

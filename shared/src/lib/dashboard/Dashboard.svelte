@@ -13,8 +13,9 @@
   import { modalOpenStore, modalStore, modalSub, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
+  import CmModal from "./components/CmModal.svelte"
 
-export let noteSync: SyncLikeNStores
+  export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
   const allTags = noteDeri.allTags
 
@@ -28,7 +29,7 @@ export let noteSync: SyncLikeNStores
   const note_groupss = noteDeri.groupStore
 
   let closeAll = () => {
-    noteOpens = R.map(v => false)(noteOpens)
+    noteOpens = R.map((v) => false)(noteOpens)
   }
   closeAll()
 
@@ -101,17 +102,7 @@ export let noteSync: SyncLikeNStores
   </div>
 </div>
 
-<dialog id="modal$" class="modal" use:modalSub on:close={() => ($modalOpenStore = false)}>
-  <div class="modal-box">
-    <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
-    <p class="py-4">
-      {$modalStore}
-    </p>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+<CmModal />
 
 <div class="toast">
   {#each $toastStore as [toastMsg, n] (n)}
@@ -120,3 +111,21 @@ export let noteSync: SyncLikeNStores
     </div>
   {/each}
 </div>
+
+<style>
+  /* @container (min-width: 16.15rem) {
+    .foo {
+      width: 16.15rem;
+    }
+  }
+  @container (min-width: 32.15rem) {
+    .foo {
+      width: 32.15rem;
+    }
+  }
+  @container (min-width: 48.15rem) {
+    .foo {
+      width: 48.15rem;
+    }
+  } */
+</style>

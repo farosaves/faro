@@ -56,4 +56,5 @@ module.exports = {
       },
     },
   ],
+  ignorePatterns: ["supabase-sveltekit/static/*", "sextension/public.*"],
 }
