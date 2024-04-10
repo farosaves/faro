@@ -88,12 +88,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 ; (async () => { // here I can potentially defer loading if page has no highlights - but would delay creating one on click
   await T.loadDeps.query()
-  console.log("loaded bg")
-  // await sleep(500)
-  // await T.serializedHighlights.query().then(batchDeserialize)
-  // const goto = new URLSearchParams(window.location.search).get("highlightUuid")
-  // if (goto) gotoText(goto)
-  // DEBUG && console.log("goto", goto)
+  DEBUG && console.log("loaded bg")
 })()
 
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts

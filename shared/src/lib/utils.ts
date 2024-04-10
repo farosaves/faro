@@ -52,7 +52,7 @@ export const ifErr
       return r
     }
 
-export const DEBUG = !!import.meta.env.VITE_DEBUG || false
+export const DEBUG = import.meta.env.VITE_DEBUG == "true" || false
 
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
 export const funLog = (where = "", from = "") => (n: unknown) => DEBUG && console.log(from, n, where && ("at" + where))
