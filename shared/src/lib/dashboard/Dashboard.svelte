@@ -10,7 +10,7 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, modalStore, modalSub, toastStore } from "$lib"
+  import { modalOpenStore, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
@@ -29,7 +29,7 @@
   const note_groupss = noteDeri.groupStore
 
   let closeAll = () => {
-    noteOpens = R.map((v) => false)(noteOpens)
+    noteOpens = R.map(v => false)(noteOpens)
   }
   closeAll()
 
