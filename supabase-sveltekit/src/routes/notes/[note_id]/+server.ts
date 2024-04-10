@@ -22,11 +22,16 @@ export const GET = async ({ params }) => {
   $("head").append(
   `<script type="module">
     import {deserialize, gotoText} from "/deserializer.js"
-    window.addEventListener("load", () => {
-      console.log(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
-      deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
-      gotoText("${data.snippet_uuid}")
-    })
+    let loaded = false
+    const f = () => {
+      if (!loaded) {
+        loaded = true
+        deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
+        gotoText("${data.snippet_uuid}")  
+      }
+    }
+    window.addEventListener("load", f)
+    setTimeout(f, 500)
   </script>`)
   console.log($("head").html() == a)
 
