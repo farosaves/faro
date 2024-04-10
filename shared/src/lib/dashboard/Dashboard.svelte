@@ -1,15 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import Note from "./components/Note.svelte"
-  import { NoteSync, type SourceData, type SupabaseClient, type SyncLike } from "shared"
   import Search from "./components/Search.svelte"
-  import { type NoteEx, Tags } from "shared"
   import DomainFilter from "./components/DomainFilter.svelte"
-  import { identity, flow, pipe } from "fp-ts/lib/function"
-  import { option as O, record as R } from "fp-ts"
-  import { sessStore } from "shared"
+  import { flow } from "fp-ts/lib/function"
+  import { record as R } from "fp-ts"
   import TagView from "./components/TagView.svelte"
-  import { get } from "svelte/store"
   import { domainFilter, fuzzySort, newestFirst, tagFilter } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
@@ -17,9 +13,8 @@
   import { modalOpenStore, modalStore, modalSub, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
-  import type { Action } from "svelte/action"
 
-  export let noteSync: SyncLikeNStores
+export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
   const allTags = noteDeri.allTags
 
@@ -33,7 +28,7 @@
   const note_groupss = noteDeri.groupStore
 
   let closeAll = () => {
-    noteOpens = R.map((v) => false)(noteOpens)
+    noteOpens = R.map(v => false)(noteOpens)
   }
   closeAll()
 

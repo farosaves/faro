@@ -1,7 +1,7 @@
 <script lang="ts">
   export let data
   const { supabase } = data
-  import { option as O, map as M } from "fp-ts"
+  import { option as O } from "fp-ts"
   import { Dashboard, NoteSync, sessStore } from "shared"
   import { onMount } from "svelte"
   const noteSync = new NoteSync(supabase, undefined)

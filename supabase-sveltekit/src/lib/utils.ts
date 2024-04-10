@@ -1,7 +1,6 @@
-import type { SupabaseClient as _SupabaseClient } from "@supabase/supabase-js"
-import type { Database, Notes, SourceData } from "shared"
-import { fillInTitleUrl, hostname, partition_by_id } from "shared"
-import type { NoteSync, NoteEx } from "shared"
+import type { SourceData } from "shared"
+import { hostname } from "shared"
+import type { NoteEx } from "shared"
 import { option as O } from "fp-ts"
 
 // export type SupabaseClient = _SupabaseClient<Database>;

@@ -4,7 +4,6 @@
   import { page } from "$app/stores"
   import { NoteSync, funLog, sleep } from "shared"
   import { get } from "svelte/store"
-  import { record as R, map as M } from "fp-ts"
   import type { UUID } from "crypto"
   import { onMount } from "svelte"
 
@@ -24,7 +23,7 @@
     // div.innerHTML = await fetch(`/api/forward/?url=${url}&main=true`).then((x) => x.text())
 
     // div.innerHTML = html2.innerHTML
-    const stylesheetLinks = Array.from(div.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[]
+    const stylesheetLinks = Array.from(div.querySelectorAll("link[rel=\"stylesheet\"]")) as HTMLLinkElement[]
 
     //   fetch('http://www.example.com/external-styles.css')
     // .then(response => response.text())

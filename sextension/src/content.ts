@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
+import { DEBUG, elemsOfClass, makeQCH } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"

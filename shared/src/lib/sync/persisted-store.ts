@@ -1,7 +1,6 @@
 import { writable as internal, type Writable } from "svelte/store"
 import { option as O, either as E } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
-import type { ArgType } from "$lib/semaphore"
 import { get, set } from "idb-keyval"
 import { compressSync, decompressSync, strFromU8, strToU8 } from "fflate"
 

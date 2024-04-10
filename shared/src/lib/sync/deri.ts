@@ -1,9 +1,9 @@
-import type { NoteEx, SupabaseClient } from "$lib"
+import type { NoteEx } from "$lib"
 import { record as R, array as A, nonEmptyArray as NA, string as S, option as O } from "fp-ts"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
-import type { NoteStoreR, NoteSync, STUMapStoreR, SyncLike } from "./sync"
+import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe } from "fp-ts/lib/function"
-import { fillInTitleUrl, filterSort, funLog } from "$lib"
+import { fillInTitleUrl, filterSort } from "$lib"
 import type { UUID } from "crypto"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }

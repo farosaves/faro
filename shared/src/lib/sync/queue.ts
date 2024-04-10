@@ -1,14 +1,13 @@
 import { hostname, ifErr, logIfError, updateStore, type Src, applyPatches } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./xxdo"
-import { either as E, option as O, array as A, string as S, map as M } from "fp-ts"
+import { either as E, option as O, array as A, string as S } from "fp-ts"
 import { type Writable, get } from "svelte/store"
 import { persisted } from "./persisted-store"
 import * as devalue from "devalue"
 import type { SupabaseClient } from "$lib/db/typeExtras"
 import type { Notes } from "$lib/db/types"
 import { pipe } from "fp-ts/lib/function"
-import { match } from "ts-pattern"
 
 
 export type Action = E.Either<Src & { id: UUID }, PatchTup>

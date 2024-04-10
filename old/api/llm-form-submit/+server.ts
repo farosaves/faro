@@ -1,7 +1,6 @@
 // import { OPENAI_SECRET_KEY, REPLICATE_API_TOKEN } from '$env/static/private';
 import { REPLICATE_API_TOKEN } from "$env/static/private"
 import { json } from "@sveltejs/kit"
-import OpenAI from "openai"
 
 import Replicate from "replicate"
 
