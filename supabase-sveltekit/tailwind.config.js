@@ -15,7 +15,7 @@ export default {
   daisyui: {
     themes: [
       {
-        mytheme: {
+        default: {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           ...require("daisyui/src/theming/themes")["night"],
           "primary": "oklch(61.77% 0.163 307.59)",

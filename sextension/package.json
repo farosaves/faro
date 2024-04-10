@@ -9,7 +9,7 @@
     "b": "bnr && sleep 0.5 && open \"http://reload.extensions\"",
     "preview": "vite preview",
     "watch": "npm-watch",
-    "bz": "VITE_PI_IP=https://farosapp.com DEBUG=false vite build && rm ../supabase-sveltekit/static/ext.zip && zip -r ../supabase-sveltekit/static/ext.zip dist",
+    "bz": "VITE_PI_IP=https://farosapp.com VITE_DEBUG=false vite build && rm ../supabase-sveltekit/static/ext.zip && zip -r ../supabase-sveltekit/static/ext.zip dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "watch": {

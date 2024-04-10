@@ -1,11 +1,10 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
+import { DEBUG, elemsOfClass, funLog, logIfError, makeQCH, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
 import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
-import { DEBUG } from "$lib/utils"
 
 if (DEBUG) console.log("hello")
 
@@ -87,16 +86,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "delete") deleteSelection(request.uuid)
 })
 
-; (async () => { // here I can potentially skip loading if page has no highlights
+; (async () => { // here I can potentially defer loading if page has no highlights - but would delay creating one on click
   await T.loadDeps.query()
-  console.log("loaded bg")
-  // await sleep(500)
-  // await T.serializedHighlights.query().then(batchDeserialize)
-  // const goto = new URLSearchParams(window.location.search).get("highlightUuid")
-  // if (goto) gotoText(goto)
-  // DEBUG && console.log("goto", goto)
+  DEBUG && console.log("loaded bg")
 })()
 
+// see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
 window.addEventListener("load", async () => {
   if (!loaded) { // extra check in case it took more than 500ms to load..

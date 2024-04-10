@@ -51,8 +51,11 @@ export const ifErr
       if (!!error == is) f(error)
       return r
     }
+
+export const DEBUG = import.meta.env.VITE_DEBUG == "true" || false
+
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
-export const funLog = (where = "", from = "") => (n: unknown) => console.log(from, n, where && ("at" + where))
+export const funLog = (where = "", from = "") => (n: unknown) => DEBUG && console.log(from, n, where && ("at" + where))
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -99,7 +102,6 @@ export async function getNotes(
   user_id: string,
   prevnotes = [],
 ): Promise<Notes[]> {
-  console.log("getting notes")
   let query = supabase.from("notes").select("*").eq("user_id", user_id)
   query = O.match(
     () => query,
@@ -107,7 +109,6 @@ export async function getNotes(
   )(source_id)
 
   const { data } = await query
-  console.log("got notes")
 
   if (data === null) return prevnotes
   return data

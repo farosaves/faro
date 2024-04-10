@@ -43,7 +43,7 @@ const fuzzySortDef = (newestFirst: boolean) => ({ f: (n: NoteEx): NoteEx & { pri
   ...n,
   priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
 }), overrideGroups: false })
-console.log([fzRes, fzSelectedKeys, replacer, newestFirst])
+
 export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
     return ({ f: (n: NoteEx) => {

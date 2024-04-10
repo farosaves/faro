@@ -42,9 +42,7 @@ export class NoteDeri {
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
     this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([n, s]) => {
-      // console.log("note store", n)
       const vals = [...n.values()]
-      funLog("noteArr deri")(vals)
       return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id as UUID)), searchArt: O.none }))
     })
 

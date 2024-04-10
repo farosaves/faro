@@ -1,8 +1,8 @@
-import { API_ADDRESS, DEBUG, getSession } from "$lib/utils"
+import { API_ADDRESS, getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { NoteDeri, NoteSync, domain_title, escapeRegExp, funLog, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
+import { DEBUG, NoteDeri, NoteSync, domain_title, escapeRegExp, funLog, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -14,7 +14,7 @@ import { createContext, t } from "./lib/chromey/trpc"
 
 const T = trpc2()
 
-const note_sync = new NoteSync(supabase, undefined, "chrome")
+const note_sync = new NoteSync(supabase, undefined)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)

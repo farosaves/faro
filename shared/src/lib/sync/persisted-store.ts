@@ -2,6 +2,8 @@ import { writable as internal, type Writable } from "svelte/store"
 import { option as O, either as E } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import type { ArgType } from "$lib/semaphore"
+import { get, set } from "idb-keyval"
+import { compressSync, decompressSync, strFromU8, strToU8 } from "fflate"
 
 declare type Updater<T> = (value: T) => T
 declare type StoreDict<T> = { [key: string]: Writable<T> }
@@ -10,13 +12,13 @@ declare type StoreDict<T> = { [key: string]: Writable<T> }
 interface Stores {
   local: StoreDict<any>
   session: StoreDict<any>
-  chrome: StoreDict<any>
+  indexedDB: StoreDict<any>
 }
 
 const stores: Stores = {
   local: {},
   session: {},
-  chrome: {},
+  indexedDB: {},
 }
 
 export interface Serializer<T> {
@@ -24,7 +26,7 @@ export interface Serializer<T> {
   stringify(object: T): string
 }
 
-export type StorageType = "local" | "session" | "chrome"
+export type StorageType = "local" | "session" | "indexedDB"
 
 export interface Options<T> {
   serializer?: Serializer<T>
@@ -32,11 +34,13 @@ export interface Options<T> {
   syncTabs?: boolean
   onError?: (e: unknown) => void
 }
-
 function getStorage(type: StorageType) {
-  if (type == "chrome") {
-    const setItem = (key: string, val: string) => chrome.storage.local.set(Object.fromEntries([[key, val]]))
-    const getItem = (key: string) => chrome.storage.local.get(key).then(x => x[key] as string | undefined)
+  if (type == "indexedDB") {
+    // const setItem = (key: string, val: string) => chrome.storage.local.set(Object.fromEntries([[key, val]]))
+    // const getItem = (key: string) => chrome.storage.local.get(key).then(x => x[key] as string | undefined)
+    const setItem = (key: string, val: string) => set(key, compressSync(strToU8(val)))
+    const getItem = (key: string) => get(key).then(decompressSync).then(strFromU8)
+
     return { setItem, getItem }
   }
   return type === "local" ? localStorage : sessionStorage
@@ -44,10 +48,10 @@ function getStorage(type: StorageType) {
 
 export function persisted<T>(key: string, initialValue: T, options?: Options<T>): Writable<T> {
   const serializer = options?.serializer ?? JSON
-  const storageType = options?.storage ?? "local"
+  const storageType = options?.storage ?? "indexedDB"
   const syncTabs = options?.syncTabs ?? true
   const onError = options?.onError ?? (e => console.error(`Error when writing value from persisted store "${key}" to ${storageType}`, e))
-  const browser = (typeof (window) !== "undefined" && typeof (document) !== "undefined") || storageType == "chrome"
+  const browser = (typeof (window) !== "undefined" && typeof (document) !== "undefined") || (storageType == "indexedDB" && typeof (indexedDB) !== "undefined")
   const storage = browser ? getStorage(storageType) : null
 
   async function updateStorage(key: string, value: T) {
@@ -79,18 +83,18 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
         window.addEventListener("storage", handleStorage)
 
         return () => window.removeEventListener("storage", handleStorage)
-      } else if (storageType == "chrome" && syncTabs) {
-        type T = ArgType<typeof chrome.storage.onChanged.addListener>[0]
-        const handleStorage: T = (changes, namespace) => {
-          for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-            // console.log(
-            //   // `Storage key "${key}" in namespace "${namespace}" changed.`,
-            //   // `Old value was "${oldValue}", new value is "${newValue}".`,
-            // )
-          }
-        }
-        chrome.storage.onChanged.addListener(handleStorage)
-        return () => chrome.storage.onChanged.removeListener(handleStorage)
+      } else if (storageType == "indexedDB" && syncTabs) {
+        // type T = ArgType<typeof chrome.storage.onChanged.addListener>[0]
+        // const handleStorage: T = (changes, namespace) => {
+        //   for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
+        //     // console.log(
+        //     //   // `Storage key "${key}" in namespace "${namespace}" changed.`,
+        //     //   // `Old value was "${oldValue}", new value is "${newValue}".`,
+        //     // )
+        //   }
+        // }
+        // chrome.storage.onChanged.addListener(handleStorage)
+        // return () => chrome.storage.onChanged.removeListener(handleStorage)
       }
     })
 
