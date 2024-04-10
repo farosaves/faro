@@ -68,6 +68,7 @@
   "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
+    "fflate": "^0.8.2",
     "fp-ts": "^2.16.2",
     "fp-ts-std": "^0.18.0",
     "fuzzysort": "^2.0.4",
