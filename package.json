@@ -51,6 +51,7 @@
     }
   },
   "devDependencies": {
+    "@iconify-json/jam": "^1.1.8",
     "@playwright/test": "^1.42.1",
     "@stylistic/eslint-plugin": "^1.7.0",
     "@total-typescript/ts-reset": "^0.5.1",

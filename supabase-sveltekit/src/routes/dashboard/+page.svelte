@@ -8,13 +8,13 @@
   // console.log(session?.user.id)
   // console.log(noteSync.noteStore)
   let showLoginPrompt = false
+
   onMount(async () => {
     const {
       data: { session },
     } = await supabase.auth.getSession()
     sessStore.set(O.fromNullable(session))
     if (session) noteSync.setUser_id(session.user.id)
-
     showLoginPrompt = O.isNone($sessStore)
     if (O.isSome($sessStore)) {
       noteSync.setUser_id($sessStore.value.user.id) // in case updated

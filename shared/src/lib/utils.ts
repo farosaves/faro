@@ -33,6 +33,11 @@ export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
 
+export const mapElse = <T>(v: O.Option<T>) =>
+  <U>(f: (a: T) => U, def: U) =>
+    pipe(v, O.map(f), O.getOrElse(() => def))
+
+
 export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
 export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
 
