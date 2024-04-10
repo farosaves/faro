@@ -2,7 +2,7 @@
   import type { MouseEventHandler } from "svelte/elements"
 
   import type { SyncLike } from "./sync/sync"
-  import { option as O, array as A, readonlyArray as RA } from "fp-ts"
+  import { option as O, array as A } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, modalStore, replacer, toastNotify } from "./stores"
@@ -35,8 +35,8 @@
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,
-          A.findIndex((n) => n == "quote"),
-          O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
+          A.findIndex(n => n == "quote"),
+          O.chain(i => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map((r) => {
             const target = escapeHTML(r.target)
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
@@ -60,10 +60,10 @@
     return true
   }
   onMount(() => {
-    "highlightOnMount" in note_data &&
-      note_data["highlightOnMount"] &&
-      highlightMe() &&
-      (note_data["highlightOnMount"] = false)
+    "highlightOnMount" in note_data
+    && note_data["highlightOnMount"]
+    && highlightMe()
+    && (note_data["highlightOnMount"] = false)
   })
 
   const loadModalText = () =>

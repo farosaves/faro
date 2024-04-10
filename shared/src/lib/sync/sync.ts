@@ -2,9 +2,9 @@
 
 // @ts-ignore
 import { persisted, type StorageType } from "./persisted-store"
-import type { InsertNotes, Notes } from "../db/types"
+import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
-import { derived, get, writable, type Readable, type Updater, type Writable } from "svelte/store"
+import { derived, get, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
   neq,
@@ -18,14 +18,14 @@ import {
   chainN,
   uuidv5,
 } from "$lib/utils"
-import { option as O, record as R, string as S, array as A, either as E, map as M } from "fp-ts"
+import { option as O, string as S, map as M } from "fp-ts"
 
-import { flip, flow, pipe } from "fp-ts/lib/function"
+import { flow, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
-import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
+import { xxdoStacks, type PatchTup } from "./xxdo"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 // import * as lzString from "lz-string"

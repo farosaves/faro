@@ -1,7 +1,7 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import { shortcut, type NoteEx, type NoteSync } from "shared"
-  import { array as A, option as O, readonlyArray as RA } from "fp-ts"
+  import { shortcut } from "shared"
+  import { array as A } from "fp-ts"
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
 

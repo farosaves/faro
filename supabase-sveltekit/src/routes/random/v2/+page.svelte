@@ -1,16 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import * as rangy from "rangy"
-  import { type Patch, produceWithPatches, type UnFreeze } from "structurajs"
-  import { writable, type Writable } from "svelte/store"
+  import { writable } from "svelte/store"
   import { applyPatches, updateStore } from "shared"
   // import { SHA256 } from "crypto-js"
 
-  import { record as R, array as A } from "fp-ts"
-  import { groupBy } from "fp-ts/lib/ReadonlyNonEmptyArray"
-  import { identity, pipe } from "fp-ts/lib/function"
 
-  // const hashId =
+// const hashId =
   //   <T,>(f: (x: T) => { toString: () => string }) =>
   //   (x: T) =>
   //     [SHA256(f(x).toString()).toString(), x] as [string, T]

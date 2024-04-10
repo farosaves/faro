@@ -1,8 +1,8 @@
-import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
+import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
 import { chainN, escapeHTML, replacer, type NoteEx } from "shared"
-import { derived, get, writable, type Writable } from "svelte/store"
+import { derived, writable } from "svelte/store"
 import { hostnameStr } from "./utils"
 
 const _exclTagSets = {

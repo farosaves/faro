@@ -2,7 +2,7 @@
   import type { NoteDeri, SyncLike } from "shared"
   import Note from "$lib/components/Note.svelte"
   import { option as O, array as A } from "fp-ts"
-  import { createMock, funLog, type PendingNote } from "shared"
+  import { createMock, type PendingNote } from "shared"
   import { pipe } from "fp-ts/lib/function"
   import type { NoteMut } from "$lib/note_mut"
 
@@ -15,22 +15,22 @@
 
   $: optimistic = pipe(
     optimistic,
-    O.chain((mn) =>
+    O.chain(mn =>
       pipe(
         Object.values($note_panel || []),
-        A.findFirst((r) => r.snippet_uuid == mn.snippet_uuid),
+        A.findFirst(r => r.snippet_uuid == mn.snippet_uuid),
         O.match(
           () => O.some(mn),
-          (a) => O.none,
+          a => O.none,
         ),
       ),
     ),
   )
 
   // if (!(source_id in $note_store)) $note_store = []
-  let noteOpens = Object.values($note_panel).map((_) => false)
+  let noteOpens = Object.values($note_panel).map(_ => false)
   let closeAll = () => {
-    noteOpens = noteOpens.map((_) => false)
+    noteOpens = noteOpens.map(_ => false)
   }
   // $: console.log($note_store, source_id)
 </script>

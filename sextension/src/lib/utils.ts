@@ -1,6 +1,6 @@
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { DEBUG, logIfError, type Notes } from "shared"
+import { DEBUG, logIfError } from "shared"
 import { deleteSnippetMsg } from "./chromey/messages"
 import type { UUID } from "crypto"
 

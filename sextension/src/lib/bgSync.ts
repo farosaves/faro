@@ -1,4 +1,4 @@
-import { NoteDeri, NoteSync, type SyncLike, type SyncLikeNStores } from "shared"
+import { NoteDeri, type SyncLike, type SyncLikeNStores } from "shared"
 import { RemoteStore } from "./chromey/messages"
 import { NoteMut } from "./note_mut"
 import type { AppRouter } from "../background"
