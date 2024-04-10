@@ -1,3 +1,7 @@
+<script>
+  import IconRefresh from "~icons/tabler/refresh"
+</script>
+
 <svelte:head>
   <title>Faros - Save Snippets While Reading</title>
 </svelte:head>
@@ -17,13 +21,13 @@
       </p>
       <!-- Needless to say you shouldn't install extensions like this from people you don't know personally lol<br /> -->
       <a class="btn btn-primary" href="login">Log in or sign up</a>
-      <h2 class="text-2xl font-bold">How to use it</h2>
+      <h2 class="text-2xl font-bold">How do I use it?</h2>
       <ul class="list-disc text-nowrap w-min text-left">
         <li class="list-item">Select text</li>
         <li class="list-item">Press Alt (/ Option on Mac) + D</li>
         <li class="list-item">
-          If something doesnt work either: refresh the page or<br /> refresh the sidebar with Ctrl (/Command) +
-          B two times
+          If something doesnt work try refreshing the extension <br />
+          With the <IconRefresh /> icon in the top right of the sidebar.
         </li>
         <li class="list-item">You can see all cards in farosapp.com/dashboard</li>
       </ul>

@@ -1,8 +1,14 @@
 import type { Session } from "@supabase/supabase-js"
 import { derived, writable } from "svelte/store"
 import { option as O, array as A } from "fp-ts"
+import type { Action } from "svelte/action"
 
 export const modalOpenStore = writable(false)
+export const modalSub: Action<HTMLDialogElement> = (modal) => {
+  const unsub = modalOpenStore.subscribe(n => n && modal.showModal())
+  return { destroy: unsub }
+}
+
 
 const _sess: O.Option<Session> = O.none
 

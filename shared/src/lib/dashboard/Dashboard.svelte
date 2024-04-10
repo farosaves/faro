@@ -14,9 +14,10 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, modalStore, toastStore } from "$lib"
+  import { modalOpenStore, modalStore, modalSub, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
+  import type { Action } from "svelte/action"
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
@@ -46,11 +47,8 @@
 
   let Xview = false
   const priorities = ["5", "0", "-5"] as const
-  let modal: HTMLDialogElement
   onMount(() => {
-    modalOpenStore.subscribe((n) => n && modal.showModal())
-    // I think doing sub in onMount is enough..
-    // (n) => n && O.getOrElse(() => modalOpenStore.set(false))(O.tryCatch(modal.showModal)),
+    modalOpenStore.set(false)
   })
 </script>
 
@@ -108,7 +106,7 @@
   </div>
 </div>
 
-<dialog id="modal$" class="modal" bind:this={modal} on:close={() => ($modalOpenStore = false)}>
+<dialog id="modal$" class="modal" use:modalSub on:close={() => ($modalOpenStore = false)}>
   <div class="modal-box">
     <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
     <p class="py-4">

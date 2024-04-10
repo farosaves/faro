@@ -1,10 +1,10 @@
 import type { NoteEx, SourceData } from "$lib/db/typeExtras"
 import { replacer } from "$lib/stores"
 import { chainN, escapeHTML, hostname } from "$lib/utils"
-import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
+import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
-import { derived, get, writable, type Writable } from "svelte/store"
+import { derived, writable } from "svelte/store"
 const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
 
 const _exclTagSets = {
