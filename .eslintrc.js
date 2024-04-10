@@ -11,10 +11,9 @@ const customized = stylistic.configs.customize({
 /** @type { import("eslint").Linter.Config } */
 // eslint-disable-next-line no-undef
 module.exports = {
-
   extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:svelte/recommended"],
 
-  plugins: ["@stylistic", "@typescript-eslint"],
+  plugins: ["@stylistic", "@typescript-eslint", "unused-imports"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     sourceType: "module",
@@ -27,7 +26,6 @@ module.exports = {
     node: true,
   },
 
-
   rules: {
     ...customized.rules,
     "@typescript-eslint/no-var-requires": "off", // or "warn" to turn it into a warning
@@ -37,6 +35,17 @@ module.exports = {
     "@stylistic/quotes": [1, "double"],
     "@stylistic/no-multiple-empty-lines": 1,
     "@stylistic/no-trailing-spaces": 1,
+    "no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        vars: "all",
+        varsIgnorePattern: "^_",
+        args: "after-used",
+        argsIgnorePattern: "^_",
+      },
+    ],
   },
   overrides: [
     {
@@ -47,6 +56,4 @@ module.exports = {
       },
     },
   ],
-
 }
-

@@ -110,16 +110,18 @@
     <div class="join w-full">
       <!-- <button class="btn btn-xs join-item grow" on:click={() => {}}>
         Pin / Unpin</button> -->
-      <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
-        <button
-          class="btn btn-xs text-error"
-          on:click={() => {
-            syncLike.deleteit(note_data.id)
-            // prettier-ignore
-            pipe(deleteCbOpt, O.map(f => f()))
-            closeAll()
-          }}>DELETE</button>
-      </StarArchive>
+      {#if hovered}
+        <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
+          <button
+            class="btn btn-xs text-error"
+            on:click={() => {
+              syncLike.deleteit(note_data.id)
+              // prettier-ignore
+              pipe(deleteCbOpt, O.map(f => f()))
+              closeAll()
+            }}>DELETE</button>
+        </StarArchive>
+      {/if}
     </div>
   </div>
   <button
