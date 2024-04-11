@@ -20,6 +20,7 @@
 
 {#if pipe( $groups, R.filter((a) => a.length > 0), R.size, ) > 1}
   <div class="flex flex-col content-center">
+    <!-- possibly these should be swaps like in stararchive -->
     <div class="join w-full">
       <button
         class="join-item btn grow btn-sm"

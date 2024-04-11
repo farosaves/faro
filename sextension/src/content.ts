@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH } from "shared"
+import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH, Semaphore } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
@@ -111,16 +111,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "delete") deleteSelection(request.uuid)
 })
 
-; (async () => { // here I can potentially defer loading if page has no highlights - but would delay creating one on click
+const sem = new Semaphore()
+
+sem.use(async () => { // here I can potentially defer loading if page has no highlights - but would delay creating one on click
   await T.loadDeps.query()
   DEBUG && console.log("loaded bg")
-})()
+})
 
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
-const onLoad = async () => {
+const onLoad = async () => sem.use(async () => {
   if (!loaded) {
-    DEBUG && console.log("loaded")
     await T.serializedHighlights.query().then(batchDeserialize)
     const goto = new URLSearchParams(window.location.search).get("highlightUuid")
     if (goto) gotoText(goto)
@@ -135,7 +136,7 @@ const onLoad = async () => {
     batchDeserialize([[snippet_uuid, serialized_highlight]])
     gotoText(snippet_uuid)
   }
-}
+})
 window.addEventListener("load", onLoad)
 
 setTimeout(onLoad, 500) // wait half a second
