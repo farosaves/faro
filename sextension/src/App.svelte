@@ -1,11 +1,12 @@
 <script lang="ts">
   import IconRefresh from "~icons/tabler/refresh"
+  import IconCog from "~icons/jam/cog"
   import IconLayoutDashboard from "~icons/tabler/layout-dashboard"
 
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { type PendingNote, CmModal, API_ADDRESS } from "shared"
+  import { type PendingNote, CmModal, API_ADDRESS, updateTheme } from "shared"
   import { domain_title, shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -31,10 +32,7 @@
   const session = RemoteStore("session", O.none as O.Option<Session>)
 
   let optimistic: O.Option<PendingNote> = O.none
-  // let logged_in = true
-  // setTimeout(() => {
-  //   logged_in = O.isSome(get(session))
-  // }, 1000)
+  import { themeChange } from "theme-change"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -42,7 +40,8 @@
       optimistic = O.some(x)
       setTimeout(() => (optimistic = O.none), 1000)
     })
-    TB.refresh.query().then(console.log)
+    TB.refresh.query()
+    themeChange(false)
   })
 
   const handle_keydown = (e: KeyboardEvent) => {
@@ -52,6 +51,7 @@
     }
   }
   const iconSize = 15
+  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
@@ -81,7 +81,7 @@
   <div class="flex">
     <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
 
-    <div class="grid h-min">
+    <div class="grid h-min space-y-2">
       <a
         href={O.isNone($session) ? dashboardURL : `${API_ADDRESS}/dashboard`}
         target="_blank"
@@ -97,6 +97,19 @@
         on:contextmenu|preventDefault={() => TB.disconnect.query()}>
         <IconRefresh font-size={iconSize} />
       </button>
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
+        <div class="dropdown-content join join-vertical">
+          {#each themes as value}
+            <button
+              class="btn join-item"
+              data-set-theme={value}
+              data-act-class="ACTIVECLASS"
+              on:click={() => setTimeout(updateTheme, 100)}
+              >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+          {/each}
+        </div>
+      </div>
     </div>
   </div>
 
