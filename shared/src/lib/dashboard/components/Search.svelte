@@ -34,7 +34,7 @@
   <div class="join w-full">
     {#each entries as [ariaLabel, value] (value)}
       <input
-        class="join-item btn grow"
+        class="join-item btn grow btn-sm"
         type="checkbox"
         name="options"
         bind:group={selectedKeys}

@@ -1,5 +1,5 @@
 <script>
-  import { replacer } from "shared"
+  import { altKey, replacer } from "shared"
   // import * as CryptoJS from "crypto-js"
   // const key = CryptoJS.lib.WordArray.random(16)
   // const enc = CryptoJS.AES.encrypt("hey", key)
@@ -37,7 +37,7 @@
     <div class="collapse-content mx-4">
       <ul class="list-disc text-nowrap w-min text-left">
         <li class="list-item">Select text</li>
-        <li class="list-item">Press Alt (Option on Mac) + D</li>
+        <li class="list-item">Press {altKey} + D</li>
         <li class="list-item">
           If something doesnt work try refreshing the extension <br />
           With the 🔄 icon in the top right of the sidebar.

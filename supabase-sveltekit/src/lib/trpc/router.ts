@@ -3,8 +3,14 @@ import type { Context } from "$lib/trpc/context"
 import { initTRPC } from "@trpc/server"
 import z from "zod"
 import { add_card } from "./api/cards"
+import { createClient } from "@supabase/supabase-js"
+import type { Database } from "shared"
+import { PUBLIC_SUPABASE_URL } from "$env/static/public"
+import { SERVICE_ROLE_KEY } from "$env/static/private"
 
 export const t = initTRPC.context<Context>().create()
+
+const serviceSb = createClient<Database>(PUBLIC_SUPABASE_URL, SERVICE_ROLE_KEY)
 
 // unfortunately to have type inference in the extension you need to do it manually
 const tokens = z.object({
@@ -26,6 +32,7 @@ export const router = t.router({
     }
     return
   }),
+  singleNote: t.procedure.input(z.string()).query(async ({ input }) => await serviceSb.from("notes").select("*, sources (url)").eq("id", input).single()),
   create_card: t.procedure
     .input(cardInput)
     .mutation(({ input, ctx: { locals } }) => add_card({ ...input, supabase: locals.supabase })),

@@ -1,17 +1,42 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, makeQCH } from "shared"
+import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import type { AppRouter } from "./background"
 import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
+// import { trpc2 } from "$lib/trpc-client"
 
 if (DEBUG) console.log("hello")
+
+// const Tserver = createTRPCProxyClient({ links: [httpBatchLink({ url: API_ADDRESS + "/trpc" })] }) // trpc({ url: { origin: API_ADDRESS } })
+// const Tserver = trpc2()
 
 const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port }), loggerLink()],
 })
+
+const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
+const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
+const note_idKey = "noteUuid"
+;(async () => {
+  DEBUG && console.log(window.location.href)
+  if (noteRegexp.test(window.location.href || "")) {
+    DEBUG && console.log("tested")
+    const note_id = (/(?<=\/notes\/).+/.exec(window.location.href) || [])[0]!
+    DEBUG && console.log(note_id)
+    const { data } = await T.singleNote.query(note_id)
+    const newUrlStr = data?.sources?.url
+    DEBUG && console.log(newUrlStr)
+    if (newUrlStr) {
+      const newUrl = new URL(newUrlStr)
+      newUrl.searchParams.set(note_idKey, note_id)
+      window.location.replace(newUrl)
+    }
+  }
+})()
+
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
@@ -93,24 +118,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
-window.addEventListener("load", async () => {
-  if (!loaded) { // extra check in case it took more than 500ms to load..
-    loaded = true
+const onLoad = async () => {
+  if (!loaded) {
     DEBUG && console.log("loaded")
     await T.serializedHighlights.query().then(batchDeserialize)
     const goto = new URLSearchParams(window.location.search).get("highlightUuid")
     if (goto) gotoText(goto)
     DEBUG && console.log("goto", goto)
-  }
-})
-
-setTimeout(async () => {
-  if (!loaded) {
-    DEBUG && console.log("fallback loaded")
-    await T.serializedHighlights.query().then(batchDeserialize)
-    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
-    if (goto) gotoText(goto)
-    DEBUG && console.log("goto", goto)
     loaded = true
+    const singleNote_id = new URLSearchParams(window.location.search).get(note_idKey)
+    if (!singleNote_id) return
+    const { data } = await T.singleNote.query(singleNote_id)
+    if (!data) return
+    const { serialized_highlight, snippet_uuid } = data
+    if (!serialized_highlight || !snippet_uuid) return
+    batchDeserialize([[snippet_uuid, serialized_highlight]])
+    gotoText(snippet_uuid)
   }
-}, 500) // wait half a second
+}
+window.addEventListener("load", onLoad)
+
+setTimeout(onLoad, 500) // wait half a second
