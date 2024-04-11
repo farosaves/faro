@@ -6,7 +6,7 @@
   import { flow } from "fp-ts/lib/function"
   import { record as R } from "fp-ts"
   import TagView from "./components/TagView.svelte"
-  import { domainFilter, fuzzySort, newestFirst, tagFilter } from "./filterSortStores"
+  import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
@@ -14,6 +14,7 @@
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
+  import PriorityFilter from "./components/PriorityFilter.svelte"
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
@@ -23,13 +24,13 @@
   let noteOpens: Record<string, boolean> = {}
   // export let note_sync: SyncLike
   $: noteDeri.transformStore.set({
-    f: flow($fuzzySort.f, $tagFilter, $domainFilter),
+    f: flow($fuzzySort.f, $tagFilter, $domainFilter, $priorityFilter),
     overrideGroups: $fuzzySort.overrideGroups,
   })
   const note_groupss = noteDeri.groupStore
 
   let closeAll = () => {
-    noteOpens = R.map(v => false)(noteOpens)
+    noteOpens = R.map((v) => false)(noteOpens)
   }
   closeAll()
 
@@ -85,7 +86,7 @@
   </div>
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content">
+    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4">
       <li>
         <button class="btn btn-sm" on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
@@ -95,6 +96,7 @@
       </li>
       <li></li>
       <li><DomainFilter {noteDeri} /></li>
+      <li><PriorityFilter groups={note_groupss} /></li>
       <li hidden>
         <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
       </li>

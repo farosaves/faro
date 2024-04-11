@@ -4,6 +4,7 @@
   import IconArchive from "~icons/tabler/archive"
   import IconArchiveFill from "~icons/tabler/archive-filled"
   import { shortcut } from "./shortcut"
+  import { altKey } from "./utils"
   export let hovered: boolean
   const defaultP = 0
   export let p: number
@@ -16,7 +17,7 @@
     <input
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-right"
-      data-tip="Alt+S"
+      data-tip="{altKey}+S"
       checked={false}
       on:click|preventDefault={onClick(5)}
       use:shortcut={{ alt: true, code: "KeyS" }} />
@@ -33,7 +34,7 @@
     <input
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-left"
-      data-tip="Alt+X"
+      data-tip="{altKey}+X"
       checked={false}
       on:click|preventDefault={onClick(-5)}
       use:shortcut={{ alt: true, code: "KeyX" }} />

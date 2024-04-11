@@ -1,14 +1,12 @@
-import { PUBLIC_SUPABASE_URL } from "$env/static/public"
-import { SERVICE_ROLE_KEY } from "$env/static/private"
-import type { Database } from "shared"
-import { createClient } from "@supabase/supabase-js"
+import { trpc } from "$lib/trpc/client"
 import * as cheerio from "cheerio/lib/slim"
+import { API_ADDRESS } from "shared"
 
-const sb = createClient<Database>(PUBLIC_SUPABASE_URL, SERVICE_ROLE_KEY)
 
+const T = trpc({ url: { origin: API_ADDRESS } })
 export const GET = async ({ params }) => {
   const { note_id } = params
-  const { data, error } = await sb.from("notes").select("*, sources (url)").eq("id", note_id).single()
+  const { data, error } = await T.singleNote.query(note_id)
   const pageUrl = data?.sources?.url
   if (!pageUrl) return new Response(JSON.stringify(error))
   // console.log("sess", await sb.auth.getSession())

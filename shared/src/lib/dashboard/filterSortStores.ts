@@ -28,6 +28,15 @@ export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => (
     : 0,
 }))
 
+const priorities = ["star", "none", "archive"] as const
+const tr = { "5": "star", "0": "none", "-5": "archive" } as const
+export const selectedPriorities = writable(new Set(priorities))
+export const priorityFilter = derived(selectedPriorities, p => (n: _A) => {
+  if (!p.has(tr[(n.prioritised).toString() as "-5" | "0" | "5"])) n.priority = 0
+  return n
+})
+
+
 export const uncheckedDomains = writable(new Set<string>())
 export const domainFilter = derived(uncheckedDomains, d => (n: _A) => {
   if (d.has(hostnameStr(n))) n.priority = 0

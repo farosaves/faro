@@ -1,8 +1,8 @@
-import { API_ADDRESS, getSession } from "$lib/utils"
+import { getSession } from "$lib/utils"
 import { option as O } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -76,7 +76,8 @@ const appRouter = (() => {
     undo: t.procedure.query(() => note_sync.undo()),
     redo: t.procedure.query(() => note_sync.redo()),
     newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
-
+    // forward t
+    singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
 
   })
 })()
@@ -99,6 +100,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
+
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
   console.log(homeRegexp)
