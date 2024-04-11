@@ -1,4 +1,3 @@
-// export let normalize = (s: string) => s.replaceAll(/[\p{P}\s]/gu, "");
 // originally from shared
 const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
@@ -51,7 +50,6 @@ export const prepare2deserialize = (textContent: string, s: string) =>
     : stripQuote(s)
 
 export const deserialize = (applierOptions: unknown) => ([uuid, serialized]: [string, string]) => {
-  console.log("deserializeing", uuid, serialized)
   if (!serialized) return
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _rangy = rangy as any

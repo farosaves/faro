@@ -25,9 +25,6 @@
 
   const bgSync = getBgSync(TB)
   const currSrc = RemoteStore("currSrc", { title: "", url: "" })
-  const currDomainTitle = derived(currSrc, ({ title, url }) =>
-    O.getOrElse(() => "")(domain_title(url, title)),
-  )
   const needsRefresh = RemoteStore("needsRefresh", false)
   const session = RemoteStore("session", O.none as O.Option<Session>)
 
