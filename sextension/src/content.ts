@@ -122,7 +122,9 @@ sem.use(async () => { // here I can potentially defer loading if page has no hig
 let loaded = false
 const onLoad = async () => sem.use(async () => {
   if (!loaded) {
-    await T.serializedHighlights.query().then(batchDeserialize)
+    const sers = await T.serializedHighlights.query()
+    DEBUG && console.log("sers", sers)
+    batchDeserialize(sers)
     const goto = new URLSearchParams(window.location.search).get("highlightUuid")
     if (goto) gotoText(goto)
     DEBUG && console.log("goto", goto)
