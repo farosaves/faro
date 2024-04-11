@@ -86,8 +86,8 @@
   </div>
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4">
-      <li class="top-6">
+    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 top-6">
+      <li>
         <button class="btn btn-sm" on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
@@ -97,7 +97,7 @@
       <li></li>
       <li><DomainFilter {noteDeri} /></li>
       <!-- HACK! -->
-      <li class="fixed bottom-8 left-12"><PriorityFilter groups={note_groupss} /></li>
+      <li class="fixed bottom-8 left-12"><PriorityFilter noteArr={noteDeri.noteArr} /></li>
       <li hidden>
         <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
       </li>

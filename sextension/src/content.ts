@@ -3,8 +3,10 @@ import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
 import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH, Semaphore } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
+import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
 import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
+import type { UUID } from "crypto"
 // import { trpc2 } from "$lib/trpc-client"
 
 if (DEBUG) console.log("hello")
@@ -61,7 +63,7 @@ function wrapSelectedText(uuid: string) {
   const classname = "_" + uuid
   const app = _rangy.createClassApplier(classname, applierOptions)
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const ran = document.getSelection()?.getRangeAt(0)!
+  const ran = window.getSelection()?.getRangeAt(0)!
   const rangeText = reserialize(ran)
   const selection = ran2sel(ran)
 
@@ -75,10 +77,34 @@ const batchDeserialize = (uss: [string, string][]) => uss.forEach(deserialize(ap
 
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
-// type Req = { action: "getHighlightedText" | "goto" | "deserialize" | "delete" }
+// check if it's part of another already
+const subSelection = async (selectedText: string) => {
+  const anchorClasses = Array.from(window.getSelection()?.anchorNode?.parentElement?.classList || [])
+  const potentialHighlights = anchorClasses.filter(s => s.startsWith("_")).map(s => s.slice(1))
+  if (potentialHighlights.length) {
+    const ids = (await T.serializedHighlights.query()).map(([s, _serialized]) => s as UUID)
+    const int = A.intersection(S.Eq)(ids)(potentialHighlights)
+    if (int) {
+      if (int.length > 1) console.log("what the heck?")
+      const note = await T.singleNoteBySnippetId.query(int[0])
+      if (note?.quote.includes(selectedText)) {
+        note?.highlights.push(selectedText)
+        console.log("updated note", JSON.stringify(note))
+        if (note) T.updateNote.mutate(note)
+        return true
+      }
+    }
+  }
+  return false
+}
+
 getHighlightedText.sub(async ([uuid]) => {
   const selectedText = window.getSelection()?.toString()
   if (!selectedText) return
+  // now check if we're in a quote already
+  if (await subSelection(selectedText)) return
+
+
   DEBUG && console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
   DEBUG && console.log(rangy.createRange())
   const serialized = wrapSelectedText(uuid)
