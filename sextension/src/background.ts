@@ -12,6 +12,9 @@ import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
 
+// chrome.storage.local.get("yy").then(n => console.log(n["yy"])).then(() => chrome.storage.local.set({ yy: "oo" }))
+// idb.get("yy").then(console.log).then(() => idb.set("yy", "aa"))
+
 const T = trpc2()
 
 const note_sync = new NoteSync(supabase, undefined)

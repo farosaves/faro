@@ -22,6 +22,7 @@
     </ul>
   </div>
   <div class="navbar-end">
+    <a class="btn btn-ghost" href="mailto:pawel@farosapp.com">Contact</a>
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn m-1">Theme</div>
       <div class="dropdown-content join join-vertical">
@@ -31,7 +32,7 @@
             data-set-theme={value}
             data-act-class="ACTIVECLASS"
             on:click={() => setTimeout(updateTheme, 100)}
-            >{value.replace(/\b\w/g, s => s.toUpperCase())}</button>
+            >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
         {/each}
       </div>
     </div>

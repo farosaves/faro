@@ -19,6 +19,8 @@ import * as schemas from "./db/schemas"
 export * from "./stores"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
+export * from "./semaphore"
+
 export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
