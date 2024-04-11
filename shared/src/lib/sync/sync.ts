@@ -180,6 +180,13 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
+  updateNote = async (note: Notes) => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
+      ns.set(note.id, note)
+    })
+    this.act(patchTup, true)
+  }
+
   tagChange = (noteId: string) => async (tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.get(noteId)!.tags = tags

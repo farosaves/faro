@@ -25,18 +25,23 @@
   let this_element: Element
   $: tags = note_data.tags || []
 
+  const replaceAll = (escaped: string, replacer: (c: string) => string) => {
+    for (const hl of note_data.highlights) escaped = escaped.replace(hl, $replacer)
+    return escaped
+  }
+
   $: text = pipe(
     note_data.searchArt,
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
+        return note_data.highlights ? replaceAll(escaped, $replacer) : escaped
       }, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,
-          A.findIndex(n => n == "quote"),
-          O.chain(i => O.fromNullable(optKR[i])), // here I check that quote has a highlight
+          A.findIndex((n) => n == "quote"),
+          O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map((r) => {
             const target = escapeHTML(r.target)
             return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
@@ -60,10 +65,10 @@
     return true
   }
   onMount(() => {
-    "highlightOnMount" in note_data
-    && note_data["highlightOnMount"]
-    && highlightMe()
-    && (note_data["highlightOnMount"] = false)
+    "highlightOnMount" in note_data &&
+      note_data["highlightOnMount"] &&
+      highlightMe() &&
+      (note_data["highlightOnMount"] = false)
   })
 
   let hovered = false

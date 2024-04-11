@@ -1,8 +1,8 @@
 import { getSession } from "$lib/utils"
-import { option as O } from "fp-ts"
+import { option as O, array as A } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, type Notes, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -11,9 +11,7 @@ import { NoteMut } from "$lib/note_mut"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
-
-// chrome.storage.local.get("yy").then(n => console.log(n["yy"])).then(() => chrome.storage.local.set({ yy: "oo" }))
-// idb.get("yy").then(console.log).then(() => idb.set("yy", "aa"))
+import { pipe } from "fp-ts/lib/function"
 
 const T = trpc2()
 
@@ -41,6 +39,8 @@ const onUser_idUpdate = O.match(
 user_id.subscribe(onUser_idUpdate)
 
 const refresh = async (online = true) => {
+  const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+  if (tab) updateCurrUrl(tab)
   const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
@@ -79,9 +79,11 @@ const appRouter = (() => {
     undo: t.procedure.query(() => note_sync.undo()),
     redo: t.procedure.query(() => note_sync.redo()),
     newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
+    updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
     // forward t
     singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
-
+    singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
+      pipe(get(note_mut.panel), A.findFirst(a => a.snippet_uuid == input), O.toNullable)),
   })
 })()
 export type AppRouter = typeof appRouter

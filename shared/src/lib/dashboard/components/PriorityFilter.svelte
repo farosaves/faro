@@ -5,10 +5,10 @@
   import IconArchiveOff from "~icons/tabler/archive-off"
   import type { NoteDeri } from "$lib"
 
-  import { record as R } from "fp-ts"
+  import { array as A, number as N } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
   import { selectedPriorities } from "../filterSortStores"
-  export let groups: NoteDeri["groupStore"]
+  export let noteArr: NoteDeri["noteArr"]
   const toggleValCb = (val: "star" | "none" | "archive") => () =>
     selectedPriorities.update((s) => {
       s.delete(val) || s.add(val)
@@ -18,7 +18,7 @@
   // bind:group={selectedKeys}
 </script>
 
-{#if pipe( $groups, R.filter((a) => a.length > 0), R.size, ) > 1}
+{#if pipe( $noteArr, A.map((x) => x.prioritised), A.uniq(N.Eq), A.size, ) > 1}
   <div class="flex flex-col content-center">
     <!-- possibly these should be swaps like in stararchive -->
     <div class="join w-full">

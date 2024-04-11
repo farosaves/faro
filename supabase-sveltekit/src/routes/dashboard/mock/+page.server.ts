@@ -1,11 +1,13 @@
 export const ssr = false
 import type { UUID } from "crypto"
 import type { PageServerLoad } from "./$types"
-import type { Notes, Src } from "shared"
+import { API_ADDRESS, type Notes, type Src } from "shared"
+import { trpc } from "$lib/trpc/client"
 type STUMap = Map<UUID, Src>
 
+const T = trpc({ url: { origin: API_ADDRESS } })
 export const load: PageServerLoad = async ({ locals, url }) => {
-  // redirect(302, "/login")
+  // redirect(302, "/login")http://localhost:5173/notes/95db5279-4c93-405b-a734-6ed1aa3bbf15
   const ids = [0, 0, 0, 0, 0].map(_ => crypto.randomUUID())
   const stuMap: STUMap = new Map([
     [ids[0], { title: "Hey you!", url: url.origin + "/login" }],
@@ -30,6 +32,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     user_note: "",
     prioritised: 0,
   })
+  const kalId = "95db5279-4c93-405b-a734-6ed1aa3bbf15"
+  const { data: _kal } = await T.singleNote.query(kalId)
+  const kal = _kal
+    ? ({ ..._kal as Notes, source_id: ids[2] })
+    : ({ source_id: ids[2],
+        quote:
+        "This links to a wikipedia page about a plant. Normally content of a note would be a snippet taken from the page.",
+        tags: ["plants"],
+        ...defs() })
+
   const mocknoteArr: Notes[] = [
     {
       source_id: ids[0],
@@ -46,7 +58,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     },
     {
       source_id: ids[1],
-      quote: "the tags you've added will appear just above",
+      quote: "the tags you've added will appear above",
       tags: ["tip"],
       ...defs(),
     },
@@ -56,13 +68,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       tags: ["tip"],
       ...defs(),
     },
-    {
-      source_id: ids[2],
-      quote:
-          "This links to a wikipedia page about a plant. Normally content of a note would be a snippet taken from the page.",
-      tags: ["plants"],
-      ...defs(),
-    },
+    kal,
     {
       source_id: ids[3],
       quote: "The chrome extension! To save stuff. I'll add it to marketplace soon..",
@@ -76,12 +82,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       tags: ["features"],
       ...defs(),
     },
-    // {
-    //   source_id: ids[4],
-    //   quote: "for any reason",
-    //   tags: [],
-    //   ...defs(),
-    // },
+    {
+      source_id: ids[4],
+      quote: "for any reason",
+      tags: [],
+      ...defs(),
+    },
   ]
   const notes: Map<UUID, Notes> = new Map(mocknoteArr.map((n) => {
     const id = crypto.randomUUID()
