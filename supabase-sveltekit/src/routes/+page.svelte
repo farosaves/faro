@@ -43,7 +43,7 @@
     <div class="collapse collapse-arrow bg-base-100 w-1/2">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
-      <div class="collapse-content">No! But you'll need it to sync.</div>
+      <div class="collapse-content">No! <br />But in order to sync you do.</div>
     </div>
     <div class="collapse collapse-arrow bg-base-100 w-1/2">
       <input type="checkbox" />
