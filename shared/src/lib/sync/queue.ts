@@ -81,9 +81,10 @@ export class ActionQueue {
   pushActionSrc = async (src: Src & { id: UUID }) => {
     // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
     const domain = O.toNullable(hostname(src.domain))
-    const urls = [src.domain]
     const { id, title } = src
-    const { error } = await this.sb.from("sources").insert({ id, title, urls, domain }).then(logIfError("insert sources"))
+    // TODO HERE
+    // Trpc.
+    // const { error } = await this.sb.from("sources").upsert({ id, title, domain }).then(logIfError("insert sources"))
     const success = (error == null)
     if (success) console.log("pushed source")
     return success
