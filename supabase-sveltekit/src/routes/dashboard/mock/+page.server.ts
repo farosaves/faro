@@ -27,7 +27,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     highlights: [],
     context:
         "If this was a normal save, here you would see more context i.e. a few sentences before and after the one you saved.",
-    context_html: "",
     predicted_topic: "",
     serialized_highlight: "",
     snippet_uuid: "",
