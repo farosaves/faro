@@ -14,7 +14,6 @@ import {
   invertMap,
   type Src,
   domainTitle,
-  chainN,
   uuidv5,
   fillInTitleDomain,
 } from "$lib/utils"
@@ -74,7 +73,7 @@ export class NoteSync {
     this.stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
     this.stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
     this.invStuMapStore = derived(this.stuMapStore,
-      flow(M.map(domainTitle), M.compact, invertMap))
+      flow(M.map(domainTitle), invertMap))
 
     this.xxdoStacks = xxdoStacks(storage)
 
@@ -123,16 +122,14 @@ export class NoteSync {
   getsetSource_id = async (src: Src) => {
     const local = this.getSource_id(src)
     if (O.isSome(local)) return local.value
-    const newId = pipe(domainTitle(src), O.map(uuidv5))
-    if (O.isNone(newId)) throw new Error("coudlnt create source id for source: " + JSON.stringify(src))
-    const id = newId.value
+    const id = uuidv5(domainTitle(src))
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
     await this.actionQueue.actSrc({ ...src, id })
     return id
   }
 
   // chainN(get(this.invStuMapStore).get), DOESNT WORK
-  getSource_id = flow(domainTitle, chainN(n => get(this.invStuMapStore).get(n)))
+  getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
   newNote = async (note: PendingNote, src: Src) => {
     const source_id = await this.getsetSource_id(src)
