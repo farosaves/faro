@@ -9,7 +9,7 @@ function desc<T>(first: (t: T) => number): (t1: T, t2: T) => number {
 
 export const gotoText = (uuid: string) => {
   const elems = elemsOfClass("_" + uuid)
-  elems.item(0)!.scrollIntoView({ block: "center" })
+  elems.item(0)!.scrollIntoView({ block: "center", behavior: "auto" })
   elems.forEach((elem) => {
     const sc = elem.style.backgroundColor
     elem.style.backgroundColor = "#fff200"
