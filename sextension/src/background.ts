@@ -108,7 +108,6 @@ const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]"
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  console.log(homeRegexp)
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)
