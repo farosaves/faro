@@ -29,7 +29,7 @@ const note_idKey = "noteUuid"
     const note_id = (/(?<=\/notes\/).+/.exec(window.location.href) || [])[0]!
     DEBUG && console.log(note_id)
     const { data } = await T.singleNote.query(note_id)
-    const newUrlStr = data?.sources?.url
+    const newUrlStr = data?.url
     DEBUG && console.log(newUrlStr)
     if (newUrlStr) {
       const newUrl = new URL(newUrlStr)
@@ -124,6 +124,7 @@ getHighlightedText.sub(async ([uuid]) => {
     context: "",
     snippet_uuid: uuid,
     serialized_highlight: serialized,
+    url: window.location.href,
   }
   optimisticNotes.send(note_data)
   const newNote = await T.newNote.mutate(note_data) // .catch(funLog("newNote"))

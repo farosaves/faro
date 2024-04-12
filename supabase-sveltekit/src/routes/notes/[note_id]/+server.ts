@@ -7,7 +7,7 @@ const T = trpc({ url: { origin: API_ADDRESS } })
 export const GET = async ({ params }) => {
   const { note_id } = params
   const { data, error } = await T.singleNote.query(note_id)
-  const pageUrl = data?.sources?.url
+  const pageUrl = data?.url
   if (!pageUrl) return new Response(JSON.stringify(error))
   // console.log("sess", await sb.auth.getSession())
   const $ = cheerio.load(await (await fetch(pageUrl)).text())

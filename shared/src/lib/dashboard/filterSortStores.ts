@@ -1,11 +1,10 @@
-import type { NoteEx, SourceData } from "$lib/db/typeExtras"
+import type { NoteEx } from "$lib/db/typeExtras"
 import { replacer } from "$lib/stores"
-import { chainN, escapeHTML, hostname } from "$lib/utils"
+import { chainN, escapeHTML } from "$lib/utils"
 import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
 import { derived, writable } from "svelte/store"
-const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
 
 const _exclTagSets = {
   sets: { "": new Set([]) } as Record<string, Set<string>>,
@@ -39,7 +38,7 @@ export const priorityFilter = derived(selectedPriorities, p => (n: _A) => {
 
 export const uncheckedDomains = writable(new Set<string>())
 export const domainFilter = derived(uncheckedDomains, d => (n: _A) => {
-  if (d.has(hostnameStr(n))) n.priority = 0
+  if (d.has(n.sources.domain)) n.priority = 0
   return n
 })
 
@@ -92,7 +91,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
         searchArt = O.none
         title = n.sources.title
       }
-      const sources = { url: n.sources.url, title }
+      const sources = { domain: n.sources.domain, title }
       return { ...n, priority, searchArt, sources }
     }, overrideGroups: true })
   } else {
