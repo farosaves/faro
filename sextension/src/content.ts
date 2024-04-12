@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH, Semaphore } from "shared"
+import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -141,17 +141,19 @@ const sem = new Semaphore()
 
 sem.use(async () => { // here I can potentially defer loading if page has no highlights - but would delay creating one on click
   await T.loadDeps.query()
+  await sleep(50)
   DEBUG && console.log("loaded bg")
 })
 
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
-const onLoad = async () => sem.use(async () => {
+const onLoad = () => sem.use(async () => {
   if (!loaded) {
     const sers = await T.serializedHighlights.query()
     DEBUG && console.log("sers", sers)
     batchDeserialize(sers)
     const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+    await sleep(50)
     if (goto) gotoText(goto)
     DEBUG && console.log("goto", goto)
     loaded = true
