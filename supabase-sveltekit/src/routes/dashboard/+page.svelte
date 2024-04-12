@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LoginPrompt from "$lib/components/LoginPrompt.svelte"
   export let data
   const { supabase } = data
   import { option as O } from "fp-ts"
@@ -24,4 +25,5 @@
   })
 </script>
 
+<LoginPrompt {showLoginPrompt} />
 <Dashboard {noteSync} />
