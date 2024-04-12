@@ -7,12 +7,11 @@
   import { uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   export let noteDeri: NoteDeri
-  const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
-  const domains = derived(noteDeri.noteArr, x =>
+  const domains = derived(noteDeri.noteArr, (x) =>
     pipe(
       x,
-      NA.groupBy(hostnameStr),
-      R.map(ns => ns.length),
+      NA.groupBy((n) => n.sources.domain),
+      R.map((ns) => ns.length),
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),
   )

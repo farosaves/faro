@@ -8,7 +8,6 @@ import { derived, get, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
   neq,
-  fillInTitleUrl,
   getNotes,
   unwrapTo,
   updateStore,
@@ -17,6 +16,7 @@ import {
   domainTitle,
   chainN,
   uuidv5,
+  fillInTitleDomain,
 } from "$lib/utils"
 import { option as O, string as S, map as M } from "fp-ts"
 
@@ -35,7 +35,7 @@ export type NoteStoreR = Readable<ReturnType<typeof validateNs>>
 const allNotesR: ReturnType<typeof validateNs> = new Map()
 
 type STUMap = Map<UUID, Src>
-const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.string(), url: z.string() })).parse(o) as STUMap
+const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.string(), domain: z.string() })).parse(o) as STUMap
 export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
 
@@ -104,7 +104,7 @@ export class NoteSync {
         pipe(
           (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
           O.fromNullable,
-          O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleUrl(n)]))),
+          O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
         ),
       ),
     )

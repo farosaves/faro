@@ -10,10 +10,10 @@
   let noteId: string
 
   const { params } = get(page)
-  console.log(data.session?.user.id)
-  const { noteStore, stuMapStore } = new NoteSync(data.supabase, data.session?.user.id)
-  const n = get(noteStore).get("3e88b49c-aa4e-47b5-b356-5c38f1a6ac0d")
-  const a = get(stuMapStore).get((n?.source_id as UUID) || "")
+  // console.log(data.session?.user.id)
+  const { noteStore, stuMapStore } = new NoteSync(data.supabase, undefined)
+  // const n = get(noteStore).get("3e88b49c-aa4e-47b5-b356-5c38f1a6ac0d")
+  // const a = get(stuMapStore).get((n?.source_id as UUID) || "")
 
   //   R.lookup(noteId,
   let div: HTMLDivElement
@@ -23,7 +23,7 @@
     // div.innerHTML = await fetch(`/api/forward/?url=${url}&main=true`).then((x) => x.text())
 
     // div.innerHTML = html2.innerHTML
-    const stylesheetLinks = Array.from(div.querySelectorAll("link[rel=\"stylesheet\"]")) as HTMLLinkElement[]
+    const stylesheetLinks = Array.from(div.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[]
 
     //   fetch('http://www.example.com/external-styles.css')
     // .then(response => response.text())

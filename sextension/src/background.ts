@@ -2,7 +2,7 @@ import { getSession } from "$lib/utils"
 import { option as O, array as A } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, type Notes, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, hostname, type Notes, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -94,13 +94,15 @@ createChromeHandler({
   createContext,
 })
 
-const currSrc = writable<Src>({ url: "", title: "" })
+const currSrc = writable<Src>({ domain: "", title: "" })
 pushStore("currSrc", currSrc)
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
-  if (url && title) currSrc.set({ url, title })
-  const source_id = note_mut.setLocalSrcId({ url: url || "", title: title || "" })
+  // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
+  const domain = O.toNullable(hostname(url || "")) // "" is fine here because it will fail later
+  if (domain && title) currSrc.set({ domain, title })
+  const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })
 }
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")

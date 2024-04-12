@@ -1,10 +1,10 @@
-import { NoteSync, chainN, domainTitle, hostname, type Notes } from "shared"
+import { NoteSync, chainN, domainTitle, type Notes } from "shared"
 import type { Src } from "shared"
 import { option as O } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 
-const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
+// const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync

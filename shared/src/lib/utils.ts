@@ -1,5 +1,5 @@
 import type { SourceData, SupabaseClient } from "./db/typeExtras"
-import { array as A, task as T } from "fp-ts"
+import { array as A } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { option as O } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
@@ -73,7 +73,7 @@ export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const hostname = (s: string) => O.tryCatch(() => new URL(s).hostname)
 
 export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
-export const domainTitle = (src: Src) => O.map(s => [s, src.title].join(";"))(hostname(src.url))
+export const domainTitle = (src: Src) => O.map(s => [s, src.title].join(";"))(hostname(src.domain))
 
 // sort descendingly but for negative scores filter out
 export const filterSort
@@ -83,20 +83,18 @@ export const filterSort
 
 export const chainN = <T, U>(f: (a: T) => U | undefined | null) => O.chain(flow(f, O.fromNullable))
 
+// type T = {
+//   title: string | null
+//   urls: string[]
+// } | undefined
+// export const fillInTitleUrl = (v: T) => {
+//   return { title: v?.title || "missing Title", url: v?.urls[0] || "" }
+// }
 type T = {
   title: string | null
-  url: string | null
+  domain: string | null
 } | undefined
-export const fillInTitleUrl = (v: T) => {
-  const _get = (u: typeof v, fld: "title" | "url", missing: string) =>
-    pipe(
-      u,
-      O.fromNullable,
-      chainN(v => v[fld]),
-      O.fold(() => missing, identity),
-    )
-  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
-}
+export const fillInTitleDomain = (v: T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
 
 // https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
 export const toStore = <T>(Sub: Observable<T>, init: T) => {
