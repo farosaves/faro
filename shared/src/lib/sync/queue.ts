@@ -84,7 +84,7 @@ export class ActionQueue {
     const { id, title } = src
     // TODO HERE
     // Trpc.
-    // const { error } = await this.sb.from("sources").upsert({ id, title, domain }).then(logIfError("insert sources"))
+    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(logIfError("insert sources"))
     const success = (error == null)
     if (success) console.log("pushed source")
     return success

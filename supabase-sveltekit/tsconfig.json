@@ -12,6 +12,7 @@
 		"moduleResolution": "bundler",
 		"composite": true,
 		"outDir": "out",	
+		"noEmit": false
 	},
 	"ts-node": {
 		"esm": true,

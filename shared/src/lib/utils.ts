@@ -18,7 +18,6 @@ import {
 } from "structurajs"
 import type { Notes } from "./db/types"
 import type { UUID } from "crypto"
-import { trpc2 } from "./trpc-client"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
 
@@ -26,8 +25,6 @@ export type Src = SourceData["sources"]
 // strips trailing /
 export const delTr = (s: string) => s.replace(/\/$/, "")
 export const API_ADDRESS = delTr(import.meta.env.VITE_PI_IP as string)
-
-export const Trpc = trpc2()
 
 export const ctrlKey = navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2318" : "Ctrl"
 export const altKey = navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2325" : "Alt"

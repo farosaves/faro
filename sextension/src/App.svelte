@@ -7,7 +7,7 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import { type PendingNote, CmModal, API_ADDRESS, updateTheme } from "shared"
-  import { domain_title, shortcut } from "shared"
+  import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
   import { createTRPCProxyClient } from "@trpc/client"
@@ -15,7 +15,6 @@
   import { chromeLink } from "trpc-chrome/link"
   import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
-  import { derived } from "svelte/store"
   let login_url = API_ADDRESS + "/login"
   $: T = trpc2()
   const port = chrome.runtime.connect()

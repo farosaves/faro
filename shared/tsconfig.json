@@ -20,5 +20,7 @@
 	"ts-node": {
 		"esm": true,
 		"experimentalSpecifierResolution": "node",
-	}
+	},
+	"references": [{ "path": "../supabase-sveltekit" }]
+
 }
