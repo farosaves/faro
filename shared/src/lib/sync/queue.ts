@@ -1,13 +1,13 @@
 import { hostname, ifErr, logIfError, updateStore, type Src, applyPatches } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./xxdo"
-import { either as E, option as O, array as A, string as S } from "fp-ts"
+import { either as E, option as O, array as A, string as S, tuple as T } from "fp-ts"
 import { type Writable, get } from "svelte/store"
 import { persisted } from "./persisted-store"
 import * as devalue from "devalue"
 import type { SupabaseClient } from "$lib/db/typeExtras"
 import type { Notes } from "$lib/db/types"
-import { pipe } from "fp-ts/lib/function"
+import { flow, pipe } from "fp-ts/lib/function"
 
 
 export type Action = E.Either<Src & { id: UUID }, PatchTup>
@@ -30,14 +30,17 @@ export class ActionQueue {
   }
 
   goOnline = async (user_id: UUID) => {
+    const successes = []
     for (const action of get(this.queueStore)) {
       //   await match(action)  // if ever more than 2 e.g. tabs
       //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
       //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
       //     .exhaustive()
-      await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion)
+      // https://farosapp.com/notes/ac6f8223-fa95-4b4d-b7e8-1960db532dc1
+      successes.push(await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion))
     }
-    this.queueStore.set([])
+    this.queueStore.update(flow( // keep unsuccessful
+      A.zip(successes), A.filter(([_, success]) => !success), A.map(T.fst)))
   }
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
@@ -59,14 +62,17 @@ export class ActionQueue {
     if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
 
     const op = notesOps.map(x => x.op)[0]
+    let success: boolean
     if (op == "upsert")
-      await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)
-    if (op == "delete")
-      await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)
+      success = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error == null
+    else if (op == "delete")
+      success = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error == null
+    else throw new Error("unreachable")
+    return success
   }
 
   act = (user_id: UUID) => async (patchTup: PatchTup) => {
-    if (this.online()) await this.pushAction(user_id)(patchTup)
+    if (this.online() && await this.pushAction(user_id)(patchTup)) return
     else this.queueStore.update(A.append(E.right(patchTup)))
     // console.log("AQ", get(this.actionQueue))
     // else throw new Error("only online for now")
@@ -75,12 +81,14 @@ export class ActionQueue {
   pushActionSrc = async (src: Src & { id: UUID }) => {
     // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
     const domain = O.toNullable(hostname(src.url))
-    await this.sb.from("sources").insert({ ...src, domain: domain }).then(logIfError("insert sources"))
-    console.log("pushed source")
+    const { error } = await this.sb.from("sources").insert({ ...src, domain: domain }).then(logIfError("insert sources"))
+    const success = (error == null)
+    if (success) console.log("pushed source")
+    return success
   }
 
   actSrc = async (src: Src & { id: UUID }) => {
-    if (this.online()) await this.pushActionSrc(src)
+    if (this.online() && await this.pushActionSrc(src)) return
     else this.queueStore.update(A.append(E.left(src)))
   }
 }
