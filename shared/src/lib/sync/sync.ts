@@ -62,9 +62,10 @@ export class NoteSync {
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   actionQueue: ActionQueue
+  _checkOnline: () => Promise<true>
   DEBUG: boolean
 
-  constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
+  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<true>, storage?: StorageType) {
     this.sb = sb
     this.noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
     // this block shall ensure local data gets overwritten on db schema changes
@@ -79,7 +80,8 @@ export class NoteSync {
 
     this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore)
 
-    this._user_id = user_id as UUID | undefined // TODO: here
+    this._user_id = user_id as UUID | undefined
+    this._checkOnline = checkOnline
 
     this.DEBUG = import.meta.env.VITE_DEBUG || false
   }
@@ -87,8 +89,10 @@ export class NoteSync {
   online = () => this._user_id !== undefined
 
   setUser_id = async (user_id: string | undefined) => {
-    this._user_id = user_id as UUID | undefined // TODO: here
-    if (user_id === undefined) return
+    this._user_id = user_id as UUID | undefined
+    const online = await this._checkOnline().catch(() => false)
+    if (user_id === undefined && online) return
+    this._sub()
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
     await this.refresh_sources()
@@ -211,7 +215,7 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
-  sub = () => {
+  _sub = () => {
     this.sb
       .channel("notes")
       .on(

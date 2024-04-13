@@ -11,7 +11,7 @@ export type PatchTup = { patches: Patch[], inverse: Patch[] }
 
 const _undo_stack: PatchTup[] = []
 const _redo_stack: PatchTup[] = []
-export const xxdoStacks = (storage: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage, serializer: devalue })
+export const xxdoStacks = (storage?: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage, serializer: devalue })
 
 export type NotesOps = {
   op: "upsert" | "delete"
