@@ -83,11 +83,14 @@ export class ActionQueue {
     const domain = O.toNullable(hostname(src.domain))
     const { id, title } = src
     // TODO HERE
-    // Trpc.
     const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(logIfError("insert sources"))
     const success = (error == null)
-    if (success) console.log("pushed source")
-    return success
+    console.log("pushed source", success)
+    if (success) return success
+    else { // if it is in db - e.g. I'm on the plane and added source but someone online did it already in the meantime - but that's fallback eventuality
+      const { data } = await this.sb.from("sources").select().eq("id", id).single().then(logIfError("check for sources"))
+      return (data?.domain == domain && data?.title == title)
+    }
   }
 
   actSrc = async (src: Src & { id: UUID }) => {
