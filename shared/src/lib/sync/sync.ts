@@ -91,7 +91,7 @@ export class NoteSync {
   setUser_id = async (user_id: string | undefined) => {
     this._user_id = user_id as UUID | undefined
     const online = await this._checkOnline().catch(() => false)
-    if (user_id === undefined && online) return
+    if (user_id === undefined || !online) return
     this._sub()
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
