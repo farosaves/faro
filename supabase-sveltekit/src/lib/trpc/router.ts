@@ -44,6 +44,6 @@ export const router = t.router({
     .mutation(({ input: { note_id }, ctx: { locals } }) =>
       add_card({ note_id, supabase: locals.supabase, front: null, back: null }),
     ),
-
+  online: t.procedure.query(() => true as const),
 })
 export type Router = typeof router
