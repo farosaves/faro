@@ -16,7 +16,6 @@ export const GET = async ({ params }) => {
     $("head").append(`<script src="${module}"></script>`)
   // dom.window.document.head.appendChild(JSDOM.fragment("<script src=\"/deserializer.js\" type=\"module\"></script>"))
   // dom.window.document.head.appendChild(JSDOM.fragment(`<script></script>`))
-  const a = $("head").html()
   $("head").append(
   `<script type="module">
     import {deserialize, gotoText} from "/deserializer.js"
@@ -31,7 +30,7 @@ export const GET = async ({ params }) => {
     window.addEventListener("load", f)
     setTimeout(f, 500)
   </script>`)
-  console.log($("head").html() == a)
+  $("head").append("<meta property=\"og:image\" content=\"favicon.png\"/>")
 
   return new Response($.html(), { headers: { "Content-Type": "text/html" } })
 }

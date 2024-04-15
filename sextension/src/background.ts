@@ -15,7 +15,7 @@ import { pipe } from "fp-ts/lib/function"
 
 const T = trpc2()
 
-const note_sync = new NoteSync(supabase, undefined)
+const note_sync = new NoteSync(supabase, undefined, T.online.query)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
@@ -34,7 +34,6 @@ const onUser_idUpdate = O.match(
     note_sync.setUser_id(user_id)
     note_sync.refresh_sources()
     note_sync.refresh_notes()
-    note_sync.sub()
   })
 user_id.subscribe(onUser_idUpdate)
 
