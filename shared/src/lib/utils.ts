@@ -26,8 +26,6 @@ export type Src = SourceData["sources"]
 export const delTr = (s: string) => s.replace(/\/$/, "")
 export const API_ADDRESS = delTr(import.meta.env.VITE_PI_IP as string)
 
-export const ctrlKey = navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2318" : "Ctrl"
-export const altKey = navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2325" : "Alt"
 
 export const namespaceUuid: UUID = "0646f4ce-17c9-4a66-963e-280982b6ac8a"
 export const uuidv5 = (s: string) => v5(s, namespaceUuid) as UUID
@@ -35,6 +33,9 @@ export const uuidv5 = (s: string) => v5(s, namespaceUuid) as UUID
 export const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
 export const browser = () => typeof window !== "undefined" && typeof document !== "undefined" // for SSR
+export const ctrlKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2318" : "Ctrl"
+export const altKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2325" : "Alt"
+
 
 export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 
