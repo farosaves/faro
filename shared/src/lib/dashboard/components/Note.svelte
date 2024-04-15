@@ -11,7 +11,7 @@
   export let allTags: Readable<string[]>
 
   let goto_function = async () => {
-    const url = new URL(note_data.sources.url)
+    const url = new URL(note_data.url)
     console.log("title", note_data.sources.title)
     note_data.snippet_uuid && url.searchParams.set("highlightUuid", note_data.snippet_uuid)
     console.log(url)

@@ -1,11 +1,10 @@
-import type { NoteEx, SourceData } from "$lib/db/typeExtras"
+import type { NoteEx } from "$lib/db/typeExtras"
 import { replacer } from "$lib/stores"
-import { chainN, escapeHTML, hostname } from "$lib/utils"
-import { array as A, record as R, nonEmptyArray as NA, option as O, readonlyArray as RA } from "fp-ts"
+import { chainN, escapeHTML } from "$lib/utils"
+import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
-import { derived, get, writable, type Writable } from "svelte/store"
-const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
+import { derived, writable } from "svelte/store"
 
 const _exclTagSets = {
   sets: { "": new Set([]) } as Record<string, Set<string>>,
@@ -28,9 +27,18 @@ export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => (
     : 0,
 }))
 
+const priorities = ["star", "none", "archive"] as const
+const tr = { "5": "star", "0": "none", "-5": "archive" } as const
+export const selectedPriorities = writable(new Set(priorities))
+export const priorityFilter = derived(selectedPriorities, p => (n: _A) => {
+  if (!p.has(tr[(n.prioritised).toString() as "-5" | "0" | "5"])) n.priority = 0
+  return n
+})
+
+
 export const uncheckedDomains = writable(new Set<string>())
 export const domainFilter = derived(uncheckedDomains, d => (n: _A) => {
-  if (d.has(hostnameStr(n))) n.priority = 0
+  if (d.has(n.sources.domain)) n.priority = 0
   return n
 })
 
@@ -83,7 +91,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
         searchArt = O.none
         title = n.sources.title
       }
-      const sources = { url: n.sources.url, title }
+      const sources = { domain: n.sources.domain, title }
       return { ...n, priority, searchArt, sources }
     }, overrideGroups: true })
   } else {

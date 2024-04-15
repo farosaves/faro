@@ -1,11 +1,8 @@
 <script lang="ts">
-  import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O, set as S, string as Str } from "fp-ts"
-  import { desc, NoteDeri, type NoteEx, type NoteSync } from "shared"
-  import { derived, get, writable } from "svelte/store"
-  import { exclTagSets, exclTagSets as t, tagFilter } from "../filterSortStores"
-  import { modalOpenStore } from "shared"
-  import type { Option } from "fp-ts/lib/Option"
+  import { set as S, string as Str } from "fp-ts"
+  import { NoteDeri } from "shared"
+  import { get } from "svelte/store"
+  import { exclTagSets, exclTagSets as t } from "../filterSortStores"
   export let noteDeri: NoteDeri
   $: console.log(Array.from($t.sets[$t.currId]))
   const tab_ids = ["1", "2"]

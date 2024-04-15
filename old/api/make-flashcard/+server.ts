@@ -1,7 +1,6 @@
-import { error, json } from "@sveltejs/kit"
+import { json } from "@sveltejs/kit"
 import { REPLICATE_API_TOKEN } from "$env/static/private"
 import { QA_prompt1, QA_prompt_response1, prompt_response0 } from "./prompts"
-import { FSRS, Card } from "fsrs.js"
 
 import Replicate from "replicate"
 

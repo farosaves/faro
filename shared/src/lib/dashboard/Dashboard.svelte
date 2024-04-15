@@ -1,22 +1,20 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import Note from "./components/Note.svelte"
-  import { NoteSync, type SourceData, type SupabaseClient, type SyncLike } from "shared"
   import Search from "./components/Search.svelte"
-  import { type NoteEx, Tags } from "shared"
   import DomainFilter from "./components/DomainFilter.svelte"
-  import { identity, flow, pipe } from "fp-ts/lib/function"
-  import { option as O, record as R } from "fp-ts"
-  import { sessStore } from "shared"
+  import { flow } from "fp-ts/lib/function"
+  import { record as R } from "fp-ts"
   import TagView from "./components/TagView.svelte"
-  import { get } from "svelte/store"
-  import { domainFilter, fuzzySort, newestFirst, tagFilter } from "./filterSortStores"
+  import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, modalStore, toastStore } from "$lib"
+  import { modalOpenStore, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
+  import CmModal from "./components/CmModal.svelte"
+  import PriorityFilter from "./components/PriorityFilter.svelte"
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
@@ -26,7 +24,7 @@
   let noteOpens: Record<string, boolean> = {}
   // export let note_sync: SyncLike
   $: noteDeri.transformStore.set({
-    f: flow($fuzzySort.f, $tagFilter, $domainFilter),
+    f: flow($fuzzySort.f, $tagFilter, $domainFilter, $priorityFilter),
     overrideGroups: $fuzzySort.overrideGroups,
   })
   const note_groupss = noteDeri.groupStore
@@ -46,11 +44,8 @@
 
   let Xview = false
   const priorities = ["5", "0", "-5"] as const
-  let modal: HTMLDialogElement
   onMount(() => {
-    modalOpenStore.subscribe((n) => n && modal.showModal())
-    // I think doing sub in onMount is enough..
-    // (n) => n && O.getOrElse(() => modalOpenStore.set(false))(O.tryCatch(modal.showModal)),
+    modalOpenStore.set(false)
   })
 </script>
 
@@ -91,8 +86,8 @@
   </div>
   <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content">
-      <li>
+    <ul class="menu p-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4">
+      <li class="pt-6">
         <button class="btn btn-sm" on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
@@ -101,6 +96,8 @@
       </li>
       <li></li>
       <li><DomainFilter {noteDeri} /></li>
+      <!-- HACK! -->
+      <li class="fixed bottom-8 left-12"><PriorityFilter noteArr={noteDeri.noteArr} /></li>
       <li hidden>
         <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
       </li>
@@ -108,17 +105,7 @@
   </div>
 </div>
 
-<dialog id="modal$" class="modal" bind:this={modal} on:close={() => ($modalOpenStore = false)}>
-  <div class="modal-box">
-    <!-- <h3 class="font-bold text-lg">{note_data}</h3> -->
-    <p class="py-4">
-      {$modalStore}
-    </p>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+<CmModal />
 
 <div class="toast">
   {#each $toastStore as [toastMsg, n] (n)}
@@ -127,3 +114,21 @@
     </div>
   {/each}
 </div>
+
+<style>
+  /* @container (min-width: 16.15rem) {
+    .foo {
+      width: 16.15rem;
+    }
+  }
+  @container (min-width: 32.15rem) {
+    .foo {
+      width: 32.15rem;
+    }
+  }
+  @container (min-width: 48.15rem) {
+    .foo {
+      width: 48.15rem;
+    }
+  } */
+</style>

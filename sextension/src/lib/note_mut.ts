@@ -1,11 +1,10 @@
-import { NoteSync, chainN, domainTitle, domain_title, funLog, hostname, invertMap, logIfError, type Notes, type SourceData } from "shared"
-import { createMock } from "shared"
-import type { InsertNotes, PendingNote, Src } from "shared"
-import { option as O, record as R, string as S, map as M } from "fp-ts"
-import { pipe, flow, flip, identity } from "fp-ts/lib/function"
-import { derived, get, writable, type Readable, type Writable } from "svelte/store"
+import { NoteSync, chainN, domainTitle, type Notes } from "shared"
+import type { Src } from "shared"
+import { option as O } from "fp-ts"
+import { pipe } from "fp-ts/lib/function"
+import { derived, writable, type Readable, type Writable } from "svelte/store"
 
-const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
+// const hostnameStr = (url: string) => O.getOrElse(() => "")(hostname(url))
 
 export class NoteMut {
   ns: NoteSync
@@ -19,7 +18,7 @@ export class NoteMut {
     this.panel = derived([this.ns.noteStore, this.currSrc, this.ns.invStuMapStore], ([ns, srcOpt, isms]) =>
       pipe(
         srcOpt,
-        O.chain(domainTitle),
+        O.map(domainTitle),
         chainN(n => isms.get(n)),
         O.map(source_id => [...ns.values()].filter(n => n.source_id == source_id)),
         O.getOrElse<Notes[]>(() => [])),

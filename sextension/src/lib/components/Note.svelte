@@ -1,10 +1,9 @@
 <script lang="ts">
   import { _Note as Note, type Notes } from "shared"
-  import type { NoteDeri, NoteSync, SyncLike } from "shared"
+  import type { NoteDeri, SyncLike } from "shared"
   import { deleteSnippet, gotoSnippet } from "$lib/utils"
   import { some, type Option } from "fp-ts/lib/Option"
   import type { UUID } from "crypto"
-  import type { Readable } from "svelte/store"
   export let syncLike: SyncLike & Pick<NoteDeri, "allTags">
   const { allTags } = syncLike
   export let note_data: Notes & { searchArt: Option<never> } // no searching

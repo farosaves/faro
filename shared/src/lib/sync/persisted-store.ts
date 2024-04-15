@@ -1,7 +1,6 @@
 import { writable as internal, type Writable } from "svelte/store"
 import { option as O, either as E } from "fp-ts"
-import { pipe } from "fp-ts/lib/function"
-import type { ArgType } from "$lib/semaphore"
+import { flow, pipe } from "fp-ts/lib/function"
 import { get, set } from "idb-keyval"
 import { compressSync, decompressSync, strFromU8, strToU8 } from "fflate"
 
@@ -36,11 +35,9 @@ export interface Options<T> {
 }
 function getStorage(type: StorageType) {
   if (type == "indexedDB") {
-    // const setItem = (key: string, val: string) => chrome.storage.local.set(Object.fromEntries([[key, val]]))
-    // const getItem = (key: string) => chrome.storage.local.get(key).then(x => x[key] as string | undefined)
     const setItem = (key: string, val: string) => set(key, compressSync(strToU8(val)))
-    const getItem = (key: string) => get(key).then(decompressSync).then(strFromU8)
-
+    const getItem = async (key: string) =>
+      pipe(await get(key), O.fromNullable, O.map(flow(decompressSync, strFromU8)), O.toUndefined)
     return { setItem, getItem }
   }
   return type === "local" ? localStorage : sessionStorage

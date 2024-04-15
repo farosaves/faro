@@ -22,6 +22,7 @@
     </ul>
   </div>
   <div class="navbar-end">
+    <a class="btn btn-ghost" href="mailto:pawel@farosapp.com">Contact</a>
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn m-1">Theme</div>
       <div class="dropdown-content join join-vertical">

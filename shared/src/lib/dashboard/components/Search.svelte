@@ -1,7 +1,7 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import { shortcut, type NoteEx, type NoteSync } from "shared"
-  import { array as A, option as O, readonlyArray as RA } from "fp-ts"
+  import { shortcut } from "shared"
+  import { array as A } from "fp-ts"
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
 
@@ -34,7 +34,7 @@
   <div class="join w-full">
     {#each entries as [ariaLabel, value] (value)}
       <input
-        class="join-item btn grow"
+        class="join-item btn grow btn-sm"
         type="checkbox"
         name="options"
         bind:group={selectedKeys}

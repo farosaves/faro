@@ -5,19 +5,19 @@
   import IconTagOff from "~icons/tabler/tag-off"
 
   import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O, map as M, string as S } from "fp-ts"
-  import { desc, NoteDeri, type NoteEx, type NoteSync } from "shared"
-  import { derived, writable } from "svelte/store"
-  import { exclTagSet, exclTagSets, tagFilter } from "../filterSortStores"
+  import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
+  import { desc, NoteDeri } from "shared"
+  import { derived } from "svelte/store"
+  import { exclTagSet, exclTagSets } from "../filterSortStores"
   import { modalOpenStore } from "shared"
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteDeri.noteArr, (x) =>
+  const tags_counts = derived(noteDeri.noteArr, x =>
     pipe(
       x,
-      A.flatMap((note) => note.tags || []),
+      A.flatMap(note => note.tags || []),
       NA.groupBy(identity),
-      R.map((x) => x.length),
+      R.map(x => x.length),
       R.toArray,
     )
       .concat(
@@ -41,7 +41,7 @@
     })
   const onDblClick = (tag: string) => () =>
     ($exclTagSets.sets[$exclTagSets.currId] = new Set(
-      $tags_counts.map(([x, y]) => x).filter((t) => t != tag),
+      $tags_counts.map(([x, y]) => x).filter(t => t != tag),
     ))
 
   // let modalPotential: boolean

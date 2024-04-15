@@ -64,7 +64,6 @@ export const cardsUpdateSchema = z.object({
 
 export const notesRowSchema = z.object({
   context: z.string().nullable(),
-  context_html: z.string().nullable(),
   created_at: z.string(),
   highlights: z.array(z.string()),
   id: z.string(),
@@ -75,13 +74,13 @@ export const notesRowSchema = z.object({
   snippet_uuid: z.string().nullable(),
   source_id: z.string(),
   tags: z.array(z.string()),
+  url: z.string(),
   user_id: z.string(),
   user_note: z.string().nullable(),
 })
 
 export const notesInsertSchema = z.object({
   context: z.string().optional().nullable(),
-  context_html: z.string().optional().nullable(),
   created_at: z.string().optional(),
   highlights: z.array(z.string()),
   id: z.string(),
@@ -92,13 +91,13 @@ export const notesInsertSchema = z.object({
   snippet_uuid: z.string().optional().nullable(),
   source_id: z.string(),
   tags: z.array(z.string()).optional(),
+  url: z.string(),
   user_id: z.string().optional(),
   user_note: z.string().optional().nullable(),
 })
 
 export const notesUpdateSchema = z.object({
   context: z.string().optional().nullable(),
-  context_html: z.string().optional().nullable(),
   created_at: z.string().optional(),
   highlights: z.array(z.string()).optional(),
   id: z.string().optional(),
@@ -109,6 +108,7 @@ export const notesUpdateSchema = z.object({
   snippet_uuid: z.string().optional().nullable(),
   source_id: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  url: z.string().optional(),
   user_id: z.string().optional(),
   user_note: z.string().optional().nullable(),
 })
@@ -142,27 +142,27 @@ export const profilesUpdateSchema = z.object({
 
 export const sourcesRowSchema = z.object({
   created_at: z.string(),
+  depr_url: z.string().nullable(),
   DOI: z.string().nullable(),
   domain: z.string().nullable(),
   id: z.string(),
   title: z.string().nullable(),
-  url: z.string().nullable(),
 })
 
 export const sourcesInsertSchema = z.object({
   created_at: z.string().optional(),
+  depr_url: z.string().optional().nullable(),
   DOI: z.string().optional().nullable(),
   domain: z.string().optional().nullable(),
   id: z.string(),
   title: z.string().optional().nullable(),
-  url: z.string().optional().nullable(),
 })
 
 export const sourcesUpdateSchema = z.object({
   created_at: z.string().optional(),
+  depr_url: z.string().optional().nullable(),
   DOI: z.string().optional().nullable(),
   domain: z.string().optional().nullable(),
   id: z.string().optional(),
   title: z.string().optional().nullable(),
-  url: z.string().optional().nullable(),
 })

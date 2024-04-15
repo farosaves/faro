@@ -1,12 +1,12 @@
 <script lang="ts">
   export let data
   const { supabase, mock } = data
-  import { option as O, map as M } from "fp-ts"
+  import { map as M } from "fp-ts"
   import { Dashboard, NoteSync, persisted } from "shared"
   import { onMount } from "svelte"
   import { get } from "svelte/store"
   import * as devalue from "devalue"
-  const noteSync = new NoteSync(supabase, undefined)
+  const noteSync = new NoteSync(supabase, undefined, async () => true)
   noteSync.noteStore = persisted("mockNoteStore", new Map(), { serializer: devalue })
   noteSync.stuMapStore = persisted("mockStuMapStore", new Map(), { serializer: devalue })
   noteSync.actionQueue.queueStore = persisted("mockActionQueue", new Map(), { serializer: devalue })

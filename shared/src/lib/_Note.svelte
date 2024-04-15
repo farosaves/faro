@@ -2,10 +2,10 @@
   import type { MouseEventHandler } from "svelte/elements"
 
   import type { SyncLike } from "./sync/sync"
-  import { option as O, array as A, readonlyArray as RA } from "fp-ts"
+  import { option as O, array as A } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
-  import { modalOpenStore, modalStore, replacer, toastNotify } from "./stores"
+  import { modalOpenStore, modalNote, replacer, toastNotify } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -25,12 +25,17 @@
   let this_element: Element
   $: tags = note_data.tags || []
 
+  const replaceAll = (escaped: string, replacer: (c: string) => string) => {
+    for (const hl of note_data.highlights) escaped = escaped.replace(hl, $replacer)
+    return escaped
+  }
+
   $: text = pipe(
     note_data.searchArt,
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return note_data.highlights ? escaped.replace(note_data.highlights[0], $replacer) : escaped
+        return note_data.highlights ? replaceAll(escaped, $replacer) : escaped
       }, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
@@ -66,25 +71,17 @@
       (note_data["highlightOnMount"] = false)
   })
 
-  const loadModalText = () =>
-    note_data.highlights
-      ? escapeHTML(note_data.context || "").replaceAll(note_data.highlights[0], $replacer)
-      : escapeHTML(note_data.context || "")
-
   let hovered = false
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- on:mouseenter={loadModalText} -->
 <div
   class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
   on:mouseenter={() => (hovered = true)}
   on:mouseleave={() => (hovered = false)}
   class:highlighting
   on:contextmenu|preventDefault={() => {
-    $modalStore = "Created at: " + note_data.created_at
-    // if (myModal) myModal.showModal()
-    // loadModalText()
+    $modalNote = O.some(note_data)
     $modalOpenStore = true
   }}>
   <input type="checkbox" class="-z-10" bind:checked={isOpen} />
@@ -96,8 +93,6 @@
       on:click={async () => {
         const save_showing_content = isOpen
         closeAll()
-
-        // svelte stores....
         await sleep(1)
         isOpen = !save_showing_content
       }}
@@ -110,16 +105,18 @@
     <div class="join w-full">
       <!-- <button class="btn btn-xs join-item grow" on:click={() => {}}>
         Pin / Unpin</button> -->
-      <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
-        <button
-          class="btn btn-xs text-error"
-          on:click={() => {
-            syncLike.deleteit(note_data.id)
-            // prettier-ignore
-            pipe(deleteCbOpt, O.map(f => f()))
-            closeAll()
-          }}>DELETE</button>
-      </StarArchive>
+      {#if hovered}
+        <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
+          <button
+            class="btn btn-xs text-error"
+            on:click={() => {
+              syncLike.deleteit(note_data.id)
+              // prettier-ignore
+              pipe(deleteCbOpt, O.map(f => f()))
+              closeAll()
+            }}>DELETE</button>
+        </StarArchive>
+      {/if}
     </div>
   </div>
   <button

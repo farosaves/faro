@@ -1,5 +1,5 @@
 import { option as O, record as R, string as S, array as A, map as M } from "fp-ts"
-import { flip, flow, identity, pipe } from "fp-ts/lib/function"
+import { pipe } from "fp-ts/lib/function"
 import type { Notes } from "$lib/db/types"
 import type { Patch } from "immer"
 import { getOrElse } from "$lib/utils"
@@ -11,7 +11,7 @@ export type PatchTup = { patches: Patch[], inverse: Patch[] }
 
 const _undo_stack: PatchTup[] = []
 const _redo_stack: PatchTup[] = []
-export const xxdoStacks = (storage: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage, serializer: devalue })
+export const xxdoStacks = (storage?: StorageType) => persisted("xxdoStacks", { undo: _undo_stack, redo: _redo_stack }, { storage, serializer: devalue })
 
 export type NotesOps = {
   op: "upsert" | "delete"

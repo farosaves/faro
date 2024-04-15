@@ -1,8 +1,8 @@
 <script lang="ts">
   import { option as O } from "fp-ts"
-  import { supabase, type Session } from "$lib/chromey/bg"
+  import { type Session } from "$lib/chromey/bg"
   import { RemoteStore } from "$lib/chromey/messages"
-  import { Dashboard, NoteSync, sessStore } from "shared"
+  import { Dashboard, sessStore } from "shared"
   import { getSyncLikeNStores } from "$lib/bgSync"
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "../background"
@@ -15,7 +15,7 @@
   })
 
   const noteSync = getSyncLikeNStores(TB)
-  noteSync.noteStore.subscribe((s) => console.log("updated remote noteStore", s.size))
+  noteSync.noteStore.subscribe(s => console.log("updated remote noteStore", s.size))
   // session.subscribe(O.map((sess) => noteSync.setUser_id(sess.user.id)))
 
   console.log("henlo")

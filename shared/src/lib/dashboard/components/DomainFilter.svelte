@@ -1,17 +1,16 @@
 <script lang="ts">
-  import type { NoteEx, NoteSync, Notes, SourceData } from "shared"
-  import { derived, type Readable } from "svelte/store"
-  import { record as R, array as A, option as O, nonEmptyArray as NA } from "fp-ts"
+  import type { SourceData } from "shared"
+  import { derived } from "svelte/store"
+  import { record as R, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
   import { desc, hostname } from "shared"
   import { uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   export let noteDeri: NoteDeri
-  const hostnameStr = (n: SourceData) => O.getOrElse(() => "")(hostname(n.sources.url))
   const domains = derived(noteDeri.noteArr, (x) =>
     pipe(
       x,
-      NA.groupBy(hostnameStr),
+      NA.groupBy((n) => n.sources.domain),
       R.map((ns) => ns.length),
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),

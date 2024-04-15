@@ -11,5 +11,6 @@
       "source.fixAll.eslint": "explicit"
     }
   },
-  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen"
+  "julia.environmentPath": "/Users/pawelparadysz/Projects/flashcardiser/oxygen",
+  "python.analysis.typeCheckingMode": "basic"
 }

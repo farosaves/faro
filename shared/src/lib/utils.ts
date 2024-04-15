@@ -1,12 +1,12 @@
-import type { Notess, SourceData, SupabaseClient } from "./db/typeExtras"
-import { array as A, task as T } from "fp-ts"
+import type { SourceData, SupabaseClient } from "./db/typeExtras"
+import { array as A } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
-import { option as O, record as R, number as N } from "fp-ts"
+import { option as O } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import type { LazyArg } from "fp-ts/lib/function"
-import { derived, get, writable, type Writable } from "svelte/store"
-import { Subject, Observable } from "rxjs"
-import type { Draft, Patch } from "immer"
+import { writable, type Writable } from "svelte/store"
+import { Observable } from "rxjs"
+import type { Patch } from "immer"
 import { v5 } from "uuid"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
@@ -20,7 +20,12 @@ import type { Notes } from "./db/types"
 import type { UUID } from "crypto"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
+
 export type Src = SourceData["sources"]
+// strips trailing /
+export const delTr = (s: string) => s.replace(/\/$/, "")
+export const API_ADDRESS = delTr(import.meta.env.VITE_PI_IP as string)
+
 
 export const namespaceUuid: UUID = "0646f4ce-17c9-4a66-963e-280982b6ac8a"
 export const uuidv5 = (s: string) => v5(s, namespaceUuid) as UUID
@@ -28,10 +33,18 @@ export const uuidv5 = (s: string) => v5(s, namespaceUuid) as UUID
 export const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 
 export const browser = () => typeof window !== "undefined" && typeof document !== "undefined" // for SSR
+export const ctrlKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2318" : "Ctrl"
+export const altKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2325" : "Alt"
+
 
 export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 
 export const mapSome = <U, T>(f: (...args: [U]) => O.Option<T>) => flow(A.map(f), A.flatMap(A.fromOption))
+
+export const mapElse = <T>(v: O.Option<T>) =>
+  <U>(f: (a: T) => U, def: U) =>
+    pipe(v, O.map(f), O.getOrElse(() => def))
+
 
 export const partition_by_id = (id: number) => A.partition((v: { id: number }) => v.id == id)
 export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id !== id)
@@ -61,8 +74,8 @@ export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const hostname = (s: string) => O.tryCatch(() => new URL(s).hostname)
 
-export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
-export const domainTitle = (src: Src) => O.map(s => [s, src.title].join(";"))(hostname(src.url))
+// export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
+export const domainTitle = (src: Src) => [src.domain, src.title].join(";")
 
 // sort descendingly but for negative scores filter out
 export const filterSort
@@ -72,20 +85,19 @@ export const filterSort
 
 export const chainN = <T, U>(f: (a: T) => U | undefined | null) => O.chain(flow(f, O.fromNullable))
 
-type T = {
+// type T = {
+//   title: string | null
+//   urls: string[]
+// } | undefined
+// export const fillInTitleUrl = (v: T) => {
+//   return { title: v?.title || "missing Title", url: v?.urls[0] || "" }
+// }
+
+type _T = {
   title: string | null
-  url: string | null
+  domain: string | null
 } | undefined
-export const fillInTitleUrl = (v: T) => {
-  const _get = (u: typeof v, fld: "title" | "url", missing: string) =>
-    pipe(
-      u,
-      O.fromNullable,
-      chainN(v => v[fld]),
-      O.fold(() => missing, identity),
-    )
-  return { title: _get(v, "title", "missing Title"), url: _get(v, "url", "") }
-}
+export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
 
 // https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
 export const toStore = <T>(Sub: Observable<T>, init: T) => {

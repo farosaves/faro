@@ -1,9 +1,9 @@
-import type { NoteEx, SupabaseClient } from "$lib"
+import type { NoteEx } from "$lib"
 import { record as R, array as A, nonEmptyArray as NA, string as S, option as O } from "fp-ts"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
-import type { NoteStoreR, NoteSync, STUMapStoreR, SyncLike } from "./sync"
+import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe } from "fp-ts/lib/function"
-import { fillInTitleUrl, filterSort, funLog } from "$lib"
+import { fillInTitleDomain, filterSort } from "$lib"
 import type { UUID } from "crypto"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
@@ -43,7 +43,7 @@ export class NoteDeri {
     // this.nq = this.sb.from("notes")
     this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([n, s]) => {
       const vals = [...n.values()]
-      return vals.map(n => ({ ...n, sources: fillInTitleUrl(s.get(n.source_id as UUID)), searchArt: O.none }))
+      return vals.map(n => ({ ...n, sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none }))
     })
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)

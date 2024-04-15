@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { makeQCH, makeQuote } from "../../../lib/trpc/api/fun"
+import { makeQCH } from "../../../lib/trpc/api/fun"
 
 test("normal", () => {
   expect(

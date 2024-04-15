@@ -5,6 +5,7 @@ import Tags from "./Tags.svelte"
 import MyTags from "./MyTags.svelte"
 import StarArchive from "./StarArchive.svelte"
 import Dashboard from "./dashboard/Dashboard.svelte"
+import CmModal from "./dashboard/components/CmModal.svelte"
 export * from "./sync/sync"
 export * from "./sync/deri"
 export * from "./utils"
@@ -18,7 +19,9 @@ import * as schemas from "./db/schemas"
 export * from "./stores"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
-export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, persisted, StarArchive, Dashboard }
+export * from "./semaphore"
+
+export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
 

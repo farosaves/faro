@@ -1,8 +1,15 @@
 import type { Session } from "@supabase/supabase-js"
 import { derived, writable } from "svelte/store"
 import { option as O, array as A } from "fp-ts"
+import type { Action } from "svelte/action"
+import type { Notes } from "./db/types"
 
 export const modalOpenStore = writable(false)
+export const modalSub: Action<HTMLDialogElement> = (modal) => {
+  const unsub = modalOpenStore.subscribe(n => n && modal.showModal())
+  return { destroy: unsub }
+}
+
 
 const _sess: O.Option<Session> = O.none
 
@@ -18,7 +25,7 @@ export const updateTheme = () =>
   themeStore.set(
     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme)
 
-export const modalStore = writable("")
+export const modalNote = writable<O.Option<Notes>>(O.none)
 
 let nToast = 0
 export const toastStore = writable<[string, number][]>([])

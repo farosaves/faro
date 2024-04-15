@@ -1,8 +1,8 @@
-import { API_ADDRESS, getSession } from "$lib/utils"
-import { option as O } from "fp-ts"
-import { pushStore, optimisticNotes, getHighlightedText } from "$lib/chromey/messages"
+import { getSession } from "$lib/utils"
+import { option as O, array as A } from "fp-ts"
+import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { DEBUG, NoteDeri, NoteSync, domain_title, escapeRegExp, funLog, hostname, schemas, type NoteEx, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, hostname, type Notes, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -11,10 +11,11 @@ import { NoteMut } from "$lib/note_mut"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
+import { pipe } from "fp-ts/lib/function"
 
 const T = trpc2()
 
-const note_sync = new NoteSync(supabase, undefined)
+const note_sync = new NoteSync(supabase, undefined, T.online.query)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
@@ -33,11 +34,12 @@ const onUser_idUpdate = O.match(
     note_sync.setUser_id(user_id)
     note_sync.refresh_sources()
     note_sync.refresh_notes()
-    note_sync.sub()
   })
 user_id.subscribe(onUser_idUpdate)
 
 const refresh = async (online = true) => {
+  const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+  if (tab) updateCurrUrl(tab)
   const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
@@ -76,8 +78,11 @@ const appRouter = (() => {
     undo: t.procedure.query(() => note_sync.undo()),
     redo: t.procedure.query(() => note_sync.redo()),
     newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
-
-
+    updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
+    // forward t
+    singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
+    singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
+      pipe(get(note_mut.panel), A.findFirst(a => a.snippet_uuid == input), O.toNullable)),
   })
 })()
 export type AppRouter = typeof appRouter
@@ -88,20 +93,22 @@ createChromeHandler({
   createContext,
 })
 
-const currSrc = writable<Src>({ url: "", title: "" })
+const currSrc = writable<Src>({ domain: "", title: "" })
 pushStore("currSrc", currSrc)
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
-  if (url && title) currSrc.set({ url, title })
-  const source_id = note_mut.setLocalSrcId({ url: url || "", title: title || "" })
+  // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
+  const domain = O.toNullable(hostname(url || "")) // "" is fine here because it will fail later
+  if (domain && title) currSrc.set({ domain, title })
+  const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })
 }
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
+
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  console.log(homeRegexp)
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)

@@ -2,30 +2,29 @@
 
 // @ts-ignore
 import { persisted, type StorageType } from "./persisted-store"
-import type { InsertNotes, Notes } from "../db/types"
+import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
-import { derived, get, writable, type Readable, type Updater, type Writable } from "svelte/store"
+import { derived, get, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
   neq,
-  fillInTitleUrl,
   getNotes,
   unwrapTo,
   updateStore,
   invertMap,
   type Src,
   domainTitle,
-  chainN,
   uuidv5,
+  fillInTitleDomain,
 } from "$lib/utils"
-import { option as O, record as R, string as S, array as A, either as E, map as M } from "fp-ts"
+import { option as O, string as S, map as M } from "fp-ts"
 
-import { flip, flow, pipe } from "fp-ts/lib/function"
+import { flow, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
-import { getNotesOps, xxdoStacks, type PatchTup } from "./xxdo"
+import { xxdoStacks, type PatchTup } from "./xxdo"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 // import * as lzString from "lz-string"
@@ -35,7 +34,7 @@ export type NoteStoreR = Readable<ReturnType<typeof validateNs>>
 const allNotesR: ReturnType<typeof validateNs> = new Map()
 
 type STUMap = Map<UUID, Src>
-const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.string(), url: z.string() })).parse(o) as STUMap
+const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.string(), domain: z.string() })).parse(o) as STUMap
 export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
 
@@ -63,9 +62,10 @@ export class NoteSync {
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   actionQueue: ActionQueue
+  _checkOnline: () => Promise<true>
   DEBUG: boolean
 
-  constructor(sb: SupabaseClient, user_id: string | undefined, storage: StorageType = "local") {
+  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<true>, storage?: StorageType) {
     this.sb = sb
     this.noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
     // this block shall ensure local data gets overwritten on db schema changes
@@ -74,13 +74,14 @@ export class NoteSync {
     this.stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
     this.stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
     this.invStuMapStore = derived(this.stuMapStore,
-      flow(M.map(domainTitle), M.compact, invertMap))
+      flow(M.map(domainTitle), invertMap))
 
     this.xxdoStacks = xxdoStacks(storage)
 
     this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore)
 
-    this._user_id = user_id as UUID | undefined // TODO: here
+    this._user_id = user_id as UUID | undefined
+    this._checkOnline = checkOnline
 
     this.DEBUG = import.meta.env.VITE_DEBUG || false
   }
@@ -88,8 +89,10 @@ export class NoteSync {
   online = () => this._user_id !== undefined
 
   setUser_id = async (user_id: string | undefined) => {
-    this._user_id = user_id as UUID | undefined // TODO: here
-    if (user_id === undefined) return
+    this._user_id = user_id as UUID | undefined
+    const online = await this._checkOnline().catch(() => false)
+    if (user_id === undefined || !online) return
+    this._sub()
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
     await this.refresh_sources()
@@ -104,7 +107,7 @@ export class NoteSync {
         pipe(
           (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
           O.fromNullable,
-          O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleUrl(n)]))),
+          O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
         ),
       ),
     )
@@ -123,16 +126,14 @@ export class NoteSync {
   getsetSource_id = async (src: Src) => {
     const local = this.getSource_id(src)
     if (O.isSome(local)) return local.value
-    const newId = pipe(domainTitle(src), O.map(uuidv5))
-    if (O.isNone(newId)) throw new Error("coudlnt create source id for source: " + JSON.stringify(src))
-    const id = newId.value
+    const id = uuidv5(domainTitle(src))
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
     await this.actionQueue.actSrc({ ...src, id })
     return id
   }
 
   // chainN(get(this.invStuMapStore).get), DOESNT WORK
-  getSource_id = flow(domainTitle, chainN(n => get(this.invStuMapStore).get(n)))
+  getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
   newNote = async (note: PendingNote, src: Src) => {
     const source_id = await this.getsetSource_id(src)
@@ -180,6 +181,13 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
+  updateNote = async (note: Notes) => {
+    const patchTup = updateStore(this.noteStore)((ns) => {
+      ns.set(note.id, note)
+    })
+    this.act(patchTup, true)
+  }
+
   tagChange = (noteId: string) => async (tags: string[]) => {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.get(noteId)!.tags = tags
@@ -207,7 +215,7 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
-  sub = () => {
+  _sub = () => {
     this.sb
       .channel("notes")
       .on(

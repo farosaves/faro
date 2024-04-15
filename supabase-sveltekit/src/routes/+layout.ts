@@ -1,5 +1,5 @@
-// export const ssr = false;
-// export const prerender = false;
+// export const ssr = false
+// export const prerender = false
 
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public"
 import type { Database } from "shared"

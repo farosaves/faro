@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { exclTagSet, exclTagSets } from "../filterSortStores"
-  import { option as O, array as A, string as S } from "fp-ts"
-  import { MyTags, sleep, type NoteSync, NoteDeri } from "shared"
-  import { derived, get, writable } from "svelte/store"
+  import { exclTagSet } from "../filterSortStores"
+  import { MyTags, sleep, NoteDeri } from "shared"
+  import { writable } from "svelte/store"
 
   // type OptionValueType<T> = T extends O.Option<infer R> ? R : never
   const id = "a"
@@ -13,7 +12,7 @@
   let tags = writable<string[]>([])
 
   // as long as open read from the top
-  $: if ($isOpen) $tags = $allTags.filter((x) => !$exclTagSet.has(x))
+  $: if ($isOpen) $tags = $allTags.filter(x => !$exclTagSet.has(x))
   const toggleOpen = async (e: MouseEvent) => {
     const _isOpen = $isOpen
     // close_all_notes()

@@ -1,27 +1,28 @@
 <script lang="ts">
+  import LoginPrompt from "$lib/components/LoginPrompt.svelte"
+  import { trpc } from "$lib/trpc/client.js"
   export let data
   const { supabase } = data
-  import { option as O, map as M } from "fp-ts"
-  import { Dashboard, NoteSync, sessStore } from "shared"
+  import { option as O } from "fp-ts"
+  import { DEBUG, Dashboard, NoteSync, sessStore } from "shared"
   import { onMount } from "svelte"
-  const noteSync = new NoteSync(supabase, undefined)
+  const T = trpc()
+  const noteSync = new NoteSync(supabase, undefined, T.online.query)
   // console.log(session?.user.id)
   // console.log(noteSync.noteStore)
   let showLoginPrompt = false
+  // noteSync.noteStore.subscribe((n) => console.log(n))
   onMount(async () => {
     const {
       data: { session },
     } = await supabase.auth.getSession()
     sessStore.set(O.fromNullable(session))
-    if (session) noteSync.setUser_id(session.user.id)
-
+    DEBUG && console.log(session)
+    if (session) await noteSync.setUser_id(session.user.id)
     showLoginPrompt = O.isNone($sessStore)
-    if (O.isSome($sessStore)) {
-      noteSync.setUser_id($sessStore.value.user.id) // in case updated
-      noteSync.sub()
-      setTimeout(() => noteSync.refresh_sources().then(() => noteSync.refresh_notes()), 200)
-    }
   })
 </script>
 
+<button class="btn" on:click={() => {}}>ref</button>
+<LoginPrompt {showLoginPrompt} />
 <Dashboard {noteSync} />
