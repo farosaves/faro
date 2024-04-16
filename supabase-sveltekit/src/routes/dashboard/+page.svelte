@@ -23,6 +23,6 @@
   })
 </script>
 
-<button class="btn" on:click={() => {}}>ref</button>
+<!-- <button class="btn" on:click={() => {}}>ref</button> -->
 <LoginPrompt {showLoginPrompt} />
 <Dashboard {noteSync} />
