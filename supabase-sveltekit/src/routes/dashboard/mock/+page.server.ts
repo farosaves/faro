@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   // redirect(302, "/login")http://localhost:5173/notes/95db5279-4c93-405b-a734-6ed1aa3bbf15
   const ids = [0, 0, 0, 0, 0].map(_ => crypto.randomUUID())
   const stuMap: STUMap = pipe(new Map([
-    [ids[0], { title: "Hey you!", url: url.origin + "/login" }],
+    [ids[0], { title: "Hey YC!", url: url.origin + "/login" }],
     [ids[1], { title: "Tips", url: url.origin }],
     [ids[2], { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" }],
     [ids[3], { title: "Also check out!", url: url.origin + "/ext.zip" }],
@@ -35,10 +35,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     source_id: ids[n],
     url: stuMap.get(ids[n])!.domain,
   })
-  const kalId = "95db5279-4c93-405b-a734-6ed1aa3bbf15"
+  const kalId = "99b504bd-652a-44fc-b8d3-3450f78169ce"
   const { data: _kal } = await T.singleNote.query(kalId)
   const kal = _kal
-    ? ({ ..._kal as Notes, source_id: ids[2] })
+    ? ({ ..._kal as Notes, source_id: ids[2], prioritised: -5 })
     : ({
         quote:
         "This links to a wikipedia page about a plant. Normally content of a note would be a snippet taken from the page.",
@@ -47,10 +47,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
   const mocknoteArr: Notes[] = [
     {
-      quote: "You're not logged in! Double click me!",
+      quote: "Use the login credentials from the application! Double click me for login",
       tags: ["!!!"],
       ...defs(0),
-      highlights: ["not logged in!"],
+      highlights: ["click me"],
     },
     {
       quote: "You can play around with the tags.\nAdd one clicking below",
@@ -67,12 +67,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       tags: ["tip"],
       ...defs(1),
     },
-    kal,
+    // kal,
     {
-      quote: "The chrome extension! To save stuff. I'll add it to marketplace soon..",
+      quote: "The chrome extension (not yet on marketplace)",
       tags: [],
       ...defs(3),
-      highlights: ["chrome extension"],
+      highlights: [],
     },
     {
       quote: "and the search bar on the left.",
