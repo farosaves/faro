@@ -100,8 +100,10 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
   // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
   const domain = O.toNullable(hostname(url || "")) // "" is fine here because it will fail later
+  DEBUG && console.log(domain, title)
   if (domain && title) currSrc.set({ domain, title })
   const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })
+  console.log(source_id)
 }
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
