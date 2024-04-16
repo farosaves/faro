@@ -12,12 +12,12 @@
   import { modalOpenStore } from "shared"
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteDeri.noteArr, x =>
+  const tags_counts = derived(noteDeri.noteArr, (x) =>
     pipe(
       x,
-      A.flatMap(note => note.tags || []),
+      A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
-      R.map(x => x.length),
+      R.map((x) => x.length),
       R.toArray,
     )
       .concat(
@@ -41,7 +41,7 @@
     })
   const onDblClick = (tag: string) => () =>
     ($exclTagSets.sets[$exclTagSets.currId] = new Set(
-      $tags_counts.map(([x, y]) => x).filter(t => t != tag),
+      $tags_counts.map(([x, y]) => x).filter((t) => t != tag),
     ))
 
   // let modalPotential: boolean
@@ -66,7 +66,7 @@
   }
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] border-b-2 border-t-2 border-neutral">
+<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
