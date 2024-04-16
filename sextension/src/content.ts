@@ -155,8 +155,8 @@ const onLoad = () => sem.use(async () => {
     batchDeserialize(sers)
     const goto = new URLSearchParams(window.location.search).get("highlightUuid")
     await sleep(50)
-    if (goto) gotoText(goto)
     DEBUG && console.log("goto", goto)
+    if (goto) gotoText(goto)
     loaded = true
     const singleNote_id = new URLSearchParams(window.location.search).get(note_idKey)
     if (!singleNote_id) return
