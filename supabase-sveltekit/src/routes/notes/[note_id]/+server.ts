@@ -32,7 +32,7 @@ export const GET = async ({ params }) => {
     window.addEventListener("load", f)
     setTimeout(f, 500)
   </script>`)
-  $("head").prepend("<meta property=\"og:image\" content=\"preview.png\"/>") // ! hack
+  $("head").prepend(`<meta property="og:image" content="${API_ADDRESS}/preview.png"/>`) // ! hack
 
   return new Response($.html(), { headers: { "Content-Type": "text/html" } })
 }
