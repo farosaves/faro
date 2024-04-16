@@ -27,7 +27,7 @@
 </script>
 
 <details>
-  <summary> Domains </summary>
+  <summary> Sites </summary>
   <ul class="menu bg-base-200 w-56 rounded-box">
     <li>
       <label class="label cursor-pointer">

@@ -1,7 +1,7 @@
-import { hostname, ifErr, logIfError, updateStore, type Src, applyPatches } from "$lib/utils"
+import { ifErr, logIfError, updateStore, type Src, applyPatches } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./xxdo"
-import { either as E, option as O, array as A, string as S, tuple as T } from "fp-ts"
+import { either as E, array as A, string as S, tuple as T } from "fp-ts"
 import { type Writable, get } from "svelte/store"
 import { persisted } from "./persisted-store"
 import * as devalue from "devalue"
@@ -80,8 +80,7 @@ export class ActionQueue {
 
   pushActionSrc = async (src: Src & { id: UUID }) => {
     // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
-    const domain = O.toNullable(hostname(src.domain))
-    const { id, title } = src
+    const { id, title, domain } = src
     // TODO HERE
     const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(logIfError("insert sources"))
     const success = (error == null)
@@ -89,7 +88,7 @@ export class ActionQueue {
     if (success) return success
     else { // if it is in db - e.g. I'm on the plane and added source but someone online did it already in the meantime - but that's fallback eventuality
       const { data } = await this.sb.from("sources").select().eq("id", id).single().then(logIfError("check for sources"))
-      return (data?.domain == domain && data?.title == title)
+      return (data?.domain == src.domain && data?.title == title)
     }
   }
 
