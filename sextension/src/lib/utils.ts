@@ -1,6 +1,6 @@
 // import { PUBLIC_PI_IP } from '$env/static/public';
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { API_ADDRESS, DEBUG, logIfError } from "shared"
+import { API_ADDRESS, DEBUG, funLog, logIfError } from "shared"
 import { deleteSnippetMsg } from "./chromey/messages"
 import type { UUID } from "crypto"
 
@@ -12,7 +12,11 @@ export type ATokens = { access_token: string, refresh_token: string } | undefine
 export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) {
     // here log me out
-    supabase.auth.signOut({ scope: "local" }).then(logIfError("getSession"))
+    // supabase.auth.signOut({ scope: "local" }).then(logIfError("getSession"))
+    // @ts-expect-error
+    await supabase.auth.setSession(undefined).catch(funLog("getSession none"))
+    const x = await supabase.auth.getSession()
+    console.log(x)
     return null
   }
   const { access_token, refresh_token } = tokens
