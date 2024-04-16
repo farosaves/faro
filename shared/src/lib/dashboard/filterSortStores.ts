@@ -15,6 +15,7 @@ export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
 export const exclTagSet = derived(exclTagSets, ({ sets, currId }) => sets[currId])
 
 type _A = NoteEx & { priority: number }
+
 export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => ({
   ...n,
   priority: pipe(
@@ -34,7 +35,8 @@ export const priorityFilter = derived(selectedPriorities, p => (n: _A) => {
   if (!p.has(tr[(n.prioritised).toString() as "-5" | "0" | "5"])) n.priority = 0
   return n
 })
-
+export const twoPlusTags = writable(false)
+export const twoPlusTagFilter = derived(twoPlusTags, useIt => (n: _A) => useIt ? ({ ...n, priority: n.priority * +(n.tags.length > 1) }) : n)
 
 export const uncheckedDomains = writable(new Set<string>())
 export const domainFilter = derived(uncheckedDomains, d => (n: _A) => {

@@ -6,10 +6,9 @@
 
   import { identity, pipe } from "fp-ts/lib/function"
   import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
-  import { desc, NoteDeri } from "shared"
+  import { desc, NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
-  import { exclTagSet, exclTagSets } from "../filterSortStores"
-  import { modalOpenStore } from "shared"
+  import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
   const tags_counts = derived(noteDeri.noteArr, (x) =>
@@ -54,10 +53,10 @@
     return true
   }
   const onContextMenu = (tag: string) => () => {
-    if (myModal) {
+    if (myModal && tag.length) {
       currTag = newTag = tag
       myModal.showModal()
-      $modalOpenStore = true
+      $tagModalOpenStore = true
     }
   }
   const deleteTag = () => {
@@ -75,6 +74,15 @@
       <IconCheckbox />
     </button>
   </div>
+  <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
+    <button
+      class="btn btn-neutral btn-sm text-nowrap"
+      on:click={() => ($twoPlusTags = !$twoPlusTags)}
+      class:btn-outline={!$twoPlusTags}>
+      <IconCheckbox />
+    </button>
+  </div> -->
+
   {#each $tags_counts as [tag, cnt]}
     <div
       class="tooltip tooltip-right tooltip-secondary carousel-item"
@@ -93,7 +101,7 @@
   {/each}
 </div>
 
-<dialog class="modal" bind:this={myModal} on:close={() => ($modalOpenStore = false)}>
+<dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
     <button
       class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
