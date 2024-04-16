@@ -32,7 +32,7 @@ export const GET = async ({ params }) => {
     window.addEventListener("load", f)
     setTimeout(f, 500)
   </script>`)
-  $("head").append("<meta property=\"og:image\" content=\"favicon.png\"/>")
+  $("head").append("<meta property=\"og:image\" content=\"preview.png\"/>")
 
   return new Response($.html(), { headers: { "Content-Type": "text/html" } })
 }
