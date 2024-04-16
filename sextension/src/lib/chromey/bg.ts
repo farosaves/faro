@@ -20,10 +20,8 @@ const chromeStorageInterface: SupportedStorage = {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  // multiTab: true,
   auth: {
     storage: chromeStorageInterface,
     persistSession: true,
   },
-  // localStorage: chromeStorageInterface,
 })
