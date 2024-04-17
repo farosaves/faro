@@ -2,7 +2,7 @@ import { getSession } from "$lib/utils"
 import { option as O, array as A } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, hostname, type Notes, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, type Notes, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -99,7 +99,7 @@ pushStore("currSrc", currSrc)
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
   // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
-  const domain = O.toNullable(hostname(url || "")) // "" is fine here because it will fail later
+  const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
   DEBUG && console.log(domain, title)
   if (domain && title) currSrc.set({ domain, title })
   const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })

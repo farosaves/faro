@@ -32,7 +32,7 @@ test("login flow", async ({ page }) => {
   await expect(page).toHaveURL(/dashboard/)
   // reactivity
   const loc = page.locator("button.btn-sm", { hasNotText: /./ })
-  await expect(loc.nth(1)).not.toHaveClass(/btn-outline/)
+  await expect(loc.nth(0)).not.toHaveClass(/btn-outline/)
   await loc.nth(0).click()
-  await expect(loc.nth(1)).toHaveClass(/btn-outline/)
+  await expect(loc.nth(0)).toHaveClass(/btn-outline/)
 })
