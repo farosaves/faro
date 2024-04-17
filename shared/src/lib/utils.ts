@@ -72,7 +72,7 @@ export const funLog = (where = "", from = "") => (n: unknown) => DEBUG && consol
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
-export const hostname = (s: string) => O.tryCatch(() => new URL(s).hostname)
+export const host = (s: string) => O.tryCatch(() => new URL(s).host)
 
 // export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
 export const domainTitle = (src: Src) => [src.domain, src.title].join(";")

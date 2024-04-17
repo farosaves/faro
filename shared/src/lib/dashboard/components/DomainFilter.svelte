@@ -3,7 +3,7 @@
   import { derived } from "svelte/store"
   import { record as R, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
-  import { desc, hostname } from "shared"
+  import { desc, host } from "shared"
   import { uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   export let noteDeri: NoteDeri
