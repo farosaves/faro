@@ -7,11 +7,12 @@ const T = trpc({ url: { origin: API_ADDRESS } })
 export const GET = async ({ params }) => {
   const { note_id } = params
   const { data, error } = await T.singleNote.query(note_id)
-  const myString = (data?.quote) ? `window.location.href = "${data.url.split("#")[0]}#:~:text=${encodeURIComponent(data.quote)}"` : ""
+  // const myString = (data?.quote) ? `window.location.href = "${data.url.split("#")[0]}#:~:text=${encodeURIComponent(data.quote)}"` : ""
   const pageUrl = data?.url
   if (!pageUrl) return new Response(JSON.stringify(error))
   // console.log("sess", await sb.auth.getSession())
   const $ = cheerio.load(await (await fetch(pageUrl)).text())
+  const domain = new URL(pageUrl).host
 
   for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js"])
     $("head").append(`<script src="${module}"></script>`)
@@ -23,7 +24,6 @@ export const GET = async ({ params }) => {
     let loaded = false
     const f = () => {
       if (!loaded) {
-        ${myString}
         loaded = true
         deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
         gotoText("${data.snippet_uuid}")  
