@@ -12,6 +12,9 @@ def on_click(x, y, button: Button, pressed):
 with Listener(on_click=on_click) as listener:
     listener.join()
 
+with ListenerK(on_press=print) as listener:
+    listener.join()
+
 
 print("Listening for clicks. Press Ctrl-C to stop.")
 
