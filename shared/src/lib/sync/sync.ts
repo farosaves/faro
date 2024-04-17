@@ -16,6 +16,7 @@ import {
   domainTitle,
   uuidv5,
   fillInTitleDomain,
+  funLog,
 } from "$lib/utils"
 import { option as O, string as S, map as M } from "fp-ts"
 
@@ -136,6 +137,7 @@ export class NoteSync {
   getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
   newNote = async (note: PendingNote, src: Src) => {
+    funLog("newNote")(src)
     const source_id = await this.getsetSource_id(src)
     const n = { ...createMock(), ...note, source_id }
     const patchTup: PatchTup = updateStore(this.noteStore)((map) => {

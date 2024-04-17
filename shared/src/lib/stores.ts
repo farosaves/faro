@@ -9,6 +9,7 @@ export const modalSub: Action<HTMLDialogElement> = (modal) => {
   const unsub = modalOpenStore.subscribe(n => n && modal.showModal())
   return { destroy: unsub }
 }
+export const tagModalOpenStore = writable(false)
 
 
 const _sess: O.Option<Session> = O.none

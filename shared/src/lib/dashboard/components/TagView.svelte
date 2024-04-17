@@ -4,20 +4,19 @@
   import IconCheckbox from "~icons/tabler/checkbox"
   import IconTagOff from "~icons/tabler/tag-off"
 
-  import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
-  import { desc, NoteDeri } from "shared"
+  import { flow, identity, pipe } from "fp-ts/lib/function"
+  import { array as A, record as R, nonEmptyArray as NA, option as O, tuple as T } from "fp-ts"
+  import { desc, NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
-  import { exclTagSet, exclTagSets } from "../filterSortStores"
-  import { modalOpenStore } from "shared"
+  import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteDeri.noteArr, x =>
+  const tags_counts = derived(noteDeri.noteArr, (x) =>
     pipe(
       x,
-      A.flatMap(note => note.tags || []),
+      A.flatMap((note) => note.tags || []),
       NA.groupBy(identity),
-      R.map(x => x.length),
+      R.map((x) => x.length),
       R.toArray,
     )
       .concat(
@@ -25,6 +24,14 @@
         [["", pipe(x, A.filter(note => !note.tags.length), A.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
+  )
+  const untagged = derived(
+    tags_counts,
+    flow(
+      A.findFirst((x) => x[0] == ""),
+      O.map(T.snd),
+      O.getOrElse(() => 0),
+    ),
   )
 
   // $: console.log(!!$tagFilter, "tagFilter updated")
@@ -41,7 +48,7 @@
     })
   const onDblClick = (tag: string) => () =>
     ($exclTagSets.sets[$exclTagSets.currId] = new Set(
-      $tags_counts.map(([x, y]) => x).filter(t => t != tag),
+      $tags_counts.map(([x, y]) => x).filter((t) => t != tag),
     ))
 
   // let modalPotential: boolean
@@ -55,9 +62,10 @@
   }
   const onContextMenu = (tag: string) => () => {
     if (myModal) {
+      // && tag.length
       currTag = newTag = tag
       myModal.showModal()
-      $modalOpenStore = true
+      $tagModalOpenStore = true
     }
   }
   const deleteTag = () => {
@@ -66,34 +74,49 @@
   }
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] border-b-2 border-t-2 border-neutral">
+<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
-      class:btn-outline={$exclTagSet.size == $tags_counts.length}>
+      class:btn-outline={$exclTagSet.size}>
       <IconCheckbox />
     </button>
   </div>
-  {#each $tags_counts as [tag, cnt]}
-    <div
-      class="tooltip tooltip-right tooltip-secondary carousel-item"
-      data-tip={tag ? cnt : `${cnt} untagged`}>
+  <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
+    <button
+      class="btn btn-neutral btn-sm text-nowrap"
+      on:click={() => ($twoPlusTags = !$twoPlusTags)}
+      class:btn-outline={!$twoPlusTags}>
+      <IconCheckbox />
+    </button>
+  </div> -->
+  {#if $untagged}
+    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={`${$untagged} untagged`}>
+      <button
+        class="btn btn-neutral btn-sm text-nowrap"
+        on:click={() => toggleTag("")}
+        on:dblclick={onDblClick("")}
+        class:btn-outline={$exclTagSet.has("")}>
+        <IconTagOff />
+      </button>
+    </div>
+  {/if}
+  {#each $tags_counts.filter((x) => x[0].length > 0) as [tag, cnt]}
+    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleTag(tag)}
         on:contextmenu|preventDefault={onContextMenu(tag)}
         on:dblclick={onDblClick(tag)}
         class:btn-outline={$exclTagSet.has(tag)}
-        >{#if tag}{tag}{:else}
-          <IconTagOff />
-        {/if}
+        >{tag}
       </button>
     </div>
   {/each}
 </div>
 
-<dialog class="modal" bind:this={myModal} on:close={() => ($modalOpenStore = false)}>
+<dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
     <button
       class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"

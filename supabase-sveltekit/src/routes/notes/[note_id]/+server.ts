@@ -7,6 +7,7 @@ const T = trpc({ url: { origin: API_ADDRESS } })
 export const GET = async ({ params }) => {
   const { note_id } = params
   const { data, error } = await T.singleNote.query(note_id)
+  const myString = (data?.quote) ? `window.location.href = "${data.url.split("#")[0]}#:~:text=${encodeURIComponent(data.quote)}"` : ""
   const pageUrl = data?.url
   if (!pageUrl) return new Response(JSON.stringify(error))
   // console.log("sess", await sb.auth.getSession())
@@ -22,6 +23,7 @@ export const GET = async ({ params }) => {
     let loaded = false
     const f = () => {
       if (!loaded) {
+        ${myString}
         loaded = true
         deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
         gotoText("${data.snippet_uuid}")  
@@ -30,7 +32,7 @@ export const GET = async ({ params }) => {
     window.addEventListener("load", f)
     setTimeout(f, 500)
   </script>`)
-  $("head").append("<meta property=\"og:image\" content=\"favicon.png\"/>")
+  $("head").prepend(`<meta property="og:image" content="${API_ADDRESS}/preview.png"/>`) // ! hack
 
   return new Response($.html(), { headers: { "Content-Type": "text/html" } })
 }

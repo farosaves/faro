@@ -10,7 +10,7 @@
   import { convertPatchesToStandard, produceWithPatches } from "structurajs"
 
   let alltext: string[]
-  let mousePosition: Observable<{ x: number, y: number }> | null = null
+  let mousePosition: Observable<{ x: number; y: number }> | null = null
   const Sub = new Subject<string>()
 
   const map = new Map([[1, 2]])
@@ -48,6 +48,7 @@
 
   // const O = toObservable(query)
   const obs = onMount(async () => {
+    window.location.href = window.location.href + ""
     Sub.next("omg2")
 
     // document.getSelection()!.setBaseAndExtent(p, 0, p, p.childNodes.length);
@@ -58,9 +59,9 @@
     // alltext = dom.body.innerText.replaceAll(/(\s*\n\s*)+/gm, '\n');
     alltext = dom.body.innerText
       .split("\n")
-      .map(s => s.trim())
-      .filter(x => x.split(" ").length > 0)
-      .map(s => tok.sentences(s))
+      .map((s) => s.trim())
+      .filter((x) => x.split(" ").length > 0)
+      .map((s) => tok.sentences(s))
       .flat()
     // console.log(alltext)
 
@@ -79,7 +80,7 @@
   let res = ""
   let f = () => {
     const x = fuzzysort.go($query, alltext, { limit: 5 })
-    res = x.map(x => fuzzysort.highlight(x, "<b class=\"text-yellow-300\"\">", "</b>")).join("<br/><br/>")
+    res = x.map((x) => fuzzysort.highlight(x, '<b class="text-yellow-300"">', "</b>")).join("<br/><br/>")
     // console.log(x.map((x) => x.score));
   }
   // console.log(O)

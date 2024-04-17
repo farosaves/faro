@@ -77,7 +77,7 @@
   <div class="flex">
     <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
 
-    <div class="grid h-min space-y-2">
+    <div class="grid h-min">
       <a
         href={O.isNone($session) ? dashboardURL : `${API_ADDRESS}/dashboard`}
         target="_blank"
@@ -95,10 +95,10 @@
       </button>
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
-        <div class="dropdown-content join join-vertical">
+        <div class="dropdown-content join join-vertical z-20">
           {#each themes as value}
             <button
-              class="btn join-item"
+              class="btn join-item z-20"
               data-set-theme={value}
               data-act-class="ACTIVECLASS"
               on:click={() => setTimeout(updateTheme, 100)}

@@ -1,2 +1,0 @@
-ffmpeg -i huberman_ama12.mp3 -ar 16000 huberman_ama12.wav                                                      
-./main -pp -m models/ggml-small.en.bin -f ../flashcardiser/transcriber/huberman_ama12.wav -oj 
