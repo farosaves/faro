@@ -4,8 +4,8 @@
   import IconCheckbox from "~icons/tabler/checkbox"
   import IconTagOff from "~icons/tabler/tag-off"
 
-  import { identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O } from "fp-ts"
+  import { flow, identity, pipe } from "fp-ts/lib/function"
+  import { array as A, record as R, nonEmptyArray as NA, option as O, tuple as T } from "fp-ts"
   import { desc, NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
   import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
@@ -24,6 +24,14 @@
         [["", pipe(x, A.filter(note => !note.tags.length), A.size)]],
       )
       .toSorted(desc(([x, y]) => y)),
+  )
+  const untagged = derived(
+    tags_counts,
+    flow(
+      A.findFirst((x) => x[0] == ""),
+      O.map(T.snd),
+      O.getOrElse(() => 0),
+    ),
   )
 
   // $: console.log(!!$tagFilter, "tagFilter updated")
@@ -53,7 +61,8 @@
     return true
   }
   const onContextMenu = (tag: string) => () => {
-    if (myModal && tag.length) {
+    if (myModal) {
+      // && tag.length
       currTag = newTag = tag
       myModal.showModal()
       $tagModalOpenStore = true
@@ -70,7 +79,7 @@
     <button
       class="btn btn-neutral btn-sm text-nowrap"
       on:click={checkClick}
-      class:btn-outline={$exclTagSet.size == $tags_counts.length}>
+      class:btn-outline={$exclTagSet.size}>
       <IconCheckbox />
     </button>
   </div>
@@ -82,20 +91,26 @@
       <IconCheckbox />
     </button>
   </div> -->
-
-  {#each $tags_counts as [tag, cnt]}
-    <div
-      class="tooltip tooltip-right tooltip-secondary carousel-item"
-      data-tip={tag ? cnt : `${cnt} untagged`}>
+  {#if $untagged}
+    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={`${$untagged} untagged`}>
+      <button
+        class="btn btn-neutral btn-sm text-nowrap"
+        on:click={() => toggleTag("")}
+        on:dblclick={onDblClick("")}
+        class:btn-outline={$exclTagSet.has("")}>
+        <IconTagOff />
+      </button>
+    </div>
+  {/if}
+  {#each $tags_counts.filter((x) => x[0].length > 0) as [tag, cnt]}
+    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggleTag(tag)}
         on:contextmenu|preventDefault={onContextMenu(tag)}
         on:dblclick={onDblClick(tag)}
         class:btn-outline={$exclTagSet.has(tag)}
-        >{#if tag}{tag}{:else}
-          <IconTagOff />
-        {/if}
+        >{tag}
       </button>
     </div>
   {/each}
