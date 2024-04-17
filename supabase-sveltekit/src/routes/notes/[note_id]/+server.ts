@@ -12,7 +12,12 @@ export const GET = async ({ params }) => {
   if (!pageUrl) return new Response(JSON.stringify(error))
   // console.log("sess", await sb.auth.getSession())
   const $ = cheerio.load(await (await fetch(pageUrl)).text())
-  const domain = new URL(pageUrl).host
+  const domain = pageUrl.split(/(?<=\w)\//)[0]
+  const isLocal = (s: string) => {
+    const t = /^\/\w/ // starts: / character
+    return t.test(s)
+  }
+  // const domain = new URL(pageUrl).host
 
   for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js"])
     $("head").append(`<script src="${module}"></script>`)
@@ -33,6 +38,9 @@ export const GET = async ({ params }) => {
     setTimeout(f, 500)
   </script>`)
   $("head").prepend(`<meta property="og:image" content="${API_ADDRESS}/preview.png"/>`) // ! hack
+  $("head>[href]").each((i, e) => isLocal(e.attribs["href"]) ? !!(e.attribs["href"] = domain + e.attribs["href"]).length : true)
+  $("body [src]").each((i, e) => isLocal(e.attribs["src"]) ? !!(e.attribs["src"] = domain + e.attribs["src"]).length : true)
+  $("body [srcset]").each((i, e) => isLocal(e.attribs["srcset"]) ? !!(e.attribs["srcset"] = domain + e.attribs["src"]).length : true)
 
   return new Response($.html(), { headers: { "Content-Type": "text/html" } })
 }

@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, makeQCH, Semaphore, sleep } from "shared"
+import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, funLog, makeQCH, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -156,8 +156,11 @@ const onLoad = () => sem.use(async () => {
     const goto = new URLSearchParams(window.location.search).get("highlightUuid")
     await sleep(50)
     DEBUG && console.log("goto", goto)
-    if (goto) gotoText(goto)
-    loaded = true
+    try {
+      if (goto) gotoText(goto)
+      loaded = true
+    } catch { funLog("content/goto")("couldnt goto") }
+
     const singleNote_id = new URLSearchParams(window.location.search).get(note_idKey)
     if (!singleNote_id) return
     const { data } = await T.singleNote.query(singleNote_id)
