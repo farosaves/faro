@@ -6,7 +6,7 @@
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { type PendingNote, CmModal, API_ADDRESS, updateTheme } from "shared"
+  import { type PendingNote, CmModal, API_ADDRESS, updateTheme, toastStore } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -29,6 +29,7 @@
 
   let optimistic: O.Option<PendingNote> = O.none
   import { themeChange } from "theme-change"
+  import { fade } from "svelte/transition"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -112,6 +113,15 @@
   <NotePanel bind:optimistic syncLike={bgSync} />
 
   <CmModal />
+
+  <div class="toast">
+    {#each $toastStore as [toastMsg, n] (n)}
+      <div out:fade class="alert alert-info">
+        <span>{toastMsg}</span>
+      </div>
+    {/each}
+  </div>
+
   <!-- <textarea
     placeholder="scratchy scratch scratch"
     class="max-w-xs w-full bottom-0 left-0 absolute textarea p-1"
