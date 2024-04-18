@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, funLog, makeQCH, Semaphore, sleep } from "shared"
+import { DEBUG, elemsOfClass, funLog, makeQCH, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -19,26 +19,7 @@ export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port }), loggerLink()],
 })
 
-const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
-const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 const note_idKey = "noteUuid"
-;(async () => {
-  DEBUG && console.log(window.location.href)
-  if (noteRegexp.test(window.location.href || "")) {
-    DEBUG && console.log("tested")
-    const note_id = (/(?<=\/notes\/).+/.exec(window.location.href) || [])[0]!
-    DEBUG && console.log(note_id)
-    const { data } = await T.singleNote.query(note_id)
-    const newUrlStr = data?.url
-    DEBUG && console.log(newUrlStr)
-    if (newUrlStr) {
-      const newUrl = new URL(newUrlStr)
-      newUrl.searchParams.set(note_idKey, note_id)
-      window.location.replace(newUrl)
-    }
-  }
-})()
-
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
