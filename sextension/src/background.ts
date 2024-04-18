@@ -96,8 +96,27 @@ createChromeHandler({
 const currSrc = writable<Src>({ domain: "", title: "" })
 pushStore("currSrc", currSrc)
 
+
+const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
+const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
+const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
+
+const note_idKey = "noteUuid"
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
+  if (url && noteRegexp.test(url)) {
+    const note_id = (/(?<=\/notes\/).+/.exec(url) || [])[0]!
+    T.singleNote.query(note_id).then(({ data }) => {
+      const newUrlStr = data?.url
+      if (newUrlStr) {
+        const newUrl = new URL(newUrlStr)
+        newUrl.searchParams.set(note_idKey, note_id)
+        chrome.tabs.update({ url: newUrl.toString() })
+      }
+    })
+    return
+    // const newUrlStr = data?.url
+  }
   // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
   const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
   DEBUG && console.log(domain, title)
@@ -105,9 +124,6 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })
   console.log(source_id)
 }
-
-const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
-const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
