@@ -14,16 +14,12 @@ export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
     // here log me out
     // supabase.auth.signOut({ scope: "local" }).then(logIfError("getSession"))
     await supabase.auth.initialize()
-    supabase.auth.getSession().then(funLog("getsession undefined"))
+    supabase.auth.getSession().then(funLog("getsession with tokens undefined"))
     return null
   }
   const { access_token, refresh_token } = tokens
   // set session
-  await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError("getSession"))
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession().then(logIfError("getSession"))
+  const { data: { session } } = await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError("getSession"))
   return session
 }
 

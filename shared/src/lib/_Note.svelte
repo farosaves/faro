@@ -108,7 +108,7 @@
       {#if hovered}
         <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
           <button
-            class="btn btn-xs text-error"
+            class="btn btn-xs text-error text-center"
             on:click={() => {
               syncLike.deleteit(note_data.id)
               // prettier-ignore
