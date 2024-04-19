@@ -23,15 +23,21 @@ export const GET = async ({ params }) => {
     $("head").append(`<script src="${module}"></script>`)
   // dom.window.document.head.appendChild(JSDOM.fragment("<script src=\"/deserializer.js\" type=\"module\"></script>"))
   // dom.window.document.head.appendChild(JSDOM.fragment(`<script></script>`))
+  const id = "iigdnlokbommcbpkhlafbkhgpbmeagfl" // https://developer.chrome.com/docs/extensions/develop/concepts/messaging?hl=en#external-webpage
   $("head").append(
   `<script type="module">
     import {deserialize, gotoText} from "/deserializer.js"
     let loaded = false
+    
     const f = () => {
       if (!loaded) {
         loaded = true
+        // try {
+
+        // } catch {
         deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
         gotoText("${data.snippet_uuid}")  
+        // }
       }
     }
     window.addEventListener("load", f)
