@@ -2,7 +2,7 @@ import { getSession } from "$lib/utils"
 import { option as O, array as A } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, type Notes, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, host, type Notes, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -40,7 +40,7 @@ user_id.subscribe(onUser_idUpdate)
 const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
-  const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
+  const toks = (online && await T.my_tokens.query()) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
