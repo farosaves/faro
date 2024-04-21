@@ -68,7 +68,10 @@ export const ifErr
 export const DEBUG = import.meta.env.VITE_DEBUG == "true" || false
 
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
-export const funLog = (where = "", from = "") => (n: unknown) => DEBUG && console.log(from, n, where && ("at" + where))
+export const funLog = (where = "", from = "") => <T>(n: T) => {
+  DEBUG && console.log(from, n, where && ("at" + where))
+  return n
+}
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))

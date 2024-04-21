@@ -26,7 +26,7 @@
     <!-- </div> -->
   </label>
 
-  <div class="grow">
+  <div class="grow flex justify-center">
     <slot />
   </div>
 
