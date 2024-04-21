@@ -1,7 +1,7 @@
 const { VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_URL } = import.meta.env
 
 import { createBrowserClient, isBrowser, parse } from "@supabase/ssr"
-import type { Database } from "shared"
+import { logIfError, type Database } from "shared"
 export const loadSB = () => {
   const supabase = createBrowserClient<Database>(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, {
     global: {
@@ -19,6 +19,6 @@ export const loadSB = () => {
     },
   })
 
-  const session = supabase.auth.getSession().then(d => d.data.session)
+  const session = supabase.auth.getSession().then(logIfError("getsession loadSB")).then(d => d.data.session)
   return { supabase, session }
 }

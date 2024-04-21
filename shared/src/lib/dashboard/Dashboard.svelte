@@ -10,7 +10,7 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, tagModalOpenStore, toastStore } from "$lib"
+  import { modalOpenStore, tagModalOpenStore, toastNotify, toastStore } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
@@ -36,8 +36,9 @@
 
   let w_rem = 16
   const handle_keydown = (e: KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore && !tagModalOpenStore) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore && !$tagModalOpenStore) {
       e.preventDefault()
+      toastNotify(e.shiftKey ? "Redo" : "Undo")
       ;(e.shiftKey ? noteDeri.sync.redo : noteDeri.sync.undo)()
     }
   }

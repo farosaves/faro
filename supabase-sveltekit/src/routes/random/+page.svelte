@@ -8,6 +8,7 @@
   import { flow } from "fp-ts/lib/function"
   import { toStore } from "shared"
   import { convertPatchesToStandard, produceWithPatches } from "structurajs"
+  import * as mhtml2html from "mhtml2html"
 
   let alltext: string[]
   let mousePosition: Observable<{ x: number; y: number }> | null = null
@@ -48,7 +49,12 @@
 
   // const O = toObservable(query)
   const obs = onMount(async () => {
-    window.location.href = window.location.href + ""
+    const mhtml = await (await fetch("/test.mhtml")).text()
+    console.log(mhtml.length)
+    const xd: { window: { document: Document } } = mhtml2html.convert(mhtml)
+
+    console.log(xd.window.document.documentElement.outerHTML)
+    // window.location.href = window.location.href + ""
     Sub.next("omg2")
 
     // document.getSelection()!.setBaseAndExtent(p, 0, p, p.childNodes.length);

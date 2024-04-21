@@ -2,7 +2,7 @@ import { getSession } from "$lib/utils"
 import { option as O, array as A } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, type Notes, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, host, type Notes, type PendingNote, type Src } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -40,7 +40,7 @@ user_id.subscribe(onUser_idUpdate)
 const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
-  const toks = (online && await T.my_tokens.query().catch(funLog("toks"))) || undefined
+  const toks = (online && await T.my_tokens.query()) || undefined
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
@@ -96,8 +96,27 @@ createChromeHandler({
 const currSrc = writable<Src>({ domain: "", title: "" })
 pushStore("currSrc", currSrc)
 
+
+const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
+const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
+const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
+
+const note_idKey = "noteUuid"
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
+  if (url && noteRegexp.test(url)) {
+    const note_id = (/(?<=\/notes\/).+/.exec(url) || [])[0]!
+    T.singleNote.query(note_id).then(({ data }) => {
+      const newUrlStr = data?.url
+      if (newUrlStr) {
+        const newUrl = new URL(newUrlStr)
+        newUrl.searchParams.set(note_idKey, note_id)
+        chrome.tabs.update({ url: newUrl.toString() })
+      }
+    })
+    return
+    // const newUrlStr = data?.url
+  }
   // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
   const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
   DEBUG && console.log(domain, title)
@@ -105,9 +124,6 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })
   console.log(source_id)
 }
-
-const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
-const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window

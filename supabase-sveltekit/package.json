@@ -56,6 +56,7 @@
     "fp-ts": "^2.16.2",
     "fsrs.js": "^1.2.0",
     "fuzzysort": "^2.0.4",
+    "mhtml2html": "^3.0.0",
     "rxjs": "^7.8.1",
     "sbd": "^1.0.19",
     "shared": "file:../shared",
