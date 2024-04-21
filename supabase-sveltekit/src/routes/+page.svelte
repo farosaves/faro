@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Save Snippets While Reading</title>
+  <title>Faros - Save & Share Highlights - Bookmarks</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">
@@ -16,7 +16,7 @@
     <div class="hero-content text-center">
       <div class="max-w-md space-y-3">
         <h1 class="text-5xl py-4">{@html $replacer("Faros")}</h1>
-        <h2 class="text-4xl font-bold">Save & organise snippets <br /> Use them like bookmarks</h2>
+        <h2 class="text-4xl font-bold">Save & share highlights <br /> Use them like bookmarks</h2>
         <p class="py-1">
           You can go to a <u><b><a href="/dashboard/mock">mock dashboard</a></b></u> to get an idea of what it
           looks before you download the chrome extension.<br />
