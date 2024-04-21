@@ -20,6 +20,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         event.cookies.delete(key, options)
       },
     },
+    auth: { autoRefreshToken: false },
   }) as unknown as SupabaseClient
 
   event.locals.getSession = async () => {
