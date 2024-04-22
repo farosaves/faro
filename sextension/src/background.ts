@@ -42,6 +42,7 @@ const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
   const toks = (online && await T.my_tokens.query()) || undefined
+  if (!toks) throw new Error("refresh no tokens disabled for now")
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
