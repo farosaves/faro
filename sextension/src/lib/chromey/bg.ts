@@ -23,6 +23,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: chromeStorageInterface,
     persistSession: true,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+
   },
 })
-supabase.auth.stopAutoRefresh() // in chrome it should be stopped
+// supabase.auth.stopAutoRefresh() // in chrome it should be stopped

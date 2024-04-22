@@ -136,14 +136,13 @@ export class NoteSync {
   // chainN(get(this.invStuMapStore).get), DOESNT WORK
   getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
-  newNote = async (note: PendingNote, src: Src) => {
+  newNote = async (note: PendingNote & { tags: string[] }, src: Src) => {
     funLog("newNote")(src)
     const source_id = await this.getsetSource_id(src)
     const n = { ...createMock(), ...note, source_id }
     const patchTup: PatchTup = updateStore(this.noteStore)((map) => {
       map.set(n.id, n)
     })
-
     await this.act(patchTup, true)
     return n
   }
