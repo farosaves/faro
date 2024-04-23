@@ -1,5 +1,5 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
-import { funLog, logIfError, type Database, type SupabaseClient } from "shared"
+import { funLog, sleep, type Database, type SupabaseClient } from "shared"
 import { createContext } from "$lib/trpc/context"
 import { router } from "$lib/trpc/router"
 import { createServerClient } from "@supabase/ssr"
@@ -10,19 +10,19 @@ import { either as E } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 
 export const handle: Handle = async ({ event, resolve }) => {
-  event.setHeaders({ "Cache-Control": "no-store" }) // https://github.com/sveltejs/kit/issues/6735#issuecomment-1248053008 - didnt fix (alone (yet))
+  // event.setHeaders({ "Cache-Control": "no-store" }) // https://github.com/sveltejs/kit/issues/6735#issuecomment-1248053008 - makes it worse lol
 
   event.locals.supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       get: key => event.cookies.get(key),
       set: (key, value, options) => {
-        pipe(// @ts-expect-error
-          () => event.cookies.set(key, value, options),
+        pipe(
+          () => event.cookies.set(key, value, { ...options, path: "/" }),
           x => E.tryCatch(x, y => y), E.mapLeft(funLog("cookie set")))
       },
       remove: (key, options) => {
-        pipe(// @ts-expect-error
-          () => event.cookies.delete(key, options),
+        pipe(
+          () => event.cookies.delete(key, { ...options, path: "/" }),
           x => E.tryCatch(x, y => y), E.mapLeft(funLog("cookie remove")))
         // O.tryCatch, O.getOrElseW(() => funLog("cookie set")("failed")))
       },
@@ -33,11 +33,24 @@ export const handle: Handle = async ({ event, resolve }) => {
     },
   }) as unknown as SupabaseClient
 
-  event.locals.getSession = async () => {
+  event.locals.safeGetSession = async () => {
     const {
       data: { session },
-    } = await event.locals.supabase.auth.getSession().then(logIfError("getSession event locals"))
-    return session
+    } = await event.locals.supabase.auth.getSession()
+    if (!session) {
+      return { session: null, user: null }
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await event.locals.supabase.auth.getUser()
+    if (error) {
+      // JWT validation has failed
+      return { session: null, user: null }
+    }
+    await sleep(100)
+    return { session, user }
   }
 
   let response
@@ -75,17 +88,17 @@ export const handle: Handle = async ({ event, resolve }) => {
   } else // DEFAULT
     response = await resolve(event, {
       filterSerializedResponseHeaders(name) {
-        return name === "content-range"
+        return name === "content-range" || name == "cookies"
       },
     })
 
+  // console.log(response.headers)
 
   // response.headers.getSetCookie({
   //   name: "sb-{YOUR_ID}-auth-token",
   //   value: JSON.stringify(session),
   //   path: "/",
   // })
-  // event.locals.getSession
 
 
   if (event.url.pathname.endsWith(".mjs") || event.url.pathname.endsWith(".js"))

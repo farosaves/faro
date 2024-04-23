@@ -1,5 +1,5 @@
 export async function GET({ locals }) {
-  const session = await locals.getSession()
+  const { session, user } = await locals.safeGetSession()
 
   const headers = {
     "Content-Type": "application/json",
@@ -7,7 +7,7 @@ export async function GET({ locals }) {
     "Access-Control-Allow-Credentials": "true",
   }
 
-  if (!session || !session.user) {
+  if (!session || !user) {
     return new Response(JSON.stringify({ isLoggedIn: false }), {
       status: 200,
       headers: headers,
