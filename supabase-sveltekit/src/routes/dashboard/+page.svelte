@@ -5,19 +5,14 @@
   const { supabase } = data
   import { option as O, taskOption as TO } from "fp-ts"
   import { pipe } from "fp-ts/lib/function.js"
-  import { DEBUG, Dashboard, NoteSync, TOofPromise, chainN, sessStore } from "shared"
+  import { DEBUG, Dashboard, NoteSync, chainN, sessStore } from "shared"
   import { onMount } from "svelte"
   const T = trpc()
   const noteSync = new NoteSync(supabase, undefined, T.online.query)
   let showLoginPrompt = false
   onMount(async () => {
-    const sessOpt = await pipe(
-      T.my_tokens.query(),
-      TOofPromise,
-      TO.map(supabase.auth.setSession),
-      TO.map((x) => x.then(({ data }) => data.session)),
-      TO.chain(TOofPromise),
-    )()
+    const toks = await T.my_tokens.query()
+    const sessOpt = O.fromNullable(toks && (await supabase.auth.setSession(toks)).data.session)
 
     sessStore.set(sessOpt)
     DEBUG && console.log(sessOpt)
