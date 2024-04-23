@@ -23,6 +23,10 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
         return cookie[key]
       },
     },
+    auth: {
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
   }) as unknown as SupabaseClient
   // const {
   //   data: { session },

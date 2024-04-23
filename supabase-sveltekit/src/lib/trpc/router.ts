@@ -46,5 +46,6 @@ export const router = t.router({
     ),
   online: t.procedure.query(() => true as const),
   emailToList: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("emails2send").insert({ email: input })),
+  // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),
 })
 export type Router = typeof router

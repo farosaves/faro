@@ -2,7 +2,7 @@ import { getSession } from "$lib/utils"
 import { option as O, array as A, record as R } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, host, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -42,6 +42,7 @@ const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
   const toks = (online && await T.my_tokens.query()) || undefined
+  funLog("refresh toks")(toks)
   if (!toks) { // logged out
     sess.set(O.none)
     return O.none
