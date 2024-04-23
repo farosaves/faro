@@ -73,7 +73,7 @@
       <div class="collapse-content mx-4">
         <ul class="list-disc text-nowrap w-min text-left">
           <li class="list-item">Select text</li>
-          <li class="list-item">Press {altKey} + D</li>
+          <li class="list-item">Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">D</kbd></li>
           <li class="list-item">
             If something doesnt work try refreshing the extension <br />
             With the 🔄 icon in the top right of the sidebar.
