@@ -5,6 +5,7 @@ import type { inferAsyncReturnType } from "@trpc/server"
 export async function createContext(event: RequestEvent) {
   return {
     locals: event.locals,
+
   }
 }
 

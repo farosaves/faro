@@ -28,7 +28,7 @@ export const deleteSnippetMsg = gmWrap<UUID>("deleteSnippet")
 import { get, writable, type Readable } from "svelte/store"
 import type { SendOptions } from "@extend-chrome/messages/types/types"
 
-type SharedStores = "currSrc" | "panel" | "needsRefresh" | "session" | "allTags" | "noteStore" | "stuMapStore"
+type SharedStores = "currSrcs" | "panel" | "needsRefresh" | "session" | "allTags" | "noteStore" | "stuMapStore"
 
 export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: string, errCb = () => {}) => {
   const _idStart = idStart ?? id + "__start"

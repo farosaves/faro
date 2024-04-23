@@ -1,5 +1,5 @@
 import { getSession } from "$lib/utils"
-import { option as O, array as A, record as R } from "fp-ts"
+import { option as O, array as A, record as R, map as M, number as N, taskOption as TO } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
 import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, type Notes, type PendingNote } from "shared"
@@ -41,7 +41,10 @@ user_id.subscribe(onUser_idUpdate)
 const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
-  const toks = (online && await T.my_tokens.query()) || undefined
+  // tab?.windowId
+  // funLog("preparing")("xd")
+  // const toks = (online && await T.my_tokens.query().then(funLog("toks pass")).catch(funLog("toks catch"))) || undefined
+  const toks = (online && O.toNullable(await TO.tryCatch(T.my_tokens.query)())) || undefined
   funLog("refresh toks")(toks)
   if (!toks) { // logged out
     sess.set(O.none)
@@ -110,7 +113,8 @@ createChromeHandler({
 })
 // note_mut.currSrc
 // const currSrc = writable<Src>({ domain: "", title: "" })
-pushStore("currSrc", note_mut.currSrc)
+
+pushStore("currSrcs", note_mut.currSrcs)
 
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
@@ -136,7 +140,8 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
   const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
   DEBUG && console.log(domain, title)
-  if (domain && title) note_mut.currSrc.set({ domain, title })
+  note_mut.currWindowId.set(tab.windowId)
+  if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
 }
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
@@ -144,6 +149,10 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
   updateCurrUrl(tab)
+  setTimeout(async () => {
+    const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+    tab && updateCurrUrl(tab)
+  }, 500)
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
@@ -160,6 +169,7 @@ const signalRefresh = (ms = 2000) => {
 }
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)
+  // tODo here check if online at all
   getHighlightedText.send(crypto.randomUUID(), { tabId: tab.id }).catch(() => signalRefresh())
 }
 // this makes it *not close* - it opens from the function above

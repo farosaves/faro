@@ -8,13 +8,17 @@ import { derived, writable, type Readable, type Writable } from "svelte/store"
 
 export class NoteMut {
   ns: NoteSync
-  currSrc: Writable<Src>
+  currSrc: Readable<Src>
   panel: Readable<Notes[]>
+  currSrcs: Writable<Map<number, Src>>
+  currWindowId: Writable<number>
   constructor(ns: NoteSync) {
     this.ns = ns
-    this.currSrc = writable({ title: "", domain: "" })
-    // this.ns.stuMapStore
-    // this.currSrcnId.subscribe(funLog("currSrcnId"))
+    // this.currSrc = writable({ title: "", domain: "" })
+    this.currWindowId = writable(NaN)
+    this.currSrcs = writable(new Map())
+    this.currSrc = derived([this.currSrcs, this.currWindowId], ([srcs, id]) => srcs.get(id) || { title: "", domain: "" })
+
     this.panel = derived([this.ns.noteStore, this.currSrc, this.ns.invStuMapStore], ([ns, src, isms]) =>
       pipe(
         O.some(src),
