@@ -78,7 +78,10 @@
 <div
   class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
   on:mouseenter={() => (hovered = true)}
-  on:mouseleave={() => (hovered = false)}
+  on:mouseleave={() => {
+    hovered = false
+    isOpen = false
+  }}
   class:highlighting
   on:contextmenu|preventDefault={() => {
     $modalNote = O.some(note_data)
@@ -91,10 +94,10 @@
     style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
     <button
       on:click={async () => {
-        const save_showing_content = isOpen
+        const saveIsOpen = isOpen
         closeAll()
         await sleep(1)
-        isOpen = !save_showing_content
+        isOpen = !saveIsOpen
       }}
       on:dblclick={goto_function}>
       {@html text}
