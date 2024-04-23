@@ -12,11 +12,11 @@
   let showLoginPrompt = false
   onMount(async () => {
     const toks = await T.my_tokens.query()
-    const sessOpt = O.fromNullable(toks && (await supabase.auth.setSession(toks)).data.session)
+    const sess = toks && (await supabase.auth.setSession(toks)).data.session
 
-    sessStore.set(sessOpt)
-    DEBUG && console.log(sessOpt)
-    if (O.isSome(sessOpt)) await noteSync.setUser_id(sessOpt.value.user.id)
+    sessStore.set(O.fromNullable(sess))
+    DEBUG && console.log(sess)
+    if (sess) await noteSync.setUser_id(sess.user.id)
     showLoginPrompt = O.isNone($sessStore)
   })
 </script>
