@@ -1,7 +1,7 @@
 <script lang="ts">
   import { option } from "fp-ts"
   import { replacer, sessStore, updateTheme } from "shared"
-  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
+  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   import { onMount } from "svelte"
   import { themeChange } from "theme-change"
   onMount(() => {

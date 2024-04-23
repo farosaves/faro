@@ -26,10 +26,12 @@
   const currSrc = RemoteStore("currSrc", { title: "", url: "" })
   const needsRefresh = RemoteStore("needsRefresh", false)
   const session = RemoteStore("session", O.none as O.Option<Session>)
+  const email = derived(session, (s) => O.toNullable(s)?.user?.email)
 
   let optimistic: O.Option<PendingNote> = O.none
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
+  import { derived } from "svelte/store"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -48,7 +50,7 @@
     }
   }
   const iconSize = 15
-  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
+  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
@@ -80,7 +82,7 @@
 
     <div class="grid h-min">
       <a
-        href={O.isNone($session) ? dashboardURL : `${API_ADDRESS}/dashboard`}
+        href={$email ? `${API_ADDRESS}/dashboard` : dashboardURL}
         target="_blank"
         class="tooltip tooltip-left"
         data-tip="Go to dashboard (alt+F)"
@@ -89,7 +91,7 @@
 
       <button
         class="tooltip tooltip-left"
-        data-tip={"Logged in as: \n" + (O.toNullable($session)?.user?.email || "...not logged in")}
+        data-tip={"Logged in as: \n" + ($email || "...not logged in")}
         on:click={() => TB.refresh.query().then(console.log)}
         on:contextmenu|preventDefault={() => TB.disconnect.query()}>
         <IconRefresh font-size={iconSize} />

@@ -21,7 +21,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       },
     },
     auth: {
-      // autoRefreshToken: false,
+      autoRefreshToken: true,
       // detectSessionInUrl: false,
     },
   }) as unknown as SupabaseClient
