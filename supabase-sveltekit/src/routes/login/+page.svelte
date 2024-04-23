@@ -7,18 +7,16 @@
   import { goto } from "$app/navigation"
   let view: ViewType = "sign_in"
   let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"]
-  import { sessStore } from "shared"
+  import { DEBUG, sessStore } from "shared"
   import { option as O } from "fp-ts"
   import type { SupabaseClient } from "@supabase/supabase-js"
   import { page } from "$app/stores"
   import { get } from "svelte/store"
-  // let providers = ["github"]
-  const DEBUG = import.meta.env.DEBUG || false
 
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
-        console.log(session)
+        DEBUG && console.log(session)
         if (session) $sessStore = O.some(session)
         setTimeout(() => {
           DEBUG && console.log("url", $page.url.pathname) // omfg $page binds immediately, and get(page) on call
