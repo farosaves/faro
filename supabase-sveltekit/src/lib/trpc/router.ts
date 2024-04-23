@@ -45,5 +45,6 @@ export const router = t.router({
       add_card({ note_id, supabase: locals.supabase, front: null, back: null }),
     ),
   online: t.procedure.query(() => true as const),
+  emailToList: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("emails2send").insert({ email: input })),
 })
 export type Router = typeof router
