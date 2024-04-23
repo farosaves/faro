@@ -87,7 +87,7 @@ export const filterSort
       xs.filter(x => first(x) > 0).toSorted(desc(first, second))
 
 export const chainN = <T, U>(f: (a: T) => U | undefined | null) => O.chain(flow(f, O.fromNullable))
-export const TOofPromise = <T>(x: Promise<T>) => pipe(() => x.then(O.fromNullable))
+// export const TOofPromise = <T>(x: Promise<T>) => pipe(() => x.then(O.fromNullable))
 // TO.fromTask,
 // TO.chain(x => async () => O.fromNullable(x)))
 

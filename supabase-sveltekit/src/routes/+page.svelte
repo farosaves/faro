@@ -55,6 +55,7 @@
   </div>
   <div class="flex justify-center w-full">
     <iframe
+      loading="lazy"
       width="560"
       height="315"
       src="https://www.youtube.com/embed/1E8DST6DRSg?si=-z_Cg4lEEuuqzcPv"
