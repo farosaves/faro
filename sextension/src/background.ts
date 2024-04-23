@@ -42,7 +42,10 @@ const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
   const toks = (online && await T.my_tokens.query()) || undefined
-  if (!toks) throw new Error("refresh no tokens disabled for now")
+  if (!toks) { // logged out
+    sess.set(O.none)
+    return O.none
+  }
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
@@ -143,6 +146,7 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
+  // should I close window here too?
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 
