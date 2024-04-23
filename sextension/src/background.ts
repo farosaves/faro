@@ -1,8 +1,8 @@
 import { getSession } from "$lib/utils"
-import { option as O, array as A } from "fp-ts"
+import { option as O, array as A, record as R } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, host, type Notes, type PendingNote, type Src } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, host, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -11,7 +11,8 @@ import { NoteMut } from "$lib/note_mut"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
-import { pipe } from "fp-ts/lib/function"
+import { identity, pipe } from "fp-ts/lib/function"
+import { groupBy } from "fp-ts/lib/NonEmptyArray"
 
 const T = trpc2()
 
@@ -41,6 +42,10 @@ const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
   const toks = (online && await T.my_tokens.query()) || undefined
+  if (!toks) { // logged out
+    sess.set(O.none)
+    return O.none
+  }
   const newSess = O.fromNullable(await getSession(supabase, toks))
   sess.set(newSess)
   return newSess
@@ -54,6 +59,16 @@ refresh()
 //   return newSess
 // }
 const typeCast = <T>(input: unknown) => input as T
+const newNote = (n: PendingNote) => {
+  const panel = get(note_mut.panel)
+  const commonTags = pipe(panel,
+    A.flatMap(x => x.tags),
+    groupBy(identity),
+    R.filter(x => x.length == panel.length),
+    R.keys,
+  )
+  note_sync.newNote({ ...n, tags: commonTags }, get(note_mut.currSrc))
+}
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
@@ -77,7 +92,7 @@ const appRouter = (() => {
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
     undo: t.procedure.query(() => note_sync.undo()),
     redo: t.procedure.query(() => note_sync.redo()),
-    newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => note_sync.newNote(input, get(currSrc))),
+    newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => newNote(input)),
     updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
     // forward t
     singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
@@ -92,9 +107,9 @@ createChromeHandler({
   router: appRouter,
   createContext,
 })
-
-const currSrc = writable<Src>({ domain: "", title: "" })
-pushStore("currSrc", currSrc)
+// note_mut.currSrc
+// const currSrc = writable<Src>({ domain: "", title: "" })
+pushStore("currSrc", note_mut.currSrc)
 
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
@@ -120,9 +135,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
   const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
   DEBUG && console.log(domain, title)
-  if (domain && title) currSrc.set({ domain, title })
-  const source_id = note_mut.setLocalSrcId({ domain: domain || "", title: title || "" })
-  console.log(source_id)
+  if (domain && title) note_mut.currSrc.set({ domain, title })
 }
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
@@ -133,6 +146,7 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
+  // should I close window here too?
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 

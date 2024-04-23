@@ -82,14 +82,14 @@ export class ActionQueue {
     // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
     const { id, title, domain } = src
     // TODO HERE
+    // check if already was added by prolly someone else
+    const { data } = await this.sb.from("sources").select().eq("id", id).maybeSingle().then(logIfError("check for sources"))
+    if (data?.domain == src.domain && data?.title == title) return true
     const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(logIfError("insert sources"))
     const success = (error == null)
     console.log("pushed source", success)
     if (success) return success
-    else { // if it is in db - e.g. I'm on the plane and added source but someone online did it already in the meantime - but that's fallback eventuality
-      const { data } = await this.sb.from("sources").select().eq("id", id).single().then(logIfError("check for sources"))
-      return (data?.domain == src.domain && data?.title == title)
-    }
+    throw new Error("neither present nor can push")
   }
 
   actSrc = async (src: Src & { id: UUID }) => {

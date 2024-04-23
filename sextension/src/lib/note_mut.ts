@@ -8,24 +8,20 @@ import { derived, writable, type Readable, type Writable } from "svelte/store"
 
 export class NoteMut {
   ns: NoteSync
-  currSrc: Writable<O.Option<Src>>
+  currSrc: Writable<Src>
   panel: Readable<Notes[]>
   constructor(ns: NoteSync) {
     this.ns = ns
-    this.currSrc = writable(O.none)
+    this.currSrc = writable({ title: "", domain: "" })
     // this.ns.stuMapStore
     // this.currSrcnId.subscribe(funLog("currSrcnId"))
-    this.panel = derived([this.ns.noteStore, this.currSrc, this.ns.invStuMapStore], ([ns, srcOpt, isms]) =>
+    this.panel = derived([this.ns.noteStore, this.currSrc, this.ns.invStuMapStore], ([ns, src, isms]) =>
       pipe(
-        srcOpt,
+        O.some(src),
         O.map(domainTitle),
         chainN(n => isms.get(n)),
         O.map(source_id => [...ns.values()].filter(n => n.source_id == source_id)),
         O.getOrElse<Notes[]>(() => [])),
     )
-  }
-
-  setLocalSrcId = (src: Src) => {
-    this.currSrc.set(O.some(src))
   }
 }

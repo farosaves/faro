@@ -62,6 +62,24 @@ export const cardsUpdateSchema = z.object({
   user_id: z.string().optional(),
 })
 
+export const emails2sendRowSchema = z.object({
+  created_at: z.string(),
+  email: z.string(),
+  id: z.number(),
+})
+
+export const emails2sendInsertSchema = z.object({
+  created_at: z.string().optional(),
+  email: z.string(),
+  id: z.number().optional(),
+})
+
+export const emails2sendUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  email: z.string().optional(),
+  id: z.number().optional(),
+})
+
 export const notesRowSchema = z.object({
   context: z.string().nullable(),
   created_at: z.string(),

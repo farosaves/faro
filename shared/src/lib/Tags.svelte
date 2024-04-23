@@ -147,7 +147,7 @@
       }
 
       if (onlyUnique) {
-        let found = tags?.find(elem => elem[autoCompleteKey] === currentTag[autoCompleteKey])
+        let found = tags?.find((elem) => elem[autoCompleteKey] === currentTag[autoCompleteKey])
 
         if (found) return
       }
@@ -201,7 +201,7 @@
     e.preventDefault()
 
     const data = getClipboardData(e)
-    splitTags(data).map(tag => addTag(tag))
+    splitTags(data).map((tag) => addTag(tag))
   }
 
   function onDrop(e) {
@@ -209,7 +209,7 @@
     e.preventDefault()
 
     const data = e.dataTransfer.getData("Text")
-    splitTags(data).map(tag => addTag(tag))
+    splitTags(data).map((tag) => addTag(tag))
   }
 
   function onFocus() {
@@ -257,7 +257,7 @@
   }
 
   function splitTags(data) {
-    return data.split(splitWith).map(tag => tag.trim())
+    return data.split(splitWith).map((tag) => tag.trim())
   }
 
   function escapeHTML(string) {
@@ -265,11 +265,11 @@
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
-      "\"": "&quot;",
+      '"': "&quot;",
       "'": "&#x27;",
       "/": "&#x2F;",
     }
-    return ("" + string).replace(/[&<>"'\/]/g, match => htmlEscapes[match])
+    return ("" + string).replace(/[&<>"'\/]/g, (match) => htmlEscapes[match])
   }
 
   function buildMatchMarkup(search, value) {
@@ -314,7 +314,7 @@
       }
 
       if (autoCompleteFilter !== false) {
-        matchs = autoCompleteValues.filter(e =>
+        matchs = autoCompleteValues.filter((e) =>
           e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()),
         )
       }
@@ -328,7 +328,7 @@
       })
     } else {
       if (autoCompleteFilter !== false) {
-        matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase()))
+        matchs = autoCompleteValues.filter((e) => e.toLowerCase().includes(value.toLowerCase()))
       }
       matchs = matchs.map((matchTag) => {
         return {
@@ -339,7 +339,7 @@
     }
 
     if (onlyUnique === true && !autoCompleteKey) {
-      matchs = matchs.filter(tag => !tags.includes(tag.label))
+      matchs = matchs.filter((tag) => !tags.includes(tag.label))
     }
 
     arrelementsmatch = matchs
@@ -381,7 +381,7 @@
     on:paste={onPaste}
     on:drop={onDrop}
     on:focus={onFocus}
-    on:blur={e => onBlur(e, tag)}
+    on:blur={(e) => onBlur(e, tag)}
     on:pointerdown={onClick}
     class="svelte-tags-input"
     {placeholder}
@@ -527,8 +527,8 @@
     z-index: 90;
   }
 
-  .svelte-tags-input-matchs li:hover,
-  .svelte-tags-input-matchs li.focus {
+  /* .svelte-tags-input-matchs li.focus, */
+  .svelte-tags-input-matchs li:hover {
     background: #000;
     color: #fff;
     outline: none;
