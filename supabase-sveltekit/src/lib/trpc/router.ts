@@ -25,9 +25,9 @@ const cardInput = z.object({
 
 export const router = t.router({
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
-    const sess = await locals.getSession()
-    if (sess) {
-      const { access_token, refresh_token } = sess
+    const { session } = await locals.safeGetSession()
+    if (session) {
+      const { access_token, refresh_token } = session
       return { access_token, refresh_token }
     }
     return

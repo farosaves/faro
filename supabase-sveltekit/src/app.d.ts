@@ -1,6 +1,6 @@
 // src/app.d.ts
 
-import { Session } from "@supabase/supabase-js"
+import { Session, type User } from "@supabase/supabase-js"
 import { SupabaseClient } from "shared"
 import "unplugin-icons/types/svelte"
 
@@ -8,7 +8,7 @@ declare global {
   namespace App {
     interface Locals {
       supabase: SupabaseClient
-      getSession(): Promise<Session | null>
+      safeGetSession(): Promise<{ session: Session | null, user: User | null }>
     }
     // interface PageData {
     //   session: Session | null

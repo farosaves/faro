@@ -24,20 +24,37 @@
     if ($uncheckedDomains.size > 0) $uncheckedDomains = new Set()
     else $uncheckedDomains = new Set($domains.map(([x, y]) => x))
   }
+  const onDblClick = (domain: string) => () =>
+    ($uncheckedDomains = new Set($domains.map(([x, y]) => x).filter((t) => t != domain)))
 </script>
 
 <details>
   <summary> Sites </summary>
-  <ul class="menu bg-base-200 w-56 rounded-box">
-    <li>
-      <label class="label cursor-pointer">
+  <div class="join join-vertical bg-base-200 w-56">
+    <button
+      class="btn btn-neutral btn-sm text-nowrap join-item w-full"
+      on:click={toggleAll}
+      class:btn-outline={$uncheckedDomains.size}>
+      Toggle All
+    </button>
+
+    <!-- <label class="label cursor-pointer">
         <span class="label-text">Toggle All</span>
         <input type="checkbox" checked on:change={toggleAll} class="checkbox" />
-      </label>
-    </li>
+      </label> -->
 
     {#each $domains as [domain, num], i}
-      <li>
+      <div class="tooltip tooltip-right tooltip-secondary p-0 join-item" data-tip={num}>
+        <button
+          class="btn btn-neutral btn-sm text-nowrap join-item w-full"
+          on:click={toggleDomain(domain)}
+          on:dblclick={onDblClick(domain)}
+          class:btn-outline={$uncheckedDomains.has(domain)}>
+          {domain}
+        </button>
+      </div>
+
+      <!-- <li>
         <label class="label cursor-pointer">
           <span class="label-text tooltip tooltip-left tooltip-primary" data-tip={num}>{domain}</span>
           <input
@@ -46,7 +63,7 @@
             on:click={toggleDomain(domain)}
             class="checkbox" />
         </label>
-      </li>
+      </li> -->
     {/each}
-  </ul>
+  </div>
 </details>
