@@ -57,6 +57,9 @@ export const asc
     (t1: T, t2: T) =>
       f(t1) - f(t2)
 
+export const note_idKey = "noteUuid"
+export const internalSearchParams = ["highlightUuid", note_idKey] as const
+
 export const ifErr
   = <U>(f: (e: U) => void, is = true) =>
     <T extends { error: U }>(r: T) => {

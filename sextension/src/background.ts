@@ -2,7 +2,7 @@ import { getSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -71,6 +71,11 @@ const newNote = (n: PendingNote) => {
     R.filter(x => x.length == panel.length),
     R.keys,
   )
+  const u = new URL(n.url)
+  for (const p of internalSearchParams)
+    u.searchParams.delete(p)
+  n.url = u.href
+
   note_sync.newNote({ ...n, tags: commonTags }, get(note_mut.currSrc))
 }
 const appRouter = (() => {
@@ -121,7 +126,6 @@ const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 
-const note_idKey = "noteUuid"
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
   if (url && noteRegexp.test(url)) {
