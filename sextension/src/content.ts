@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, funLog, makeQCH, Semaphore, sleep } from "shared"
+import { DEBUG, elemsOfClass, funLog, makeQCH, note_idKey, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -19,7 +19,6 @@ export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port }), loggerLink()],
 })
 
-const note_idKey = "noteUuid"
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()

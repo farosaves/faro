@@ -152,7 +152,7 @@ export class NoteSync {
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
     updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
-    this.actionQueue.pushAction(this._user_id!)(pTInverted)
+    this.actionQueue.act(this._user_id)(pTInverted)
     return pTInverted
   }
 
@@ -172,7 +172,7 @@ export class NoteSync {
 
   act = async (patchTup: PatchTup, userAction = true) => {
     if (userAction) this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-    await this.actionQueue.act(this._user_id!)(patchTup)
+    await this.actionQueue.act(this._user_id)(patchTup)
   }
 
   deleteit = async (noteId: string) => {

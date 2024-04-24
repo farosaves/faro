@@ -10,7 +10,6 @@ export const GET = async ({ params }) => {
   // const myString = (data?.quote) ? `window.location.href = "${data.url.split("#")[0]}#:~:text=${encodeURIComponent(data.quote)}"` : ""
   const pageUrl = data?.url
   if (!pageUrl) return new Response(JSON.stringify(error))
-  // console.log("sess", await sb.auth.getSession())
   const $ = cheerio.load(await (await fetch(pageUrl)).text())
   const domain = pageUrl.split(/(?<=\w)\//)[0]
   const isLocal = (s: string) => {

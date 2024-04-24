@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { replacer, updateTheme } from "shared"
-  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
+  import { option } from "fp-ts"
+  import { replacer, sessStore, updateTheme } from "shared"
+  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   import { onMount } from "svelte"
   import { themeChange } from "theme-change"
   onMount(() => {
@@ -22,7 +23,33 @@
     </ul>
   </div>
   <div class="navbar-end">
-    <a class="btn btn-ghost" href="mailto:pawel@farosapp.com">Contact</a>
+    <a class="btn btn-ghost" href="/random/mail-redirect">Contact</a>
+    <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
+      <li>
+        <details>
+          <summary>Settings</summary>
+          <ul>
+            {#if option.isSome($sessStore)}<li><a>Submenu 1</a></li>{/if}
+            <li>
+              <details class="join">
+                <summary>Theme</summary>
+                {#each themes as value}
+                  <li>
+                    <button
+                      class="btn join-item"
+                      data-set-theme={value}
+                      data-act-class="ACTIVECLASS"
+                      on:click={() => setTimeout(updateTheme, 100)}
+                      >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+                  </li>
+                {/each}
+              </details>
+            </li>
+          </ul>
+        </details>
+      </li>
+    </ul> -->
+
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn m-1">Theme</div>
       <div class="dropdown-content join join-vertical">

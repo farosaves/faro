@@ -6,7 +6,7 @@
   import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { type PendingNote, CmModal, API_ADDRESS, updateTheme, toastStore } from "shared"
+  import { type PendingNote, CmModal, API_ADDRESS, updateTheme, toastStore, funLog, type Src } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -23,19 +23,26 @@
   })
 
   const bgSync = getBgSync(TB)
-  const currSrc = RemoteStore("currSrc", { title: "", url: "" })
+  const currSrcs = RemoteStore("currSrcs", new Map<number, Src>())
+  const windowId = writable(-1)
+  const currSrc = derived([currSrcs, windowId], ([srcs, id]) => srcs.get(id) || { title: "", domain: "" })
   const needsRefresh = RemoteStore("needsRefresh", false)
   const session = RemoteStore("session", O.none as O.Option<Session>)
+  const email = derived(session, (s) => O.toNullable(s)?.user?.email)
 
   let optimistic: O.Option<PendingNote> = O.none
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
+  import { derived, writable } from "svelte/store"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
+    const window = await chrome.windows.getCurrent()
+    windowId.set(window.id || NaN)
+    funLog("windowid")(window.id)
     optimisticNotes.stream.subscribe(([x]) => {
       optimistic = O.some(x)
-      setTimeout(() => (optimistic = O.none), 1000)
+      setTimeout(() => (optimistic = O.none), 2000)
     })
     TB.refresh.query()
     themeChange(false)
@@ -48,7 +55,7 @@
     }
   }
   const iconSize = 15
-  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua", "night"]
+  const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
@@ -80,7 +87,7 @@
 
     <div class="grid h-min">
       <a
-        href={O.isNone($session) ? dashboardURL : `${API_ADDRESS}/dashboard`}
+        href={$email ? `${API_ADDRESS}/dashboard` : dashboardURL}
         target="_blank"
         class="tooltip tooltip-left"
         data-tip="Go to dashboard (alt+F)"
@@ -89,7 +96,7 @@
 
       <button
         class="tooltip tooltip-left"
-        data-tip={"Logged in as: \n" + (O.toNullable($session)?.user?.email || "...not logged in")}
+        data-tip={"Logged in as: \n" + ($email || "...not logged in")}
         on:click={() => TB.refresh.query().then(console.log)}
         on:contextmenu|preventDefault={() => TB.disconnect.query()}>
         <IconRefresh font-size={iconSize} />
