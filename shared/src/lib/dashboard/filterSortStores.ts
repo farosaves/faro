@@ -1,27 +1,34 @@
 import type { NoteEx } from "$lib/db/typeExtras"
 import { replacer } from "$lib/stores"
-import { chainN, escapeHTML } from "$lib/utils"
+import { persisted } from "$lib/sync/persisted-store"
+import { chainN, escapeHTML, getOrElse } from "$lib/utils"
 import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
 import fuzzysort from "fuzzysort"
 import { derived, writable } from "svelte/store"
+import { z } from "zod"
+import * as devalue from "devalue"
 
 const _exclTagSets = {
   sets: { "": new Set([]) } as Record<string, Set<string>>,
   currId: "",
 }
 
-export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
-export const exclTagSet = derived(exclTagSets, ({ sets, currId }) => sets[currId])
+// export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
+export const exclTagSets = persisted("exclTagSets", _exclTagSets, { serializer: devalue }) // )
+const validate = z.object({ sets: z.record(z.string(), z.set(z.string())), currId: z.string() }).parse
+exclTagSets.update(ns => pipe(() => validate(ns), O.tryCatch, O.getOrElse(() => _exclTagSets)))
+
+export const exclTagSet = derived(exclTagSets, ({ sets, currId }) => sets[currId] || new Set())
 
 type _A = NoteEx & { priority: number }
 
-export const tagFilter = derived(exclTagSets, ({ sets, currId }) => (n: _A) => ({
+export const tagFilter = derived(exclTagSet, set => (n: _A) => ({
   ...n,
   priority: pipe(
     NA.fromArray(n.tags),
     O.getOrElse(() => [""]),
-    A.map(s => !sets[currId].has(s)),
+    A.map(s => !set.has(s)),
     A.reduce(false, (x, y) => x || y),
   )
     ? n.priority
@@ -38,7 +45,9 @@ export const priorityFilter = derived(selectedPriorities, p => (n: _A) => {
 export const twoPlusTags = writable(false)
 export const twoPlusTagFilter = derived(twoPlusTags, useIt => (n: _A) => useIt ? ({ ...n, priority: n.priority * +(n.tags.length > 1) }) : n)
 
-export const uncheckedDomains = writable(new Set<string>())
+export const uncheckedDomains = persisted<Set<string>>("uncheckedDomains", new Set(), { serializer: devalue })
+const validatUD = z.set(z.string()).parse
+uncheckedDomains.update(ns => pipe(() => validatUD(ns), O.tryCatch, getOrElse(() => new Set())))
 export const domainFilter = derived(uncheckedDomains, d => (n: _A) => {
   if (d.has(n.sources.domain)) n.priority = 0
   return n
