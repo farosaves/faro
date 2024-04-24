@@ -18,12 +18,12 @@ export const handle: Handle = async ({ event, resolve }) => {
       set: (key, value, options) => {
         pipe(
           () => event.cookies.set(key, value, { ...options, path: "/" }),
-          x => E.tryCatch(x, y => y), E.mapLeft(funLog("cookie set")))
+          x => E.tryCatch(x, funLog("cookie set")))
       },
       remove: (key, options) => {
         pipe(
           () => event.cookies.delete(key, { ...options, path: "/" }),
-          x => E.tryCatch(x, y => y), E.mapLeft(funLog("cookie remove")))
+          x => E.tryCatch(x, funLog("cookie remove")))
         // O.tryCatch, O.getOrElseW(() => funLog("cookie set")("failed")))
       },
     },
@@ -88,7 +88,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   } else // DEFAULT
     response = await resolve(event, {
       filterSerializedResponseHeaders(name) {
-        return name === "content-range" || name == "cookies"
+        return name === "content-range"
       },
     })
 

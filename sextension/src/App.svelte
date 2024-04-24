@@ -42,7 +42,7 @@
     funLog("windowid")(window.id)
     optimisticNotes.stream.subscribe(([x]) => {
       optimistic = O.some(x)
-      setTimeout(() => (optimistic = O.none), 1000)
+      setTimeout(() => (optimistic = O.none), 2000)
     })
     TB.refresh.query()
     themeChange(false)
