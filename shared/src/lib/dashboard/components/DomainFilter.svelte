@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { SourceData } from "shared"
   import { derived } from "svelte/store"
   import { record as R, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
   import { desc, host } from "shared"
   import { uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
+  import { onMount } from "svelte"
   export let noteDeri: NoteDeri
   const domains = derived(noteDeri.noteArr, (x) =>
     pipe(
@@ -26,11 +26,17 @@
   }
   const onDblClick = (domain: string) => () =>
     ($uncheckedDomains = new Set($domains.map(([x, y]) => x).filter((t) => t != domain)))
+
+  let details: HTMLDetailsElement
+  onMount(() => {
+    details = document.getElementById("details") as HTMLDetailsElement
+    setTimeout(() => (details.open = !!$uncheckedDomains.size), 200)
+  })
 </script>
 
-<details>
-  <summary> Sites </summary>
-  <div class="join join-vertical bg-base-200 w-56">
+<details id="details" class="flex">
+  <summary class="mb-2"> Sites </summary>
+  <div class="join join-vertical bg-base-200 w-56 m-auto">
     <button
       class="btn btn-neutral btn-sm text-nowrap join-item w-full"
       on:click={toggleAll}
@@ -44,7 +50,7 @@
       </label> -->
 
     {#each $domains as [domain, num], i}
-      <div class="tooltip tooltip-right tooltip-secondary p-0 join-item" data-tip={num}>
+      <div class="tooltip tooltip-top tooltip-secondary p-0 join-item" data-tip={num}>
         <button
           class="btn btn-neutral btn-sm text-nowrap join-item w-full"
           on:click={toggleDomain(domain)}
