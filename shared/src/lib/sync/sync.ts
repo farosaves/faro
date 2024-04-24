@@ -152,7 +152,7 @@ export class NoteSync {
     const pTInverted = { inverse: patches, patches: inverse }
     console.log("patches:", patchTup)
     updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
-    this.actionQueue.pushAction(this._user_id!)(pTInverted)
+    this.actionQueue.act(this._user_id)(pTInverted)
     return pTInverted
   }
 
