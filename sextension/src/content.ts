@@ -1,11 +1,11 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, funLog, makeQCH, note_idKey, Semaphore, sleep } from "shared"
+import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, funLog, makeQCH, note_idKey, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient, loggerLink } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
-import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
+import { checkGoto, getHighlightedText, gotoNoSuccess, optimisticNotes } from "$lib/chromey/messages"
 import type { UUID } from "crypto"
 // import { trpc2 } from "$lib/trpc-client"
 
@@ -128,8 +128,11 @@ sem.use(async () => { // here I can potentially defer loading if page has no hig
 
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
+let failedOnce = false
 const onLoad = () => sem.use(async () => {
   if (!loaded) {
+    if (await testIfLinkTest()) return // use non-ext flow 4 highlight obv
+
     const sers = await T.serializedHighlights.query()
     DEBUG && console.log("sers", sers)
     batchDeserialize(sers)
@@ -139,7 +142,7 @@ const onLoad = () => sem.use(async () => {
     try {
       if (goto) gotoText(goto)
       loaded = true
-    } catch { funLog("content/goto")("couldnt goto") }
+    } catch { failedOnce = true }
 
     const singleNote_id = new URLSearchParams(window.location.search).get(note_idKey)
     if (!singleNote_id) return
@@ -152,5 +155,27 @@ const onLoad = () => sem.use(async () => {
   }
 })
 window.addEventListener("load", onLoad)
+window.addEventListener("DOMContentLoaded", onLoad)
 
 setTimeout(onLoad, 500) // wait half a second
+
+const testIfLinkTest = async () => {
+  const noteTestRegexp = RegExp(escapeRegExp(API_ADDRESS.replace(/http(s?):\/\//, "")) + "/notes/test/")
+  const url = window.location.href
+  funLog("testIfLinkTest")(url)
+  const note_ids = (url && noteTestRegexp.test(url))
+    && ((/(?<=\/notes\/test\/).+/.exec(url)))
+  funLog("testIfLinkTest ids")(note_ids)
+  if (!note_ids) return false
+  const note = await T.singleNoteLocal.query(note_ids[0])
+  if (!note) return console.log("copied note not present locally?") // override debug for now
+  const e = document.getElementsByClassName("_" + note.snippet_uuid)
+  funLog("testIfLinkTest elems")(e)
+  if (e.length) await T.closeMe.query()
+  if (e.length) return // superfluous
+  T.move2Prompt.query(note.id)
+}
+
+checkGoto.sub(() => gotoNoSuccess.send(!loaded && failedOnce))
+
+window.addEventListener("keydown", async e => e.altKey && e.code == "KeyF" && T.openDashboard.query())

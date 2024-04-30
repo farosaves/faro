@@ -3,10 +3,10 @@
   import IconCog from "~icons/jam/cog"
   import IconLayoutDashboard from "~icons/tabler/layout-dashboard"
 
-  import { trpc2 } from "$lib/trpc-client"
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { type PendingNote, CmModal, API_ADDRESS, updateTheme, toastStore, funLog, type Src } from "shared"
+  import type { PendingNote, Src } from "shared"
+  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -16,7 +16,7 @@
   import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
   let login_url = API_ADDRESS + "/login"
-  $: T = trpc2()
+  // $: T = trpc2()
   const port = chrome.runtime.connect()
   export const TB = createTRPCProxyClient<AppRouter>({
     links: [chromeLink({ port })],
@@ -58,8 +58,12 @@
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
 </script>
 
-<svelte:window on:keydown={handle_keydown} />
+<svelte:window
+  on:keydown={handle_keydown}
+  on:focus={() => ($windowActive = true)}
+  on:blur={() => ($windowActive = false)} />
 
+{$windowActive}
 <!-- <a target="_blank" href={dashboardURL}>welcome?</a> -->
 
 {#if $needsRefresh}

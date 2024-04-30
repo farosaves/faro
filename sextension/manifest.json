@@ -23,6 +23,7 @@
     }
   ],
   "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs", "sidePanel", "commands"],
+  "optional_permissions": ["pageCapture"],
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+D" },

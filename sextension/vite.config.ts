@@ -19,7 +19,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: { dashboard: "dashboard.html" },
+      input: { dashboard: "dashboard.html", prompt: "prompt.html" },
       external: ["chrome", "rangy-core.min.js", "rangy-classaplier.min.js", "rangy-highlighter.min.js"],
     },
     minify: false,
