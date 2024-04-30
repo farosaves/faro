@@ -19,6 +19,9 @@ export const gmDvWrap = <T>(s: string) => {
 
 export const optimisticNotes = gmWrap<PendingNote>("STATS")
 
+export const checkGoto = gmWrap<void>("checkGoto")
+export const gotoNoSuccess = gmWrap<boolean>("gotoNoSuccess")
+
 export const getHighlightedText = gmWrap<UUID>("getHighlightedText")
 export const gotoSnippetMsg = gmWrap<UUID>("gotoSnippet")
 export const deleteSnippetMsg = gmWrap<UUID>("deleteSnippet")
@@ -41,7 +44,7 @@ export const pushStore = <T>(id: SharedStores, store: Readable<T>, idStart?: str
 export const RemoteStore = <T>(id: SharedStores, init: T, idStart = id + "__start") => {
   const store = writable(init)
   const msg = gmDvWrap<T>(id)
-  msg.sub(([v, sender]) => store.set(v))
+  msg.sub(([v, _sender]) => store.set(v))
   const start = gmWrap<void>(idStart)
   start.send()
   return store

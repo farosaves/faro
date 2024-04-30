@@ -4,9 +4,11 @@ import { initTRPC } from "@trpc/server"
 import z from "zod"
 import { add_card } from "./api/cards"
 import { createClient } from "@supabase/supabase-js"
-import type { Database } from "shared"
+import { typeCast, type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 import { SERVICE_ROLE_KEY } from "$env/static/private"
+import { uploadMHTML } from "./api/mhtmly"
+import type { UUID } from "crypto"
 
 export const t = initTRPC.context<Context>().create()
 
@@ -46,6 +48,8 @@ export const router = t.router({
     ),
   online: t.procedure.query(() => true as const),
   emailToList: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("emails2send").insert({ email: input })),
+
+  uploadMHTML: t.procedure.input(typeCast<{ id: UUID, data: string }>).mutation(({ input }) => uploadMHTML(input.data, input.id)),
   // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),
 })
 export type Router = typeof router
