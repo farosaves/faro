@@ -1,7 +1,7 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
 import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, funLog, makeQCH, note_idKey, Semaphore, sleep } from "shared"
-import { createTRPCProxyClient, loggerLink } from "@trpc/client"
+import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
@@ -16,7 +16,7 @@ if (DEBUG) console.log("hello")
 
 const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
-  links: [chromeLink({ port }), loggerLink()],
+  links: [chromeLink({ port })],
 })
 
 
