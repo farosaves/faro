@@ -1,5 +1,8 @@
 import { compressSync, strToU8 } from "fflate"
-import { S3 } from "aws-sdk"
+import aws from "aws-sdk"
+
+const { S3 } = aws
+// import { S3 } from "aws-sdk"
 import type { UUID } from "crypto"
 import { funLog } from "shared"
 const s3 = new S3({
