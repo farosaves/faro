@@ -131,8 +131,8 @@
     on:click={() => {
       if (hovered) {
         navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
-        toastNotify("Copied to clipboard. Tested link works.", 5000)
-        open(import.meta.env.VITE_PI_IP + "/notes/test/" + note_data.id)
+        toastNotify("Copied to clipboard.")
+        // open(import.meta.env.VITE_PI_IP + "/notes/test/" + note_data.id)
       }
     }}
     data-umami-event="Note Copy"
