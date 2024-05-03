@@ -1,7 +1,8 @@
-**Definition:** Faros is legally represented by Paweł Paradysz (me, I). In the following, "Faros" means the representative natural entity "Paweł Paradysz" by which the software was developed.
-
 **Important:** Before using this software (Faros), please carefully read this agreement under which you are acquiring a license to use Faros. If you do not accept the the content of this agreement please do not use Faros. If you access or use Faros, you will be accepting Faros [Terms and Conditions](https://web-highlights.com/legal/terms-of-service), [Privacy Policy](https://web-highlights.com/legal/privacy-policy) and [Cookie Policy](https://web-highlights.com/legal/cookies).
 # Privacy Policy
+
+Faros is legally represented by Paweł Paradysz (me, I). In the following, "Faros" means the representative natural entity "Paweł Paradysz" by which the software was developed.
+
 ## Overview
 Your email is collected for keeping your account, e.g. sending password reset links, and in case of signing in with Google or other providers to e.g. prevent having one account with Google Sign-In and another with gmail address and password.
 Cookies are only set when you log in and used to keep the information of who is logged in.
