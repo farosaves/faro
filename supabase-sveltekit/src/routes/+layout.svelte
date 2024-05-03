@@ -4,6 +4,7 @@
   import { goto, invalidate } from "$app/navigation"
   import { onMount } from "svelte"
   import Navbar from "$lib/components/Navbar.svelte"
+  import { DEBUG } from "shared"
 
   export let data
 
@@ -23,20 +24,31 @@
   })
 </script>
 
-<Navbar />
-<div>
-  <slot />
-</div>
+<svelte:head>
+  {#if !DEBUG}
+    <script
+      defer
+      src="https://analytics.us.umami.is/script.js"
+      data-website-id="d6ea5b3a-1a06-4012-8968-336951400cb0"></script>
+  {/if}
+</svelte:head>
 
-<footer class="footer place-content-between p-4 bg-base-300 text-base-content">
-  <!-- <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">yo</nav> -->
-  <!-- yo -->
-  <aside>© 2024 - Pawel Paradysz</aside>
-  <nav class="flex">
-    <a class="underline" href="/legal/tos">Terms of Service</a>
-    <a class="underline" href="/legal/privacy">Privacy Policy</a>
-  </nav>
-  <aside>
-    <p>Made using <a href="https://jam-icons.com/" class="underline">Jam icons</a></p>
-  </aside>
-</footer>
+<div class="min-h-screen flex flex-col">
+  <Navbar />
+  <div class="flex-grow">
+    <slot />
+  </div>
+
+  <footer class="footer place-content-between p-4 bg-base-300 text-base-content">
+    <!-- <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">yo</nav> -->
+    <!-- yo -->
+    <aside>© 2024 - Pawel Paradysz</aside>
+    <nav class="flex">
+      <a class="underline" href="/legal/tos">Terms of Service</a>
+      <a class="underline" href="/legal/privacy">Privacy Policy</a>
+    </nav>
+    <aside>
+      <p>Made using <a href="https://jam-icons.com/" class="underline">Jam icons</a></p>
+    </aside>
+  </footer>
+</div>

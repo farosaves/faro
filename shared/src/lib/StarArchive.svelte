@@ -17,6 +17,7 @@
     <input
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-right"
+      data-umami-event="Note Star"
       data-tip="{altKey}+S"
       checked={false}
       on:click|preventDefault={onClick(5)}
@@ -34,6 +35,7 @@
     <input
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-left"
+      data-umami-event="Note Arch"
       data-tip="{altKey}+X"
       checked={false}
       on:click|preventDefault={onClick(-5)}

@@ -36,7 +36,13 @@
   <title>Faros - Your Account</title>
 </svelte:head>
 
-<div class="flex items-center justify-center min-h-screen p-4 bg-neutral text-neutral-content">
+<!-- <div class="flex flex-col">
+  <div class="flex-grow">
+    <div class="h-full">my content</div>
+  </div>
+</div> -->
+
+<div class="flex items-center justify-center p-4 bg-neutral text-neutral-content" style="min-height: 84vh;">
   <div class="w-full max-w-xl p-10 card bg-base-300">
     <form
       class="space-y-6 form-control"
