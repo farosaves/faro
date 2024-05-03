@@ -39,6 +39,7 @@
       {supabaseClient}
       redirectTo={`${data.url}/auth/callback?view=${view}`}
       showLinks={false}
+      providers={["google", "github"]}
       view={view == "sign_up" ? "magic_link" : view}
       appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
     <!-- <Auth supabaseClient={data.supabase} {view} {providers} /> -->

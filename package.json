@@ -1,6 +1,7 @@
 {
   "name": "myroot",
   "dependencies": {
+    "aws-sdk": "^2.1607.0",
     "devalue": "^4.3.2",
     "fflate": "^0.8.2",
     "idb-keyval": "^6.2.1",

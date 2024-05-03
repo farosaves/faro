@@ -11,6 +11,7 @@ export const modalSub: Action<HTMLDialogElement> = (modal) => {
 }
 export const tagModalOpenStore = writable(false)
 
+export const windowActive = writable(false)
 
 const _sess: O.Option<Session> = O.none
 
@@ -30,7 +31,7 @@ export const modalNote = writable<O.Option<Notes>>(O.none)
 
 let nToast = 0
 export const toastStore = writable<[string, number][]>([])
-export const toastNotify = (msg: string) => {
+export const toastNotify = (msg: string, delay = 2000) => {
   toastStore.update(A.append([msg, nToast += 1]))
-  setTimeout(() => toastStore.update(A.dropLeft(1)), 2000)
+  setTimeout(() => toastStore.update(A.dropLeft(1)), delay)
 }

@@ -1,8 +1,8 @@
 import { getSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO } from "fp-ts"
-import { pushStore, getHighlightedText } from "$lib/chromey/messages"
+import { pushStore, getHighlightedText, checkGoto } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, typeCast, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -62,7 +62,6 @@ refresh()
 //   optMail(get(sess)) != optMail(newSess) && sess.set(newSess)
 //   return newSess
 // }
-const typeCast = <T>(input: unknown) => input as T
 const newNote = (n: PendingNote) => {
   const panel = get(note_mut.panel)
   const commonTags = pipe(panel,
@@ -78,20 +77,31 @@ const newNote = (n: PendingNote) => {
 
   note_sync.newNote({ ...n, tags: commonTags }, get(note_mut.currSrc))
 }
+const email = derived(sess, s => O.toNullable(s)?.user?.email)
+const tabs2Check: number[] = []
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
 
   return t.router({
+    openDashboard: t.procedure.query(() => {
+      const url = get(email) ? `${API_ADDRESS}/dashboard` : chrome.runtime.getURL("dashboard.html")
+      chrome.tabs.create({ url })
+    }),
     serializedHighlights: t.procedure.query(() => get(note_mut.panel).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
+    tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
+      if (!tab) return
       chrome.scripting.executeScript({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-        target: { tabId: tab?.id! },
+        target: { tabId: tab.id! },
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
+      if (tabs2Check.includes(tab.id!))
+        setTimeout(() => checkGoto.send(undefined, { tabId: tab.id! }), 550)
     }),
-
+    closeMe: t.procedure.query(({ ctx: { tab } }) => { if (tab?.id) chrome.tabs.remove(tab?.id) }),
+    move2Prompt: t.procedure.input(z.string()).query(
+      ({ input }) => chrome.tabs.update({ url: chrome.runtime.getURL("prompt.html") + "?id=" + input })),
     refresh: t.procedure.query(() => refresh()),
     disconnect: t.procedure.query(() => refresh(false)),
     // forward note_sync
@@ -105,6 +115,8 @@ const appRouter = (() => {
     updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
     // forward t
     singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
+    singleNoteLocal: t.procedure.input(z.string()).query(({ input }) => get(note_sync.noteStore).get(input)),
+
     singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
       pipe(get(note_mut.panel), A.findFirst(a => a.snippet_uuid == input), O.toNullable)),
   })
@@ -121,15 +133,25 @@ createChromeHandler({
 
 pushStore("currSrcs", note_mut.currSrcs)
 
+const testCopiedLink = (note_id: string) => {
+  console.log("I think pass here?")
+  // const n = get(note_sync.noteStore).get(note_id)
+  // if (n == undefined) throw new Error("what's up??")
+  // if (n.snippet_uuid == null) throw new Error("not copyable")
+  // it shouldve the highlight
+}
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
+const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title } = tab
-  if (url && noteRegexp.test(url)) {
-    const note_id = (/(?<=\/notes\/).+/.exec(url) || [])[0]!
+  if (url && noteTestRegexp.test(url))
+    testCopiedLink((/(?<=\/notes\/test\/).+/.exec(url))![0])
+  else if (url && noteRegexp.test(url)) {
+    const note_id = (/(?<=\/notes\/).+/.exec(url))![0]
     T.singleNote.query(note_id).then(({ data }) => {
       const newUrlStr = data?.url
       if (newUrlStr) {
@@ -150,12 +172,14 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   // here closes the window
-  if (homeRegexp.test(tab.url || ""))
+  if (homeRegexp.test(tab.url || "")) {
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
+    refresh()
+  }
   updateCurrUrl(tab)
   setTimeout(async () => {
-    const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-    tab && updateCurrUrl(tab)
+    const newTab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+    if (newTab && tab.url !== newTab.url) updateCurrUrl(tab)
   }, 500)
 })
 
