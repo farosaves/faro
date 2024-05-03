@@ -1,6 +1,8 @@
 # Terms of Service
 
-**Definition:** Faros is legally represented by Paweł Paradysz (me, I, we, our). In the following, "Faros" means the representative natural entity "Paweł Paradysz" by which the software was developed.
+### Definitions
+
+Faros is legally represented by Paweł Paradysz (me, I, we, our). In the following, "Faros" means the representative natural entity "Paweł Paradysz" by which the software was developed.
 
 "User" or "You" means the individual or the business entity to which a license is granted by Web Highlights for the use of the Software.
 
@@ -11,8 +13,9 @@
 “Service” means the provision of access to the Licensed Software.
 
 <!-- (vi) “Usage Data” means data collected about the User’s use of the Service. For example, how often the User accesses a to do list, or what photo(s) they favorite. -->
+### Changes to terms
 
-**Changes to Terms**: We reserve the right to modify these Terms at any time. We will always post the most current version on our website and notify you should anything material change. By continuing to use the Services after the changes become effective, you agree to the revised Terms.
+We reserve the right to modify these Terms at any time. We will always post the most current version on our website and notify you should anything material change. By continuing to use the Services after the changes become effective, you agree to the revised Terms.
 
 ## Eligibility
 
