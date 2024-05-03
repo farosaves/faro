@@ -5,7 +5,7 @@
   import { option as O, array as A } from "fp-ts"
   import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
-  import { modalOpenStore, modalNote, replacer, toastNotify } from "./stores"
+  import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import fuzzysort from "fuzzysort"
@@ -75,8 +75,11 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- class:p-0={hovered && $windowActive}border p-[1px]
+  class:border-2={hovered && $windowActive} -->
 <div
-  class="collapse bg-base-200 border-primary border hover:border-2 p-[1px] hover:p-0"
+  class="collapse bg-base-200 border-primary"
+  style="border-width: {1 + +(hovered && $windowActive)}px; padding: {+!(hovered && $windowActive)}px"
   on:mouseenter={() => (hovered = true)}
   on:mouseleave={() => {
     hovered = false
@@ -127,7 +130,8 @@
     on:click={() => {
       if (hovered) {
         navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
-        toastNotify("Copied to clipboard.")
+        toastNotify("Copied to clipboard. Tested link works.", 5000)
+        open(import.meta.env.VITE_PI_IP + "/notes/test/" + note_data.id)
       }
     }}
     use:shortcut={{ control: true, code: "KeyC" }} />

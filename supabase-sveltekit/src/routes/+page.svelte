@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Save & Share Highlights - Bookmarks</title>
+  <title>Faros - Save links to highlights - Bookmarks</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">
@@ -19,7 +19,7 @@
       <div class="flex flex-col w-full place-items-center">
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4">{@html $replacer("Faros")}</h1>
-          <h2 class="text-4xl font-bold">Save & share highlights <br /> Use them like bookmarks</h2>
+          <h2 class="text-4xl font-bold">Save links to highlights <br /> Alternative to bookmarks</h2>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
           {#if form?.success}<div class="collapse collapse-close bg-base-100">

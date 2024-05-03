@@ -57,6 +57,8 @@ export const asc
     (t1: T, t2: T) =>
       f(t1) - f(t2)
 
+export const typeCast = <T>(input: unknown) => input as T
+
 export const note_idKey = "noteUuid"
 export const internalSearchParams = ["highlightUuid", note_idKey] as const
 

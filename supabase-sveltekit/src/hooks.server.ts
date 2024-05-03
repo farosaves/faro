@@ -12,18 +12,21 @@ import { pipe } from "fp-ts/lib/function"
 export const handle: Handle = async ({ event, resolve }) => {
   // event.setHeaders({ "Cache-Control": "no-store" }) // https://github.com/sveltejs/kit/issues/6735#issuecomment-1248053008 - makes it worse lol
 
+  const failedSets: [string, string][] = []
+  const failedRemoves: string[] = []
+
   event.locals.supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       get: key => event.cookies.get(key),
       set: (key, value, options) => {
         pipe(
           () => event.cookies.set(key, value, { ...options, path: "/" }),
-          x => E.tryCatch(x, funLog("cookie set")))
+          x => E.tryCatch(x, () => failedSets.push([key, value])))
       },
       remove: (key, options) => {
         pipe(
           () => event.cookies.delete(key, { ...options, path: "/" }),
-          x => E.tryCatch(x, funLog("cookie remove")))
+          x => E.tryCatch(x, () => failedRemoves.push(key)))
         // O.tryCatch, O.getOrElseW(() => funLog("cookie set")("failed")))
       },
     },
@@ -104,8 +107,11 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (event.url.pathname.endsWith(".mjs") || event.url.pathname.endsWith(".js"))
     response.headers.set("Content-Type", "application/javascript")
 
+  funLog("getset")(response.headers.getSetCookie())
+  funLog("cookie")((response.headers.get("Cookie") || ""))
+  if (failedSets.length) funLog("failedSets")(failedSets)
+  if (failedRemoves.length) funLog("failedRemoves")(failedRemoves)
   // console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174
-
 
   const origin = event.request.headers.get("origin")
   // here if we want access control we can check origin programatically
