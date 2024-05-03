@@ -10,7 +10,7 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, tagModalOpenStore, toastNotify, toastStore } from "$lib"
+  import { modalOpenStore, tagModalOpenStore, toastNotify, toastStore, windowActive } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
@@ -47,6 +47,7 @@
   const priorities = ["5", "0", "-5"] as const
   onMount(() => {
     modalOpenStore.set(false)
+    windowActive.set(true)
   })
 </script>
 
