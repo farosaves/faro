@@ -4,6 +4,7 @@
   import { goto, invalidate } from "$app/navigation"
   import { onMount } from "svelte"
   import Navbar from "$lib/components/Navbar.svelte"
+  import { DEBUG } from "shared"
 
   export let data
 
@@ -22,6 +23,15 @@
     })
   })
 </script>
+
+<svelte:head>
+  {#if !DEBUG}
+    <script
+      defer
+      src="https://analytics.us.umami.is/script.js"
+      data-website-id="d6ea5b3a-1a06-4012-8968-336951400cb0"></script>
+  {/if}
+</svelte:head>
 
 <div class="min-h-screen flex flex-col">
   <Navbar />

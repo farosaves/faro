@@ -115,6 +115,7 @@
         <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
           <button
             class="btn btn-xs text-error"
+            data-umami-event="Note Del"
             on:click={() => {
               syncLike.deleteit(note_data.id)
               // prettier-ignore
@@ -134,6 +135,7 @@
         open(import.meta.env.VITE_PI_IP + "/notes/test/" + note_data.id)
       }
     }}
+    data-umami-event="Note Copy"
     use:shortcut={{ control: true, code: "KeyC" }} />
 </div>
 

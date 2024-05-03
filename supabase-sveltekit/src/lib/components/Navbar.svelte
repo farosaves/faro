@@ -15,11 +15,11 @@
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-lg">
-      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/dashboard" data-umami-event="Nav DB">Dashboard</a></li>
       <!-- <li><a href="/notes/pinned">Pinned</a></li>
       <li><a href="/notes/queue">Queue</a></li> -->
       <!-- <li><a href="upload">Upload</a></li> -->
-      <li><a href="/account">Account</a></li>
+      <li><a href="/account" data-umami-event="Nav Acc">Account</a></li>
     </ul>
   </div>
   <div class="navbar-end">
