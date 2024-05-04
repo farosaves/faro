@@ -12,7 +12,7 @@ export * from "./utils"
 export * from "./db/types"
 export * from "./shortcut"
 export * from "./db/mock"
-import { makeQCH } from "./snippetiser/main"
+import { makeQH } from "./snippetiser/main"
 import { persisted } from "./sync/persisted-store"
 import * as dbtypes from "./db/types"
 import * as schemas from "./db/schemas"
@@ -21,7 +21,7 @@ import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
 export * from "./semaphore"
 
-export { Tags, MyTags, _Note, makeQCH, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
+export { Tags, MyTags, _Note, makeQH, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
 
