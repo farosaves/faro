@@ -31,7 +31,7 @@
     if (!noSuccess) {
       const blob = await chrome.pageCapture.saveAsMHTML({ tabId: tab.id! })
       if (!blob) throw new Error("bloob:(")
-      T2.uploadMHTML.mutate({ id, data: await blob.text() })
+      // T2.uploadMHTML.mutate({ id, data: await blob.text() })
 
       // either save this or call mhtml2html here
     }
