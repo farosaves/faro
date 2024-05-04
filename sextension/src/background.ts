@@ -24,7 +24,7 @@ pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
 // note_mut.panel.subscribe(funLog("note_panel"))
-pushStore("panel", note_mut.panel)
+pushStore("panels", note_mut.panels)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
@@ -63,7 +63,7 @@ refresh()
 //   return newSess
 // }
 const newNote = (n: PendingNote) => {
-  const panel = get(note_mut.panel)
+  const panel = get(note_mut.panels)
   const commonTags = pipe(panel,
     A.flatMap(x => x.tags),
     groupBy(identity),
@@ -88,7 +88,7 @@ const appRouter = (() => {
       const url = get(email) ? `${API_ADDRESS}/dashboard` : chrome.runtime.getURL("dashboard.html")
       chrome.tabs.create({ url })
     }),
-    serializedHighlights: t.procedure.query(() => get(note_mut.panel).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
+    serializedHighlights: t.procedure.query(() => get(note_mut.panels).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
     tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       if (!tab) return
@@ -118,7 +118,7 @@ const appRouter = (() => {
     singleNoteLocal: t.procedure.input(z.string()).query(({ input }) => get(note_sync.noteStore).get(input)),
 
     singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
-      pipe(get(note_mut.panel), A.findFirst(a => a.snippet_uuid == input), O.toNullable)),
+      pipe(get(note_mut.panels), A.findFirst(a => a.snippet_uuid == input), O.toNullable)),
   })
 })()
 export type AppRouter = typeof appRouter
