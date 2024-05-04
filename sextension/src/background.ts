@@ -1,4 +1,4 @@
-import { getSession } from "$lib/utils"
+import { getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText, checkGoto } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
@@ -50,7 +50,7 @@ const refresh = async (online = true) => {
     sess.set(O.none)
     return O.none
   }
-  const newSess = O.fromNullable(await getSession(supabase, toks))
+  const newSess = O.fromNullable(await getSetSession(supabase, toks))
   sess.set(newSess)
   return newSess
 }
