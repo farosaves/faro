@@ -120,7 +120,7 @@
     </div>
   </div>
 
-  <NotePanel bind:optimistic syncLike={bgSync} />
+  <NotePanel bind:optimistic syncLike={bgSync} {windowId} />
 
   <CmModal />
 

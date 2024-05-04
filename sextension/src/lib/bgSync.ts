@@ -4,11 +4,11 @@ import { NoteMut } from "./note_mut"
 import type { AppRouter } from "../background"
 import type { createTRPCProxyClient } from "@trpc/client"
 
-type BgSync = SyncLike & Pick<NoteMut, "panel"> & Pick<NoteDeri, "allTags">
+type BgSync = SyncLike & Pick<NoteMut, "panels"> & Pick<NoteDeri, "allTags">
 
 export const getBgSync = (t: ReturnType<typeof createTRPCProxyClient<AppRouter>>): BgSync => ({
   allTags: RemoteStore("allTags", []),
-  panel: RemoteStore("panel", []),
+  panels: RemoteStore("panels", new Map()),
   tagChange: nid => xs => t.tagChange.mutate([nid, xs]),
   changePrioritised: nid => p => t.changePrioritised.mutate([nid, p]),
   deleteit: nid => t.deleteit.mutate(nid),
