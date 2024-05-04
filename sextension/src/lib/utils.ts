@@ -9,7 +9,7 @@ import type { UUID } from "crypto"
 DEBUG && console.log("API_ADDRESS", API_ADDRESS)
 
 export type ATokens = { access_token: string, refresh_token: string }
-export const getSession = async (supabase: SupabaseClient, tokens: ATokens) => {
+export const getSetSession = async (supabase: SupabaseClient, tokens: ATokens) => {
   if (!tokens) {
     // here log me out
     // supabase.auth.signOut({ scope: "local" }).then(logIfError("get session"))

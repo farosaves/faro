@@ -22,7 +22,7 @@
       "js": ["src/content.ts"]
     }
   ],
-  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs", "sidePanel", "commands"],
+  "permissions": ["scripting", "storage", "contextMenus", "tabs", "sidePanel", "commands"],
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+D" },
