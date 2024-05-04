@@ -22,16 +22,12 @@
       "js": ["src/content.ts"]
     }
   ],
-  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs", "sidePanel", "commands"],
-  "optional_permissions": ["pageCapture"],
+  "permissions": ["scripting", "storage", "contextMenus", "tabs", "sidePanel", "commands"],
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+D" },
       "description": "Capture text"
     }
-  },
-  "externally_connectable": {
-    "matches": ["https://*.farosapp.com/*"]
   },
   "side_panel": {
     "default_path": "index.html"

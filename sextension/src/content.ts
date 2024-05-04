@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, funLog, makeQCH, note_idKey, Semaphore, sleep } from "shared"
+import { API_ADDRESS, DEBUG, elemsOfClass, escapeRegExp, funLog, makeQH, note_idKey, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -36,6 +36,7 @@ const deleteSelection = (uuid: string) => {
   const elements = elemsOfClass("_" + uuid)
   if (DEBUG) console.log("deleting", uuid, elements.length)
   elements.forEach(e => (e.style.textDecoration = ""))
+  elements.forEach(e => e.classList.remove("_" + uuid))
 }
 function wrapSelectedText(uuid: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,6 +67,7 @@ const subSelection = async (selectedText: string) => {
     const int = A.intersection(S.Eq)(ids)(potentialHighlights)
     if (int) {
       if (int.length > 1) console.log("what the heck?")
+      T.singleNoteBySnippetId.query(int[0])
       const note = await T.singleNoteBySnippetId.query(int[0])
       if (note?.quote.includes(selectedText)) {
         note?.highlights.push(selectedText)
@@ -92,11 +94,10 @@ getHighlightedText.sub(async ([uuid]) => {
   gotoText(uuid)
 
   DEBUG && console.log("uploading...:", { selectedText })
-  // makeQCH grabs text around the highlighted bit:
-  // quote: will try to grab the full sentence
-  // context: will try to grab a <p> tag etc - useful for debugging
-  // quote is what's displayed on the note
-  const { quote, highlights } = makeQCH(htmlstr2body)(document, uuid, selectedText)
+  // makeQH grabs text around the selected bit:
+  // if it's <=3 words they're highlighted and surrounding sentence is a quote
+  // if it's > 3 words the selection is the quote and nothing is highlighted
+  const { quote, highlights } = makeQH(htmlstr2body)(document, uuid, selectedText)
   if (!quote) return { note_data: null }
   const note_data = {
     quote,
@@ -108,6 +109,7 @@ getHighlightedText.sub(async ([uuid]) => {
   }
   optimisticNotes.send(note_data)
   const newNote = await T.newNote.mutate(note_data) // .catch(funLog("newNote"))
+  funLog("newNote")(newNote)
   if (newNote == null) {
     deleteSelection(uuid)
   }

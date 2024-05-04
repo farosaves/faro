@@ -63,7 +63,6 @@
   on:focus={() => ($windowActive = true)}
   on:blur={() => ($windowActive = false)} />
 
-{$windowActive}
 <!-- <a target="_blank" href={dashboardURL}>welcome?</a> -->
 
 {#if $needsRefresh}
@@ -121,7 +120,7 @@
     </div>
   </div>
 
-  <NotePanel bind:optimistic syncLike={bgSync} />
+  <NotePanel bind:optimistic syncLike={bgSync} {windowId} />
 
   <CmModal />
 

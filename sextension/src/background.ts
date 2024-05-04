@@ -1,5 +1,5 @@
-import { getSession } from "$lib/utils"
-import { option as O, array as A, record as R, map as M, number as N, taskOption as TO } from "fp-ts"
+import { getSetSession } from "$lib/utils"
+import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText, checkGoto } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
 import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, typeCast, type Notes, type PendingNote } from "shared"
@@ -24,7 +24,7 @@ pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
 // note_mut.panel.subscribe(funLog("note_panel"))
-pushStore("panel", note_mut.panel)
+pushStore("panels", note_mut.panels)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
@@ -50,7 +50,7 @@ const refresh = async (online = true) => {
     sess.set(O.none)
     return O.none
   }
-  const newSess = O.fromNullable(await getSession(supabase, toks))
+  const newSess = O.fromNullable(await getSetSession(supabase, toks))
   sess.set(newSess)
   return newSess
 }
@@ -62,8 +62,8 @@ refresh()
 //   optMail(get(sess)) != optMail(newSess) && sess.set(newSess)
 //   return newSess
 // }
-const newNote = (n: PendingNote) => {
-  const panel = get(note_mut.panel)
+const newNote = (n: PendingNote, windowId?: number) => {
+  const panel = get(note_mut.panels).get(windowId || -1) || []
   const commonTags = pipe(panel,
     A.flatMap(x => x.tags),
     groupBy(identity),
@@ -74,8 +74,9 @@ const newNote = (n: PendingNote) => {
   for (const p of internalSearchParams)
     u.searchParams.delete(p)
   n.url = u.href
-
-  note_sync.newNote({ ...n, tags: commonTags }, get(note_mut.currSrc))
+  const src = get(note_mut.currSrcs).get(windowId || -1)
+  if (src)
+    return note_sync.newNote({ ...n, tags: commonTags }, src)
 }
 const email = derived(sess, s => O.toNullable(s)?.user?.email)
 const tabs2Check: number[] = []
@@ -88,7 +89,8 @@ const appRouter = (() => {
       const url = get(email) ? `${API_ADDRESS}/dashboard` : chrome.runtime.getURL("dashboard.html")
       chrome.tabs.create({ url })
     }),
-    serializedHighlights: t.procedure.query(() => get(note_mut.panel).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
+    serializedHighlights: t.procedure.query(({ ctx: { tab } }) =>
+      (get(note_mut.panels).get(tab?.windowId || -1) || []).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
     tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       if (!tab) return
@@ -111,14 +113,18 @@ const appRouter = (() => {
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
     undo: t.procedure.query(() => note_sync.undo()),
     redo: t.procedure.query(() => note_sync.redo()),
-    newNote: t.procedure.input(typeCast<PendingNote>).mutation(({ input }) => newNote(input)),
+    newNote: t.procedure.input(typeCast<PendingNote>).mutation(async ({ input, ctx: { tab } }) => await newNote(input, tab?.windowId)),
     updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
     // forward t
     singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
     singleNoteLocal: t.procedure.input(z.string()).query(({ input }) => get(note_sync.noteStore).get(input)),
 
     singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
-      pipe(get(note_mut.panel), A.findFirst(a => a.snippet_uuid == input), O.toNullable)),
+      pipe(get(note_mut.panels),
+        M.values(pipe(N.Ord, ord.contramap(x => x.length))),
+        A.flatten,
+        A.findFirst(a => a.snippet_uuid == input), O.toNullable),
+    ),
   })
 })()
 export type AppRouter = typeof appRouter

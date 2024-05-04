@@ -142,7 +142,7 @@ const getFullSentences
       return text
     }
 // const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
-export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selectedText: string) => {
+export const makeQH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selectedText: string) => {
   const matches = Array.from(d.getElementsByClassName("_" + uuid))
   const root = goUp(e => e.getElementsByClassName("_" + uuid).length == matches.length, matches[0])
   const gen = generateUp(O.fromNullable(root))
@@ -199,6 +199,6 @@ export const makeQCH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selec
     .replaceAll(/\[\d{1,2}\]/g, "")
     .replaceAll(/\n+/g, " ")
     .trim()
-  return { quote, context, highlights }
+  return { quote, highlights }
   // _quote = try2getfullsentences(sel, quotenodes)
 }
