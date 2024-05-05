@@ -2,4 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+.mont {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 500; 
+}
+.viga {
+    font-family: Viga;
+    /* font-weight: 700; doesnt do anything */
+}
+.subr { 
+    font-family: Montserrat Subrayada;
+    font-weight: 400;
+    font-style: normal;
+}
+.subb { 
+    font-family: Montserrat Subrayada;
+    font-weight: 700;
+    font-style: normal;
+}
+.over {
+    font-family: Overlock;
+    font-weight: 700
+}
 
+.share {
+    font-family: Share;
+    font-weight: 700;
+}
+
+.shareit {
+    font-family: Share;
+    font-weight: 700;
+    font-style: italic;
+  
+}
