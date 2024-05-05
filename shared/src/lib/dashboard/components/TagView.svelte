@@ -74,15 +74,24 @@
   }
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
+<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] overflow-y-hidden">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
-    <button
-      class="btn btn-neutral btn-sm text-nowrap"
-      on:click={checkClick}
-      class:btn-outline={$exclTagSet.size}>
-      <IconCheckbox />
-    </button>
+    <details class="dropdown">
+      <summary>
+        <button
+          class="btn btn-neutral btn-sm text-nowrap"
+          on:click={checkClick}
+          class:btn-outline={$exclTagSet.size}>
+          <IconCheckbox />
+        </button>
+      </summary>
+      <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+        <li><a>Item 1</a></li>
+        <li><a>Item 2</a></li>
+      </ul>
+    </details>
   </div>
+
   <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
     <button
       class="btn btn-neutral btn-sm text-nowrap"
