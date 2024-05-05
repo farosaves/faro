@@ -72,6 +72,7 @@
     myModal && myModal.close()
     noteDeri.sync.tagUpdate(currTag, O.none)
   }
+  // some comment
 </script>
 
 <div class="bg-base-100 sticky top-0 z-20 carousel w-[99%]">
