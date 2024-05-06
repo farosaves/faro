@@ -31,5 +31,11 @@
   },
   "side_panel": {
     "default_path": "index.html"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icon.svg"],
+      "matches": ["https://farosapp.com/*", "https://dev.farosapp.com/*"]
+    }
+  ]
 }
