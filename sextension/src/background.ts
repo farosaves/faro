@@ -153,7 +153,9 @@ const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
-  const { url, title } = tab
+  const { url, title: _title } = tab
+  // fix "(1) Messenger" as title
+  const title = _title?.replace(/^\s*\(\s*[0-9]+\s*\)\s*/, "").replaceAll(/\s/gi, " ")
   if (url && noteTestRegexp.test(url))
     testCopiedLink((/(?<=\/notes\/test\/).+/.exec(url))![0])
   else if (url && noteRegexp.test(url)) {
@@ -183,9 +185,10 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
     refresh()
   }
   updateCurrUrl(tab)
+
   setTimeout(async () => {
     const newTab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-    if (newTab && tab.url !== newTab.url) updateCurrUrl(tab)
+    if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateCurrUrl(newTab)
   }, 500)
 })
 

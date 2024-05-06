@@ -1,12 +1,14 @@
 <script>
-  import { altKey, replacer } from "shared"
-  import IconEnvelope from "~icons/jam/envelope"
-  // import * as CryptoJS from "crypto-js"
-  // const key = CryptoJS.lib.WordArray.random(16)
-  // const enc = CryptoJS.AES.encrypt("hey", key)
-  // console.log(enc.ciphertext.toString())
-  // console.log(CryptoJS.AES.decrypt(enc.ciphertext.toString(), key))
-  export let form
+  import { altKey, funLog, replacer } from "shared"
+  import { onMount } from "svelte"
+  import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
+  let extInstalled = true
+  onMount(async () => {
+    // failed to fetch if not installed
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch(
+      (r) => (extInstalled = r.message != "Failed to fetch"),
+    )
+  })
 </script>
 
 <svelte:head>
@@ -18,34 +20,25 @@
     <div class="hero-content text-center">
       <div class="flex flex-col w-full place-items-center">
         <div class="max-w-md space-y-4">
-          <h1 class="text-5xl py-4">{@html $replacer("Faros")}</h1>
+          <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
           <h2 class="text-4xl font-bold">Save links to highlights <br /> Alternative to bookmarks</h2>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
-          {#if form?.success}<div class="collapse collapse-close bg-base-100">
-              <div class="collapse-title text-xl font-medium text-center p-4">All set, thx!</div>
-            </div>
-          {:else}
-            <div class="collapse bg-base-100">
-              <input type="checkbox" />
-              <div class="collapse-title text-xl font-medium text-center p-4">Get emailed when goes live</div>
-              <div class="collapse-content mx-4">
-                <form method="POST">
-                  <label class="input input-bordered flex items-center gap-2">
-                    <IconEnvelope />
-                    <input name="email" type="email" class="grow" placeholder="Email" />
-                    <button hidden type="submit"></button>
-                  </label>
-                </form>
-              </div>
-            </div>
+          {#if !extInstalled}
+            <a
+              id="farosgetitlink"
+              class="btn btn-lg btn-primary text-xl"
+              target="_blank"
+              href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
+              <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
           {/if}
         </div>
 
         <div class="divider"></div>
         <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
           <p class="py-1">
-            Check out <u><b><a href="/dashboard/mock">mock dashboard</a></b></u> to see what it looks like
+            You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
+            to see what it looks like
             <br />
             Or watch the video introduction:
           </p>

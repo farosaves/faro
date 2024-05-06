@@ -132,6 +132,9 @@ sem.use(async () => { // here I can potentially defer loading if page has no hig
 let loaded = false
 let failedOnce = false
 const onLoad = () => sem.use(async () => {
+  funLog("farosgetitlink")(document.getElementById("farosgetitlink"))
+  document.getElementById("farosgetitlink")?.classList.add("hidden")
+
   if (!loaded) {
     if (await testIfLinkTest()) return // use non-ext flow 4 highlight obv
 
@@ -181,3 +184,4 @@ const testIfLinkTest = async () => {
 checkGoto.sub(() => gotoNoSuccess.send(!loaded && failedOnce))
 
 window.addEventListener("keydown", async e => e.altKey && e.code == "KeyF" && T.openDashboard.query())
+
