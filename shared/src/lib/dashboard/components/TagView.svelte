@@ -74,7 +74,7 @@
   }
 </script>
 
-<div class="bg-base-100 sticky top-0 z-20 carousel w-[99%] overflow-y-hidden">
+<div class="bg-base-200 sticky top-0 z-20 carousel w-[99%]">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
     <details class="dropdown">
       <summary>
