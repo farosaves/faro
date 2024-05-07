@@ -55,9 +55,11 @@ export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePriorit
 // type Action = PatchTup & { action: "patches" } | { src: Src, id: UUID, action: "source" }
 const storage = "indexedDB"
 const noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
-noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
+if (get(noteStore).values.length) // checking the length doesnt matter it's only needed to throttle for some reason
+  noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
 const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
-stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+if (get(stuMapStore).values.length)
+  stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
 
 export class NoteSync {
   sb: SupabaseClient
