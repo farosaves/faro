@@ -23,7 +23,7 @@ import type { UUID } from "crypto"
 
 export type Src = SourceData["sources"]
 // strips trailing /
-export const delTr = (s: string | undefined) => s?.replace(/\/$/, "")
+export const delTr = (s: string | undefined) => s?.replace(/\/$/, "") || ""
 export const API_ADDRESS = delTr(import.meta.env.VITE_PI_IP as string)
 
 
