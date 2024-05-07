@@ -1,15 +1,19 @@
 <script lang="ts">
   import { option } from "fp-ts"
-  import { replacer, sessStore, updateTheme } from "shared"
+
+  import { replacer, themeStore, updateTheme } from "shared"
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   import { onMount } from "svelte"
+  import { get } from "svelte/store"
   import { themeChange } from "theme-change"
   onMount(() => {
+    // @ts-expect-error
+    window.lololo = () => get(themeStore)
     themeChange(false)
   })
 </script>
 
-<div class="navbar z-30 relative">
+<div class="navbar z-30 relative bg-base-100">
   <div class="navbar-start">
     <a class="btn btn-ghost text-xl mont" href="/">{@html $replacer("Faros")}</a>
   </div>
@@ -23,7 +27,7 @@
     </ul>
   </div>
   <div class="navbar-end">
-    <a class="btn btn-ghost" href="/random/mail-redirect">Contact</a>
+    <a class="btn btn-ghost" href="/mail">Contact</a>
     <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
       <li>
         <details>

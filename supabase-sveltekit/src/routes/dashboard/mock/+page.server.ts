@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     [ids[1], { title: "Tips", url: url.origin }],
     [ids[2], { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" }],
     [ids[3], { title: "Also check out!", url: url.origin + "/ext.zip" }],
-    [ids[4], { title: "Contact", url: url.origin + "/random/mail-redirect" }],
+    [ids[4], { title: "Contact", url: url.origin + "/mail" }],
   ]), M.map(t => ({ ...t, domain: t.url })))
   console.log(stuMap)
   let id = 0

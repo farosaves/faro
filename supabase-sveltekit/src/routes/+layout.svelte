@@ -33,13 +33,13 @@
   {/if}
 </svelte:head>
 
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col bg-base-300 text-base-content">
   <Navbar />
   <div class="flex-grow">
     <slot />
   </div>
 
-  <footer class="footer place-content-between p-4 bg-base-300 text-base-content">
+  <footer class="footer place-content-between p-4 bg-base-100 text-base-content">
     <!-- <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">yo</nav> -->
     <!-- yo -->
     <aside>© 2024 - Pawel Paradysz</aside>
