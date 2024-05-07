@@ -72,18 +72,21 @@
     myModal && myModal.close()
     noteDeri.sync.tagUpdate(currTag, O.none)
   }
+  let dropdownOpen = false
+  let hRem = 2
+  // window.yo = () => (dropdownOpen = !dropdownOpen)
 </script>
 
-<div class="bg-base-200 sticky top-0 z-20 carousel w-[99%]">
+<div class="bg-base-200 sticky top-0 z-20 carousel w-[99%]" style="height: {hRem}rem">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
-    <details class="dropdown">
-      <summary>
-        <button
-          class="btn btn-neutral btn-sm text-nowrap"
-          on:click={checkClick}
-          class:btn-outline={$exclTagSet.size}>
-          <IconCheckbox />
-        </button>
+    <details class="dropdown" bind:open={dropdownOpen}>
+      <summary
+        class="btn btn-neutral btn-sm text-nowrap"
+        on:click|preventDefault={checkClick}
+        class:btn-outline={$exclTagSet.size}>
+        <!-- <button -->
+        <IconCheckbox />
+        <!-- </button> -->
       </summary>
       <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
         <li><a>Item 1</a></li>
