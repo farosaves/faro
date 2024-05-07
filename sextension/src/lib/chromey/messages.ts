@@ -17,7 +17,8 @@ export const gmDvWrap = <T>(s: string) => {
   return { send, wait, sub }
 }
 
-export const optimisticNotes = gmWrap<PendingNote>("STATS")
+export const optimisticNotes = gmWrap<PendingNote>("optimisticNotes")
+// export const sharedNotes = gmWrap<Notes>("sharedNotes")
 
 export const checkGoto = gmWrap<void>("checkGoto")
 export const gotoNoSuccess = gmWrap<boolean>("gotoNoSuccess")

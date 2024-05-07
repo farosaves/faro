@@ -139,23 +139,17 @@ createChromeHandler({
 
 pushStore("currSrcs", note_mut.currSrcs)
 
-const testCopiedLink = (note_id: string) => {
-  console.log("I think pass here?")
-  // const n = get(note_sync.noteStore).get(note_id)
-  // if (n == undefined) throw new Error("what's up??")
-  // if (n.snippet_uuid == null) throw new Error("not copyable")
-  // it shouldve the highlight
-}
-
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
 const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
-  const { url, title } = tab
+  const { url, title: _title } = tab
+  // fix "(1) Messenger" as title
+  const title = _title?.replace(/^\s*\(\s*[0-9]+\s*\)\s*/, "").replaceAll(/\s/gi, " ")
   if (url && noteTestRegexp.test(url))
-    testCopiedLink((/(?<=\/notes\/test\/).+/.exec(url))![0])
+    3
   else if (url && noteRegexp.test(url)) {
     const note_id = (/(?<=\/notes\/).+/.exec(url))![0]
     T.singleNote.query(note_id).then(({ data }) => {
@@ -167,9 +161,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
       }
     })
     return
-    // const newUrlStr = data?.url
   }
-  // const domain = pipe(url, O.fromNullable, O.chain(hostname), O.toNullable)
   const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
   DEBUG && console.log(domain, title)
   note_mut.currWindowId.set(tab.windowId)
@@ -183,9 +175,10 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
     refresh()
   }
   updateCurrUrl(tab)
+
   setTimeout(async () => {
     const newTab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-    if (newTab && tab.url !== newTab.url) updateCurrUrl(tab)
+    if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateCurrUrl(newTab)
   }, 500)
 })
 
