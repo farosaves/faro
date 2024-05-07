@@ -1,7 +1,7 @@
 // note-sync with structura
 
 // @ts-ignore
-import { persisted, type StorageType } from "./persisted-store"
+import { persisted } from "./persisted-store"
 import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
 import { derived, get, type Readable, type Writable } from "svelte/store"
@@ -53,6 +53,11 @@ export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePriorit
 // on online ...
 
 // type Action = PatchTup & { action: "patches" } | { src: Src, id: UUID, action: "source" }
+const storage = "indexedDB"
+const noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
+noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
+const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
+stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
 
 export class NoteSync {
   sb: SupabaseClient
@@ -66,14 +71,11 @@ export class NoteSync {
   _checkOnline: () => Promise<true>
   DEBUG: boolean
 
-  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<true>, storage?: StorageType) {
+  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<true>) {
     this.sb = sb
-    this.noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
+    this.noteStore = noteStore
     // this block shall ensure local data gets overwritten on db schema changes
-    this.noteStore.update(ns => pipe(() => validateNs(ns), O.tryCatch, O.getOrElse(() => allNotesR)))
-
-    this.stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
-    this.stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+    this.stuMapStore = stuMapStore
     this.invStuMapStore = derived(this.stuMapStore,
       flow(M.map(domainTitle), invertMap))
 
