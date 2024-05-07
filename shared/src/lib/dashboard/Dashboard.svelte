@@ -90,7 +90,9 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4">
       <li class="pt-4">
-        <button class="btn btn-sm bg-base-100" on:click={() => ($newestFirst = !$newestFirst)}>
+        <button
+          class="btn btn-sm bg-base-100 border-neutral mx-4"
+          on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
       <li>
