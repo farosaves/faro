@@ -26,7 +26,7 @@
       id="search_input"
       autofocus
       placeholder="Type here to search"
-      class="input w-full max-w-xs min-w-32"
+      class="input w-full max-w-xs min-w-32 border-neutral"
       use:shortcut={{ alt: true, code: "KeyF", callback }}
       bind:value={query} />
     <button hidden on:click={() => console.log(query, $fzRes, selectedKeys, $notes.length)}></button>
