@@ -6,7 +6,7 @@
 
   import { flow } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { desc, NoteDeri, tagModalOpenStore } from "shared"
+  import { NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
   import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
   import { getGroupTagCounts } from "./tagViewStores"
@@ -27,6 +27,8 @@
     ),
   )
   const allTags = derived(noteDeri.allTags, A.append(""))
+  // const allExcl = derived(exclTagSet, (s) => (s.size ? A.every(s.has) : (_a: any) => false))
+  const allExcl = derived(exclTagSet, (s) => A.reduce(true, (prev, a: string) => prev && s.has(a)))
 
   const checkClick = () => {
     // assigns to trigger potential $:
@@ -93,8 +95,8 @@
         <!-- </button> -->
       </summary>
       <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-        <li><a>Item 1</a></li>
-        <li><a>Item 2</a></li>
+        <li>yo</li>
+        <li>ya</li>
       </ul>
     </details>
   </div>
@@ -118,15 +120,16 @@
       </button>
     </div>
   {/if}
-  {#each $tagGroups.filter((x) => x[0].length > 0) as [tag, cnt, ts]}
+  {#each $tagGroups.filter((x) => x[0].length > 0) as [tag, cnt, tss]}
+    {@const ts = tss.map((t) => t[0])}
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
-        on:click={() => toggleTagGroup(ts.map((t) => t[0]))}
+        on:click={() => toggleTagGroup(ts)}
         on:contextmenu|preventDefault={onContextMenu(tag)}
-        on:dblclick={onDblClickGroup(ts.map((t) => t[0]))}
-        class:btn-outline={$exclTagSet.has(tag)}
-        >{tag}
+        on:dblclick={onDblClickGroup(ts)}
+        class:btn-outline={$allExcl(ts)}
+        >{tag}/
       </button>
     </div>
   {/each}
