@@ -22,7 +22,6 @@
     ),
   )
 
-  // $: console.log(!!$tagFilter, "tagFilter updated")
   const checkClick = () => {
     // assigns to trigger potential $:
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
