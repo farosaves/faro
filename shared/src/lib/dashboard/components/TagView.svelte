@@ -8,9 +8,8 @@
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
   import { NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
-  import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
+  import { exclTagSet, exclTagSets } from "../filterSortStores"
   import { getGroupTagCounts } from "./tagViewStores"
-  import Search from "./Search.svelte"
 
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
