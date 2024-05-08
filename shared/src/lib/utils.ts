@@ -139,6 +139,8 @@ export async function getNotes(
   return data
 }
 
+export const tup = <T extends [void] | object>(val: T) => val
+
 export const curry2 = <A, B, C>(f: (a: A, b: B) => C) => (a: A) => (b: B) => f(a, b)
 export const eq = <T>(a: T) => (b: T) => a == b
 export const neq = <T>(a: T) => (b: T) => a != b
