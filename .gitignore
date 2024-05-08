@@ -1,3 +1,4 @@
+**/.obsidian/workspace.json
 **/vite.config.ts.timestamp*
 *.wav
 *.mp3
@@ -15,4 +16,3 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/notes/workspace.json
