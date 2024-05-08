@@ -9,24 +9,12 @@
   import { desc, NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
   import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
+  import { getTagsCounts } from "./tagViewStores"
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
-  const tags_counts = derived(noteDeri.noteArr, (x) =>
-    pipe(
-      x,
-      A.flatMap((note) => note.tags || []),
-      NA.groupBy(identity),
-      R.map((x) => x.length),
-      R.toArray,
-    )
-      .concat(
-        // prettier-ignore
-        [["", pipe(x, A.filter(note => !note.tags.length), A.size)]],
-      )
-      .toSorted(desc(([x, y]) => y)),
-  )
+  const tagsCounts = getTagsCounts(noteDeri)
   const untagged = derived(
-    tags_counts,
+    tagsCounts,
     flow(
       A.findFirst((x) => x[0] == ""),
       O.map(T.snd),
@@ -38,7 +26,7 @@
   const checkClick = () => {
     // assigns to trigger potential $:
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
-    else $exclTagSets.sets[$exclTagSets.currId] = new Set($tags_counts.map(([x, y]) => x))
+    else $exclTagSets.sets[$exclTagSets.currId] = new Set($tagsCounts.map(([x, y]) => x))
   }
   // $: console.log(Array.from($exclTagSets.sets[$exclTagSets.currId]))
   const toggleTag = (tag: string) =>
@@ -47,9 +35,7 @@
       return s
     })
   const onDblClick = (tag: string) => () =>
-    ($exclTagSets.sets[$exclTagSets.currId] = new Set(
-      $tags_counts.map(([x, y]) => x).filter((t) => t != tag),
-    ))
+    ($exclTagSets.sets[$exclTagSets.currId] = new Set($tagsCounts.map(([x, y]) => x).filter((t) => t != tag)))
 
   // let modalPotential: boolean
   let myModal: HTMLDialogElement | null = null
@@ -114,7 +100,7 @@
       </button>
     </div>
   {/if}
-  {#each $tags_counts.filter((x) => x[0].length > 0) as [tag, cnt]}
+  {#each $tagsCounts.filter((x) => x[0].length > 0) as [tag, cnt]}
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
