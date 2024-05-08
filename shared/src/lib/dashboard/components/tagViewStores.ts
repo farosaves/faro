@@ -1,8 +1,12 @@
 import type { NoteDeri } from "$lib/sync/deri"
-import { desc } from "$lib/utils"
-import { array as A, nonEmptyArray as NA, record as R } from "fp-ts"
+import { desc, tup } from "$lib/utils"
+import { array as A, nonEmptyArray as NA, record as R, either as E } from "fp-ts"
+import { sum } from "fp-ts-std/Array"
 import { identity, pipe } from "fp-ts/lib/function"
 import { derived } from "svelte/store"
+
+type TC = [string, number]
+type TGC = E.Either<TC, [string, number, TC[]]>
 
 export const getTagsCounts = (noteDeri: NoteDeri) => derived(noteDeri.noteArr, x =>
   pipe(x,
@@ -15,7 +19,17 @@ export const getTagsCounts = (noteDeri: NoteDeri) => derived(noteDeri.noteArr, x
   ).toSorted(desc(([x, y]) => y)),
 )
 
-export const groupTagsCounts = (tagsCounts: [string, number][]) => {
+export const groupTagsCounts = (tagsCounts: TC[]) => {
+  const r: TGC[] = pipe(tagsCounts,
+    NA.groupBy(([a, b]) => a.split("/")[0]),
+    // check if not group
+    R.map(xs => xs.length == 1 && !xs[0][0].includes("/")
+      ? E.left(xs[0])
+      : E.right(tup([xs[0][0].split("/")[0], sum(xs.map(x => x[1])), xs])),
+    ),
+    R.toArray,
+    A.map(x => x[1]),
+  )
   const groups = tagsCounts.map(x => x[0].split("/")).filter(x => x.length > 1).map(x => x[0])
   const groupCounts = new Map(A.zip(A.replicate(groups.length, 0))(groups))
   for (const [tag, cnt] of tagsCounts)
