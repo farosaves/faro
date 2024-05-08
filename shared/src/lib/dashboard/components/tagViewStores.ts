@@ -7,14 +7,15 @@ import { derived } from "svelte/store"
 type TC = [string, number]
 type TGC = E.Either<TC, [string, number, TC[]]>
 
-export const getTagsCounts = (noteDeri: NoteDeri) => derived(noteDeri.noteArr, x =>
+export const getGroupTagCounts = (noteDeri: NoteDeri) => derived(noteDeri.noteArr, x =>
   pipe(x,
     A.flatMap(note => note.tags || []),
     NA.groupBy(identity),
     R.map(x => x.length),
     R.toArray,
     A.append(tup(["", pipe(x, A.filter(note => !note.tags.length), A.size)])),
-  ).toSorted(desc(([x, y]) => y)),
+    groupTagsCounts,
+  ),
 )
 export const groupTagsCounts = (tagsCounts: TC[]): TGC[] =>
   pipe(tagsCounts,
