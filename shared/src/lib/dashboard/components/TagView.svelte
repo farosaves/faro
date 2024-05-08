@@ -4,28 +4,34 @@
   import IconCheckbox from "~icons/tabler/checkbox"
   import IconTagOff from "~icons/tabler/tag-off"
 
-  import { flow, identity, pipe } from "fp-ts/lib/function"
-  import { array as A, record as R, nonEmptyArray as NA, option as O, tuple as T } from "fp-ts"
+  import { flow } from "fp-ts/lib/function"
+  import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
   import { desc, NoteDeri, tagModalOpenStore } from "shared"
   import { derived } from "svelte/store"
   import { exclTagSet, exclTagSets, twoPlusTags } from "../filterSortStores"
-  import { getTagsCounts } from "./tagViewStores"
+  import { getGroupTagCounts } from "./tagViewStores"
+  import Search from "./Search.svelte"
+
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
-  const tagsCounts = getTagsCounts(noteDeri)
+  const tagsCounts = getGroupTagCounts(noteDeri)
+  const pureTags = derived(tagsCounts, flow(A.map(E.swap), A.map(O.fromEither), A.compact))
+  const tagGroups = derived(tagsCounts, flow(A.map(O.fromEither), A.compact))
   const untagged = derived(
     tagsCounts,
     flow(
+      A.map(E.toUnion),
       A.findFirst((x) => x[0] == ""),
-      O.map(T.snd),
+      O.map((x) => x[1]),
       O.getOrElse(() => 0),
     ),
   )
+  const allTags = derived(noteDeri.allTags, A.append(""))
 
   const checkClick = () => {
     // assigns to trigger potential $:
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
-    else $exclTagSets.sets[$exclTagSets.currId] = new Set($tagsCounts.map(([x, y]) => x))
+    else $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
   }
   // $: console.log(Array.from($exclTagSets.sets[$exclTagSets.currId]))
   const toggleTag = (tag: string) =>
@@ -33,9 +39,22 @@
       s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
       return s
     })
-  const onDblClick = (tag: string) => () =>
-    ($exclTagSets.sets[$exclTagSets.currId] = new Set($tagsCounts.map(([x, y]) => x).filter((t) => t != tag)))
-
+  const toggleTagGroup = (tags: string[]) =>
+    exclTagSets.update((s) => {
+      if (S.intersection(Str.Eq)(s.sets[s.currId])(new Set(tags)).size)
+        for (const tag of tags) s.sets[s.currId].delete(tag)
+      else for (const tag of tags) s.sets[s.currId].add(tag)
+      // s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
+      return s
+    })
+  const onDblClick = (tag: string) => () => {
+    $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
+    toggleTag(tag)
+  }
+  const onDblClickGroup = (tags: string[]) => () => {
+    $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
+    toggleTagGroup(tags)
+  }
   // let modalPotential: boolean
   let myModal: HTMLDialogElement | null = null
   let currTag: string
@@ -99,7 +118,19 @@
       </button>
     </div>
   {/if}
-  {#each $tagsCounts.filter((x) => x[0].length > 0) as [tag, cnt]}
+  {#each $tagGroups.filter((x) => x[0].length > 0) as [tag, cnt, ts]}
+    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
+      <button
+        class="btn btn-neutral btn-sm text-nowrap"
+        on:click={() => toggleTagGroup(ts.map((t) => t[0]))}
+        on:contextmenu|preventDefault={onContextMenu(tag)}
+        on:dblclick={onDblClickGroup(ts.map((t) => t[0]))}
+        class:btn-outline={$exclTagSet.has(tag)}
+        >{tag}
+      </button>
+    </div>
+  {/each}
+  {#each $pureTags.filter((x) => x[0].length > 0) as [tag, cnt]}
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
