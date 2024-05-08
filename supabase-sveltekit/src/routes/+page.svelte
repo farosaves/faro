@@ -59,7 +59,7 @@
       allowfullscreen></iframe>
   </div>
   <div class="my-8"></div>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center hidden">
     <div class="collapse collapse-arrow bg-base-100 w-1/2">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
