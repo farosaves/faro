@@ -5,7 +5,8 @@ import { flow, identity, pipe } from "fp-ts/lib/function"
 import { derived } from "svelte/store"
 
 type TC = [string, number]
-type TGC = E.Either<TC, [string, number, TC[]]>
+type TG = [string, number, TC[]]
+export type TGC = E.Either<TC, TG>
 
 export const getGroupTagCounts = (noteDeri: NoteDeri) => derived(noteDeri.noteArr, x =>
   pipe(x,
@@ -28,8 +29,10 @@ export const groupTagsCounts = (tagsCounts: TC[]): TGC[] =>
     R.toEntries,
     A.map(t => t[1]),
   ).toSorted(desc(flow(E.toUnion, t => t[1])))
-  // const groups = tagsCounts.map(x => x[0].split("/")).filter(x => x.length > 1).map(x => x[0])
-  // const groupCounts = new Map(A.zip(A.replicate(groups.length, 0))(groups))
-  // for (const [tag, cnt] of tagsCounts)
-  //   groupCounts.set(tag, cnt + (groupCounts.get(tag) || 0))
 
+export const groupize = <T>(f1: (a: string) => T, f2: (as: string[]) => T) =>
+  flow(
+    E.bimap(
+      (tc: TC) => f1(tc[0]),
+      ([_1, _2, tcs]: TG) => f2(tcs.map(x => x[0]))),
+    E.toUnion)
