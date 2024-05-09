@@ -4,8 +4,10 @@
   import { array as A } from "fp-ts"
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
+  import type { Readable } from "svelte/store"
 
   export let noteDeri: NoteDeri
+  export let openFirst: Readable<() => void>
   const notes = noteDeri.noteArr
   let query = ""
   const possibleSelections = ["sources.title", "quote"]
@@ -29,7 +31,7 @@
       class="input w-full max-w-xs min-w-32 border-neutral"
       use:shortcut={{ alt: true, code: "KeyF", callback }}
       bind:value={query} />
-    <button hidden on:click={() => console.log(query, $fzRes, selectedKeys, $notes.length)}></button>
+    <button hidden on:click={() => query.length && $openFirst()}></button>
   </form>
   <div class="join w-full">
     {#each entries as [ariaLabel, value] (value)}

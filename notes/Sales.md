@@ -18,6 +18,8 @@
 * systems: do one well, not 5 dead social media links
 	* do I prefer writing... or talking to camera
 * MEANT TO BE FUN
+* I can't speak to one person - how do I address many people relatebly at once?
+  * Imagine im addressing 3 at the same time - like I was making a video for one
 # PR
 * research journalist and write the whole article for them in their style - wow
 * journalists usually post more on twitter than have followers
