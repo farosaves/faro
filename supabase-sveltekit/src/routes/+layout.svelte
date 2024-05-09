@@ -4,7 +4,7 @@
   import { goto, invalidate } from "$app/navigation"
   import { onMount } from "svelte"
   import Navbar from "$lib/components/Navbar.svelte"
-  import { DEBUG } from "shared"
+  import { API_ADDRESS, DEBUG } from "shared"
 
   export let data
 
@@ -25,6 +25,8 @@
 </script>
 
 <svelte:head>
+  <meta property="og:image" content="{API_ADDRESS}/tile.png" />
+
   {#if !DEBUG}
     <script
       defer
