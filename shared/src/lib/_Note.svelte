@@ -3,7 +3,6 @@
 
   import type { SyncLike } from "./sync/sync"
   import { option as O, array as A } from "fp-ts"
-  import { onMount } from "svelte"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
@@ -16,6 +15,7 @@
   export let closeAll: () => void
   export let syncLike: SyncLike
   export let allTags: Readable<string[]>
+  export let wRem: number | undefined = undefined
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
@@ -53,23 +53,23 @@
   )
   // .replace(note_data.quote, quoteBoldReplace)
 
-  $: onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
-  $: onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
-  $: changeP = syncLike.changePrioritised(note_data.id)
+  const onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  const onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  const changeP = syncLike.changePrioritised(note_data.id)
 
-  let highlighting = false
-  const highlightMe = () => {
-    this_element.scrollIntoView({ block: "center" })
-    highlighting = true
-    setTimeout(() => (highlighting = false), 1000)
-    return true
-  }
-  onMount(() => {
-    "highlightOnMount" in note_data &&
-      note_data["highlightOnMount"] &&
-      highlightMe() &&
-      (note_data["highlightOnMount"] = false)
-  })
+  // let highlighting = false
+  // const highlightMe = () => {
+  //   this_element.scrollIntoView({ block: "center" })
+  //   highlighting = true
+  //   setTimeout(() => (highlighting = false), 1000)
+  //   return true
+  // }
+  // onMount(() => {
+  //   "highlightOnMount" in note_data &&
+  //     note_data["highlightOnMount"] &&
+  //     highlightMe() &&
+  //     (note_data["highlightOnMount"] = false)
+  // })
 
   let hovered = false
 </script>
@@ -77,40 +77,37 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- class:p-0={hovered && $windowActive}border p-[1px]
   class:border-2={hovered && $windowActive} -->
-<div
-  class="collapse bg-base-200 border-primary"
-  style="border-width: {1 + +(hovered && $windowActive)}px; padding: {+!(hovered && $windowActive)}px"
-  on:mouseenter={() => (hovered = true)}
-  on:mouseleave={() => {
-    hovered = false
-    isOpen = false
-  }}
-  class:highlighting
-  on:contextmenu|preventDefault={() => {
-    $modalNote = O.some(note_data)
-    $modalOpenStore = true
-  }}>
-  <input type="checkbox" class="-z-10" bind:checked={isOpen} />
+<div class="relative" style={wRem ? `max-width: ${wRem}rem; min-width: ${wRem}rem` : ""}>
   <div
-    class="collapse-title text-center"
-    bind:this={this_element}
-    style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
-    <button
-      on:click={async () => {
-        const saveIsOpen = isOpen
-        closeAll()
-        await sleep(1)
-        isOpen = !saveIsOpen
-      }}
-      on:dblclick={goto_function}>
-      {@html text}
-    </button>
-    <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
-  </div>
-  <div class="collapse-content z-40" style="grid-row-start: 2">
-    <div class="join w-full">
-      <!-- <button class="btn btn-xs join-item grow" on:click={() => {}}>
-        Pin / Unpin</button> -->
+    class="collapse bg-base-200 border-primary"
+    style="border-width: {1 + +(hovered && $windowActive)}px; padding: {+!(hovered && $windowActive)}px"
+    on:mouseenter={() => (hovered = true)}
+    on:mouseleave={() => {
+      hovered = false
+      isOpen = false
+    }}
+    on:contextmenu|preventDefault={() => {
+      $modalNote = O.some(note_data)
+      $modalOpenStore = true
+    }}>
+    <input type="checkbox" class="-z-10" bind:checked={isOpen} />
+    <div
+      class="collapse-title text-center"
+      bind:this={this_element}
+      style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
+      <button
+        on:click={async () => {
+          const saveIsOpen = isOpen
+          closeAll()
+          await sleep(1)
+          isOpen = !saveIsOpen
+        }}
+        on:dblclick={goto_function}>
+        {@html text}
+      </button>
+      <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
+    </div>
+    <div class="collapse-content z-40" style="grid-row-start: 2">
       {#if hovered}
         <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
           <button
@@ -123,20 +120,19 @@
               closeAll()
             }}>DELETE</button>
         </StarArchive>
+        <button
+          hidden
+          on:click={() => {
+            if (hovered) {
+              navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
+              toastNotify("Copied to clipboard.")
+            }
+          }}
+          data-umami-event="Note Copy"
+          use:shortcut={{ control: true, code: "KeyC" }} />
       {/if}
     </div>
   </div>
-  <button
-    hidden
-    on:click={() => {
-      if (hovered) {
-        navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
-        toastNotify("Copied to clipboard.")
-        // open(import.meta.env.VITE_PI_IP + "/notes/test/" + note_data.id)
-      }
-    }}
-    data-umami-event="Note Copy"
-    use:shortcut={{ control: true, code: "KeyC" }} />
 </div>
 
 <style>
