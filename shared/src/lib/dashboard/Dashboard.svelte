@@ -1,20 +1,22 @@
 <script lang="ts">
   import { onMount } from "svelte"
-  import Note from "./components/Note.svelte"
+  import Note from "../_Note.svelte"
   import Search from "./components/Search.svelte"
   import DomainFilter from "./components/DomainFilter.svelte"
-  import { flow } from "fp-ts/lib/function"
-  import { record as R } from "fp-ts"
+  import { flow, pipe } from "fp-ts/lib/function"
+  import { record as R, tuple as T, array as A } from "fp-ts"
   import TagView from "./components/TagView.svelte"
   import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { modalOpenStore, tagModalOpenStore, toastNotify, toastStore, windowActive } from "$lib"
+  import { desc, modalOpenStore, tagModalOpenStore, toastNotify, toastStore, windowActive } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
   import PriorityFilter from "./components/PriorityFilter.svelte"
+  import { derived, type Readable } from "svelte/store"
+  import { gotoFunction } from "./utils"
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
@@ -28,13 +30,18 @@
     overrideGroups: $fuzzySort.overrideGroups,
   })
   const note_groupss = noteDeri.groupStore
+  const openFirst: Readable<() => void> = derived(note_groupss, (r) =>
+    gotoFunction(
+      pipe(r, R.toArray, A.map(T.snd), A.flatMap(A.flatMap(T.snd))).toSorted(desc((x) => x.priority))[0],
+    ),
+  )
 
   let closeAll = () => {
     noteOpens = R.map((v) => false)(noteOpens)
   }
   closeAll()
 
-  let w_rem = 16
+  let wRem = 16
   const handle_keydown = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore && !$tagModalOpenStore) {
       e.preventDefault()
@@ -68,15 +75,22 @@
       <div
         class="flex flex-row flex-wrap border-secondary pb-2 pt-2"
         class:border-b-2={!!$note_groupss[priority].length}>
-        {#each $note_groupss[priority] as [title, note_group], i}
+        {#each $note_groupss[priority] as [title, note_group]}
           <div
             class="border-2 text-center rounded-lg border-neutral flex flex-col"
-            style="max-width: {w_rem * note_group.length + 0.25}rem;
-            min-width: {w_rem + 0.15}rem">
+            style="max-width: {wRem * note_group.length + 0.25}rem;
+            min-width: {wRem + 0.15}rem">
             <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
-              {#each note_group as note, j}
-                <Note note_data={note} isOpen={noteOpens[note.id]} {closeAll} {noteSync} {w_rem} {allTags} />
+              {#each note_group as note (note.id)}
+                <Note
+                  note_data={note}
+                  isOpen={noteOpens[note.id]}
+                  {closeAll}
+                  goto_function={gotoFunction(note)}
+                  syncLike={noteSync}
+                  {wRem}
+                  {allTags} />
               {/each}
             </div>
           </div>
@@ -96,7 +110,7 @@
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
       <li>
-        <Search {noteDeri} />
+        <Search {noteDeri} {openFirst} />
       </li>
       <li></li>
       <li><DomainFilter {noteDeri} /></li>

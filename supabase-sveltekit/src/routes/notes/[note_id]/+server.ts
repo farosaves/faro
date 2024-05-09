@@ -1,6 +1,6 @@
 import { trpc } from "$lib/trpc/client"
 import * as cheerio from "cheerio/lib/slim"
-import { API_ADDRESS } from "shared"
+import { API_ADDRESS, getOrElse, host } from "shared"
 
 
 const T = trpc({ url: { origin: API_ADDRESS } })
@@ -27,22 +27,33 @@ export const GET = async ({ params }) => {
   `<script type="module">
     import {deserialize, gotoText} from "/deserializer.js"
     let loaded = false
-    
-    const f = () => {
+    const t = () => {
       if (!loaded) {
-        loaded = true
-        // try {
-
-        // } catch {
-        deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
-        gotoText("${data.snippet_uuid}")  
-        // }
+        window.location.href = "${data.url}"
+      } else {
+        document.getElementById("farosloading").style.display = "none"
+        document.getElementById("farosloaded").style.display = "inline"
+      }
+    }
+    const f = () => {
+      setTimeout(t, 500)
+      if (!loaded) {
+            deserialize(applierOptions)(["${data.snippet_uuid}", "${data.serialized_highlight?.replace("\"", "\\\"").trim()}"])
+            gotoText("${data.snippet_uuid}")  
+            loaded = true
       }
     }
     window.addEventListener("load", f)
     setTimeout(f, 500)
+  
   </script>`)
   $("head").prepend(`<meta property="og:image" content="${API_ADDRESS}/preview.png"/>`) // ! hack
+  $("body").prepend("<div id='farosloading' style='display:inline; position: sticky; top:0px; z-index:50; background:black'>loading...</div>")
+  $("body").prepend(`<div id='farosloaded' style='display:none; position: sticky; top:0px; z-index:50; background:black'>
+  rehosted with <a href="farosapp.com">farosapp.com</a>
+  original at <a href="${data.url}">${getOrElse(() => "this url")(host(data.url))}</a>
+  
+  </div>`)
   $("head>[href]").each((i, e) => isLocal(e.attribs["href"]) ? !!(e.attribs["href"] = domain + e.attribs["href"]).length : true)
   $("body [src]").each((i, e) => isLocal(e.attribs["src"]) ? !!(e.attribs["src"] = domain + e.attribs["src"]).length : true)
   $("body [srcset]").each((i, e) => isLocal(e.attribs["srcset"]) ? !!(e.attribs["srcset"] = domain + e.attribs["src"]).length : true)
