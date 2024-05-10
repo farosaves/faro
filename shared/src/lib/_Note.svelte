@@ -19,6 +19,7 @@
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
+  export let isHighlighted = false
 
   // type OptionValueType<T> = T extends O.Option<infer R> ? R : never
 
@@ -80,7 +81,8 @@
 <div class="relative" style={wRem ? `max-width: ${wRem}rem; min-width: ${wRem}rem` : ""}>
   <div
     class="collapse bg-base-200 border-primary"
-    style="border-width: {1 + +(hovered && $windowActive)}px; padding: {+!(hovered && $windowActive)}px"
+    style="border-width: {1 + +(hovered && $windowActive) + 2 * +isHighlighted}px;
+     padding: {+!((hovered && $windowActive) || isHighlighted)}px"
     on:mouseenter={() => (hovered = true)}
     on:mouseleave={() => {
       hovered = false
@@ -136,8 +138,8 @@
   </div>
 </div>
 
-<style>
+<!-- <style>
   .highlighting {
     border-width: 5px;
   }
-</style>
+</style> -->

@@ -15,11 +15,11 @@
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
   import PriorityFilter from "./components/PriorityFilter.svelte"
-  import { derived, type Readable } from "svelte/store"
   import { gotoFunction } from "./utils"
 
   export let noteSync: SyncLikeNStores
   const noteDeri = new NoteDeri(noteSync)
+  const idHighlighted = noteDeri.idHighlighted
   const allTags = noteDeri.allTags
 
   // let showing_contents: boolean[][]
@@ -30,11 +30,6 @@
     overrideGroups: $fuzzySort.overrideGroups,
   })
   const note_groupss = noteDeri.groupStore
-  const openFirst: Readable<() => void> = derived(note_groupss, (r) =>
-    gotoFunction(
-      pipe(r, R.toArray, A.map(T.snd), A.flatMap(A.flatMap(T.snd))).toSorted(desc((x) => x.priority))[0],
-    ),
-  )
 
   let closeAll = () => {
     noteOpens = R.map((v) => false)(noteOpens)
@@ -90,7 +85,8 @@
                   goto_function={gotoFunction(note)}
                   syncLike={noteSync}
                   {wRem}
-                  {allTags} />
+                  {allTags}
+                  isHighlighted={note.id == $idHighlighted} />
               {/each}
             </div>
           </div>
@@ -110,7 +106,7 @@
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
       <li>
-        <Search {noteDeri} {openFirst} />
+        <Search {noteDeri} openFirst={noteDeri.openFirst} />
       </li>
       <li></li>
       <li><DomainFilter {noteDeri} /></li>

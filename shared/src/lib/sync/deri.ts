@@ -3,8 +3,9 @@ import { record as R, array as A, nonEmptyArray as NA, string as S, option as O,
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe } from "fp-ts/lib/function"
-import { fillInTitleDomain, filterSort } from "$lib"
+import { fillInTitleDomain, filterSort, desc } from "$lib"
 import type { UUID } from "crypto"
+import { gotoFunction } from "$lib/dashboard/utils"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)
@@ -38,6 +39,10 @@ export class NoteDeri {
   transformStore: Writable<typeof defTransform>
   noteArr: Readable<NoteEx[]>
   allTags: Readable<string[]>
+  first
+  openFirst: Readable<() => void>
+  idHighlighted: Readable<string>
+  searching
   constructor(noteSync: SyncLikeNStores) {
     this.sync = noteSync
     this.transformStore = transformStore
@@ -49,6 +54,13 @@ export class NoteDeri {
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
     this.allTags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
+    this.first = derived(
+      this.groupStore,
+      r => pipe(r, R.toArray, A.map(T.snd), A.flatMap(A.flatMap(T.snd))).toSorted(desc(x => x.priority)).at(0),
+    )
+    this.openFirst = derived(this.first, gotoFunction)
+    this.searching = writable(false)
+    this.idHighlighted = derived([this.searching, this.first], x => x[0] ? x[1]?.id || "" : "")
   }
 
   reset_transform = () => this.transformStore.set(defTransform)
