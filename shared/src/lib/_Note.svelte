@@ -104,6 +104,7 @@
         }}
         on:dblclick={goto_function}>
         {@html text}
+        <!-- <br />{note_data.priority || "noPriority"} -->
       </button>
       <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
     </div>
