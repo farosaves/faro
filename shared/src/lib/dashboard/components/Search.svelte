@@ -14,7 +14,14 @@
   const texts = ["Titles", "Text"]
   const entries = A.zip(possibleSelections)(texts)
   let selectedKeys = possibleSelections // : (typeof possibleSelections)[number][]
-  $: fzRes.set(!!query && fuzzysort.go(query, $notes, { keys: selectedKeys, limit: 15 }))
+  $: fzRes.set(
+    !!query &&
+      fuzzysort.go(query, $notes, {
+        keys: selectedKeys,
+        limit: 15,
+        scoreFn: (a) => (a[0] ? a[0].score : -1000) + (a[1] ? a[1].score : -1000),
+      }),
+  )
   $: fzSelectedKeys.set(selectedKeys)
   $: query
   const callback = () => document.getElementById("search_input")?.focus()
