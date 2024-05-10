@@ -71,7 +71,7 @@ const subSelection = async (selectedText: string) => {
       const note = await T.singleNoteBySnippetId.query(int[0])
       if (note?.quote.includes(selectedText)) {
         note?.highlights.push(selectedText)
-        console.log("updated note", JSON.stringify(note))
+        DEBUG && console.log("updated note", JSON.stringify(note))
         if (note) T.updateNote.mutate(note)
         return true
       }

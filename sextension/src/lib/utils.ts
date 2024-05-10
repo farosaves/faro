@@ -25,14 +25,14 @@ export const getSetSession = async (supabase: SupabaseClient, tokens: ATokens) =
 }
 
 export async function gotoSnippet(uuid: UUID) {
-  console.log("going to..", uuid)
+  DEBUG && console.log("going to..", uuid)
   const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   deleteSnippetMsg.send(uuid)
   chrome.tabs.sendMessage(tab.id!, { action: "goto", uuid })
 }
 
 export async function deleteSnippet(uuid: UUID, serialized: string) {
-  console.log("deleting..", uuid, serialized)
+  DEBUG && console.log("deleting..", uuid, serialized)
   const tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0]
   chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
 }
