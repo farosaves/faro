@@ -15,10 +15,6 @@
   })
 
   const noteSync = getSyncLikeNStores(TB)
-  noteSync.noteStore.subscribe(s => console.log("updated remote noteStore", s.size))
-  // session.subscribe(O.map((sess) => noteSync.setUser_id(sess.user.id)))
-
-  console.log("henlo")
 </script>
 
 <!-- <a href="dashboard" class="btn btn-primary">whao</a> -->

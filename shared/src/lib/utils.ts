@@ -165,7 +165,7 @@ export const applyPatches
   = (ps: Patch[]) =>
     <T>(s: T) => {
       _applyPatches(s, ps)
-      console.log("applying patches")
+      DEBUG && console.log("applying patches")
       return s
     }
 
@@ -181,6 +181,6 @@ export const updateStore
           ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv) as Patch[][]
         return result as T
       })
-      console.log(patches)
+      DEBUG && console.log(patches)
       return { patches, inverse }
     }

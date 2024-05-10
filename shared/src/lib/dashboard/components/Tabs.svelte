@@ -4,7 +4,6 @@
   import { get } from "svelte/store"
   import { exclTagSets, exclTagSets as t } from "../filterSortStores"
   export let noteDeri: NoteDeri
-  $: console.log(Array.from($t.sets[$t.currId]))
   const tab_ids = ["1", "2"]
   const tab_titles = ["tab one", "tab two"]
   const tab_actives = [new Set<string>(), new Set<string>()]
