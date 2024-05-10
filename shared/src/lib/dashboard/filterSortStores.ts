@@ -72,7 +72,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
       if (res && res.length) {
         priority = pipe(
           Array.from(res),
-          A.findFirstMap(r => (r.obj.id == n.id ? O.some(r.score + 1_000_000) : O.none)),
+          A.findFirstMap(r => (r.obj.id == n.id ? O.some(r.score) : O.none)),
           O.match(() => 0, identity),
         )
         searchArt = pipe(

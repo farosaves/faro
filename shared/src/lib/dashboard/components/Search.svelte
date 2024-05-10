@@ -19,7 +19,9 @@
       fuzzysort.go(query, $notes, {
         keys: selectedKeys,
         limit: 15,
-        scoreFn: (a) => (a[0] ? a[0].score : -1000) + (a[1] ? a[1].score : -1000),
+        scoreFn: (a) =>
+          (a[0] ? Math.max(a[0].score + 1000, 0) : 0) ** 3 +
+          (a[1] ? Math.max(a[1].score + 1000, 0) + 1000 : 0) ** 3,
       }),
   )
   $: fzSelectedKeys.set(selectedKeys)
