@@ -23,7 +23,6 @@ const noteDeri = new NoteDeri(note_sync)
 pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
 const note_mut: NoteMut = new NoteMut(note_sync)
-// note_mut.panel.subscribe(funLog("note_panel"))
 pushStore("panels", note_mut.panels)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
@@ -41,9 +40,6 @@ user_id.subscribe(onUser_idUpdate)
 const refresh = async (online = true) => {
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (tab) updateCurrUrl(tab)
-  // tab?.windowId
-  // funLog("preparing")("xd")
-  // const toks = (online && await T.my_tokens.query().then(funLog("toks pass")).catch(funLog("toks catch"))) || undefined
   const toks = (online && O.toNullable(await TO.tryCatch(T.my_tokens.query)())) || undefined
   funLog("refresh toks")(toks)
   if (!toks) { // logged out
@@ -196,6 +192,7 @@ const signalRefresh = (ms = 2000) => {
 }
 async function activate(tab: chrome.tabs.Tab) {
   chrome.sidePanel.open({ tabId: tab.id } as chrome.sidePanel.OpenOptions)
+  updateCurrUrl(tab)
   // tODo here check if online at all
   getHighlightedText.send(crypto.randomUUID(), { tabId: tab.id }).catch(() => signalRefresh())
 }

@@ -19,7 +19,6 @@ export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port })],
 })
 
-
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
   sel.setSingleRange(rann as RangyRange)
