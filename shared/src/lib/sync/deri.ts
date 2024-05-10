@@ -1,5 +1,5 @@
 import type { NoteEx } from "$lib"
-import { record as R, array as A, nonEmptyArray as NA, string as S, option as O } from "fp-ts"
+import { record as R, array as A, nonEmptyArray as NA, string as S, option as O, tuple as T } from "fp-ts"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe } from "fp-ts/lib/function"
@@ -28,6 +28,7 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     R.map(filterSort(// ([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // // !hacky + 1000 // so I removed it because it does groups first anyway
       ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
     )),
+    R.map(A.map(T.mapSnd(filterSort(x => x.priority)))),
   )
 
 export type SyncLikeNStores = SyncLike & { noteStore: NoteStoreR, stuMapStore: STUMapStoreR }
