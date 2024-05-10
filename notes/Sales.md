@@ -23,7 +23,7 @@
 # PR
 * research journalist and write the whole article for them in their style - wow
 * journalists usually post more on twitter than have followers
-* starts with having one person having respect for you
+* starts with having one person having respect for you - don't be lazy - be disciplined
 
 ## Analogy
  In coding a feature is - when done right - just a cherry on top of refactors, libraries and tools. Seems that in sales a deal is a cherry on top of communication, understanding and authenticity.
