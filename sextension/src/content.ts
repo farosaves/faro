@@ -19,7 +19,6 @@ export const T = createTRPCProxyClient<AppRouter>({
   links: [chromeLink({ port })],
 })
 
-
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
   sel.setSingleRange(rann as RangyRange)
@@ -71,7 +70,7 @@ const subSelection = async (selectedText: string) => {
       const note = await T.singleNoteBySnippetId.query(int[0])
       if (note?.quote.includes(selectedText)) {
         note?.highlights.push(selectedText)
-        console.log("updated note", JSON.stringify(note))
+        DEBUG && console.log("updated note", JSON.stringify(note))
         if (note) T.updateNote.mutate(note)
         return true
       }

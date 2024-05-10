@@ -57,7 +57,6 @@ export const deserialize = (applierOptions: unknown) => ([uuid, serialized]: [st
   const app = _rangy.createClassApplier("_" + uuid, applierOptions)
   hl.addClassApplier(app)
   const prepared = prepare2deserialize(document.body.textContent || "", serialized)
-  console.log("prep", prepared)
   try {
     hl.deserialize(prepared)
   } catch { return }

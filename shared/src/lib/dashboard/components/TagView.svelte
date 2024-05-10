@@ -76,12 +76,20 @@
 
 <div class="bg-base-200 sticky top-0 z-20 carousel w-[99%]">
   <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
+    <!--   <details class="dropdown" bind:open={dropdownOpen}> -->
     <button
       class="btn btn-neutral btn-sm text-nowrap"
-      on:click={checkClick}
+      on:click|preventDefault={checkClick}
       class:btn-outline={$exclTagSet.size}>
+      <!-- <button -->
       <IconCheckbox />
+      <!-- </button> -->
     </button>
+    <!-- <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+        <li>yo</li>
+        <li>ya</li>
+      </ul>
+    </details>-->
   </div>
   <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
     <button
@@ -106,10 +114,10 @@
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
-        on:click={() => toggleTag(tag)}
+        on:click={() => toggle(tgc)}
         on:contextmenu|preventDefault={onContextMenu(tag)}
-        on:dblclick={onDblClick(tag)}
-        class:btn-outline={$exclTagSet.has(tag)}
+        on:dblclick={onDbl(tgc)}
+        class:btn-outline={$excl(tgc)}
         >{tag}
       </button>
     </div>
