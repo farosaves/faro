@@ -29,6 +29,7 @@
               id="farosgetitlink"
               class="btn btn-lg btn-primary text-xl"
               target="_blank"
+              data-umami-event="WebStore"
               href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
               <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
           {/if}
