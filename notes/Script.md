@@ -11,3 +11,26 @@ Here's what it looks like:
 * Double click it to open
 Here's what makes it better than bookmarks:
 * Searching by text is very easy
+* Easy to remember why you saved something
+* Don't need to scroll over the page
+
+#### Is it a promotional or introductory video
+* So I have 3 ideas 
+
+| do you ever??? | with faros...                               | faros is...                                   |
+| -------------- | ------------------------------------------- | --------------------------------------------- |
+|                | you can save a page to get back to it later | an app to use saved highlights like bookmarks |
+|                |                                             |                                               |
+
+
+
+Faros is an app to use saved highlights like bookmarks.
+So where a bookmark saves a link to the page - here you save a link to the snippet you highlight.
+It works like this:
+* Highlight a piece of text
+* Save from the context menu (right click) or with a keyboard shortcut
+* Find your saves on the dashboard
+Because the snippet is there you can remember what it's about and why you saved it.
+
+* Double click it to open??
+
