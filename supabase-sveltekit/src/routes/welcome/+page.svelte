@@ -16,7 +16,7 @@
         <kbd class="kbd">F</kbd>
       </p>
       <p class="py-2">
-        They'll upload to the cloud once you: <button class="py-2 btn btn-primary">Log in</button>
+        They'll upload to the cloud once you: <a href="/login" class="py-2 btn btn-primary">Log in</a>
       </p>
       <p class="py-2">
         You can make an account whenever you're ready.<br />
