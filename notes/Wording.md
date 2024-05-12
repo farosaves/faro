@@ -15,3 +15,9 @@ Benefits:
 * text search
 * remembering why
 * don't need to scroll
+
+Normally you'd:
+* keep tabs open
+* browse history
+* use bookmarks
+* re-google (and click purple links)
