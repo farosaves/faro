@@ -220,3 +220,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) =>
 // })
 
 if (DEBUG) console.log("loaded all background")
+
+chrome.runtime.onInstalled.addListener((e) => {
+  if (e.reason === chrome.runtime.OnInstalledReason.INSTALL)
+    chrome.tabs.create({ url: API_ADDRESS + "/welcome" })
+})
