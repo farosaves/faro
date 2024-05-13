@@ -164,8 +164,10 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
 }
 
-chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   // here closes the window
+  const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+  if (!tab) throw new Error("unreachable")
   if (homeRegexp.test(tab.url || "")) {
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
     refresh()
@@ -179,7 +181,7 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  // should I close window here too?
+  // should I close window here too? prolly not in case i send notifications or sth
   chrome.tabs.get(tabId).then(updateCurrUrl)
 })
 

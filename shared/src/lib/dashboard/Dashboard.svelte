@@ -75,7 +75,8 @@
             class="border-2 text-center rounded-lg border-neutral flex flex-col"
             style="max-width: {wRem * note_group.length + 0.25}rem;
             min-width: {wRem + 0.15}rem">
-            <span class="text-lg text-wrap flex-grow-0">{@html title}</span>
+            <a target="_blank" href={note_group[0].url} class="text-lg text-wrap flex-grow-0 hover:underline"
+              >{@html title}</a>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
               {#each note_group as note (note.id)}
                 <Note
