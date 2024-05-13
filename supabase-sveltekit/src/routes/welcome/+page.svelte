@@ -12,10 +12,10 @@
       <h1 class="py-2 text-5xl font-bold">Welcome onboard!</h1>
       <h2 class="py-2 text-3xl font-bold">Try it out</h2>
       <p class="py-2">
-        Highlight this sentence (triple clicking) and save with <kbd class="kbd">{altKey}</kbd> +
+        Highlight this sentence (triple clicking here) and save with <kbd class="kbd">{altKey}</kbd> +
         <kbd class="kbd">D</kbd>
       </p>
-      <p class="py-2">Highlight this <i>word</i> and save again.</p>
+      <p class="py-2">Highlight this <i class="font-semibold">word</i> (right-clicking it) and save again.</p>
       <p class="py-2">Double click your saves in the panel on the right to get back to them.</p>
 
       <p class="py-2">
