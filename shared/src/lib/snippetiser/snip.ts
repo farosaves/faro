@@ -64,7 +64,7 @@ const generateUp = (e: O.Option<ArrOr1<Element>>): ArrOr1<Element>[] =>
       e => [e, ...generateUp(succ(e))],
     ),
   )
-const listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.from(e.childNodes))
+const listOrAllChildren = (e: ArrOr1<Element>) => (Array.isArray(e) ? e : Array.from(e.children))
 
 function match(uuid: string) {
   const _match = (uuid: string) => (e: Element) =>
@@ -81,7 +81,7 @@ const getContent = (n: Node) => ("outerHTML" in n ? n.outerHTML : n.textContent 
 type Hs2t = (s: string) => HTMLElement
 const getFullSentences
   = (htmlstr2body: Hs2t) =>
-    (es: ArrOr1<Node>, uuid: string, sp = "n_______n") => {
+    (es: ArrOr1<Element>, uuid: string, sp = "n_______n") => {
       const makeNonempty
       = <T>(placeholder: T) =>
         (xs: T[]) =>
@@ -177,11 +177,12 @@ export const makeQH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, select
   // console.log(potentialQuote.map((x) => x.textContent))
   // console.log(potentialQuote.map((x) => x.textContent))
   const quoteNodes = A.filter(hasMatch(uuid))(potentialQuote)
+  const isTable = pipe(quoteNodes, A.every((n: Element) => n.tagName == "TR"))
+  if (isTable) 3
   // console.log(d.body.outerHTML)
   // console.log(wrapOrPass(contextNode).map((x) => x.outerHTML))
   // console.log(quoteNodes.map((x) => x.outerHTML))
   console.log(divSplit(quoteNodes))
-  // console.log(tag(quoteNodes[0]))
   let quote = getFullSentences(htmlstr2body)(quoteNodes, uuid)
   quote = quote
     .replaceAll(/\[\d{1,2}\]/g, "")
