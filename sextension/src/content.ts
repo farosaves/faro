@@ -34,8 +34,10 @@ const applierOptions = {
 const deleteSelection = (uuid: string) => {
   const elements = elemsOfClass("_" + uuid)
   if (DEBUG) console.log("deleting", uuid, elements.length)
-  elements.forEach(e => (e.style.textDecoration = ""))
-  elements.forEach(e => e.classList.remove("_" + uuid))
+  elements.forEach(e => e.parentNode?.replaceChild(document.createTextNode(e.textContent || ""), e))
+
+  // elements.forEach(e => (e.style.textDecoration = ""))
+  // elements.forEach(e => e.classList.remove("_" + uuid))
 }
 function wrapSelectedText(uuid: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
