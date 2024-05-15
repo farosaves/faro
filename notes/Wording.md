@@ -21,3 +21,8 @@ Normally you'd:
 * browse history
 * use bookmarks
 * re-google (and click purple links)
+
+## V2
+
+When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc.
+
