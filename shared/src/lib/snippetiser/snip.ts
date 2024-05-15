@@ -64,13 +64,12 @@ const generateUp = (e: O.Option<ArrOr1<Element>>): ArrOr1<Element>[] =>
       e => [e, ...generateUp(succ(e))],
     ),
   )
-const listOrAllChildren = (e: ArrOr1<Element>) => (Array.isArray(e) ? e : Array.from(e.children))
+const listOrAllChildren = (e: ArrOr1<Node>) => (Array.isArray(e) ? e : Array.from(e.childNodes))
 
 function match(uuid: string) {
   const _match = (uuid: string) => (e: Element) =>
     new Set(e.classList).has("_" + uuid) ? [e] : Array.from(e.getElementsByClassName("_" + uuid))
-  // @ts-expect-error
-  return (n: Node) => ("classList" in n ? _match(uuid)(n) : [])
+  return (n: Node) => (isElement(n) ? _match(uuid)(n) : [])
 }
 const hasMatch = (uuid: string) => (e: Node) => match(uuid)(e).length > 0
 
@@ -81,7 +80,7 @@ const getContent = (n: Node) => ("outerHTML" in n ? n.outerHTML : n.textContent 
 type Hs2t = (s: string) => HTMLElement
 const getFullSentences
   = (htmlstr2body: Hs2t) =>
-    (es: ArrOr1<Element>, uuid: string, sp = "n_______n") => {
+    (es: ArrOr1<Node>, uuid: string, sp = "n_______n") => {
       const makeNonempty
       = <T>(placeholder: T) =>
         (xs: T[]) =>
@@ -142,6 +141,10 @@ const getFullSentences
       return text
     }
 // const wrapOrPass = <T>(e: ArrOr1<T>) => (Array.isArray(e) ? e : [e]);
+const ELEMENT_NODE = 1
+const isElement = (node: Node): node is Element =>
+  node.nodeType === ELEMENT_NODE
+
 export const makeQH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, selectedText: string) => {
   const matches = Array.from(d.getElementsByClassName("_" + uuid))
   const root = goUp(e => e.getElementsByClassName("_" + uuid).length == matches.length, matches[0])
@@ -177,7 +180,9 @@ export const makeQH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, select
   // console.log(potentialQuote.map((x) => x.textContent))
   // console.log(potentialQuote.map((x) => x.textContent))
   const quoteNodes = A.filter(hasMatch(uuid))(potentialQuote)
-  const isTable = pipe(quoteNodes, A.every((n: Element) => n.tagName == "TR"))
+  const isTable = pipe(quoteNodes,
+    A.filter(isElement),
+    A.every((n: Element) => n.tagName == "TR"))
   if (isTable) 3
   // console.log(d.body.outerHTML)
   // console.log(wrapOrPass(contextNode).map((x) => x.outerHTML))

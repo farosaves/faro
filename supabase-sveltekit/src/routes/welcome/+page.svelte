@@ -1,5 +1,6 @@
 <script>
   import { altKey } from "shared"
+  import pin from "$lib/assets/pin.png"
 </script>
 
 <svelte:head>
@@ -24,12 +25,22 @@
       </p>
       <p class="py-2">Double clicking them on the dashboard also takes you right back.</p>
       <p class="py-2">
-        Your saves will upload to the cloud once you: <a href="/login" class="py-2 btn btn-primary">Log in</a>
+        Your saves will upload to the cloud once you: <a href="/login" class="py-2 btn btn-sm btn-primary"
+          >Log in</a>
       </p>
       <p class="py-2">
         You can make an account whenever you're ready.<br />
         Until then, the dashboard on the website here won't work - only the in-extension one.
       </p>
+      <div class="collapse bg-base-100 my-2">
+        <input type="checkbox" />
+        <div class="collapse-title text-lg font-medium text-center p-4">
+          Also: pin the extension for easier access
+        </div>
+        <div class="collapse-content mx-4">
+          <img alt="The project logo" src={pin} />
+        </div>
+      </div>
     </div>
   </div>
 </div>
