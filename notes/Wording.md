@@ -24,5 +24,17 @@ Normally you'd:
 
 ## V2
 
-When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc.
+When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
 
+Faros is an extension designed exactly to make revisiting the easiest possible.
+You save both the URL and a highlighted snippet from the page.
+So you can:
+➣ remember better what the page is about
+➣ search by text
+➣ get back to exactly where you were in text - no need to scroll 
+
+They're also presented as a scrollable feed with most recent saves first - so you can:
+➣ remind yourself what you saved recently
+➣ organise your saves with tags later
+
+I've been using it since February myself and it's 
