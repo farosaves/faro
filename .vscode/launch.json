@@ -12,6 +12,13 @@
             "cwd": "${workspaceFolder}/supabase-sveltekit"
         },
         {
+            "type": "node-terminal",
+            "name": "Run Script: test shared",
+            "request": "launch",
+            "command": "npm run test",
+            "cwd": "${workspaceFolder}/shared"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",

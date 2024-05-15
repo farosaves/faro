@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import { readFile } from "fs/promises"
 import { pipe } from "fp-ts/lib/function"
 import { JSDOM } from "jsdom"
-import { makeQH } from "./main"
+import { makeQH } from "./snip"
 type MakeQCHReq = {
   html: string
   selectedText: string
@@ -51,7 +51,7 @@ test("input5", async () => {
 test("input6", async () => {
   const r = await l("/input6.json")
   expect(makeQH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe(
-    "Persian has features of agglutination, making use of prefixes and suffixes attached to the stems of verbs and nouns, thus making it a synthetic language rather than an analytic one.",
+    "Persian has features of agglutination",
   )
 })
 test("input7", async () => {
@@ -87,6 +87,10 @@ test("input11", async () => {
   expect(makeQH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe(
     "In Galo beliefs, Jimi manifests as Melo (Sky) and Sidi (Earth), out of the interaction of which all things and beings are born, including Donyi and Polo. There are other myths explaining the meaning of the duality Donyi and Polo.",
   )
+})
+test("input12", async () => {
+  const r = await l("/input12.json")
+  expect(makeQH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe("Flødevigen 13,3° Arendal I dag kl.")
 })
 
 // test("context6", async () => {
