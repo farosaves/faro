@@ -90,7 +90,7 @@ test("input11", async () => {
 })
 test("input12", async () => {
   const r = await l("/input12.json")
-  expect(makeQH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe("what")
+  expect(makeQH(htmlstr2body)(document(r), r.uuid, r.selectedText).quote).toBe("Flødevigen 13,3° Arendal I dag kl.")
 })
 
 // test("context6", async () => {
