@@ -1,8 +1,10 @@
 
 
-YOUR DATA:
+ℹ About your data:
 When installing you can read: "it can read and change all your data on all websites"
-It means that you can use it to save all your data e.g. passwords. 
-As per the Privacy Policy when you use it, it saves: the page title, url, and whatever you see on the right.
-And all changing it does is the underlining on the page.
-The extensions are reviewed to check that they do what they claim.
+The only information that ever gets uploaded (when signed in):
+* When you use it to save:
+	* Open page address
+	* Saved highlight/quote - what's visible in the sidebar
+	* Timestamp
+The extension also keeps track the currently open tab for each window - to update the sidebar as you navigate - but doesn't save or upload that data.

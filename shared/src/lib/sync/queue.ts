@@ -1,4 +1,4 @@
-import { ifErr, logIfError, updateStore, type Src, applyPatches } from "$lib/utils"
+import { ifErr, logIfError, updateStore, type Src, applyPatches, funLog } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./xxdo"
 import { either as E, array as A, string as S, tuple as T } from "fp-ts"
@@ -45,7 +45,7 @@ export class ActionQueue {
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
     updateStore(this.noteStore)(applyPatches(patchTup.patches))
-    console.log("puuushing")
+    funLog("pushAction")("puuushing")
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) =>
         f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
@@ -68,6 +68,7 @@ export class ActionQueue {
     else if (op == "delete")
       success = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error == null
     else throw new Error("unreachable")
+    funLog("pushActionSuccess")(success)
     return success
   }
 
