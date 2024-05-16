@@ -137,16 +137,14 @@ pushStore("currSrcs", note_mut.currSrcs)
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
-const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
+// const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title: _title } = tab
   // fix "(1) Messenger" as title
   const title = _title?.replace(/^\s*\(\s*[0-9]+\s*\)\s*/, "").replaceAll(/\s/gi, " ")
-  if (url && noteTestRegexp.test(url))
-    3
-  else if (url && noteRegexp.test(url)) {
+  if (url && noteRegexp.test(url)) {
     const note_id = (/(?<=\/notes\/).+/.exec(url))![0]
     T.singleNote.query(note_id).then(({ data }) => {
       const newUrlStr = data?.url
@@ -158,7 +156,9 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
     })
     return
   }
-  const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
+  if (url && homeRegexp.test(url))
+    refresh()
+  const domain = O.toNullable(host(url || "")) // "" is fine here because it fails host()
   DEBUG && console.log(domain, title)
   note_mut.currWindowId.set(tab.windowId)
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
@@ -168,10 +168,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   // here closes the window
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (!tab) throw new Error("unreachable")
-  if (homeRegexp.test(tab.url || "")) {
+  if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-    refresh()
-  }
   updateCurrUrl(tab)
 
   setTimeout(async () => {
