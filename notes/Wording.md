@@ -22,19 +22,16 @@ Normally you'd:
 * use bookmarks
 * re-google (and click purple links)
 
-## V2
+### V2 moved to ext page
+
+## V3 - show hn
+Show HN: browser extension for managing reading
 
 When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
+The extension is designed exactly to replace these options and make revisiting as easy as possible.
+More info on the webstore page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
 
-Faros is an extension designed exactly to make revisiting the easiest possible.
-You save both the URL and a highlighted snippet from the page.
-So you can:
-➣ remember better what the page is about
-➣ search by text
-➣ get back to exactly where you were in text - no need to scroll 
+I can't do anonymous sign-ins (https://github.com/supabase/auth-helpers/issues/466 causes random logouts) but if you install without signing in it will keep working in offline mode without sending any data so you can try it out.
 
-They're also presented as a scrollable feed with most recent saves first - so you can:
-➣ remind yourself what you saved recently
-➣ organise your saves with tags later
+Lmk any questions or feedback
 
-I've been using it since February myself and it's 
