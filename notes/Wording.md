@@ -33,5 +33,5 @@ More info on the webstore page: https://chromewebstore.google.com/detail/faros/p
 
 I can't do anonymous sign-ins (https://github.com/supabase/auth-helpers/issues/466 causes random logouts) but if you install without signing in it will keep working in offline mode without sending any data so you can try it out.
 
-Lmk any questions or feedback
+The code itself is as type-safe as possible (with fp-ts & tRPC all over) and ~5500 slocs.
 
