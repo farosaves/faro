@@ -155,12 +155,17 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
     })
     return
   }
-  if (url && homeRegexp.test(url))
-    refresh()
+
   const domain = O.toNullable(host(url || "")) // "" is fine here because it fails host()
   DEBUG && console.log(domain, title)
   note_mut.currWindowId.set(tab.windowId)
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
+}
+
+const updateRefresh = (tab: chrome.tabs.Tab) => {
+  updateCurrUrl(tab)
+  if (tab.url && homeRegexp.test(tab.url))
+    refresh()
 }
 
 chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
@@ -169,17 +174,18 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   if (!tab) throw new Error("unreachable")
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-  updateCurrUrl(tab)
 
+
+  updateRefresh(tab)
   setTimeout(async () => {
     const newTab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-    if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateCurrUrl(newTab)
+    if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateRefresh(newTab)
   }, 500)
 })
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   // should I close window here too? prolly not in case i send notifications or sth
-  chrome.tabs.get(tabId).then(updateCurrUrl)
+  chrome.tabs.get(tabId).then(updateRefresh)
 })
 
 
