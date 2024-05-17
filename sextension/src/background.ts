@@ -1,6 +1,6 @@
 import { getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
-import { pushStore, getHighlightedText, checkGoto } from "$lib/chromey/messages"
+import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
 import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, typeCast, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
@@ -71,11 +71,10 @@ const newNote = (n: PendingNote, windowId?: number) => {
     u.searchParams.delete(p)
   n.url = u.href
   const src = get(note_mut.currSrcs).get(windowId || -1)
-  if (src)
-    return note_sync.newNote({ ...n, tags: commonTags }, src)
+  if (src) return note_sync.newNote({ ...n, tags: commonTags }, src)
 }
 const email = derived(sess, s => O.toNullable(s)?.user?.email)
-const tabs2Check: number[] = []
+// const tabs2Check: number[] = []
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
@@ -87,15 +86,15 @@ const appRouter = (() => {
     }),
     serializedHighlights: t.procedure.query(({ ctx: { tab } }) =>
       (get(note_mut.panels).get(tab?.windowId || -1) || []).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
-    tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
+    // tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       if (!tab) return
       chrome.scripting.executeScript({
         target: { tabId: tab.id! },
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
-      if (tabs2Check.includes(tab.id!))
-        setTimeout(() => checkGoto.send(undefined, { tabId: tab.id! }), 550)
+      // if (tabs2Check.includes(tab.id!))
+      // setTimeout(() => checkGoto.send(undefined, { tabId: tab.id! }), 550)
     }),
     closeMe: t.procedure.query(({ ctx: { tab } }) => { if (tab?.id) chrome.tabs.remove(tab?.id) }),
     move2Prompt: t.procedure.input(z.string()).query(

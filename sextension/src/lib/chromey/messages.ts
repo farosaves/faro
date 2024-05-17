@@ -20,8 +20,9 @@ export const gmDvWrap = <T>(s: string) => {
 export const optimisticNotes = gmWrap<PendingNote>("optimisticNotes")
 // export const sharedNotes = gmWrap<Notes>("sharedNotes")
 
-export const checkGoto = gmWrap<void>("checkGoto")
-export const gotoNoSuccess = gmWrap<boolean>("gotoNoSuccess")
+// export const checkGoto = gmWrap<void>("checkGoto")
+// export const gotoNoSuccess = gmWrap<boolean>("gotoNoSuccess")
+export const yo = gmWrap<boolean>("gotoNoSuccess")
 
 export const getHighlightedText = gmWrap<UUID>("getHighlightedText")
 export const gotoSnippetMsg = gmWrap<UUID>("gotoSnippet")
