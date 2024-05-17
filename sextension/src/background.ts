@@ -217,13 +217,6 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener((info, tab) =>
   info.menuItemId == "save" && tab && activate(tab))
 
-// chrome.commands.onCommand.addListener((command) => {
-//   const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
-//   if (command == "search" && !api_regexp.test(get(currSrc).url)) {
-//     chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
-//   }
-// })
-
 if (DEBUG) console.log("loaded all background")
 
 chrome.runtime.onInstalled.addListener((e) => {
