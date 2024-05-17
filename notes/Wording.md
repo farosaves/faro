@@ -35,3 +35,16 @@ I can't do anonymous sign-ins (https://github.com/supabase/auth-helpers/issues/4
 
 The code itself is as type-safe as possible (with fp-ts & tRPC all over) and ~5500 slocs.
 
+## V4
+too much nujabes (cri)
+When reading online you come across stuff you want to be able to go back to later.
+You go to a website you find it interesting you highlight one sentence and then you just save it.
+It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
+to. You attend to it, whenever you're ready, pin, archive, tag, double-click takes you back
+(albo tutaj) I don't mean to brag, but it's cool as fuck, 
+offline? check out without signing up, chrome extension
+Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
+
+
+If you have a passion - whether it's: sports, animals, coding  - it's likely you read about this topic online.
+And whenever you come across something you want to be able to go back to later, 

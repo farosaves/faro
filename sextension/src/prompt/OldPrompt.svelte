@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { createTRPCProxyClient, loggerLink } from "@trpc/client"
   import { chromeLink } from "trpc-chrome/link"
   import type { AppRouter } from "../background"
@@ -38,8 +38,6 @@
   }
 </script>
 
-<!-- <a href="dashboard" class="btn btn-primary">whao</a> -->
-<!-- {JSON.stringify($session)} -->
 <div class="hero min-h-screen bg-base-200">
   <div class="hero-content text-center">
     <div class="max-w-md">
@@ -68,10 +66,9 @@
 
         <div>
           <button class="btn btn-sm" on:click={() => T.closeMe.query()}>Deny</button>
-          <!-- svelte-ignore a11y-autofocus -->
           <button class="btn btn-sm btn-primary" autofocus on:click={accept}>Accept</button>
         </div>
       </div>
     </div>
   </div>
-</div>
+</div> -->
