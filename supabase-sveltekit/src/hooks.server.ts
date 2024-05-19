@@ -111,10 +111,13 @@ export const handle: Handle = async ({ event, resolve }) => {
   funLog("cookie")((response.headers.get("Cookie") || ""))
   if (failedSets.length) funLog("failedSets")(failedSets)
   if (failedRemoves.length) funLog("failedRemoves")(failedRemoves)
-  // console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174
+  // response.headers.set("Set-Cookie", xx)
+
 
   const origin = event.request.headers.get("origin")
+  // console.log(event.request.headers.get("origin"))  e.g. chrome-extension://aomnlngcbnepejemfdjlllcmfhdppkio or localhost:5174
   // here if we want access control we can check origin programatically
+
   response.headers.set("Access-Control-Allow-Origin", origin || "*")
   response.headers.set("Access-Control-Allow-Credentials", "true")
   return response

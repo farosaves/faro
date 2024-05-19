@@ -11,12 +11,12 @@ import { NoteMut } from "$lib/note_mut"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
-import { identity, pipe } from "fp-ts/lib/function"
+import { flow, identity, pipe } from "fp-ts/lib/function"
 import { groupBy } from "fp-ts/lib/NonEmptyArray"
 
-const T = trpc2()
+const S = trpc2()
 
-const note_sync = new NoteSync(supabase, undefined, T.online.query)
+const note_sync = new NoteSync(supabase, undefined, S.online.query)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
@@ -37,20 +37,6 @@ const onUser_idUpdate = O.match(
   })
 user_id.subscribe(onUser_idUpdate)
 
-const refresh = async (online = true) => {
-  const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-  if (tab) updateCurrUrl(tab)
-  const toks = (online && O.toNullable(await TO.tryCatch(T.my_tokens.query)())) || undefined
-  funLog("refresh toks")(toks)
-  if (!toks) { // logged out
-    sess.set(O.none)
-    return O.none
-  }
-  const newSess = O.fromNullable(await getSetSession(supabase, toks))
-  sess.set(newSess)
-  return newSess
-}
-refresh()
 // const refreshIfNew = async () => {  // premature opt
 //   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
 //   const newSess = O.fromNullable(await getSession(supabase, toks))
@@ -111,7 +97,7 @@ const appRouter = (() => {
     newNote: t.procedure.input(typeCast<PendingNote>).mutation(async ({ input, ctx: { tab } }) => await newNote(input, tab?.windowId)),
     updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
     // forward t
-    singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
+    singleNote: t.procedure.input(z.string()).query(async ({ input }) => await S.singleNote.query(input)),
     singleNoteLocal: t.procedure.input(z.string()).query(({ input }) => get(note_sync.noteStore).get(input)),
 
     singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
@@ -145,7 +131,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const title = _title?.replace(/^\s*\(\s*[0-9]+\s*\)\s*/, "").replaceAll(/\s/gi, " ")
   if (url && noteRegexp.test(url)) {
     const note_id = (/(?<=\/notes\/).+/.exec(url))![0]
-    T.singleNote.query(note_id).then(({ data }) => {
+    S.singleNote.query(note_id).then(({ data }) => {
       const newUrlStr = data?.url
       if (newUrlStr) {
         const newUrl = new URL(newUrlStr)
@@ -162,11 +148,43 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
 }
 
+const tabQueryUpdate = () => chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(flow(A.lookup(0), O.map(updateCurrUrl)))
+
+const refreshSess = async () => {
+  const toks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toNullable)
+  funLog("refresh toks")(toks)
+  const s = O.fromNullable(toks && await getSetSession(supabase, toks))
+  sess.set(s)
+  return s
+}
+
+let lastSess: O.Option<Session> = O.none
+sess.subscribe((sOpt) => {
+  lastSess = sOpt
+  funLog("sOpt")(sOpt)
+  if (O.isNone(sOpt)) return
+
+  const s = sOpt.value
+  if (O.isSome(lastSess) && s.refresh_token == lastSess.value.refresh_token) return
+  funLog("s.expires_at")(s.expires_at)
+  funLog("s.expires_in")(s.expires_in)
+  // s.expires_at ? s.expires_at - Date.now() :
+  const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
+  setTimeout(refreshSess, retryInMs) // ! this will mess up trying to simulate offline
+})
+
+const refresh = async (online = true) => {
+  tabQueryUpdate()
+  if (online) return await refreshSess()
+  sess.set(O.none) // if offline
+  return get(sess)
+}
 const updateRefresh = (tab: chrome.tabs.Tab) => {
   updateCurrUrl(tab)
   if (tab.url && homeRegexp.test(tab.url))
     refresh()
 }
+refresh()
 
 chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   // here closes the window
@@ -174,7 +192,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   if (!tab) throw new Error("unreachable")
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-
 
   updateRefresh(tab)
   setTimeout(async () => {

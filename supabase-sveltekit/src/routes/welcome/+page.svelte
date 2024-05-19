@@ -1,11 +1,23 @@
-<script>
+<script lang="ts">
   import { altKey } from "shared"
   import pin from "$lib/assets/pin.png"
+  import { onMount } from "svelte"
+  export let data
+  let email: string | undefined = undefined
+  onMount(async () => {
+    const sess = await data.supabase.auth.getSession()
+    email = sess.data.session?.user.email
+    umami.track("loggedInWelcome", { email })
+  })
 </script>
 
 <svelte:head>
   <title>Faros - Welcome</title>
 </svelte:head>
+
+<svelte:window
+  on:keydown={(e) =>
+    e.altKey && e.code == "KeyD" && umami.track("altD", { email, sel: window.getSelection()?.toString() })} />
 
 <div class="hero min-h-screen bg-base-300">
   <div class="hero-content text-center">
