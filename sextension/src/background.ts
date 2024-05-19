@@ -200,9 +200,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   }, 500)
 })
 
-chrome.tabs.onActivated.addListener(({ tabId }) => {
-  // should I close window here too? prolly not in case i send notifications or sth
-  chrome.tabs.get(tabId).then(updateRefresh)
+chrome.tabs.onActivated.addListener(async ({ tabId }) => {
+  const tab = await chrome.tabs.get(tabId)
+  updateRefresh(tab)
+  if (homeRegexp.test(tab.url || ""))
+    chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 })
 
 
