@@ -167,7 +167,18 @@ window.addEventListener("DOMContentLoaded", onLoad)
 
 setTimeout(onLoad, 500) // wait half a second
 
-window.addEventListener("keydown", async e => e.altKey && e.code == "KeyF" && T.openDashboard.query())
+
+window.addEventListener("keydown", async (e) => {
+  if (e.altKey && e.code == "KeyF") T.openDashboard.query()
+  if ((e.metaKey || e.ctrlKey) && e.code == "KeyD") console.log("hihi")
+  // const src = chrome.runtime.getURL('pages/iframe.html')
+
+  // const iframe = new DOMParser().parseFromString(
+  //   `<iframe class="crx" src="${src}"></iframe>`,
+  // ).body.firstElementChild
+
+  // document.body.append(iframe)
+})
 
 // deprecated all
 

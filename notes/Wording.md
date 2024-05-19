@@ -22,7 +22,38 @@ Normally you'd:
 * use bookmarks
 * re-google (and click purple links)
 
-## V2
+### V2 moved to ext page
 
-When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc.
+## V3 - show hn
+Show HN: browser extension for managing reading
 
+When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
+The extension is designed exactly to replace these options and make revisiting as easy as possible.
+More info on the webstore page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
+
+I can't do anonymous sign-ins (https://github.com/supabase/auth-helpers/issues/466 causes random logouts) but if you install without signing in it will keep working in offline mode without sending any data so you can try it out.
+
+The code itself is as type-safe as possible (with fp-ts & tRPC all over) and ~5500 slocs.
+
+## V4
+too much nujabes (cri)
+When reading online you come across stuff you want to be able to go back to later.
+You go to a website find something interesting, highlight one sentence then you just save it.
+It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
+to. You attend to it, whenever you're ready, pin, archive, tag, double-click takes you back
+I don't mean to brag, but it's cool as fuck, did I mention text search it's an excellent,
+way to find a save, saving you time, it's what programs do when done fine
+sure it works offline, you don't need to sign
+up, at least to try it out, why not get back
+up in the cloud
+.... .... the presentation
+faros chrome webstore should now be your next station
+
+offline? check out without signing up, chrome extension
+(the app built by the one man team of me)
+(dont think so)
+Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
+
+
+If you have a passion - whether it's: sports, animals, coding  - it's likely you read about this topic online.
+And whenever you come across something you want to be able to go back to later, 

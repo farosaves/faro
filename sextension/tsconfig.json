@@ -8,6 +8,8 @@
     "allowJs": true,
     "checkJs": true,
     "isolatedModules": true,
+    "sourceMap": false,
+    "inlineSourceMap": true,
 		"paths": {
 			"$lib/*": ["./src/lib/*"]
 		  }

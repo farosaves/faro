@@ -1,4 +1,4 @@
-I can start with the problem [[Sales]] 
+I can start with the problem [[business knowledge 2hrsxxmin]] 
 Reading online overwhelming? - no!
 
 What's different to bookmarks is that you save a piece of text along with the  

@@ -1,7 +1,6 @@
 import type { SourceData, SupabaseClient } from "./db/typeExtras"
-import { array as A } from "fp-ts"
+import { array as A, option as O, either as E } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
-import { option as O } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import type { LazyArg } from "fp-ts/lib/function"
 import { writable, type Writable } from "svelte/store"
@@ -171,11 +170,9 @@ export const applyPatches
 
 export const updateStore
   = <T>(store: Writable<T>) =>
-    // (up: (arg: Draft<T>) => void | Draft<T>) => {
     (up: (arg: UnFreeze<T>) => void | T) => {
       let [patches, inverse]: Patch[][] = [[], []]
       store.update((storeVal) => {
-        // ;[result, patches, inverse] = pWPimmer(storeVal, up)  // immer doesnt fix here
         const [result, ...pinv]
           = safeProduceWithPatches(storeVal, up)
           ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv) as Patch[][]
@@ -184,3 +181,10 @@ export const updateStore
       DEBUG && console.log(patches)
       return { patches, inverse }
     }
+
+export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry") => {
+  const a = E.tryCatch(f, funLog(debugMsg, "retry"))
+  if (E.isRight(a)) return a.right
+  await sleep(delay)
+  return f()
+}
