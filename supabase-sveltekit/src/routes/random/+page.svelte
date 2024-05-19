@@ -8,7 +8,7 @@
   import { flow } from "fp-ts/lib/function"
   import { toStore } from "shared"
   import { convertPatchesToStandard, produceWithPatches } from "structurajs"
-  import * as mhtml2html from "mhtml2html"
+  // import * as mhtml2html from "mhtml2html"
 
   let alltext: string[]
   let mousePosition: Observable<{ x: number; y: number }> | null = null
@@ -51,9 +51,9 @@
   const obs = onMount(async () => {
     const mhtml = await (await fetch("/test.mhtml")).text()
     console.log(mhtml.length)
-    const xd: { window: { document: Document } } = mhtml2html.convert(mhtml)
+    // const xd: { window: { document: Document } } = mhtml2html.convert(mhtml)
 
-    console.log(xd.window.document.documentElement.outerHTML)
+    // console.log(xd.window.document.documentElement.outerHTML)
     // window.location.href = window.location.href + ""
     Sub.next("omg2")
 
@@ -100,9 +100,12 @@
 <button class="btn" on:click={() => Sub.next((a += 1).toString())}>aa</button>
 <br />
 {@html res}
+
 <!-- {mousePosition}
 {#if mousePosition !== null}
   {#key mousePosition}
     heh
   {/key}
 {/if} -->
+
+<iframe title="popover" src="/random/aa"></iframe>

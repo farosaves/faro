@@ -1,6 +1,6 @@
 import { getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
-import { pushStore, getHighlightedText, checkGoto } from "$lib/chromey/messages"
+import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
 import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, typeCast, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
@@ -11,12 +11,12 @@ import { NoteMut } from "$lib/note_mut"
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
 import { createContext, t } from "./lib/chromey/trpc"
-import { identity, pipe } from "fp-ts/lib/function"
+import { flow, identity, pipe } from "fp-ts/lib/function"
 import { groupBy } from "fp-ts/lib/NonEmptyArray"
 
-const T = trpc2()
+const S = trpc2()
 
-const note_sync = new NoteSync(supabase, undefined, T.online.query)
+const note_sync = new NoteSync(supabase, undefined, S.online.query)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
@@ -37,20 +37,6 @@ const onUser_idUpdate = O.match(
   })
 user_id.subscribe(onUser_idUpdate)
 
-const refresh = async (online = true) => {
-  const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-  if (tab) updateCurrUrl(tab)
-  const toks = (online && O.toNullable(await TO.tryCatch(T.my_tokens.query)())) || undefined
-  funLog("refresh toks")(toks)
-  if (!toks) { // logged out
-    sess.set(O.none)
-    return O.none
-  }
-  const newSess = O.fromNullable(await getSetSession(supabase, toks))
-  sess.set(newSess)
-  return newSess
-}
-refresh()
 // const refreshIfNew = async () => {  // premature opt
 //   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
 //   const newSess = O.fromNullable(await getSession(supabase, toks))
@@ -71,11 +57,10 @@ const newNote = (n: PendingNote, windowId?: number) => {
     u.searchParams.delete(p)
   n.url = u.href
   const src = get(note_mut.currSrcs).get(windowId || -1)
-  if (src)
-    return note_sync.newNote({ ...n, tags: commonTags }, src)
+  if (src) return note_sync.newNote({ ...n, tags: commonTags }, src)
 }
 const email = derived(sess, s => O.toNullable(s)?.user?.email)
-const tabs2Check: number[] = []
+// const tabs2Check: number[] = []
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
@@ -87,15 +72,15 @@ const appRouter = (() => {
     }),
     serializedHighlights: t.procedure.query(({ ctx: { tab } }) =>
       (get(note_mut.panels).get(tab?.windowId || -1) || []).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
-    tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
+    // tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       if (!tab) return
       chrome.scripting.executeScript({
         target: { tabId: tab.id! },
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
-      if (tabs2Check.includes(tab.id!))
-        setTimeout(() => checkGoto.send(undefined, { tabId: tab.id! }), 550)
+      // if (tabs2Check.includes(tab.id!))
+      // setTimeout(() => checkGoto.send(undefined, { tabId: tab.id! }), 550)
     }),
     closeMe: t.procedure.query(({ ctx: { tab } }) => { if (tab?.id) chrome.tabs.remove(tab?.id) }),
     move2Prompt: t.procedure.input(z.string()).query(
@@ -112,7 +97,7 @@ const appRouter = (() => {
     newNote: t.procedure.input(typeCast<PendingNote>).mutation(async ({ input, ctx: { tab } }) => await newNote(input, tab?.windowId)),
     updateNote: t.procedure.input(typeCast<Notes>).mutation(({ input }) => note_sync.updateNote(input)),
     // forward t
-    singleNote: t.procedure.input(z.string()).query(async ({ input }) => await T.singleNote.query(input)),
+    singleNote: t.procedure.input(z.string()).query(async ({ input }) => await S.singleNote.query(input)),
     singleNoteLocal: t.procedure.input(z.string()).query(({ input }) => get(note_sync.noteStore).get(input)),
 
     singleNoteBySnippetId: t.procedure.input(z.string()).query(({ input }) =>
@@ -137,18 +122,16 @@ pushStore("currSrcs", note_mut.currSrcs)
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
-const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
+// const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title: _title } = tab
   // fix "(1) Messenger" as title
   const title = _title?.replace(/^\s*\(\s*[0-9]+\s*\)\s*/, "").replaceAll(/\s/gi, " ")
-  if (url && noteTestRegexp.test(url))
-    3
-  else if (url && noteRegexp.test(url)) {
+  if (url && noteRegexp.test(url)) {
     const note_id = (/(?<=\/notes\/).+/.exec(url))![0]
-    T.singleNote.query(note_id).then(({ data }) => {
+    S.singleNote.query(note_id).then(({ data }) => {
       const newUrlStr = data?.url
       if (newUrlStr) {
         const newUrl = new URL(newUrlStr)
@@ -158,31 +141,70 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
     })
     return
   }
-  const domain = O.toNullable(host(url || "")) // "" is fine here because it will fail later
+
+  const domain = O.toNullable(host(url || "")) // "" is fine here because it fails host()
   DEBUG && console.log(domain, title)
   note_mut.currWindowId.set(tab.windowId)
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
 }
 
+const tabQueryUpdate = () => chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(flow(A.lookup(0), O.map(updateCurrUrl)))
+
+const refreshSess = async () => {
+  const toks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toNullable)
+  funLog("refresh toks")(toks)
+  const s = O.fromNullable(toks && await getSetSession(supabase, toks))
+  sess.set(s)
+  return s
+}
+
+let lastSess: O.Option<Session> = O.none
+sess.subscribe((sOpt) => {
+  lastSess = sOpt
+  funLog("sOpt")(sOpt)
+  if (O.isNone(sOpt)) return
+
+  const s = sOpt.value
+  if (O.isSome(lastSess) && s.refresh_token == lastSess.value.refresh_token) return
+  funLog("s.expires_at")(s.expires_at)
+  funLog("s.expires_in")(s.expires_in)
+  // s.expires_at ? s.expires_at - Date.now() :
+  const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
+  setTimeout(refreshSess, retryInMs) // ! this will mess up trying to simulate offline
+})
+
+const refresh = async (online = true) => {
+  tabQueryUpdate()
+  if (online) return await refreshSess()
+  sess.set(O.none) // if offline
+  return get(sess)
+}
+const updateRefresh = (tab: chrome.tabs.Tab) => {
+  updateCurrUrl(tab)
+  if (tab.url && homeRegexp.test(tab.url))
+    refresh()
+}
+refresh()
+
 chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   // here closes the window
   const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
   if (!tab) throw new Error("unreachable")
-  if (homeRegexp.test(tab.url || "")) {
+  if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
-    refresh()
-  }
-  updateCurrUrl(tab)
 
+  updateRefresh(tab)
   setTimeout(async () => {
     const newTab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
-    if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateCurrUrl(newTab)
+    if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateRefresh(newTab)
   }, 500)
 })
 
-chrome.tabs.onActivated.addListener(({ tabId }) => {
-  // should I close window here too? prolly not in case i send notifications or sth
-  chrome.tabs.get(tabId).then(updateCurrUrl)
+chrome.tabs.onActivated.addListener(async ({ tabId }) => {
+  const tab = await chrome.tabs.get(tabId)
+  updateRefresh(tab)
+  if (homeRegexp.test(tab.url || ""))
+    chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 })
 
 
@@ -213,13 +235,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener((info, tab) =>
   info.menuItemId == "save" && tab && activate(tab))
-
-// chrome.commands.onCommand.addListener((command) => {
-//   const api_regexp = RegExp(escapeRegExp(API_ADDRESS))
-//   if (command == "search" && !api_regexp.test(get(currSrc).url)) {
-//     chrome.tabs.create({ url: `${API_ADDRESS}/dashboard?search` })
-//   }
-// })
 
 if (DEBUG) console.log("loaded all background")
 

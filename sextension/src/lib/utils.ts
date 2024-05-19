@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import { API_ADDRESS, DEBUG, funLog, logIfError } from "shared"
 import { deleteSnippetMsg } from "./chromey/messages"
 import type { UUID } from "crypto"
+import { flow } from "fp-ts/lib/function"
 
 /**  STRIPS TRAILING '/' */
 
@@ -20,7 +21,7 @@ export const getSetSession = async (supabase: SupabaseClient, tokens: ATokens) =
   }
   const { access_token, refresh_token } = tokens
   // set session
-  const { data: { session } } = await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError("setSession")).catch(funLog("setSessionCatch"))
+  const { data: { session } } = await supabase.auth.setSession({ access_token, refresh_token }).then(logIfError("setSession")).catch(flow(funLog("setSessionCatch"), x => ({ data: { session: undefined } })))
   return session
 }
 
