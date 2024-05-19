@@ -38,11 +38,20 @@ The code itself is as type-safe as possible (with fp-ts & tRPC all over) and ~55
 ## V4
 too much nujabes (cri)
 When reading online you come across stuff you want to be able to go back to later.
-You go to a website you find it interesting you highlight one sentence and then you just save it.
+You go to a website find something interesting, highlight one sentence then you just save it.
 It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
 to. You attend to it, whenever you're ready, pin, archive, tag, double-click takes you back
-(albo tutaj) I don't mean to brag, but it's cool as fuck, 
+I don't mean to brag, but it's cool as fuck, did I mention text search it's an excellent,
+way to find a save, saving you time, it's what programs do when done fine
+sure it works offline, you don't need to sign
+up, at least to try it out, why not get back
+up in the cloud
+.... .... the presentation
+faros chrome webstore should now be your next station
+
 offline? check out without signing up, chrome extension
+(the app built by the one man team of me)
+(dont think so)
 Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
 
 

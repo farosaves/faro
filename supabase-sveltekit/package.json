@@ -24,6 +24,7 @@
     "@types/eslint": "8.56.0",
     "@types/rangy": "^0.0.38",
     "@types/sbd": "^1.0.5",
+    "@types/umami": "^2.10.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "^10.4.18",
