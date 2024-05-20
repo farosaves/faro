@@ -7,8 +7,11 @@
   onMount(async () => {
     const sess = await data.supabase.auth.getSession()
     email = sess.data.session?.user.email
-    umami.track("loggedInWelcome", { email })
+    window.umami.track("loggedInWelcome", { email })
+    // document.body.onkeydown = onkeydown
   })
+  // const onkeydown = "(e) => console.log(e.altKey)"
+  // ;("(e) => e.altKey && e.code == 'KeyD' && umami.track('altD', { email, sel: window.getSelection()?.toString() })")
 </script>
 
 <svelte:head>
@@ -17,7 +20,9 @@
 
 <svelte:window
   on:keydown={(e) =>
-    e.altKey && e.code == "KeyD" && umami.track("altD", { email, sel: window.getSelection()?.toString() })} />
+    e.altKey &&
+    e.code == "KeyD" &&
+    window.umami.track("altD", { email, sel: window.getSelection()?.toString() })} />
 
 <div class="hero min-h-screen bg-base-300">
   <div class="hero-content text-center">
