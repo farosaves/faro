@@ -188,3 +188,6 @@ export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry"
   await sleep(delay)
   return f()
 }
+
+export const isMac = () => navigator.userAgent.includes("Mac OS X")
+export const isCmd = (e: KeyboardEvent) => isMac() ? e.metaKey : e.ctrlKey
