@@ -36,6 +36,10 @@
     {
       "resources": ["icon.svg"],
       "matches": ["https://farosapp.com/*", "https://dev.farosapp.com/*"]
+    },
+    {
+      "resources": ["prompt.html"],
+      "matches": ["<all_urls>"]
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { createClient, type SupportedStorage } from "@supabase/supabase-js"
+import type { Database } from "shared"
 export type { Session } from "@supabase/supabase-js"
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -19,7 +20,7 @@ const chromeStorageInterface: SupportedStorage = {
   },
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: chromeStorageInterface,
     persistSession: true,

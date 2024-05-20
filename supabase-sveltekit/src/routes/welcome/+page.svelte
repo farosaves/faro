@@ -51,6 +51,7 @@
         <input type="checkbox" />
         <div class="collapse-title font-medium text-center p-4">...or clicking the extension icon.</div>
         <div class="collapse-content mx-4">
+          Here's how you pin it so the icon stays on top:
           <img alt="The project logo" src={pin} />
         </div>
       </div>

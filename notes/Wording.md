@@ -25,7 +25,7 @@ Normally you'd:
 ### V2 moved to ext page
 
 ## V3 - show hn
-Show HN: browser extension for managing reading
+Show HN: chrome  extension for managing reading - web clipper meets bookmark manager
 
 When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
 The extension is designed exactly to replace these options and make revisiting as easy as possible.
@@ -40,14 +40,15 @@ too much nujabes (cri)
 When reading online you come across stuff you want to be able to go back to later.
 You go to a website find something interesting, highlight one sentence then you just save it.
 It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
-to. You attend to it, whenever you're ready, pin, archive, tag, double-click takes you back
-I don't mean to brag, but it's cool as fuck, did I mention text search it's an excellent,
-way to find a save, saving you time, it's what programs do when done fine
-sure it works offline, you don't need to sign
-up, at least to try it out, why not get back
-up in the cloud
-.... .... the presentation
-faros chrome webstore should now be your next station
+to. You attend to it, whenever you're ready, there're a few ways to help you remembering
+
+pin, archive, tag, double-click takes you back,I don't mean to brag, but it's cool as fuck
+(tu chyba nic nie zrymuje z excellent, to moze wyjebie) did I mention text search it's an excellent
+way to find a save, saving your time, sure it works offline, you don't need to sign
+up, at least to try it out, then you get back, up in the cloud
+
+(tutaj jesli dorzuce 2wers to zrobie pelen loop zeby  bylo bardziej tiktokable)
+that's all I got in store for the presentation, faros chrome webstore should now be your next station
 
 offline? check out without signing up, chrome extension
 (the app built by the one man team of me)
@@ -55,5 +56,6 @@ offline? check out without signing up, chrome extension
 Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
 
 
-If you have a passion - whether it's: sports, animals, coding  - it's likely you read about this topic online.
-And whenever you come across something you want to be able to go back to later, 
+
+
+

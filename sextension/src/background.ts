@@ -2,11 +2,12 @@ import { getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, typeCast, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, host, internalSearchParams, note_idKey, persisted, typeCast, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
 import { NoteMut } from "$lib/note_mut"
+import * as devalue from "devalue"
 
 import { createChromeHandler } from "trpc-chrome/adapter"
 import { z } from "zod"
@@ -60,6 +61,7 @@ const newNote = (n: PendingNote, windowId?: number) => {
   if (src) return note_sync.newNote({ ...n, tags: commonTags }, src)
 }
 const email = derived(sess, s => O.toNullable(s)?.user?.email)
+const wantsNoPrompt = persisted<boolean>("wantsNoPrompt", false, { serializer: devalue })
 // const tabs2Check: number[] = []
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
@@ -72,21 +74,22 @@ const appRouter = (() => {
     }),
     serializedHighlights: t.procedure.query(({ ctx: { tab } }) =>
       (get(note_mut.panels).get(tab?.windowId || -1) || []).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
-    // tab4Check: t.procedure.input(z.number()).mutation(({ input }) => tabs2Check.push(input)),
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
       if (!tab) return
       chrome.scripting.executeScript({
         target: { tabId: tab.id! },
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
-      // if (tabs2Check.includes(tab.id!))
-      // setTimeout(() => checkGoto.send(undefined, { tabId: tab.id! }), 550)
     }),
     closeMe: t.procedure.query(({ ctx: { tab } }) => { if (tab?.id) chrome.tabs.remove(tab?.id) }),
     move2Prompt: t.procedure.input(z.string()).query(
       ({ input }) => chrome.tabs.update({ url: chrome.runtime.getURL("prompt.html") + "?id=" + input })),
     refresh: t.procedure.query(() => refresh()),
     disconnect: t.procedure.query(() => refresh(false)),
+    // prompt
+    requestedNoPrompt: t.procedure.query(() => get(wantsNoPrompt)),
+    toggleNoPrompt: t.procedure.mutation(() => wantsNoPrompt.update(x => !x)),
+    // requestedNoPrompt: t.procedure.query(async () => await supabase.from("profiles").select("")),
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
     tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
@@ -158,20 +161,20 @@ const refreshSess = async () => {
   return s
 }
 
-let lastSess: O.Option<Session> = O.none
-sess.subscribe((sOpt) => {
-  lastSess = sOpt
-  funLog("sOpt")(sOpt)
-  if (O.isNone(sOpt)) return
+// let lastSess: O.Option<Session> = O.none
+// sess.subscribe((sOpt) => {
+//   lastSess = sOpt
+//   funLog("sOpt")(sOpt)
+//   if (O.isNone(sOpt)) return
 
-  const s = sOpt.value
-  if (O.isSome(lastSess) && s.refresh_token == lastSess.value.refresh_token) return
-  funLog("s.expires_at")(s.expires_at)
-  funLog("s.expires_in")(s.expires_in)
-  // s.expires_at ? s.expires_at - Date.now() :
-  const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
-  setTimeout(refreshSess, retryInMs) // ! this will mess up trying to simulate offline
-})
+//   const s = sOpt.value
+//   if (O.isSome(lastSess) && s.refresh_token == lastSess.value.refresh_token) return
+//   funLog("s.expires_at")(s.expires_at)
+//   funLog("s.expires_in")(s.expires_in)
+//   // s.expires_at ? s.expires_at - Date.now() :
+//   const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
+//   setTimeout(refreshSess, retryInMs) // ! this will mess up trying to simulate offline
+// })
 
 const refresh = async (online = true) => {
   tabQueryUpdate()

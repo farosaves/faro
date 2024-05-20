@@ -34,3 +34,17 @@ Because the snippet is there you can remember what it's about and why you saved 
 
 * Double click it to open??
 
+### V2
+based on [[Wording#V4]]
+If reading online you come across stuff you want to be able to go back to later, then Faros is the perfect extension to use.
+Highlight a sentence or two, you find the most important,
+and save it with the context menu, or a keyboard shortcut,
+which defaults to Alt + D or Option + D on mac.
+(make a second one - Adrian didnt know)
+Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
+And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar.
+
+To organise them use tags, pin and archive. A click toggles tag visibility, and a double click, makes it the unique - one selected. 
+The exact same goes for websites. 
+
+

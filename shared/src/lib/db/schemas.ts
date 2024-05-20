@@ -135,6 +135,7 @@ export const profilesRowSchema = z.object({
   avatar_url: z.string().nullable(),
   full_name: z.string().nullable(),
   id: z.string(),
+  requestedNoPrompt: z.boolean(),
   updated_at: z.string().nullable(),
   username: z.string().nullable(),
   website: z.string().nullable(),
@@ -144,6 +145,7 @@ export const profilesInsertSchema = z.object({
   avatar_url: z.string().optional().nullable(),
   full_name: z.string().optional().nullable(),
   id: z.string(),
+  requestedNoPrompt: z.boolean().optional(),
   updated_at: z.string().optional().nullable(),
   username: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
@@ -153,6 +155,7 @@ export const profilesUpdateSchema = z.object({
   avatar_url: z.string().optional().nullable(),
   full_name: z.string().optional().nullable(),
   id: z.string().optional(),
+  requestedNoPrompt: z.boolean().optional(),
   updated_at: z.string().optional().nullable(),
   username: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
@@ -160,7 +163,6 @@ export const profilesUpdateSchema = z.object({
 
 export const sourcesRowSchema = z.object({
   created_at: z.string(),
-  depr_url: z.string().nullable(),
   DOI: z.string().nullable(),
   domain: z.string().nullable(),
   id: z.string(),
@@ -169,7 +171,6 @@ export const sourcesRowSchema = z.object({
 
 export const sourcesInsertSchema = z.object({
   created_at: z.string().optional(),
-  depr_url: z.string().optional().nullable(),
   DOI: z.string().optional().nullable(),
   domain: z.string().optional().nullable(),
   id: z.string(),
@@ -178,7 +179,6 @@ export const sourcesInsertSchema = z.object({
 
 export const sourcesUpdateSchema = z.object({
   created_at: z.string().optional(),
-  depr_url: z.string().optional().nullable(),
   DOI: z.string().optional().nullable(),
   domain: z.string().optional().nullable(),
   id: z.string().optional(),
