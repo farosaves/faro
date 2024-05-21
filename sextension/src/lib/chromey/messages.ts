@@ -5,7 +5,8 @@ import * as devalue from "devalue"
 
 type Constr<T> = (value: [T, chrome.runtime.MessageSender]) => void
 export const gmWrap = <T>(s: string) => {
-  const [send, stream, wait] = getMessage<T>(s)
+  const [send, stream, _] = getMessage<T>(s)
+  const wait = firstValueFrom(stream)
   return { send, stream, wait, sub: <A extends Constr<T>>(f: A) => stream.subscribe(f) }
 }
 
@@ -32,6 +33,7 @@ export const deleteSnippetMsg = gmWrap<UUID>("deleteSnippet")
 
 import { get, writable, type Readable } from "svelte/store"
 import type { SendOptions } from "@extend-chrome/messages/types/types"
+import { firstValueFrom } from "rxjs"
 
 type SharedStores = "currSrcs" | "panels" | "needsRefresh" | "session" | "allTags" | "noteStore" | "stuMapStore"
 

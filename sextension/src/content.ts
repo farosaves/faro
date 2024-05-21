@@ -185,25 +185,3 @@ window.addEventListener("keydown", async (e) => {
   }
 })
 
-// deprecated all
-
-// const testIfLinkTest = async () => {
-//   const noteTestRegexp = RegExp(escapeRegExp(API_ADDRESS.replace(/http(s?):\/\//, "")) + "/notes/test/")
-//   const url = window.location.href
-//   funLog("testIfLinkTest")(url)
-//   const note_ids = (url && noteTestRegexp.test(url))
-//     && ((/(?<=\/notes\/test\/).+/.exec(url)))
-//   funLog("testIfLinkTest ids")(note_ids)
-//   if (!note_ids) return false
-//   const note = await T.singleNoteLocal.query(note_ids[0])
-//   if (!note) return console.log("copied note not present locally?") // override debug for now
-//   const e = document.getElementsByClassName("_" + note.snippet_uuid)
-//   funLog("testIfLinkTest elems")(e)
-//   if (e.length) await T.closeMe.query()
-//   if (e.length) return // superfluous
-//   T.move2Prompt.query(note.id)
-// }
-
-// checkGoto.sub(() => gotoNoSuccess.send(!loaded && failedOnce))
-
-
