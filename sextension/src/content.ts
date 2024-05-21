@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, funLog, makeQH, note_idKey, Semaphore, sleep } from "shared"
+import { DEBUG, elemsOfClass, funLog, isCmd, makeQH, note_idKey, Semaphore, sleep } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -170,14 +170,19 @@ setTimeout(onLoad, 500) // wait half a second
 
 window.addEventListener("keydown", async (e) => {
   if (e.altKey && e.code == "KeyF") T.openDashboard.query()
-  if ((e.metaKey || e.ctrlKey) && e.code == "KeyD") console.log("hihi")
-  // const src = chrome.runtime.getURL('pages/iframe.html')
-
-  // const iframe = new DOMParser().parseFromString(
-  //   `<iframe class="crx" src="${src}"></iframe>`,
-  // ).body.firstElementChild
-
-  // document.body.append(iframe)
+  if (isCmd(e) && e.code == "KeyD") {
+    if (await T.requestedNoPrompt.query()) return
+    const src = chrome.runtime.getURL("prompt.html")
+    const iframe = new DOMParser().parseFromString(
+      `<iframe src="${src}" style="width: 100%;
+      height: 6rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;"
+      ></iframe>`, "text/html",
+    ).body.firstElementChild
+    iframe && document.body.prepend(iframe)
+  }
 })
 
 // deprecated all

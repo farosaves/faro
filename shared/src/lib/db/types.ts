@@ -148,6 +148,7 @@ export type Database = {
           avatar_url: string | null
           full_name: string | null
           id: string
+          requestedNoPrompt: boolean
           updated_at: string | null
           username: string | null
           website: string | null
@@ -156,6 +157,7 @@ export type Database = {
           avatar_url?: string | null
           full_name?: string | null
           id: string
+          requestedNoPrompt?: boolean
           updated_at?: string | null
           username?: string | null
           website?: string | null
@@ -164,6 +166,7 @@ export type Database = {
           avatar_url?: string | null
           full_name?: string | null
           id?: string
+          requestedNoPrompt?: boolean
           updated_at?: string | null
           username?: string | null
           website?: string | null
@@ -181,7 +184,6 @@ export type Database = {
       sources: {
         Row: {
           created_at: string
-          depr_url: string | null
           DOI: string | null
           domain: string | null
           id: string
@@ -189,7 +191,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          depr_url?: string | null
           DOI?: string | null
           domain?: string | null
           id: string
@@ -197,7 +198,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          depr_url?: string | null
           DOI?: string | null
           domain?: string | null
           id?: string
