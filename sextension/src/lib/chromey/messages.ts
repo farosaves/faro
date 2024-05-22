@@ -4,13 +4,13 @@ import { getMessage } from "@extend-chrome/messages"
 import * as devalue from "devalue"
 
 type Constr<T> = (value: [T, chrome.runtime.MessageSender]) => void
-export const gmWrap = <T>(s: string) => {
+const gmWrap = <T>(s: string) => {
   const [send, stream, _] = getMessage<T>(s)
-  const wait = firstValueFrom(stream)
+  const wait = () => firstValueFrom(stream)
   return { send, stream, wait, sub: <A extends Constr<T>>(f: A) => stream.subscribe(f) }
 }
 
-export const gmDvWrap = <T>(s: string) => {
+const gmDvWrap = <T>(s: string) => {
   const [_send, _stream, _wait] = getMessage<string>(s)
   const send = (a: T, options?: SendOptions) => _send(devalue.stringify(a), options)
   const wait = (predicate?: (x: T) => boolean) => _wait(predicate === undefined ? undefined : x => predicate(devalue.parse(x) as T))
@@ -18,12 +18,8 @@ export const gmDvWrap = <T>(s: string) => {
   return { send, wait, sub }
 }
 
+export const closeSavePrompt = gmWrap<true>("closeSavePrompt")
 export const optimisticNotes = gmWrap<PendingNote>("optimisticNotes")
-// export const sharedNotes = gmWrap<Notes>("sharedNotes")
-
-// export const checkGoto = gmWrap<void>("checkGoto")
-// export const gotoNoSuccess = gmWrap<boolean>("gotoNoSuccess")
-export const yo = gmWrap<boolean>("gotoNoSuccess")
 
 export const getHighlightedText = gmWrap<UUID>("getHighlightedText")
 export const gotoSnippetMsg = gmWrap<UUID>("gotoSnippet")

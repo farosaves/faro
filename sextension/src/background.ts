@@ -1,4 +1,4 @@
-import { getSetSession } from "$lib/utils"
+import { currTab, getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
@@ -191,14 +191,14 @@ refresh()
 
 chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   // here closes the window
-  const tab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+  const tab = await currTab()
   if (!tab) throw new Error("unreachable")
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 
   updateRefresh(tab)
   setTimeout(async () => {
-    const newTab = (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)
+    const newTab = (await currTab())
     if (newTab && (tab.url !== newTab.url || tab.title !== newTab.title)) updateRefresh(newTab)
   }, 500)
 })
