@@ -7,9 +7,9 @@ export const actions = {
   default: async ({ request }) => {
     const fdata = (await request.formData())
     console.log(fdata)
-    const email = fdata.get("email")!.toString()
-    T.emailToList.mutate(email).then(logIfError("add Email"))
-    return { success: !!email.length }
+    const message = fdata.get("message")!.toString()
+    T.partingMsg.mutate(message).then(logIfError("add Email"))
+    return { success: !!message.length }
   },
 }
 
