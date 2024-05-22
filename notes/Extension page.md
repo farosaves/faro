@@ -36,7 +36,7 @@ I've been using it since February and really liked it, so I hope you'll like it 
 ℹ️ About your data:
 When installing you can read: "it can read and change all your data on all websites"
 The only information that ever gets uploaded (when signed in) when you use it to save:
-➣	Open page address
+➣ Open page address
 ➣ Saved highlight/quote - what's visible in the sidebar
 ➣ Timestamp
 
