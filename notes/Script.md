@@ -42,9 +42,14 @@ and save it with the context menu, or a keyboard shortcut,
 which defaults to Alt + D or Option + D on mac.
 (make a second one - Adrian didnt know)
 Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
-And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar.
+And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar. 
+%% no pin & archive options? only useful once you have like 20 of them... %%
+Use tags for categories. at the top:
+A click toggles it, and a double click, makes it the unique - one selected. 
+%% The exact same goes for websites.  %%
+You also get a better text search:
+Like I can type dino and get the extinction, 
+Because it's obvious it's the important info.
 
-To organise them use tags, pin and archive. A click toggles tag visibility, and a double click, makes it the unique - one selected. 
-The exact same goes for websites. 
 
 
