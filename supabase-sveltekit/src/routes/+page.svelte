@@ -38,10 +38,11 @@
         <div class="divider"></div>
         <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
           <p class="py-1">
-            You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
+            <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
             to see what it looks like
             <br />
-            Or watch the video introduction:
+            Or  -->
+            Watch the video introduction:
           </p>
         </div>
       </div>
