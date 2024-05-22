@@ -44,12 +44,14 @@ based on [[Wording#V4]]
 5. Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
 6. And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar. 
 %% no pin & archive options? only useful once you have like 20 of them... %%
-7. Use tags for categories. at the top:
+7. Use tags for categories, and here at the top:
 8. A click toggles it, and a double click, makes it the unique - one selected. 
 %% The exact same goes for websites.  %%
 9. You also get a better text search,
-10. Cause the relevant keywords are often a part of the highlighted snippet
-11. Like dino here
+10. Cause the relevant keywords are often part of the highlighted snippet
+11. Like hop, or dino
+12. I'd show you more, but I risk it being extra
+13. So I'll call it a day, you can get it on chrome webstore 
 
 dem moves:
 1. Faros landing page
