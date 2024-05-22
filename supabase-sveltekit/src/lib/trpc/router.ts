@@ -45,7 +45,7 @@ export const router = t.router({
       add_card({ note_id, supabase: locals.supabase, front: null, back: null }),
     ),
   online: t.procedure.query(() => true as const),
-  emailToList: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("emails2send").insert({ email: input })),
+  partingMsg: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: input })),
 
   // uploadMHTML: t.procedure.input(typeCast<{ id: UUID, data: string }>).mutation(({ input }) => uploadMHTML(input.data, input.id)),
   // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),
