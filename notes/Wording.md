@@ -27,6 +27,8 @@ Normally you'd:
 ## V3 - show hn
 Show HN: chrome ext for managing reading - web clipper meets bookmark manager
 
+I built this tool for myself and liked using it so much that I've made it usable by others
+
 When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
 The extension is designed exactly to replace these options and make revisiting as easy as possible.
 More info on the webstore page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
