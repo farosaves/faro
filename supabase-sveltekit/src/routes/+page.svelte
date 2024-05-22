@@ -60,14 +60,28 @@
       allowfullscreen></iframe>
   </div>
   <div class="my-8"></div>
-  <div class="flex flex-col items-center hidden">
-    <div class="collapse collapse-arrow bg-base-100 w-1/2">
-      <input type="checkbox" />
+  <div class="flex flex-col items-center">
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+      <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
+      <div class="collapse-content">
+        <span class="my-2 block"
+          >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
+        <span class="my-2 block"
+          >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span>
+        <span class="my-2 block">Or use Faros: it's designed to make revisiting as easy as possible.</span>
+      </div>
+    </div>
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
       <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
       <div class="collapse-content mx-4">
         <ul class="list-disc text-nowrap w-min text-left">
           <li class="list-item">Select text</li>
-          <li class="list-item">Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">D</kbd></li>
+          <li class="list-item">
+            Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">D</kbd> <br />
+            or right-click and select "Faros save"
+          </li>
           <li class="list-item">
             If something doesnt work try refreshing the extension <br />
             With the 🔄 icon in the top right of the sidebar.
@@ -75,22 +89,19 @@
         </ul>
       </div>
     </div>
-    <div class="collapse collapse-arrow bg-base-100 w-1/2">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
-      <div class="collapse-content">No! <br />But in order to sync with other devices you do.</div>
-    </div>
-    <div class="collapse collapse-arrow bg-base-100 w-1/2">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium text-left">Why name Faros?</div>
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+      <div class="collapse-title text-xl font-medium text-left">Where is it available?</div>
       <div class="collapse-content">
-        From <a class="underline" href="https://en.wikipedia.org/wiki/Lighthouse_of_Alexandria"
-          >the lighthouse</a
-        >. <br />
-        It's from the times of Library of Alexandria, which was the largest at the time.<br />
-        Now the largest "library" is the internet.<br />
-        The extension helps you navigate.
+        It's on chrome webstore: works on computers (no mobile sorry) and all browsers except: Firefox and
+        Safari.<br />
+        I can do Firefox easily so <a href="/mail" class="underline">lmk if interested</a>.
       </div>
+    </div>
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+      <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
+      <div class="collapse-content">No! Only to sync with other devices.</div>
     </div>
   </div>
 </div>
