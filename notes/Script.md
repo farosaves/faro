@@ -37,8 +37,8 @@ Because the snippet is there you can remember what it's about and why you saved 
 ### V2
 based on [[Wording#V4]]
 1. If reading online you come across stuff you want to be able revisit later, then Faros is the perfect extension to use.
-2. Highlight a sentence or two, you find the most important,
-3. and save it with the context menu, or a keyboard shortcut,
+2. You go to a website and highlight a sentence or two
+3. you find the most important, and save it with the context menu, or a keyboard shortcut,
 4. which defaults to Alt + D or Option + D on mac.
 (make a second one - Adrian didnt know)
 5. Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
@@ -50,8 +50,19 @@ based on [[Wording#V4]]
 9. You also get a better text search,
 10. Cause the relevant keywords are often a part of the highlighted snippet
 11. Like dino here
+
 dem moves:
-1. 
+1. Faros landing page
+2. Go to jerboa, highlight desert kangaroo
+3. context menu click
+4. highlight doesnt need to drink
+5. go to dashboard
+6. dbl click
+7. tag animal
+8. click botany, now dbl click
+9. type hop
+10. ..
+11. type dino
 
 
 

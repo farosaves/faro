@@ -22,7 +22,7 @@
       <div class="flex flex-col w-full place-items-center">
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
-          <h2 class="text-4xl font-bold">Save links to highlights <br /> Use them like bookmarks</h2>
+          <h2 class="text-4xl font-bold">Stay on top of your reading <br /> Bookmark highlights</h2>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
           {#if !extInstalled}
