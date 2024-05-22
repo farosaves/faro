@@ -14,7 +14,7 @@
   const texts = ["Titles", "Text"]
   const entries = A.zip(possibleSelections)(texts)
   let selectedKeys = possibleSelections // : (typeof possibleSelections)[number][]
-  const norm = (s: number) => Math.max(s / 1000 + 1, 0) ** 8
+  const norm = (s: number) => Math.max(s / 5000 + 1, 0) ** 8
   $: fzRes.set(
     !!query &&
       fuzzysort.go(query, $notes, {
