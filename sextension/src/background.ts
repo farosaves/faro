@@ -245,3 +245,4 @@ chrome.runtime.onInstalled.addListener((e) => {
   if (e.reason === chrome.runtime.OnInstalledReason.INSTALL)
     chrome.tabs.create({ url: API_ADDRESS + "/welcome" })
 })
+chrome.runtime.setUninstallURL(API_ADDRESS + "/farewell")

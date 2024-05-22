@@ -36,20 +36,25 @@ Because the snippet is there you can remember what it's about and why you saved 
 
 ### V2
 based on [[Wording#V4]]
-If reading online you come across stuff you want to be able to go back to later, then Faros is the perfect extension to use.
-Highlight a sentence or two, you find the most important,
-and save it with the context menu, or a keyboard shortcut,
-which defaults to Alt + D or Option + D on mac.
+1. If reading online you come across stuff you want to be able revisit later, then Faros is the perfect extension to use.
+2. Highlight a sentence or two, you find the most important,
+3. and save it with the context menu, or a keyboard shortcut,
+4. which defaults to Alt + D or Option + D on mac.
 (make a second one - Adrian didnt know)
-Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
-And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar. 
+5. Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
+6. And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar. 
 %% no pin & archive options? only useful once you have like 20 of them... %%
-Use tags for categories. at the top:
-A click toggles it, and a double click, makes it the unique - one selected. 
+7. Use tags for categories. at the top:
+8. A click toggles it, and a double click, makes it the unique - one selected. 
 %% The exact same goes for websites.  %%
-You also get a better text search:
-Like I can type dino and get the extinction, 
-Because it's obvious it's the important info.
+9. You also get a better text search,
+10. Cause the relevant keywords are often a part of the highlighted snippet
+11. Like dino here
+dem moves:
+1. 
+
+
+
 
 
 

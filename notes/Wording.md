@@ -25,7 +25,7 @@ Normally you'd:
 ### V2 moved to ext page
 
 ## V3 - show hn
-Show HN: chrome  extension for managing reading - web clipper meets bookmark manager
+Show HN: chrome ext for managing reading - web clipper meets bookmark manager
 
 When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
 The extension is designed exactly to replace these options and make revisiting as easy as possible.
@@ -55,7 +55,5 @@ offline? check out without signing up, chrome extension
 (dont think so)
 Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
 
-
-
-
-
+#### V5
+Chrome ext for staying on top of (your) reading - highlight bookmarks / web clipper meets bookmark manager

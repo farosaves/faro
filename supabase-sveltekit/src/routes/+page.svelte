@@ -1,4 +1,5 @@
 <script>
+  import { highlight } from "fuzzysort"
   import { altKey, funLog, replacer } from "shared"
   import { onMount } from "svelte"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
@@ -12,7 +13,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Save links to highlights - Use them like bookmarks</title>
+  <title>Faros - Stay on top of your reading - bookmark highlights</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">

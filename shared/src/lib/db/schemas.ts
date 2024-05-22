@@ -131,6 +131,24 @@ export const notesUpdateSchema = z.object({
   user_note: z.string().optional().nullable(),
 })
 
+export const partingMsgsRowSchema = z.object({
+  created_at: z.string(),
+  id: z.number(),
+  message: z.string(),
+})
+
+export const partingMsgsInsertSchema = z.object({
+  created_at: z.string().optional(),
+  id: z.number().optional(),
+  message: z.string(),
+})
+
+export const partingMsgsUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  id: z.number().optional(),
+  message: z.string().optional(),
+})
+
 export const profilesRowSchema = z.object({
   avatar_url: z.string().nullable(),
   full_name: z.string().nullable(),
