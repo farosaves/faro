@@ -5,7 +5,7 @@ import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
-import { getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
+import { closeSavePrompt, getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
 import type { UUID } from "crypto"
 // import { trpc2 } from "$lib/trpc-client"
 
@@ -167,11 +167,12 @@ window.addEventListener("DOMContentLoaded", onLoad)
 
 setTimeout(onLoad, 500) // wait half a second
 
-
+let promptOpen = false
 window.addEventListener("keydown", async (e) => {
   if (e.altKey && e.code == "KeyF") T.openDashboard.query()
   if (isCmd(e) && e.code == "KeyD") {
-    if (await T.requestedNoPrompt.query()) return
+    if (promptOpen || await T.requestedNoPrompt.query()) return
+    promptOpen = true
     const src = chrome.runtime.getURL("prompt.html")
     const iframe = new DOMParser().parseFromString(
       `<iframe src="${src}" style="width: 100%;
@@ -180,8 +181,12 @@ window.addEventListener("keydown", async (e) => {
       top: 0;
       z-index: 50;"
       ></iframe>`, "text/html",
-    ).body.firstElementChild
+    ).body.firstElementChild as HTMLElement | null
+    if (!iframe) return
     iframe && document.body.prepend(iframe)
+    await closeSavePrompt.wait()
+    iframe.style.display = "none"
+    promptOpen = false
   }
 })
 
