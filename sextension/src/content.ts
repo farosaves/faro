@@ -7,6 +7,7 @@ import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
 import { closeSavePrompt, getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
 import type { UUID } from "crypto"
+import { pipe } from "fp-ts/lib/function"
 // import { trpc2 } from "$lib/trpc-client"
 
 if (DEBUG) console.log("hello")
@@ -55,7 +56,7 @@ function wrapSelectedText(uuid: string) {
   return hl.serialize(selection) + rangeText
 }
 
-const batchDeserialize = (uss: [string, string][]) => uss.forEach(deserialize(applierOptions))
+const batchDeserialize = (uss: [string, string][]) => uss.map(deserialize(applierOptions))
 
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
@@ -131,41 +132,45 @@ sem.use(async () => { // here I can potentially defer loading if page has no hig
 
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
-let failedOnce = false
+let toDeserialise: [string, string][] = []
+let wentTo = false
 const onLoad = () => sem.use(async () => {
-  funLog("farosgetitlink")(document.getElementById("farosgetitlink"))
   document.getElementById("farosgetitlink")?.classList.add("hidden")
+  if (loaded && !toDeserialise.length) return
+  if (!loaded) toDeserialise = await T.serializedHighlights.query()
+  loaded = true
+  DEBUG && console.log("sers", toDeserialise)
+  batchDeserialize(toDeserialise)
+  const successes = toDeserialise.map(x => document.getElementsByClassName("_" + x[0]).length)
+  funLog("successes")(successes)
+  toDeserialise = pipe(toDeserialise, // keep unsuccessful
+    A.zip(successes), A.filter(([_, success]) => !success), A.map(([x, _y]) => x))
+  const goto = new URLSearchParams(window.location.search).get("highlightUuid")
+  await sleep(50)
+  DEBUG && console.log("goto", goto)
+  try {
+    if (!wentTo && goto) gotoText(goto)
+    wentTo = true
+  } catch { 3 }
 
-  if (!loaded) {
-    // if (await testIfLinkTest()) return // use non-ext flow 4 highlight obv
+  const singleNote_id = new URLSearchParams(window.location.search).get(note_idKey)
+  if (!singleNote_id) return
+  const { data: note } = await T.singleNote.query(singleNote_id)
+  if (!note) return
+  // bind the note to uhh tabId until src changes?
 
-    const sers = await T.serializedHighlights.query()
-    DEBUG && console.log("sers", sers)
-    batchDeserialize(sers)
-    const goto = new URLSearchParams(window.location.search).get("highlightUuid")
-    await sleep(50)
-    DEBUG && console.log("goto", goto)
-    try {
-      if (goto) gotoText(goto)
-      loaded = true
-    } catch { failedOnce = true }
-
-    const singleNote_id = new URLSearchParams(window.location.search).get(note_idKey)
-    if (!singleNote_id) return
-    const { data: note } = await T.singleNote.query(singleNote_id)
-    if (!note) return
-    // bind the note to uhh tabId until src changes?
-
-    const { serialized_highlight, snippet_uuid } = note
-    if (!serialized_highlight || !snippet_uuid) return
-    batchDeserialize([[snippet_uuid, serialized_highlight]])
-    gotoText(snippet_uuid)
-  }
+  const { serialized_highlight, snippet_uuid } = note
+  if (!serialized_highlight || !snippet_uuid) return
+  batchDeserialize([[snippet_uuid, serialized_highlight]])
+  gotoText(snippet_uuid)
 })
 window.addEventListener("load", onLoad)
 window.addEventListener("DOMContentLoaded", onLoad)
 
 setTimeout(onLoad, 500) // wait half a second
+setTimeout(onLoad, 1000) // wait half a second
+setTimeout(onLoad, 2000) // wait a second
+setTimeout(onLoad, 5000) // wait 3 second
 
 let promptOpen = false
 window.addEventListener("keydown", async (e) => {
