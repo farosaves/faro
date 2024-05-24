@@ -27,21 +27,22 @@ Normally you'd:
 ## V3 - show hn
 Show HN: chrome ext for managing reading - web clipper meets bookmark manager
 
-I built this tool for myself and liked using it so much that I've made it usable by others
+When you're reading online and come across something you'd like to be able to revisit later there's no really good option of saving it (afaik)
+The extension is designed exactly to make revisiting as easy as possible.
+More info on the web store page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
 
-When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
-The extension is designed exactly to replace these options and make revisiting as easy as possible.
-More info on the webstore page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
+I built this tool for myself and liked it so much I decided to ~complete it. 
+The code itself is as type-safe as possible (with fp-ts & tRPC all over) and <6000 slocs.
+I'm looking for ideas who you think would find it the most useful, thanks in advance!
 
-I can't do anonymous sign-ins (https://github.com/supabase/auth-helpers/issues/466 causes random logouts) but if you install without signing in it will keep working in offline mode without sending any data so you can try it out.
 
-The code itself is as type-safe as possible (with fp-ts & tRPC all over) and ~5500 slocs.
 
 ## V4
 too much nujabes (cri)
+When reading online there's cool stuff you find, it's nice to be able to go back to it later.
 When reading online you come across stuff you want to be able to go back to later.
-You go to a website find something interesting, highlight one sentence then you just save it.
-It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
+You go to a website find something interesting, highlight one sentence and then you just save it.
+It goes  to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
 to. You attend to it, whenever you're ready, there're a few ways to help you remembering
 
 pin, archive, tag, double-click takes you back,I don't mean to brag, but it's cool as fuck
@@ -58,4 +59,5 @@ offline? check out without signing up, chrome extension
 Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
 
 #### V5
-Chrome ext for staying on top of (your) reading - highlight bookmarks / web clipper meets bookmark manager
+Chrome ext for staying on top of online reading - highlight bookmarks / web clipper meets bookmark manager
+Online reading total recall ?
