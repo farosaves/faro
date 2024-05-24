@@ -46,6 +46,7 @@ export const router = t.router({
     ),
   online: t.procedure.query(() => true as const),
   partingMsg: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: input })),
+  featRequest: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: "FEAT_REQUEST: " + input })),
 
   // uploadMHTML: t.procedure.input(typeCast<{ id: UUID, data: string }>).mutation(({ input }) => uploadMHTML(input.data, input.id)),
   // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),

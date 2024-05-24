@@ -14,8 +14,8 @@
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
   const tagsCounts = getGroupTagCounts(noteDeri)
-  const pureTags = derived(tagsCounts, flow(A.map(E.swap), A.map(O.fromEither), A.compact))
-  const tagGroups = derived(tagsCounts, flow(A.map(O.fromEither), A.compact))
+  // const pureTags = derived(tagsCounts, flow(A.map(E.swap), A.map(O.fromEither), A.compact))
+  // const tagGroups = derived(tagsCounts, flow(A.map(O.fromEither), A.compact))
   const untagged = derived(
     tagsCounts,
     flow(
@@ -26,12 +26,10 @@
     ),
   )
   const allTags = derived(noteDeri.allTags, A.append(""))
-  const allExcl = derived(exclTagSet, (s) => A.reduce(true, (prev, a: string) => prev && s.has(a)))
-  // window.getset = () => get(exclTagSet)
   const excl = derived(exclTagSet, (s) =>
     groupize(
       s.has.bind(s),
-      A.reduce(true, (prev, a: string) => prev && s.has.bind(s)(a)),
+      A.reduce(true, (prev, a: string) => prev && s.has(a)),
     ),
   )
 
@@ -82,7 +80,7 @@
     myModal && myModal.close()
     noteDeri.sync.tagUpdate(currTag, O.none)
   }
-  let dropdownOpen = false
+  // let dropdownOpen = false
   let hRem = 2
   // window.yo = () => (dropdownOpen = !dropdownOpen)
 </script>
