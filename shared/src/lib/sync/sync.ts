@@ -87,24 +87,24 @@ export class NoteSync {
     this._user_id = user_id as UUID | undefined
     const online = await this._checkOnline().catch(() => false)
     if (user_id === undefined || !online) return
-    this._sub()
+    this._sub(user_id)
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
     // if (oldUser_id !== user_id) { // added this but probably redundant
     // }
-    await this.refresh_notes()
-    await this.refresh_sources()
+    const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    await this._fetchNewNotes(latest)
+    await this._fetchNewSources(latest)
     await this.actionQueue.goOnline(user_id as UUID)
   }
 
-  latest = () => maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
 
-  refresh_sources = async () => {
+  _fetchNewSources = async (latestTs: string) => {
     if (this._user_id == undefined) return
     this.stuMapStore.update(
       unwrapTo(
-        pipe(
-          (await this.sb.from("sources").select("*, notes (user_id, updated_at)").eq("notes.user_id", this._user_id).gt("notes.updated_at", this.latest())).data,
+        pipe( // .gt("notes.updated_at", this.latest())
+          (await this.sb.from("sources").select("*, notes (user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data,
           O.fromNullable,
           funLog("refreshed_sources"),
           O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
@@ -112,14 +112,27 @@ export class NoteSync {
       ),
     )
   }
-  // update_source = async (id: string, { sources }: SourceData) =>
-  //   this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources) as Updater<STUMap>)
 
-  refresh_notes = async (id: O.Option<string> = O.none) => {
+  _filter4Present = async (user_id: string, lastDate: string) => {
+    const { count } = await this.sb.from("notes").select("", { count: "exact", head: true }).eq("user_id", user_id).lte("created_at", lastDate)
+    // if as many notes in db as here don't do anything
+    funLog("filter4Present")([count, get(this.noteStore).size])
+    if ((count || 0) >= get(this.noteStore).size) return
+    const { data } = await this.sb.from("notes").select("id").eq("user_id", user_id).lte("created_at", lastDate)
+    funLog("filter4Present")(data)
+    const presentIds = new Set((data || []).map(x => x.id))
+    this.noteStore.update(M.filter(n => presentIds.has(n.id)))
+  }
+
+  _fetchNewNotes = async (latestTs: string) => {
     if (this._user_id == undefined) return
-    await getUpdatedNotes(this.sb, id, this._user_id, this.latest()).then((nns) => {
-      this.noteStore.set(new Map(nns.map(n => [n.id, n])))
-    })
+    await this._filter4Present(this._user_id, latestTs)
+    const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
+    nns.map(n => [n.id, n])
+    this.noteStore.update((ns) => {
+      nns.forEach(n => ns.set(n.id, n))
+      return ns
+    })// set())
   }
 
 
@@ -215,7 +228,7 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
-  _sub = () => {
+  _sub = (user_id: string) => {
     this.sb
       .channel("notes")
       .on(
@@ -224,7 +237,7 @@ export class NoteSync {
           event: "*",
           schema: "public",
           table: "notes",
-          filter: `user_id=eq.${this._user_id}`,
+          filter: `user_id=eq.${user_id}`,
         },
         (payload: { new: Note | object }) => {
           if ("id" in payload.new) {
@@ -233,9 +246,9 @@ export class NoteSync {
               ns.set(nn.id, nn)
             })
             if (!(get(this.stuMapStore).has(nn.source_id)))
-              this.refresh_sources()
+              this._fetchNewSources(nn.updated_at)
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this.refresh_notes() // TODO: this is to run on deletions: but if I just exectued deletion manually i could skip it
+          } else this._filter4Present(user_id, new Date().toISOString()) // TODO: this should run like the filter one
         },
       )
       .subscribe((status) => {
