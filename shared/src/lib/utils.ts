@@ -121,20 +121,12 @@ export const toStore = <T>(Sub: Observable<T>, init: T) => {
 export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
 export const maxDate = flow(A.map(parseISO), A.append(new Date(0)), max, x => x.toISOString())
 
-export async function getUpdatedNotes(
-  supabase: SupabaseClient,
-  source_id: Option<string>,
-  user_id: string,
-  lastDate: string,
-) {
-  let query = supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
-  query = O.match(
-    () => query,
-    (id: string) => query.eq("source_id", id),
-  )(source_id)
-
-  const { data } = await query
-
+export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
+  // query = O.match(
+  //   () => query,
+  //   (id: string) => query.eq("source_id", id),
+  // )(source_id)
+  const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
   return data || []
 }
 
