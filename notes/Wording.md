@@ -31,9 +31,7 @@ When you're reading online and come across something you'd like to be able to re
 The extension is designed exactly to make revisiting as easy as possible.
 More info on the web store page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
 
-I built this tool for myself and liked it so much I decided to ~complete it. 
-The code itself is as type-safe as possible (with fp-ts & tRPC all over) and <6000 slocs.
-I'm looking for ideas who you think would find it the most useful, thanks in advance!
+
 
 
 

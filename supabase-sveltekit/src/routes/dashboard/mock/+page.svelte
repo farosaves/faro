@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   export let data
   const { supabase, mock } = data
   import { map as M } from "fp-ts"
@@ -23,4 +23,4 @@
   })
 </script>
 
-<Dashboard {noteSync} />
+<Dashboard {noteSync} /> -->

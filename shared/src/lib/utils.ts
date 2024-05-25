@@ -1,5 +1,6 @@
 import type { SourceData, SupabaseClient } from "./db/typeExtras"
 import { array as A, option as O, either as E } from "fp-ts"
+import { parseISO, max } from "date-fns"
 import type { Option } from "fp-ts/lib/Option"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import type { LazyArg } from "fp-ts/lib/function"
@@ -15,7 +16,6 @@ import {
   type UnFreeze,
   safeProduceWithPatches,
 } from "structurajs"
-import type { Notes } from "./db/types"
 import type { UUID } from "crypto"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
@@ -119,14 +119,15 @@ export const toStore = <T>(Sub: Observable<T>, init: T) => {
 }
 
 export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
+export const maxDate = flow(A.map(parseISO), A.append(new Date(0)), max, x => x.toISOString())
 
-export async function getNotes(
+export async function getUpdatedNotes(
   supabase: SupabaseClient,
   source_id: Option<string>,
   user_id: string,
-  prevnotes = [],
-): Promise<Notes[]> {
-  let query = supabase.from("notes").select("*").eq("user_id", user_id)
+  lastDate: string,
+) {
+  let query = supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
   query = O.match(
     () => query,
     (id: string) => query.eq("source_id", id),
@@ -134,8 +135,7 @@ export async function getNotes(
 
   const { data } = await query
 
-  if (data === null) return prevnotes
-  return data
+  return data || []
 }
 
 export const tup = <T extends [void] | object>(val: T) => val

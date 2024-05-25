@@ -90,6 +90,7 @@ export type Database = {
           snippet_uuid: string | null
           source_id: string
           tags: string[]
+          updated_at: string
           url: string
           user_id: string
           user_note: string | null
@@ -106,6 +107,7 @@ export type Database = {
           snippet_uuid?: string | null
           source_id: string
           tags?: string[]
+          updated_at?: string
           url: string
           user_id?: string
           user_note?: string | null
@@ -122,6 +124,7 @@ export type Database = {
           snippet_uuid?: string | null
           source_id?: string
           tags?: string[]
+          updated_at?: string
           url?: string
           user_id?: string
           user_note?: string | null
