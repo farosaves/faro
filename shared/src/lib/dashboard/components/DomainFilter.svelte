@@ -20,7 +20,6 @@
     $uncheckedDomains = $uncheckedDomains // store signal
   }
   const toggleAll = () => {
-    // assigns to trigger potential $:
     if ($uncheckedDomains.size > 0) $uncheckedDomains = new Set()
     else $uncheckedDomains = new Set($domains.map(([x, y]) => x))
   }

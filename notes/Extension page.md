@@ -31,8 +31,6 @@ They're also presented as a scrollable feed with most recent saves first - so yo
 I've been using it since February and really liked it, so I hope you'll like it too.
 
 
-
-
 ℹ️ About your data:
 When installing you can read: "it can read and change all your data on all websites"
 The only information that ever gets uploaded (when signed in) when you use it to save:

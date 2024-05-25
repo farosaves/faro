@@ -38,20 +38,19 @@ Because the snippet is there you can remember what it's about and why you saved 
 based on [[Wording#V4]]
 1. If reading online you come across stuff you want to be able revisit later, then Faros is the perfect extension to use.
 2. You go to a website and highlight a sentence or two
-3. you find the most important, and save it with the context menu, or a keyboard shortcut,
-4. which defaults to Alt + D or Option + D on mac.
+3. which you find the most important, then save it with the context menu, or a keyboard shortcut,
+4. which defaults to Alt + D or Option + D, on a mac.
 (make a second one - Adrian didnt know)
-5. Saves go to the dashboard, with most recent first, so you don't forget to revisit them.
+5. Saves go to the dashboard, with the most recent first, so you don't forget to revisit them.
 6. And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar. 
 %% no pin & archive options? only useful once you have like 20 of them... %%
 7. Use tags for categories, and here at the top:
 8. A click toggles it, and a double click, makes it the unique - one selected. 
 %% The exact same goes for websites.  %%
 9. You also get a better text search,
-10. Cause the relevant keywords are often part of the highlighted snippet
-11. Like hop, or dino
-12. I'd show you more, but I risk it being extra
-13. So I'll call it a day, you can get it on chrome webstore 
+10. Cause you find keywords from the highlighted snippets
+11. Like hop, or dino here
+12. Find it on chrome webstore
 
 dem moves:
 1. Faros landing page
@@ -66,8 +65,28 @@ dem moves:
 10. ..
 11. type dino
 
-
-
-
-
-
+### V3
+Hey I'm making Faros - a browser extension that helps you stay on top of your online reading.
+When you find something interesting, it makes it easy to get back to it later. 
+%% HOW does it say this is the value prop %%
+What you do, is highlight a sentence or two, that are the most relevant to you, 
+And save it with the context menu, or a keyboard shortcut
+Which defaults to alt+D or option+D on a mac.
+Saves go to the dashboard, the most recent come first, so you don't forget to revisit them
+And a double click takes you right back to where you were in text, both from the dashboard, and in the sidebar. 
+Use simple tags to better keep track of the categories.
+Here at the top a click toggles it, and a double click, makes it the only one selected. 
+You also get better text search, cause you get keywords from the highlighted snippets
+Like hop, or dino here
+Find it on chrome webstore
+## V4
+Faros - it's a browser extension that helps you stay on top of your online reading.
+When you find something interesting, it makes it easy to get back to it later. 
+What you do, is highlight a sentence or two, that are the most relevant to you, 
+And save it with the context menu, or a keyboard shortcut.
+Saves go to the dashboard, the most recent come first, so you won't forget about them.
+A double click takes you right back to where you were in text, both in the dashboard, and in the sidebar.
+You can organise them with tags, all of which are displayed at the top. Clicking toggles it, and double clicking makes it the only one active.
+It's also easy to search by text, cause you find keywords in the highlighted snippets,
+like hop, or dino here.
+Find it on chrome webstore.
