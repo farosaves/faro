@@ -27,7 +27,7 @@
     </ul>
   </div>
   <div class="navbar-end">
-    <a class="btn btn-ghost" href="/mail">Contact</a>
+    <a class="btn btn-ghost" href="/contact">Contact</a>
     <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
       <li>
         <details>

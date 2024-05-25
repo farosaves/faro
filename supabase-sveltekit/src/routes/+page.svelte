@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Stay on top of your reading - bookmark highlights</title>
+  <title>Faros - Stay on top of online reading - bookmark highlights</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">
@@ -22,7 +22,7 @@
       <div class="flex flex-col w-full place-items-center">
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
-          <h2 class="text-4xl font-bold">Stay on top of your reading <br /> Bookmark highlights</h2>
+          <h2 class="text-4xl font-bold">Stay on top of online reading <br /> Bookmark highlights</h2>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
           {#if !extInstalled}
@@ -54,7 +54,7 @@
       loading="lazy"
       width="560"
       height="315"
-      src="https://www.youtube.com/embed/1E8DST6DRSg?si=-z_Cg4lEEuuqzcPv"
+      src="https://www.youtube.com/embed/aNaLN5J-Ei0?si=CjgEH5kWIckYKKE5"
       title="YouTube video player"
       frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -97,13 +97,22 @@
       <div class="collapse-content">
         It's on chrome webstore: works on computers (no mobile sorry) and all browsers except: Firefox and
         Safari.<br />
-        I can do Firefox easily so <a href="/mail" class="underline">lmk if interested</a>.
+        I can do Firefox easily so <a href="/contact" class="underline">lmk if interested</a>.
       </div>
     </div>
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
       <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
       <div class="collapse-content">No! Only to sync with other devices.</div>
+    </div>
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+      <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
+      <div class="collapse-content">
+        Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option to
+        buy lifetime access for $10 on <a href="https://ko-fi.com/farosapp">kofi</a>.<br />
+        <!-- I expect to charge ~$3/month later for other users. -->
+      </div>
     </div>
   </div>
 </div>
