@@ -9,7 +9,6 @@ import {
   applyPatches,
   neq,
   getUpdatedNotes,
-  unwrapTo,
   updateStore,
   invertMap,
   type Src,
@@ -18,7 +17,6 @@ import {
   fillInTitleDomain,
   funLog,
   maxDate,
-  sleep,
 } from "$lib/utils"
 import { option as O, string as S, map as M } from "fp-ts"
 
@@ -102,16 +100,19 @@ export class NoteSync {
 
   _fetchNewSources = async (latestTs: string) => {
     if (this._user_id == undefined) return
-    this.stuMapStore.update(
-      unwrapTo(
-        pipe( // .gt("notes.updated_at", this.latest())
-          (await this.sb.from("sources").select("*, notes (user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data,
-          O.fromNullable,
-          funLog("refreshed_sources"),
-          O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
-        ),
-      ),
-    )
+    const nss = (await this.sb.from("sources").select("*, notes!inner(user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data || []
+    this.stuMapStore.update((ss) => {
+      nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
+      return ss
+    })// set())
+
+    // unwrapTo(
+    //   pipe( // .gt("notes.updated_at", this.latest())
+    //     O.fromNullable,
+    //     funLog("refreshed_sources"),
+    //     O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
+    //   ),
+    // ),
   }
 
   _filter4Present = async (user_id: string, lastDate: string) => {
@@ -219,7 +220,6 @@ export class NoteSync {
           else n.tags = n.tags.filter(neq(oldTag))
       })
     })
-    await sleep(1)
     this.act(patchTup, true)
   }
 
@@ -227,7 +227,6 @@ export class NoteSync {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.get(noteId)!.prioritised = prioritised
     })
-    await sleep(1)
     this.act(patchTup, true)
   }
 
@@ -251,7 +250,7 @@ export class NoteSync {
             if (!(get(this.stuMapStore).has(nn.source_id)))
               this._fetchNewSources(nn.updated_at)
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this._filter4Present(user_id, new Date().toISOString()) // TODO: this should run like the filter one
+          } else this._filter4Present(user_id, new Date().toISOString())
         },
       )
       .subscribe((status) => {
