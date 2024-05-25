@@ -18,6 +18,7 @@ import {
   fillInTitleDomain,
   funLog,
   maxDate,
+  sleep,
 } from "$lib/utils"
 import { option as O, string as S, map as M } from "fp-ts"
 
@@ -218,6 +219,7 @@ export class NoteSync {
           else n.tags = n.tags.filter(neq(oldTag))
       })
     })
+    await sleep(1)
     this.act(patchTup, true)
   }
 
@@ -225,6 +227,7 @@ export class NoteSync {
     const patchTup = updateStore(this.noteStore)((ns) => {
       ns.get(noteId)!.prioritised = prioritised
     })
+    await sleep(1)
     this.act(patchTup, true)
   }
 
