@@ -82,13 +82,11 @@ Find it on chrome webstore
 ## V4
 Faros - it's a browser extension that helps you stay on top of your online reading.
 When you find something interesting, it makes it easy to get back to it later. 
-%% HOW does it say this is the value prop %%
 What you do, is highlight a sentence or two, that are the most relevant to you, 
-And save it with the context menu, or a keyboard shortcut
-Which defaults to alt+D or option+D on a mac.
+And save it with the context menu, or a keyboard shortcut.
 Saves go to the dashboard, the most recent come first, so you won't forget about them.
 A double click takes you right back to where you were in text, both in the dashboard, and in the sidebar.
 You can organise them with tags, all of which are displayed at the top. Clicking toggles it, and double clicking makes it the only one active.
-It's also easy to search by text, cause you find keywords in the highlighted snippets
-Like hop, or dino here
-Find it on chrome webstore 
+It's also easy to search by text, cause you find keywords in the highlighted snippets,
+like hop, or dino here.
+Find it on chrome webstore.
