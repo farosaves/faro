@@ -8,7 +8,7 @@ import { derived, get, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
   neq,
-  getNotes,
+  getUpdatedNotes,
   unwrapTo,
   updateStore,
   invertMap,
@@ -17,6 +17,7 @@ import {
   uuidv5,
   fillInTitleDomain,
   funLog,
+  maxDate,
 } from "$lib/utils"
 import { option as O, string as S, map as M } from "fp-ts"
 
@@ -42,17 +43,6 @@ const stuMap: STUMap = new Map()
 
 export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePrioritised" | "deleteit" | "undo" | "redo">
 
-// another patch stack for queued actions - Either stumap- or note-store
-// for note store patchtups I can just call act later
-// for stumap store need an analogous act OR make inserts take note, domain, title lol
-
-// so queued action stack is: notestore patchtup & Src ({domain, title})
-// before uploading queued action stack i need to first refresh sources to make stumapstore synced
-
-// so on offline add I get from invstumap store or add a temporary entry, but I don't keep that entry later
-// on online ...
-
-// type Action = PatchTup & { action: "patches" } | { src: Src, id: UUID, action: "source" }
 const storage = "indexedDB"
 const noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
 if (get(noteStore).values.length) // checking the length doesnt matter it's only needed to throttle for some reason
@@ -100,32 +90,37 @@ export class NoteSync {
     this._sub()
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
-    await this.refresh_sources()
+    // if (oldUser_id !== user_id) { // added this but probably redundant
+    // }
     await this.refresh_notes()
+    await this.refresh_sources()
     await this.actionQueue.goOnline(user_id as UUID)
   }
 
-  refresh_sources = async () =>
-    this._user_id !== undefined
-    && this.stuMapStore.update(
+  latest = () => maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+
+  refresh_sources = async () => {
+    if (this._user_id == undefined) return
+    this.stuMapStore.update(
       unwrapTo(
         pipe(
-          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
+          (await this.sb.from("sources").select("*, notes (user_id, updated_at)").eq("notes.user_id", this._user_id).gt("notes.updated_at", this.latest())).data,
           O.fromNullable,
+          funLog("refreshed_sources"),
           O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
         ),
       ),
     )
-
+  }
   // update_source = async (id: string, { sources }: SourceData) =>
   //   this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources) as Updater<STUMap>)
 
-  refresh_notes = async (id: O.Option<string> = O.none) =>
-    this._user_id !== undefined
-    && (await getNotes(this.sb, id, this._user_id).then((nns) => {
-      // console.log(new Map(nns.map(n => [n.id, n])))
+  refresh_notes = async (id: O.Option<string> = O.none) => {
+    if (this._user_id == undefined) return
+    await getUpdatedNotes(this.sb, id, this._user_id, this.latest()).then((nns) => {
       this.noteStore.set(new Map(nns.map(n => [n.id, n])))
-    }))
+    })
+  }
 
 
   getsetSource_id = async (src: Src) => {

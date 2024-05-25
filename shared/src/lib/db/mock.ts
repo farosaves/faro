@@ -8,6 +8,7 @@ export const createMock = () => ({
   source_id: "",
   predicted_topic: "",
   created_at: new Date().toUTCString(),
+  updated_at: new Date().toUTCString(),
   tags: [],
   user_id: "",
   user_note: "",
