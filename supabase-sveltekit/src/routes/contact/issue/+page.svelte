@@ -11,11 +11,11 @@
       <ul class="collapse-content mx-4 text-lg list-disc text-nowrap w-min text-left">
         <li>Not highlighting on pubmed</li>
         <li>Reddit usually doesn't highlight</li>
-        <li>Neither do YT comments</li>
+        <li>YT video titles don't highlight</li>
         <li>Table data not formatted correctly</li>
       </ul>
     </div>
-    Not listed? Email:
+    Found a new one? Email:
     <div class="flex">
       <IconEnvelope /><a href="mailto:pawel@farosapp.com">pawel@farosapp.com</a>
     </div>
