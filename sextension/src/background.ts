@@ -33,8 +33,8 @@ const onUser_idUpdate = O.match(
   () => note_sync.setUser_id(undefined),
   async (user_id: string) => {
     note_sync.setUser_id(user_id)
-    note_sync.refresh_sources()
-    note_sync.refresh_notes()
+    // note_sync.refresh_sources() // it's in the setUser_id
+    // note_sync.refresh_notes()
   })
 user_id.subscribe(onUser_idUpdate)
 
