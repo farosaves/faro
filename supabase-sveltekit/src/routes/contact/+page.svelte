@@ -17,6 +17,7 @@
         <button type="submit"><IconWrench /></button>
       </label>
     </form>
+    <a href="/roadmap" class="underline text-lg">Find here planned features</a>
     <div class="divider"></div>
     <a href="/contact/issue">Report an issue</a>
   </div>

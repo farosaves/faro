@@ -22,14 +22,15 @@ export const GET = async ({ params }) => {
     $("head").append(`<script src="${module}"></script>`)
   // dom.window.document.head.appendChild(JSDOM.fragment("<script src=\"/deserializer.js\" type=\"module\"></script>"))
   // dom.window.document.head.appendChild(JSDOM.fragment(`<script></script>`))
-  const id = "iigdnlokbommcbpkhlafbkhgpbmeagfl" // https://developer.chrome.com/docs/extensions/develop/concepts/messaging?hl=en#external-webpage
+  // const id = "iigdnlokbommcbpkhlafbkhgpbmeagfl" // https://developer.chrome.com/docs/extensions/develop/concepts/messaging?hl=en#external-webpage
+  const newHref = data.url + "#:~:text=" + encodeURIComponent(data.quote)
   $("head").append(
   `<script type="module">
     import {deserialize, gotoText} from "/deserializer.js"
     let loaded = false
     const t = () => {
       if (!loaded) {
-        window.location.href = "${data.url}"
+        window.location.href = "${newHref}"
       } else {
         document.getElementById("farosloading").style.display = "none"
         document.getElementById("farosloaded").style.display = "inline"
