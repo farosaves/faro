@@ -8,8 +8,7 @@ import { derived, get, type Readable, type Writable } from "svelte/store"
 import {
   applyPatches,
   neq,
-  getNotes,
-  unwrapTo,
+  getUpdatedNotes,
   updateStore,
   invertMap,
   type Src,
@@ -17,6 +16,7 @@ import {
   uuidv5,
   fillInTitleDomain,
   funLog,
+  maxDate,
 } from "$lib/utils"
 import { option as O, string as S, map as M } from "fp-ts"
 
@@ -42,17 +42,6 @@ const stuMap: STUMap = new Map()
 
 export type SyncLike = Pick<NoteSync, "tagChange" | "tagUpdate" | "changePrioritised" | "deleteit" | "undo" | "redo">
 
-// another patch stack for queued actions - Either stumap- or note-store
-// for note store patchtups I can just call act later
-// for stumap store need an analogous act OR make inserts take note, domain, title lol
-
-// so queued action stack is: notestore patchtup & Src ({domain, title})
-// before uploading queued action stack i need to first refresh sources to make stumapstore synced
-
-// so on offline add I get from invstumap store or add a temporary entry, but I don't keep that entry later
-// on online ...
-
-// type Action = PatchTup & { action: "patches" } | { src: Src, id: UUID, action: "source" }
 const storage = "indexedDB"
 const noteStore = persisted<ReturnType<typeof validateNs>>("noteStore", allNotesR, { serializer: devalue, storage })
 if (get(noteStore).values.length) // checking the length doesnt matter it's only needed to throttle for some reason
@@ -97,35 +86,56 @@ export class NoteSync {
     this._user_id = user_id as UUID | undefined
     const online = await this._checkOnline().catch(() => false)
     if (user_id === undefined || !online) return
-    this._sub()
+    this._sub(user_id)
     this.noteStore.update(M.filter(n => n.user_id == user_id))
     // do actions from queue
-    await this.refresh_sources()
-    await this.refresh_notes()
+    // if (oldUser_id !== user_id) { // added this but probably redundant
+    // }
+    const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    await this._fetchNewNotes(latest)
+    await this._fetchNewSources(latest)
     await this.actionQueue.goOnline(user_id as UUID)
   }
 
-  refresh_sources = async () =>
-    this._user_id !== undefined
-    && this.stuMapStore.update(
-      unwrapTo(
-        pipe(
-          (await this.sb.from("sources").select("*, notes (user_id)").eq("notes.user_id", this._user_id)).data,
-          O.fromNullable,
-          O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
-        ),
-      ),
-    )
 
-  // update_source = async (id: string, { sources }: SourceData) =>
-  //   this.stuMapStore.update(M.upsertAt(S.Eq)(id, sources) as Updater<STUMap>)
+  _fetchNewSources = async (latestTs: string) => {
+    if (this._user_id == undefined) return
+    const nss = (await this.sb.from("sources").select("*, notes!inner(user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data || []
+    this.stuMapStore.update((ss) => {
+      nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
+      return ss
+    })// set())
 
-  refresh_notes = async (id: O.Option<string> = O.none) =>
-    this._user_id !== undefined
-    && (await getNotes(this.sb, id, this._user_id).then((nns) => {
-      // console.log(new Map(nns.map(n => [n.id, n])))
-      this.noteStore.set(new Map(nns.map(n => [n.id, n])))
-    }))
+    // unwrapTo(
+    //   pipe( // .gt("notes.updated_at", this.latest())
+    //     O.fromNullable,
+    //     funLog("refreshed_sources"),
+    //     O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
+    //   ),
+    // ),
+  }
+
+  _filter4Present = async (user_id: string, lastDate: string) => {
+    const { count } = await this.sb.from("notes").select("", { count: "exact", head: true }).eq("user_id", user_id).lte("created_at", lastDate)
+    // if as many notes in db as here don't do anything
+    funLog("filter4Present")([count, get(this.noteStore).size])
+    if ((count || 0) >= get(this.noteStore).size) return
+    const { data } = await this.sb.from("notes").select("id").eq("user_id", user_id).lte("created_at", lastDate)
+    funLog("filter4Present")(data)
+    const presentIds = new Set((data || []).map(x => x.id))
+    this.noteStore.update(M.filter(n => presentIds.has(n.id)))
+  }
+
+  _fetchNewNotes = async (latestTs: string) => {
+    if (this._user_id == undefined) return
+    await this._filter4Present(this._user_id, latestTs)
+    const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
+    nns.map(n => [n.id, n])
+    this.noteStore.update((ns) => {
+      nns.forEach(n => ns.set(n.id, n))
+      return ns
+    })// set())
+  }
 
 
   getsetSource_id = async (src: Src) => {
@@ -220,7 +230,7 @@ export class NoteSync {
     this.act(patchTup, true)
   }
 
-  _sub = () => {
+  _sub = (user_id: string) => {
     this.sb
       .channel("notes")
       .on(
@@ -229,7 +239,7 @@ export class NoteSync {
           event: "*",
           schema: "public",
           table: "notes",
-          filter: `user_id=eq.${this._user_id}`,
+          filter: `user_id=eq.${user_id}`,
         },
         (payload: { new: Note | object }) => {
           if ("id" in payload.new) {
@@ -238,9 +248,9 @@ export class NoteSync {
               ns.set(nn.id, nn)
             })
             if (!(get(this.stuMapStore).has(nn.source_id)))
-              this.refresh_sources()
+              this._fetchNewSources(nn.updated_at)
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this.refresh_notes() // TODO: this is to run on deletions: but if I just exectued deletion manually i could skip it
+          } else this._filter4Present(user_id, new Date().toISOString())
         },
       )
       .subscribe((status) => {

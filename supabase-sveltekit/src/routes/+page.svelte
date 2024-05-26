@@ -84,10 +84,7 @@
             Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">D</kbd> <br />
             or right-click and select "Faros save"
           </li>
-          <li class="list-item">
-            If something doesnt work try refreshing the extension <br />
-            With the 🔄 icon in the top right of the sidebar.
-          </li>
+          <li class="list-item">If something doesn't work try refreshing the webpage.</li>
         </ul>
       </div>
     </div>

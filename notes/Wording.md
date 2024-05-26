@@ -31,16 +31,13 @@ When you're reading online and come across something you'd like to be able to re
 The extension is designed exactly to make revisiting as easy as possible.
 More info on the web store page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
 
-I built this tool for myself and liked it so much I decided to ~complete it. 
-The code itself is as type-safe as possible (with fp-ts & tRPC all over) and <6000 slocs.
-I'm looking for ideas who you think would find it the most useful, thanks in advance!
+
 
 
 
 ## V4
 too much nujabes (cri)
 When reading online there's cool stuff you find, it's nice to be able to go back to it later.
-When reading online you come across stuff you want to be able to go back to later.
 You go to a website find something interesting, highlight one sentence and then you just save it.
 It goes  to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
 to. You attend to it, whenever you're ready, there're a few ways to help you remembering
@@ -53,11 +50,14 @@ up, at least to try it out, then you get back, up in the cloud
 (tutaj jesli dorzuce 2wers to zrobie pelen loop zeby  bylo bardziej tiktokable)
 that's all I got in store for the presentation, faros chrome webstore should now be your next station
 
-offline? check out without signing up, chrome extension
+
 (the app built by the one man team of me)
 (dont think so)
-Faros is the app if you get it it be great, sorry for poor rapping i just learnt it to present
 
 #### V5
 Chrome ext for staying on top of online reading - highlight bookmarks / web clipper meets bookmark manager
 Online reading total recall ?
+
+### V6
+Yo my name's Paul, making this extension and I put nujabes on for writing the presentation
+The result I got is rather unique, as is the app which I show real quick
