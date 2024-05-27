@@ -15,7 +15,7 @@
   import { chromeLink } from "trpc-chrome/link"
   import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
-  let login_url = API_ADDRESS + "/login"
+  let login_url = API_ADDRESS + "/account/login"
   // $: T = trpc2()
   const port = chrome.runtime.connect()
   export const TB = createTRPCProxyClient<AppRouter>({
