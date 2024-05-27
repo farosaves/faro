@@ -44,8 +44,9 @@
       </p>
       <p class="py-2">Double clicking them on the dashboard also takes you right back.</p>
       <p class="py-2">
-        Your saves will upload to the cloud once you: <a href="/login" class="py-2 btn btn-sm btn-primary"
-          >Log in</a>
+        Your saves will upload to the cloud once you: <a
+          href="/account/login"
+          class="py-2 btn btn-sm btn-primary">Log in</a>
       </p>
       <p class="py-2">
         You can make an account whenever you're ready.<br />

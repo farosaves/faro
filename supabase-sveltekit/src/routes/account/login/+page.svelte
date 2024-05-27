@@ -20,7 +20,7 @@
         if (session) $sessStore = O.some(session)
         setTimeout(() => {
           DEBUG && console.log("url", $page.url.pathname) // omfg $page binds immediately, and get(page) on call
-          get(page).url.pathname == "/login" && goto("/account?from=login")
+          get(page).url.pathname == "/account/login" && goto("/account?from=login")
         }, 50)
       }
     }),
