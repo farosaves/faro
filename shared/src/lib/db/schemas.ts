@@ -81,7 +81,6 @@ export const emails2sendUpdateSchema = z.object({
 })
 
 export const notesRowSchema = z.object({
-  context: z.string().nullable(),
   created_at: z.string(),
   highlights: z.array(z.string()),
   id: z.string(),
@@ -99,7 +98,6 @@ export const notesRowSchema = z.object({
 })
 
 export const notesInsertSchema = z.object({
-  context: z.string().optional().nullable(),
   created_at: z.string().optional(),
   highlights: z.array(z.string()),
   id: z.string(),
@@ -117,7 +115,6 @@ export const notesInsertSchema = z.object({
 })
 
 export const notesUpdateSchema = z.object({
-  context: z.string().optional().nullable(),
   created_at: z.string().optional(),
   highlights: z.array(z.string()).optional(),
   id: z.string().optional(),
