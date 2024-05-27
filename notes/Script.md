@@ -94,5 +94,6 @@ Find it on chrome webstore.
 ## V5 
 Faros - it's a browser extension to manage online reading.
 %% try to start with the dashboard??? %%
+e.g. Here you can have everything you've ever found interesting on the internet saved
 
 It makes it easy to go back to anything you've read, by  
