@@ -31,7 +31,7 @@
       .then(() => goto("/account?from=passwordreset"))
 </script>
 
-{$myForm.dirty}
+<!-- {$myForm.dirty} -->
 <!-- <Auth fields={[password, passwordConf]} /> -->
 
 <div class="hero min-h-screen bg-base-200">
