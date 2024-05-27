@@ -9,10 +9,9 @@
 
 // const T = trpc({ url: { origin: API_ADDRESS } })
 // export const load: PageServerLoad = async ({ locals, url }) => {
-//   // redirect(302, "/login")http://localhost:5173/notes/95db5279-4c93-405b-a734-6ed1aa3bbf15
 //   const ids = [0, 0, 0, 0, 0].map(_ => crypto.randomUUID())
 //   const stuMap: STUMap = pipe(new Map([
-//     [ids[0], { title: "Hey YC!", url: url.origin + "/login" }],
+//     [ids[0], { title: "Hey YC!", url: url.origin + "/account/login" }],
 //     [ids[1], { title: "Tips", url: url.origin }],
 //     [ids[2], { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" }],
 //     [ids[3], { title: "Also check out!", url: url.origin + "/ext.zip" }],

@@ -50,7 +50,7 @@ export const GET = async ({ params }) => {
   </script>`)
   $("head").prepend(`<meta property="og:image" content="${API_ADDRESS}/preview.png"/>`) // ! hack
   $("body").prepend("<div id='farosloading' style='display:inline; position: sticky; top:0px; z-index:50; background:black'>loading...</div>")
-  $("body").prepend(`<div id='farosloaded' style='display:none; position: sticky; top:0px; z-index:50; background:black'>
+  $("body").prepend(`<div id='farosloaded' style='display:none; position: sticky; top:0px; z-index:50; background:black; color: white'>
   rehosted with <a href="farosapp.com">farosapp.com</a>
   original at <a href="${data.url}">${getOrElse(() => "this url")(host(data.url))}</a>
   
