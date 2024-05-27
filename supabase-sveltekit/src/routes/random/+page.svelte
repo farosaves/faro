@@ -1,111 +1,59 @@
 <script lang="ts">
-  // import { pipeline } from '@xenova/transformers';
+  import { trpc } from "$lib/trpc/client"
+  import { page } from "$app/stores"
+  const { subtle } = crypto
   import { onMount } from "svelte"
-  import { Observable, fromEvent, Subject } from "rxjs"
-  import fuzzysort from "fuzzysort"
-  import * as tok from "sbd"
-  import { type Subscriber } from "svelte/store"
-  import { flow } from "fp-ts/lib/function"
-  import { toStore } from "shared"
-  import { convertPatchesToStandard, produceWithPatches } from "structurajs"
-  // import * as mhtml2html from "mhtml2html"
+  const encoder = new TextEncoder()
+  const decoder = new TextDecoder()
+  const T = trpc($page)
+  const importPassword = (password: string) =>
+    subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"])
 
-  let alltext: string[]
-  let mousePosition: Observable<{ x: number; y: number }> | null = null
-  const Sub = new Subject<string>()
+  const hashPwd = (password: string, salt: Uint8Array) =>
+    importPassword(password).then((k) =>
+      subtle.deriveKey(
+        { name: "PBKDF2", hash: "SHA-256", salt, iterations: 500000 },
+        k,
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"],
+      ),
+    )
 
-  const map = new Map([[1, 2]])
-  const [aa, patch, inv] = produceWithPatches(map, (n) => {
-    n.set(2, 3)
-  })
-  console.log(convertPatchesToStandard(patch))
-  const rec = { 1: 2 } as Record<number, number>
-  const [aa2, patch2, inv2] = produceWithPatches(rec, (n) => {
-    n[2] = 3
-  })
+  const yoo = async (ts: string) => (await subtle.digest("SHA-256", encoder.encode(ts))).slice(0, 16)
 
-  console.log(convertPatchesToStandard(patch2))
+  const iv = crypto.getRandomValues(new Uint8Array(128 / 8))
 
-  const map2 = new Map([[{ 1: 2 }, 3]])
-  console.log(map2.get({ 1: 2 }))
+  const encrypt = async (key: CryptoKey, plaintext: string, ts: string) =>
+    subtle.encrypt(
+      { name: "AES-GCM", iv: encoder.encode(await T.nonce.query("hi")) },
+      key,
+      encoder.encode(plaintext),
+    )
+  const decrypt = async (key: CryptoKey, cyphertext: ArrayBuffer) =>
+    decoder.decode(
+      await subtle.decrypt(
+        { name: "AES-GCM", iv: encoder.encode(await T.nonce.query("hi")) },
+        key,
+        cyphertext,
+      ),
+    )
 
-  // const toObservable = (store) => new Observable((observer) => store.subscribe(observer.next))
-  // const ff = query.subscribe(x)
-  // console.log(ff)
-
-  Sub.forEach(console.log)
-  // const toStore = <T,>(Sub: Observable<T>, init: T) => {
-  //   const store = writable(init)
-  //   Sub.subscribe(store.set)
-  //   return store
-  // }
-
-  const query = toStore(Sub, "")
-  let s: Subscriber<string>
-  console.log(Sub.subscribe(() => {}))
-  console.log(query.subscribe(() => {}))
-  Sub.next("omg1")
-  // Sub.pipe(map((a) => a.length)).subscribe(console.log)
-
-  // const O = toObservable(query)
-  const obs = onMount(async () => {
-    const mhtml = await (await fetch("/test.mhtml")).text()
-    console.log(mhtml.length)
-    // const xd: { window: { document: Document } } = mhtml2html.convert(mhtml)
-
-    // console.log(xd.window.document.documentElement.outerHTML)
-    // window.location.href = window.location.href + ""
-    Sub.next("omg2")
-
-    // document.getSelection()!.setBaseAndExtent(p, 0, p, p.childNodes.length);
-    const x = await (await fetch("steg2.html")).text()
-
-    let dom = new DOMParser().parseFromString(x, "text/html")
-
-    // alltext = dom.body.innerText.replaceAll(/(\s*\n\s*)+/gm, '\n');
-    alltext = dom.body.innerText
-      .split("\n")
-      .map((s) => s.trim())
-      .filter((x) => x.split(" ").length > 0)
-      .map((s) => tok.sentences(s))
-      .flat()
-    // console.log(alltext)
-
-    const mousePosition = fromEvent<MouseEvent>(document, "click")
-      .pipe
-      // map((event) => ({ x: event.clientX, y: event.clientY })),
-      ()
-    // console.log()
-    // mousePosition.forEach(console.log)
-    mousePosition.subscribe(flow(JSON.stringify, query.set))
-  })
-
-  // Change the pattern
-  const pattern = "yoga home"
-
-  let res = ""
-  let f = () => {
-    const x = fuzzysort.go($query, alltext, { limit: 5 })
-    res = x.map((x) => fuzzysort.highlight(x, '<b class="text-yellow-300"">', "</b>")).join("<br/><br/>")
-    // console.log(x.map((x) => x.score));
+  const yo = async () => {
+    const salt = crypto.getRandomValues(new Uint8Array(128 / 8))
+    // const iv =
+    const key = await hashPwd("heyy", salt)
+    const enc = await encrypt(
+      key,
+      "this is some longer message. It's gonna be like 3 sentence long. This is the third. Now let's Try a fourth one, and another one still",
+      "henlo",
+    )
+    console.log(enc)
+    const dec = await decrypt(key, enc)
+    console.log(dec)
   }
-  // console.log(O)
-  // console.log($O)
-  let a = 0
-  console.log(1 - 2 || 3)
+
+  onMount(yo)
 </script>
 
-<p id="p">Select me: <i>italic</i> and <b>bold</b></p>
-<input bind:value={$query} on:keyup={f} />
-<button class="btn" on:click={() => Sub.next((a += 1).toString())}>aa</button>
-<br />
-{@html res}
-
-<!-- {mousePosition}
-{#if mousePosition !== null}
-  {#key mousePosition}
-    heh
-  {/key}
-{/if} -->
-
-<iframe title="popover" src="/random/aa"></iframe>
+henlo

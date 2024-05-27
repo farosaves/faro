@@ -28,6 +28,7 @@ import * as devalue from "devalue"
 import { xxdoStacks, type PatchTup } from "./xxdo"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
+import type { UnFreeze } from "structurajs"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -92,15 +93,16 @@ export class NoteSync {
     // if (oldUser_id !== user_id) { // added this but probably redundant
     // }
     const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    await this._fetchNewNotes(latest)
-    await this._fetchNewSources(latest)
+    const newNoteSrcIds = (await this._fetchNewNotes(latest)).map(nn => nn.source_id)
+    await this._fetchNewSources(newNoteSrcIds)
     await this.actionQueue.goOnline(user_id as UUID)
   }
 
 
-  _fetchNewSources = async (latestTs: string) => {
+  _fetchNewSources = async (newNoteIds: string[]) => {
     if (this._user_id == undefined) return
-    const nss = (await this.sb.from("sources").select("*, notes!inner(user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data || []
+    // const nss = (await this.sb.from("sources").select("*, notes!inner(user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data || []
+    const nss = (await this.sb.from("sources").select("*").in("id", newNoteIds)).data || []
     this.stuMapStore.update((ss) => {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
@@ -127,14 +129,15 @@ export class NoteSync {
   }
 
   _fetchNewNotes = async (latestTs: string) => {
-    if (this._user_id == undefined) return
+    if (this._user_id == undefined) return []
     await this._filter4Present(this._user_id, latestTs)
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
-    nns.map(n => [n.id, n])
     this.noteStore.update((ns) => {
-      nns.forEach(n => ns.set(n.id, n))
+      nns.forEach(nn => ns.set(nn.id, nn))
       return ns
-    })// set())
+    })
+    // return updated ones
+    return nns
   }
 
 
@@ -154,10 +157,9 @@ export class NoteSync {
     funLog("newNote")(src)
     const source_id = await this.getsetSource_id(src)
     const n = { ...createMock(), ...note, source_id }
-    const patchTup: PatchTup = updateStore(this.noteStore)((map) => {
-      map.set(n.id, n)
+    await this.updateAct((ns) => {
+      ns.set(n.id, n)
     })
-    await this.act(patchTup, true)
     return n
   }
 
@@ -184,34 +186,31 @@ export class NoteSync {
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
-  act = async (patchTup: PatchTup, userAction = true) => {
-    if (userAction) this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
+  stackNAct = async (patchTup: PatchTup) => {
+    this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
     await this.actionQueue.act(this._user_id)(patchTup)
   }
 
-  deleteit = async (noteId: string) => {
-    const patchTup = updateStore(this.noteStore)((ns) => {
+  updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>
+    this.stackNAct(updateStore(this.noteStore)(up))
+
+  deleteit = async (noteId: string) =>
+    this.updateAct((ns) => {
       ns.delete(noteId)
     })
-    this.act(patchTup, true)
-  }
 
-  updateNote = async (note: Notes) => {
-    const patchTup = updateStore(this.noteStore)((ns) => {
+  updateNote = async (note: Notes) =>
+    this.updateAct((ns) => {
       ns.set(note.id, note)
     })
-    this.act(patchTup, true)
-  }
 
-  tagChange = (noteId: string) => async (tags: string[]) => {
-    const patchTup = updateStore(this.noteStore)((ns) => {
+  tagChange = (noteId: string) => async (tags: string[]) =>
+    this.updateAct((ns) => {
       ns.get(noteId)!.tags = tags
     })
-    this.act(patchTup, true)
-  }
 
-  tagUpdate = async (oldTag: string, newTag: O.Option<string>) => {
-    const patchTup = updateStore(this.noteStore)((ns) => {
+  tagUpdate = async (oldTag: string, newTag: O.Option<string>) =>
+    this.updateAct((ns) => {
       ns.forEach((n) => {
         const i = n.tags.indexOf(oldTag)
         if (~i)
@@ -220,15 +219,11 @@ export class NoteSync {
           else n.tags = n.tags.filter(neq(oldTag))
       })
     })
-    this.act(patchTup, true)
-  }
 
-  changePrioritised = (noteId: string) => async (prioritised: number) => {
-    const patchTup = updateStore(this.noteStore)((ns) => {
+  changePrioritised = (noteId: string) => async (prioritised: number) =>
+    this.updateAct((ns) => {
       ns.get(noteId)!.prioritised = prioritised
     })
-    this.act(patchTup, true)
-  }
 
   _sub = (user_id: string) => {
     this.sb
@@ -248,7 +243,7 @@ export class NoteSync {
               ns.set(nn.id, nn)
             })
             if (!(get(this.stuMapStore).has(nn.source_id)))
-              this._fetchNewSources(nn.updated_at)
+              this._fetchNewSources([nn.source_id])
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
           } else this._filter4Present(user_id, new Date().toISOString())
         },

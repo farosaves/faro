@@ -6,11 +6,14 @@ import { add_card } from "./api/cards"
 import { createClient } from "@supabase/supabase-js"
 import { type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
-import { SERVICE_ROLE_KEY } from "$env/static/private"
+import { SERVICE_ROLE_KEY, TIMESTAMP_SALT } from "$env/static/private"
+import { subtle } from "crypto"
 
 export const t = initTRPC.context<Context>().create()
 
 const serviceSb = createClient<Database>(PUBLIC_SUPABASE_URL, SERVICE_ROLE_KEY)
+const encoder = new TextEncoder()
+const decoder = new TextDecoder()
 
 // unfortunately to have type inference in the extension you need to do it manually
 const tokens = z.object({
@@ -47,6 +50,8 @@ export const router = t.router({
   online: t.procedure.query(() => true as const),
   partingMsg: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: input })),
   featRequest: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: "FEAT_REQUEST: " + input })),
+
+  nonce: t.procedure.input(z.string()).query(async ({ input }) => decoder.decode((await subtle.digest("SHA-256", encoder.encode(input + TIMESTAMP_SALT))).slice(0, 16))),
 
   // uploadMHTML: t.procedure.input(typeCast<{ id: UUID, data: string }>).mutation(({ input }) => uploadMHTML(input.data, input.id)),
   // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),
