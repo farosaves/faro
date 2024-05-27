@@ -90,3 +90,9 @@ You can organise them with tags, all of which are displayed at the top. Clicking
 It's also easy to search by text, cause you find keywords in the highlighted snippets,
 like hop, or dino here.
 Find it on chrome webstore.
+
+## V5 
+Faros - it's a browser extension to manage online reading.
+%% try to start with the dashboard??? %%
+
+It makes it easy to go back to anything you've read, by  

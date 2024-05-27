@@ -1,5 +1,4 @@
 <script>
-  import { highlight } from "fuzzysort"
   import { altKey, funLog, replacer } from "shared"
   import { onMount } from "svelte"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
