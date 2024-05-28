@@ -104,7 +104,6 @@ getHighlightedText.sub(async ([uuid]) => {
   const note_data = {
     quote,
     highlights,
-    context: "",
     snippet_uuid: uuid,
     serialized_highlight: serialized,
     url: window.location.href,
