@@ -75,8 +75,6 @@ export class ActionQueue {
   act = (user_id: UUID | undefined) => async (patchTup: PatchTup) => {
     if (user_id && await this.pushAction(user_id)(patchTup)) return
     else this.queueStore.update(A.append(E.right(patchTup)))
-    // console.log("AQ", get(this.actionQueue))
-    // else throw new Error("only online for now")
   }
 
   pushActionSrc = async (src: Src & { id: UUID }) => {
