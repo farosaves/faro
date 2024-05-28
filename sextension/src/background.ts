@@ -214,7 +214,6 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 })
 
-
 const needsRefresh = writable(false)
 pushStore("needsRefresh", needsRefresh)
 const signalRefresh = (ms = 2000) => {
