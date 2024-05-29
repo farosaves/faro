@@ -104,7 +104,7 @@
       <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
       <div class="collapse-content">
         Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option to
-        buy lifetime access for $10 on <a href="https://ko-fi.com/farosapp">kofi</a>.<br />
+        buy lifetime access for $10 on <a class="underline" href="https://ko-fi.com/farosapp">kofi</a>.<br />
         <!-- I expect to charge ~$3/month later for other users. -->
       </div>
     </div>
