@@ -80,7 +80,35 @@ export const emails2sendUpdateSchema = z.object({
   id: z.number().optional(),
 })
 
+export const mylogsRowSchema = z.object({
+  created_at: z.string(),
+  from: z.string(),
+  id: z.number(),
+  msg: jsonSchema,
+  user_id: z.string().nullable(),
+  where: z.string(),
+})
+
+export const mylogsInsertSchema = z.object({
+  created_at: z.string().optional(),
+  from: z.string(),
+  id: z.number().optional(),
+  msg: jsonSchema,
+  user_id: z.string().optional().nullable(),
+  where: z.string(),
+})
+
+export const mylogsUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  from: z.string().optional(),
+  id: z.number().optional(),
+  msg: jsonSchema.optional(),
+  user_id: z.string().optional().nullable(),
+  where: z.string().optional(),
+})
+
 export const notesRowSchema = z.object({
+  context: z.string().nullable(),
   created_at: z.string(),
   highlights: z.array(z.string()),
   id: z.string(),
@@ -98,6 +126,7 @@ export const notesRowSchema = z.object({
 })
 
 export const notesInsertSchema = z.object({
+  context: z.string().optional().nullable(),
   created_at: z.string().optional(),
   highlights: z.array(z.string()),
   id: z.string(),
@@ -115,6 +144,7 @@ export const notesInsertSchema = z.object({
 })
 
 export const notesUpdateSchema = z.object({
+  context: z.string().optional().nullable(),
   created_at: z.string().optional(),
   highlights: z.array(z.string()).optional(),
   id: z.string().optional(),
