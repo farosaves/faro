@@ -59,6 +59,7 @@
     "fsrs.js": "^1.2.0",
     "fuzzysort": "^2.0.4",
     "mhtml2html": "^3.0.0",
+    "pdfjs-serverless": "^0.4.2",
     "rxjs": "^7.8.1",
     "sbd": "^1.0.19",
     "shared": "file:../shared",
