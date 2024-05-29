@@ -97,7 +97,7 @@
 
     <div class="toast toast-end z-10"></div>
   </div>
-  <div class="drawer-side z-10">
+  <div class="drawer-side z-10 border-r border-neutral">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4">
       <li class="pt-4">
