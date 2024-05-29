@@ -5,9 +5,7 @@
   let extInstalled = true
   onMount(async () => {
     // failed to fetch if not installed
-    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch(
-      (r) => (extInstalled = r.message != "Failed to fetch"),
-    )
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch((r) => (extInstalled = true))
   })
 </script>
 

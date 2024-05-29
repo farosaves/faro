@@ -40,6 +40,7 @@
     )
 
   const yo = async () => {
+    console.log(umami.track)
     const salt = crypto.getRandomValues(new Uint8Array(128 / 8))
     // const iv =
     const key = await hashPwd("heyy", salt)

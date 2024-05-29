@@ -2,7 +2,7 @@
 import type { Context } from "$lib/trpc/context"
 import { initTRPC } from "@trpc/server"
 import z from "zod"
-import { add_card } from "./api/cards"
+// import { add_card } from "./api/cards"
 import { createClient } from "@supabase/supabase-js"
 import { type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
@@ -39,14 +39,14 @@ export const router = t.router({
   //   await serviceSb.from("notes").select("*").eq("snippet_uuid", input).single()),
   singleNote: t.procedure.input(z.string()).query(async ({ input }) =>
     await serviceSb.from("notes").select("*").eq("id", input).single()),
-  create_card: t.procedure
-    .input(cardInput)
-    .mutation(({ input, ctx: { locals } }) => add_card({ ...input, supabase: locals.supabase })),
-  note2card: t.procedure
-    .input(z.object({ note_id: z.number() }))
-    .mutation(({ input: { note_id }, ctx: { locals } }) =>
-      add_card({ note_id, supabase: locals.supabase, front: null, back: null }),
-    ),
+  // create_card: t.procedure
+  //   .input(cardInput)
+  //   .mutation(({ input, ctx: { locals } }) => add_card({ ...input, supabase: locals.supabase })),
+  // note2card: t.procedure
+  //   .input(z.object({ note_id: z.number() }))
+  //   .mutation(({ input: { note_id }, ctx: { locals } }) =>
+  //     add_card({ note_id, supabase: locals.supabase, front: null, back: null }),
+  //   ),
   online: t.procedure.query(() => true as const),
   partingMsg: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: input })),
   featRequest: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: "FEAT_REQUEST: " + input })),
