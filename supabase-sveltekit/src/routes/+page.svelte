@@ -1,14 +1,11 @@
 <script>
-  import { highlight } from "fuzzysort"
   import { altKey, funLog, replacer } from "shared"
   import { onMount } from "svelte"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   let extInstalled = true
   onMount(async () => {
     // failed to fetch if not installed
-    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch(
-      (r) => (extInstalled = r.message != "Failed to fetch"),
-    )
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch((r) => (extInstalled = false))
   })
 </script>
 

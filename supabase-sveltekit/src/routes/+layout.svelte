@@ -27,7 +27,8 @@
 <svelte:head>
   <meta property="og:image" content="{API_ADDRESS}/tile.png" />
 
-  {#if !DEBUG}
+  {#if true}
+    <!-- !DEBUG -->
     <script
       defer
       src="https://analytics.us.umami.is/script.js"

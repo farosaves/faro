@@ -76,7 +76,17 @@ export const funLog = (where = "", from = "") => <T>(n: T) => {
   DEBUG && console.log(from, n, where && ("at" + where))
   return n
 }
+export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from: string, msg: string }
+type _F = (m: DebugMsg) => Promise<unknown>
+export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)
+
+export const funWarn = (f: _F) => (where = "", from = "") => <T>(n: T) => {
+  if (DEBUG) console.warn(from, n, where && ("at" + where))
+  else f({ where, from, severity: "warn", msg: JSON.stringify(n) })
+}
+
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
+export const warnIfError = (f: _F) => (where = "") => ifErr(funWarn(f)(where, "logIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const host = (s: string) => O.tryCatch(() => new URL(s).host)

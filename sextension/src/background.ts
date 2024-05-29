@@ -153,9 +153,13 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
 
 const tabQueryUpdate = () => chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(flow(A.lookup(0), O.map(updateCurrUrl)))
 
+let toks: Awaited<ReturnType<typeof S.my_tokens.query>> = undefined
 const refreshSess = async () => {
-  const toks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toNullable)
-  funLog("refresh toks")(toks)
+  const newToks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toUndefined)
+  funLog("refresh toks")([toks, newToks])
+  if ((newToks?.access_token == toks?.access_token) && O.isSome(get(sess)))
+    return get(sess)
+  toks = newToks
   const s = O.fromNullable(toks && await getSetSession(supabase, toks))
   sess.set(s)
   return s
@@ -209,7 +213,6 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 })
-
 
 const needsRefresh = writable(false)
 pushStore("needsRefresh", needsRefresh)

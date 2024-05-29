@@ -1,4 +1,4 @@
-import { ifErr, logIfError, updateStore, type Src, applyPatches, funLog } from "$lib/utils"
+import { ifErr, updateStore, type Src, applyPatches, funLog, warnIfError, sbLogger } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./xxdo"
 import { either as E, array as A, string as S, tuple as T } from "fp-ts"
@@ -21,11 +21,13 @@ export class ActionQueue {
   sb: SupabaseClient
   online: () => boolean
   noteStore: Writable<Map<string, Notes>>
+  warnIfErr: (where?: string) => <T extends { error: unknown }>(r: T) => T
   constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>) {
     this.queueStore = persisted("actionQueue", [], { serializer: devalue })
     this.sb = sb
     this.online = online
     this.noteStore = noteStore
+    this.warnIfErr = warnIfError(sbLogger(sb))
     // this.stuMapStore = stuMapStore
   }
 
@@ -49,7 +51,7 @@ export class ActionQueue {
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) =>
         f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
-          .then(logIfError("pushAction"))
+          .then(this.warnIfErr("pushAction"))
           .then(
             ifErr(() => updateStore(this.noteStore)(applyPatches(patchTup.inverse))))
     // maps the operation with patchTup.patches to db update
@@ -75,8 +77,6 @@ export class ActionQueue {
   act = (user_id: UUID | undefined) => async (patchTup: PatchTup) => {
     if (user_id && await this.pushAction(user_id)(patchTup)) return
     else this.queueStore.update(A.append(E.right(patchTup)))
-    // console.log("AQ", get(this.actionQueue))
-    // else throw new Error("only online for now")
   }
 
   pushActionSrc = async (src: Src & { id: UUID }) => {
@@ -84,9 +84,9 @@ export class ActionQueue {
     const { id, title, domain } = src
     // TODO HERE
     // check if already was added by prolly someone else
-    const { data } = await this.sb.from("sources").select().eq("id", id).maybeSingle().then(logIfError("check for sources"))
+    const { data } = await this.sb.from("sources").select().eq("id", id).maybeSingle().then(this.warnIfErr("check for sources"))
     if (data?.domain == src.domain && data?.title == title) return true
-    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(logIfError("insert sources"))
+    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.warnIfErr("insert sources"))
     const success = (error == null)
     console.log("pushed source", success)
     if (success) return success

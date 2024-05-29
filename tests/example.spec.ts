@@ -27,7 +27,7 @@ test("login flow", async ({ page }) => {
 
   await password.press("Enter")
 
-  await expect(page).toHaveURL(/account/)
+  await expect(page).toHaveURL(/account($|\?)/)
   await page.getByText("Dashboard", { exact: true }).click()
   await expect(page).toHaveURL(/dashboard/)
   // reactivity

@@ -18,6 +18,7 @@ import { persisted } from "./sync/persisted-store"
 import * as dbtypes from "./db/types"
 import * as schemas from "./db/schemas"
 export * from "./stores"
+export * from "./cryptic/aa"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
 export * from "./semaphore"
