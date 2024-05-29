@@ -7,7 +7,7 @@
   const passwordConf = field("passwordConf", "", [matchField(password)], opt)
   const myForm = form(password, passwordConf)
   import { onMount } from "svelte"
-  import { logIfError } from "shared"
+  import { sbLogger, warnIfError } from "shared"
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   const isNew = $page.url.searchParams.has("new")
@@ -27,7 +27,7 @@
     data.supabase.auth
       // @ts-ignore
       .updateUser({ password: $password.value })
-      .then(logIfError("reset password"))
+      .then(warnIfError(sbLogger(data.supabase))("reset password"))
       .then(() => goto("/account?from=passwordreset"))
 </script>
 
