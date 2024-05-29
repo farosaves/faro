@@ -47,7 +47,7 @@ export class ActionQueue {
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
     updateStore(this.noteStore)(applyPatches(patchTup.patches))
-    funLog("pushAction")("puuushing")
+    funLog("pushAction")("puuushing") // can do funWarn IF I do encrypted here
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) =>
         f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..

@@ -84,9 +84,13 @@ export const funWarn = (f: _F) => (where = "", from = "") => <T>(n: T) => {
   if (DEBUG) console.warn(from, n, where && ("at" + where))
   else f({ where, from, severity: "warn", msg: JSON.stringify(n) })
 }
+export const funErr = (f: _F) => (where = "", from = "") => <T>(n: T) => {
+  if (DEBUG) console.error(from, n, where && ("at" + where))
+  else f({ where, from, severity: "err", msg: JSON.stringify(n) })
+}
 
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
-export const warnIfError = (f: _F) => (where = "") => ifErr(funWarn(f)(where, "logIfError log"))
+export const warnIfError = (f: _F) => (where = "") => ifErr(funWarn(f)(where, "warnIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const host = (s: string) => O.tryCatch(() => new URL(s).host)
