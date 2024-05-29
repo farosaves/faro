@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js"
 import { type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 import { SERVICE_ROLE_KEY, TIMESTAMP_SALT } from "$env/static/private"
-import { subtle } from "crypto"
+import { subtle } from "node:crypto"
 
 export const t = initTRPC.context<Context>().create()
 
