@@ -19,7 +19,7 @@ import {
   funWarn,
   sbLogger,
   funLog2,
-  maxDateSafe,
+  maxDate,
 } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
@@ -99,7 +99,7 @@ export class NoteSync {
     const warn = funWarn(sbLogger(this.sb))
     const log = funLog2(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
-    const latest = maxDateSafe(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
     log("redresh time_latest")(latest)
     log("#nns")(await this._fetchNewNotes(latest))
     log("#nss")(await this._fetchNewSources())
