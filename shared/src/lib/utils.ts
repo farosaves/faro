@@ -140,8 +140,7 @@ export const toStore = <T>(Sub: Observable<T>, init: T) => {
 }
 
 export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
-const maxDate = flow(A.map(parseISO), A.append(new Date(0)), max, x => x.toISOString())
-export const maxDateSafe = (dateStrs: string[]) => pipe(
+export const maxDate = (dateStrs: string[]) => pipe(
   () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
   O.tryCatch,
   O.getOrElse(() => new Date(0).toISOString()))
