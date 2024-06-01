@@ -80,13 +80,20 @@ export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from:
 type _F = (m: DebugMsg) => Promise<unknown>
 export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)
 
+export const funLog2 = (f: _F) => (where = "", from = "") => <T>(n: T) => {
+  if (DEBUG) console.log(from, n, where && ("at" + where))
+  else f({ where, from, severity: "info", msg: JSON.stringify(n) })
+  return n
+}
 export const funWarn = (f: _F) => (where = "", from = "") => <T>(n: T) => {
   if (DEBUG) console.warn(from, n, where && ("at" + where))
   else f({ where, from, severity: "warn", msg: JSON.stringify(n) })
+  return n
 }
 export const funErr = (f: _F) => (where = "", from = "") => <T>(n: T) => {
   if (DEBUG) console.error(from, n, where && ("at" + where))
   else f({ where, from, severity: "err", msg: JSON.stringify(n) })
+  return n
 }
 
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
@@ -133,13 +140,14 @@ export const toStore = <T>(Sub: Observable<T>, init: T) => {
 }
 
 export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
-export const maxDate = flow(A.map(parseISO), A.append(new Date(0)), max, x => x.toISOString())
+const maxDate = flow(A.map(parseISO), A.append(new Date(0)), max, x => x.toISOString())
+export const maxDateSafe = (dateStrs: string[]) => pipe(
+  () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
+  O.tryCatch,
+  O.getOrElse(() => new Date(0).toISOString()))
+
 
 export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
-  // query = O.match(
-  //   () => query,
-  //   (id: string) => query.eq("source_id", id),
-  // )(source_id)
   const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
   return data || []
 }
