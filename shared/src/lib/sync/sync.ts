@@ -18,7 +18,7 @@ import {
   funLog,
   maxDate,
 } from "$lib/utils"
-import { option as O, string as S, map as M } from "fp-ts"
+import { option as O, string as S, map as M, array as A } from "fp-ts"
 
 import { flow, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
@@ -93,16 +93,19 @@ export class NoteSync {
     // if (oldUser_id !== user_id) { // added this but probably redundant
     // }
     const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    const newNoteSrcIds = (await this._fetchNewNotes(latest)).map(nn => nn.source_id)
-    await this._fetchNewSources(newNoteSrcIds)
+    await this._fetchNewNotes(latest)
+    await this._fetchNewSources()
     await this.actionQueue.goOnline(user_id as UUID)
   }
 
 
-  _fetchNewSources = async (newNoteIds: string[]) => {
+  _fetchNewSources = async () => {
     if (this._user_id == undefined) return
-    // const nss = (await this.sb.from("sources").select("*, notes!inner(user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data || []
-    const nss = (await this.sb.from("sources").select("*").in("id", newNoteIds)).data || []
+    const missingIds = pipe(Array.from(get(this.noteStore).values()),
+      A.map(x => x.source_id),
+      A.difference(S.Eq)(Array.from(get(this.stuMapStore).keys())),
+    )
+    const nss = (await this.sb.from("sources").select("*").in("id", missingIds)).data || []
     this.stuMapStore.update((ss) => {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
@@ -136,8 +139,6 @@ export class NoteSync {
       nns.forEach(nn => ns.set(nn.id, nn))
       return ns
     })
-    // return updated ones
-    return nns
   }
 
 
@@ -243,7 +244,7 @@ export class NoteSync {
               ns.set(nn.id, nn)
             })
             if (!(get(this.stuMapStore).has(nn.source_id)))
-              this._fetchNewSources([nn.source_id])
+              this._fetchNewSources()
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
           } else this._filter4Present(user_id, new Date().toISOString())
         },
