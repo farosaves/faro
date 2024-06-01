@@ -32,9 +32,6 @@
   "side_panel": {
     "default_path": "index.html"
   },
-  "externally_connectable": {
-    "matches": ["https://farosapp.com/*", "https://dev.farosapp.com/*", "<all_urls>"]
-  },
 
   "web_accessible_resources": [
     {
