@@ -16,7 +16,10 @@ import {
   uuidv5,
   fillInTitleDomain,
   funLog,
-  maxDate,
+  funWarn,
+  sbLogger,
+  funLog2,
+  maxDateSafe,
 } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
@@ -89,18 +92,23 @@ export class NoteSync {
     if (user_id === undefined || !online) return
     this._sub(user_id)
     this.noteStore.update(M.filter(n => n.user_id == user_id))
-    // do actions from queue
-    // if (oldUser_id !== user_id) { // added this but probably redundant
-    // }
-    const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    await this._fetchNewNotes(latest)
-    await this._fetchNewSources()
-    await this.actionQueue.goOnline(user_id as UUID)
+    this.refresh()
+  }
+
+  refresh = async () => {
+    const warn = funWarn(sbLogger(this.sb))
+    const log = funLog2(sbLogger(this.sb))
+    if (this._user_id === undefined) return warn("sync refresh")("undefined user")
+    const latest = maxDateSafe(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    log("redresh time_latest")(latest)
+    log("#nns")(await this._fetchNewNotes(latest))
+    log("#nss")(await this._fetchNewSources())
+    await this.actionQueue.goOnline(this._user_id as UUID)
   }
 
 
   _fetchNewSources = async () => {
-    if (this._user_id == undefined) return
+    if (this._user_id == undefined) return 0
     const missingIds = pipe(Array.from(get(this.noteStore).values()),
       A.map(x => x.source_id),
       A.difference(S.Eq)(Array.from(get(this.stuMapStore).keys())),
@@ -109,15 +117,8 @@ export class NoteSync {
     this.stuMapStore.update((ss) => {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
-    })// set())
-
-    // unwrapTo(
-    //   pipe( // .gt("notes.updated_at", this.latest())
-    //     O.fromNullable,
-    //     funLog("refreshed_sources"),
-    //     O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
-    //   ),
-    // ),
+    })
+    return nss.length
   }
 
   _filter4Present = async (user_id: string, lastDate: string) => {
@@ -132,13 +133,14 @@ export class NoteSync {
   }
 
   _fetchNewNotes = async (latestTs: string) => {
-    if (this._user_id == undefined) return []
+    if (this._user_id == undefined) return 0
     await this._filter4Present(this._user_id, latestTs)
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
     this.noteStore.update((ns) => {
       nns.forEach(nn => ns.set(nn.id, nn))
       return ns
     })
+    return nns.length
   }
 
 

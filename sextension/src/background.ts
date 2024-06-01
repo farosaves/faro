@@ -29,13 +29,10 @@ const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
 const user_id = derived(sess, O.map(s => s.user.id))
 // on user/session run:
-const onUser_idUpdate = O.match(
+const onUser_idUpdate = O.matchW(
   () => note_sync.setUser_id(undefined),
-  async (user_id: string) => {
-    note_sync.setUser_id(user_id)
-    // note_sync.refresh_sources() // it's in the setUser_id
-    // note_sync.refresh_notes()
-  })
+  note_sync.setUser_id,
+)
 user_id.subscribe(onUser_idUpdate)
 
 // const refreshIfNew = async () => {  // premature opt
@@ -154,16 +151,24 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
 const tabQueryUpdate = () => chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(flow(A.lookup(0), O.map(updateCurrUrl)))
 
 let toks: Awaited<ReturnType<typeof S.my_tokens.query>> = undefined
-const refreshSess = async () => {
+const refreshOnline = async () => {
   const newToks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toUndefined)
   funLog("refresh toks")([toks, newToks])
-  if ((newToks?.access_token == toks?.access_token) && O.isSome(get(sess)))
+  if ((newToks?.access_token == toks?.access_token) && O.isSome(get(sess))) {
+    note_sync.refresh()
     return get(sess)
+  }
   toks = newToks
   const s = O.fromNullable(toks && await getSetSession(supabase, toks))
   sess.set(s)
   return s
 }
+
+chrome.runtime.onMessageExternal.addListener(
+  function (request, sender, sendResponse) {
+
+  })
+
 
 // let lastSess: O.Option<Session> = O.none
 // sess.subscribe((sOpt) => {
@@ -182,7 +187,7 @@ const refreshSess = async () => {
 
 const refresh = async (online = true) => {
   tabQueryUpdate()
-  if (online) return await refreshSess()
+  if (online) return await refreshOnline()
   sess.set(O.none) // if offline
   return get(sess)
 }
