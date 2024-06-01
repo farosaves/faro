@@ -9,13 +9,13 @@
 	- [ ] check if doing now what expecting
 - [ ] also check one from warnLog etc
 - [ ] Don't make all URLs externally connectable.
-- [ ] find out why the session option is being logged
+- [x] find out why the session option is being logged
 
+### support
 - [ ] support prompt if anything not working???
 - [ ] debug turn-on-able?
 
 - [x] Improve dictation for writing my notes.
-- [ ] Learn to break up tasks better.
-- [ ] 
+- [x] Learn to break up tasks better.
 
 
