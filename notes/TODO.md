@@ -11,3 +11,9 @@
 
 - [ ] support prompt if anything not working???
 - [ ] debug turn-on-able?
+
+- [x] Improve dictation for writing my notes.
+- [ ] Learn to break up tasks better.
+- [ ] 
+
+
