@@ -78,7 +78,7 @@ export const funLog = (where = "", from = "") => <T>(n: T) => {
 }
 export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from: string, msg: string }
 type _F = (m: DebugMsg) => Promise<unknown>
-export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)
+export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m).then(console.log)
 
 export const funLog2 = (f: _F) => (where = "", from = "") => <T>(n: T) => {
   if (DEBUG) console.log(from, n, where && ("at" + where))
@@ -204,3 +204,6 @@ export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry"
 
 export const isMac = () => navigator.userAgent.includes("Mac OS X")
 export const isCmd = (e: KeyboardEvent) => isMac() ? e.metaKey : e.ctrlKey
+
+export const getKey = async (sb: SupabaseClient) =>
+  (await sb.from("keys").select("*").maybeSingle().then(warnIfError(sbLogger(sb))("getKey"))).data?.key || undefined

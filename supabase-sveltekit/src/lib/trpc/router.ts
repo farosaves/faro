@@ -21,11 +21,7 @@ const tokens = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
 })
-const cardInput = z.object({
-  front: z.nullable(z.string()),
-  back: z.nullable(z.string()),
-  note_id: z.number(),
-})
+const digest = async (str: string) => decoder.decode((await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
 
 export const router = t.router({
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
@@ -52,7 +48,11 @@ export const router = t.router({
   partingMsg: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: input }).then(warnIfErr("partingMsg"))),
   featRequest: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: "FEAT_REQUEST: " + input }).then(warnIfErr("featRequest"))),
 
-  nonce: t.procedure.input(z.string()).query(async ({ input }) => decoder.decode((await subtle.digest("SHA-256", encoder.encode(input + TIMESTAMP_SALT))).slice(0, 16))),
+  nonce: t.procedure.input(z.string()).query(async ({ input }) => digest(input)), // digest id
+  userSalt: t.procedure.query(async ({ ctx: { locals } }) => {
+    const ts = (await locals.safeGetSession()).user?.id
+    if (ts) return digest(ts)
+  }),
 
   // uploadMHTML: t.procedure.input(typeCast<{ id: UUID, data: string }>).mutation(({ input }) => uploadMHTML(input.data, input.id)),
   // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),
