@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { ThemeSupa, type ViewType } from "@supabase/auth-ui-shared"
+  import { ThemeSupa } from "@supabase/auth-ui-shared"
   import { Auth } from "@supabase/auth-ui-svelte"
   export let data
   import { onMount } from "svelte"
   import { goto } from "$app/navigation"
-  import { DEBUG, sessStore } from "shared"
+  import { sessStore } from "shared"
   import { option as O } from "fp-ts"
   import { page } from "$app/stores"
   import { get } from "svelte/store"
@@ -18,6 +18,10 @@
     }),
   )
   $: supabaseClient = data.supabase
+  // if (ThemeSupa.default.colors) {
+  //   ThemeSupa.default.colors.brand = ""
+  //   ThemeSupa.default.colors.brandAccent = ""
+  // }
 </script>
 
 <svelte:head>
@@ -25,7 +29,7 @@
 </svelte:head>
 
 <div class="flex justify-center">
-  <div class="w-64">
+  <div class="w-64 my-4">
     <Auth
       {supabaseClient}
       redirectTo={`${data.url}/auth/callback?view=sign_in`}
@@ -33,5 +37,8 @@
       providers={["google", "github"]}
       view="sign_in"
       appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
+    <div class="divider"></div>
+    <a href="/account/login/sign-up" class="underline">New user? Sign Up</a><br />
+    <a href="/account/login/forgotten-password" class="underline">Forgotten password?</a>
   </div>
 </div>
