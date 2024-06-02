@@ -55,9 +55,6 @@ that's all I got in store for the presentation, faros chrome webstore should now
 (dont think so)
 
 #### V5
+It helps you stay on top of online reading - you save sentences from pages to go back to them later.
 Chrome ext for staying on top of online reading - highlight bookmarks / web clipper meets bookmark manager
 Online reading total recall ?
-
-### V6
-Yo my name's Paul, making this extension and I put nujabes on for writing the presentation
-The result I got is rather unique, as is the app which I show real quick

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { option } from "fp-ts"
+  import IconDiscord from "~icons/logos/discord-icon"
 
   import { replacer, themeStore, updateTheme } from "shared"
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
@@ -27,6 +27,10 @@
     </ul>
   </div>
   <div class="navbar-end">
+    <a
+      class="btn btn-ghost p-2 tooltip tooltip-left"
+      href="https://discord.gg/6TvDFPA6bs"
+      data-tip="Join the server!"><IconDiscord font-size={24} /></a>
     <a class="btn btn-ghost" href="/contact">Contact</a>
     <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
       <li>

@@ -77,12 +77,42 @@ export type Database = {
         }
         Relationships: []
       }
+      keys: {
+        Row: {
+          created_at: string
+          id: number
+          key: number[] | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          key?: number[] | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          key?: number[] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "keys_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mylogs: {
         Row: {
           created_at: string
           from: string
           id: number
           msg: Json
+          severity: string
           user_id: string | null
           where: string
         }
@@ -91,6 +121,7 @@ export type Database = {
           from: string
           id?: number
           msg: Json
+          severity: string
           user_id?: string | null
           where: string
         }
@@ -99,6 +130,7 @@ export type Database = {
           from?: string
           id?: number
           msg?: Json
+          severity?: string
           user_id?: string | null
           where?: string
         }
@@ -229,6 +261,38 @@ export type Database = {
           },
         ]
       }
+      saves: {
+        Row: {
+          created_at: string
+          encrypted_data: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_data: string
+          id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_data?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saves_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sources: {
         Row: {
           created_at: string
@@ -273,25 +337,25 @@ type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-  | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-  | { schema: keyof Database },
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-    Database[PublicTableNameOrOptions["schema"]]["Views"])
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-  Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-      ? R
-      : never
+    ? R
+    : never
   : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     ? (PublicSchema["Tables"] & PublicSchema["Views"])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
-        ? R
-        : never
+      ? R
+      : never
     : never
 
 export type TablesInsert<
@@ -301,14 +365,14 @@ export type TablesInsert<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Insert: infer I
-  }
+      Insert: infer I
+    }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-      Insert: infer I
-    }
+        Insert: infer I
+      }
       ? I
       : never
     : never
@@ -320,14 +384,14 @@ export type TablesUpdate<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Update: infer U
-  }
+      Update: infer U
+    }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-      Update: infer U
-    }
+        Update: infer U
+      }
       ? U
       : never
     : never
@@ -353,6 +417,10 @@ export type Emails2send = Database["public"]["Tables"]["emails2send"]["Row"]
 export type InsertEmails2send = Database["public"]["Tables"]["emails2send"]["Insert"]
 export type UpdateEmails2send = Database["public"]["Tables"]["emails2send"]["Update"]
 
+export type Keys = Database["public"]["Tables"]["keys"]["Row"]
+export type InsertKeys = Database["public"]["Tables"]["keys"]["Insert"]
+export type UpdateKeys = Database["public"]["Tables"]["keys"]["Update"]
+
 export type Mylogs = Database["public"]["Tables"]["mylogs"]["Row"]
 export type InsertMylogs = Database["public"]["Tables"]["mylogs"]["Insert"]
 export type UpdateMylogs = Database["public"]["Tables"]["mylogs"]["Update"]
@@ -368,6 +436,10 @@ export type UpdatePartingMsgs = Database["public"]["Tables"]["partingMsgs"]["Upd
 export type Profiles = Database["public"]["Tables"]["profiles"]["Row"]
 export type InsertProfiles = Database["public"]["Tables"]["profiles"]["Insert"]
 export type UpdateProfiles = Database["public"]["Tables"]["profiles"]["Update"]
+
+export type Saves = Database["public"]["Tables"]["saves"]["Row"]
+export type InsertSaves = Database["public"]["Tables"]["saves"]["Insert"]
+export type UpdateSaves = Database["public"]["Tables"]["saves"]["Update"]
 
 export type Sources = Database["public"]["Tables"]["sources"]["Row"]
 export type InsertSources = Database["public"]["Tables"]["sources"]["Insert"]

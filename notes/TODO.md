@@ -10,6 +10,18 @@
 - [ ] also check one from warnLog etc
 - [ ] Don't make all URLs externally connectable.
 - [x] find out why the session option is being logged
+## enc1
+- [x] Make a table where I will store the keys.
+- [x] generate some random encryption key with the proper format
+- [x] insert that key into the table for my account
+- [x] write a function that retrieves the key for the currently logged in user
+
+## login page
+- [x] Create two routes.
+- [x] For now duplicate the code into both.
+- [ ] Remove the magic link option.
+- [ ] Look at the set password page
+
 
 ### support
 - [ ] support prompt if anything not working???
