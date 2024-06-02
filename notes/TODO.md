@@ -19,10 +19,12 @@
 ## login page
 - [x] Create two routes.
 - [x] For now duplicate the code into both.
-- [ ] Remove the magic link option.
+- [x] Remove the magic link option.
 - [ ] Look at the set password page
 
-
+## debug
+Performance in the built-in dashboard to win the extension is much better.An example of that is starring a save. 
+One possible cause for that could be the layout within which the web app dashboard is presented.
 ### support
 - [ ] support prompt if anything not working???
 - [ ] debug turn-on-able?

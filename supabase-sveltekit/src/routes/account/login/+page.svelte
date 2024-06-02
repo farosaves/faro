@@ -2,11 +2,8 @@
   import { ThemeSupa, type ViewType } from "@supabase/auth-ui-shared"
   import { Auth } from "@supabase/auth-ui-svelte"
   export let data
-  import Radio from "$lib/Radio.svelte"
   import { onMount } from "svelte"
   import { goto } from "$app/navigation"
-  let view: ViewType = "sign_in"
-  let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"]
   import { DEBUG, sessStore } from "shared"
   import { option as O } from "fp-ts"
   import { page } from "$app/stores"
@@ -29,15 +26,12 @@
 
 <div class="flex justify-center">
   <div class="w-64">
-    <!-- border-dotted border-gray-500 border-2 -->
     <Auth
       {supabaseClient}
-      redirectTo={`${data.url}/auth/callback?view=${view}`}
+      redirectTo={`${data.url}/auth/callback?view=sign_in`}
       showLinks={false}
       providers={["google", "github"]}
-      view={view == "sign_up" ? "magic_link" : view}
+      view="sign_in"
       appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
-    <!-- <Auth supabaseClient={data.supabase} {view} {providers} /> -->
-    <Radio options={view_options} bind:userSelected={view} />
   </div>
 </div>
