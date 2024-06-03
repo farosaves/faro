@@ -21,7 +21,8 @@ const tokens = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
 })
-const digest = async (str: string) => decoder.decode((await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
+// funLog2(sbLogger(serviceSb))("digest")(
+const digest = async (str: string) => Array.from(new Int32Array(await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
 
 export const router = t.router({
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {

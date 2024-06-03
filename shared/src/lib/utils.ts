@@ -78,7 +78,7 @@ export const funLog = (where = "", from = "") => <T>(n: T) => {
 }
 export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from: string, msg: string }
 type _F = (m: DebugMsg) => Promise<unknown>
-export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m).then(console.log)
+export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)// .then(console.log)
 
 export const funLog2 = (f: _F) => (where = "", from = "") => <T>(n: T) => {
   if (DEBUG) console.log(from, n, where && ("at" + where))
@@ -207,3 +207,12 @@ export const isCmd = (e: KeyboardEvent) => isMac() ? e.metaKey : e.ctrlKey
 
 export const getKey = async (sb: SupabaseClient) =>
   (await sb.from("keys").select("*").maybeSingle().then(warnIfError(sbLogger(sb))("getKey"))).data?.key || undefined
+
+export const pick = <T, K extends keyof T>(obj: T, keys: Readonly<K[]>): Pick<T, K> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = {}
+  for (const key of keys) {
+    result[key] = obj[key]
+  }
+  return result
+}

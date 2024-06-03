@@ -83,18 +83,24 @@ export type Database = {
           id: number
           key: number[] | null
           user_id: string
+          using_derived: boolean
+          using_stored: boolean
         }
         Insert: {
           created_at?: string
           id?: number
           key?: number[] | null
           user_id?: string
+          using_derived?: boolean
+          using_stored?: boolean
         }
         Update: {
           created_at?: string
           id?: number
           key?: number[] | null
           user_id?: string
+          using_derived?: boolean
+          using_stored?: boolean
         }
         Relationships: [
           {
