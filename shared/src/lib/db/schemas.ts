@@ -85,6 +85,8 @@ export const keysRowSchema = z.object({
   id: z.number(),
   key: z.array(z.number()).nullable(),
   user_id: z.string(),
+  using_derived: z.boolean(),
+  using_stored: z.boolean(),
 })
 
 export const keysInsertSchema = z.object({
@@ -92,6 +94,8 @@ export const keysInsertSchema = z.object({
   id: z.number().optional(),
   key: z.array(z.number()).optional().nullable(),
   user_id: z.string().optional(),
+  using_derived: z.boolean().optional(),
+  using_stored: z.boolean().optional(),
 })
 
 export const keysUpdateSchema = z.object({
@@ -99,6 +103,8 @@ export const keysUpdateSchema = z.object({
   id: z.number().optional(),
   key: z.array(z.number()).optional().nullable(),
   user_id: z.string().optional(),
+  using_derived: z.boolean().optional(),
+  using_stored: z.boolean().optional(),
 })
 
 export const mylogsRowSchema = z.object({
