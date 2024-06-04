@@ -34,15 +34,15 @@ export class ActionQueue {
   goOnline = async (user_id: UUID) => {
     const successes = []
     const { data } = (await this.sb.from("keys").select("*").maybeSingle())
-    if (data?.using_stored || data?.using_derived) // if hasn't deicded don't go online
-      for (const action of get(this.queueStore)) {
-      //   await match(action)  // if ever more than 2 e.g. tabs
-      //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
-      //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
-      //     .exhaustive()
-      // or: https://farosapp.com/notes/ac6f8223-fa95-4b4d-b7e8-1960db532dc1
-        successes.push(await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion))
-      }
+    // if (data?.using_stored || data?.using_derived) // if hasn't deicded don't go online
+    for (const action of get(this.queueStore)) {
+    //   await match(action)  // if ever more than 2 e.g. tabs
+    //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
+    //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
+    //     .exhaustive()
+    // or: https://farosapp.com/notes/ac6f8223-fa95-4b4d-b7e8-1960db532dc1
+      successes.push(await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion))
+    }
     this.queueStore.update(flow( // keep unsuccessful
       A.zip(successes), A.filter(([_, success]) => !success), A.map(T.fst)))
   }

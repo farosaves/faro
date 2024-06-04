@@ -13,6 +13,9 @@
 - [x] find out why the session option is being logged
 - [ ] make signing up much easier
 	So for example, I can ask for the email, then check if there's an account associated with it, and then show you the password prompt if there is.
+	- [ ] Think more about what the flow should look like.
+		1. submit your email 
+		2. either give the password or click the sign up button.
 ## enc1
 - [x] Make a table where I will store the keys.
 - [x] generate some random encryption key with the proper format
@@ -21,9 +24,13 @@
 - [x] add a flag in keys I guess, to mark if user agreed to password recovery
 - [x] modify the sync go online function to require this flag
 - [x] add a flag to mark that the key is derived from the password
-
 - [ ] Modify sync go online to accept the password derived key
+
+## interlude
+- [x] Add a field for the referer.
+- [x] Add to enc
 ## enc2
+- [ ] Decide what to do with the IV.
 - [ ] write an encrypting function that takes a key and converts a note row to a save row.
 - [ ] Write an inverse function that also takes a key.
 - [ ] Remember the next deployment should be like 0.2 and wait for approval so I deploy simultaneously.
@@ -35,9 +42,11 @@
 - [ ] Look at the set password page
 
 ## debug
-Performance in the built-in dashboard to win the extension is much better.An example of that is starring a save. 
+Performance in the built-in dashboard to win the extension is much better.
+An example of that is starring a save. 
 One possible cause for that could be the layout within which the web app dashboard is presented.
-
+Removed the flex but hasn't changed much.
+I don't know if they can be batched in any better way.
 ## ideas
 - [ ] Check out Mastodon, Blue Sky and so on for making accounts
 - [ ] reach out to https://skyhook.be / https://west.io
@@ -49,3 +58,7 @@ One possible cause for that could be the layout within which the web app dashboa
 - [x] Learn to break up tasks better.
 
 
+## special cases
+- [ ] YouTube comments should save URL of the comment.
+- [ ] Quora should save the shareable link in the bottom right corner.
+- [ ] Reddit probably also just the comment url

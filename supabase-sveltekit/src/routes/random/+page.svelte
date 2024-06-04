@@ -3,9 +3,11 @@
   import { page } from "$app/stores"
   import { onMount } from "svelte"
   import {
-    arr2Bytes,
+    arr32_2Bytes,
     decrypt,
+    decryptSave,
     encrypt,
+    encryptSave,
     exportRawKey,
     getKey,
     hashPwd,
@@ -19,8 +21,8 @@
   const T = trpc($page)
   const yo = async () => {
     console.log(umami.track)
-    const salt = arr2Bytes((await T.userSalt.query()) || [])
-    const iv = arr2Bytes(await T.nonce.query("yo"))
+    const salt = arr32_2Bytes((await T.userSalt.query()) || [])
+    const iv = arr32_2Bytes(await T.nonce.query("yo"))
     const key = await hashPwd("heyy", salt)
     const rawKey = await exportRawKey(key)
     const k = await getKey(supabase)
@@ -47,6 +49,12 @@
     // console.log(await decrypt(key2, enc, iv))
 
     // console.log(dec)
+    const { data } = await supabase.from("notes").select("*").limit(1).maybeSingle()
+    if (!data) return
+    console.log(data, "data")
+    const save = await encryptSave(key)(data)
+    const note = await decryptSave(key)(save)
+    console.log(save, note)
   }
 
   onMount(yo)

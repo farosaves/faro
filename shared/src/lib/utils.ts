@@ -208,7 +208,7 @@ export const isCmd = (e: KeyboardEvent) => isMac() ? e.metaKey : e.ctrlKey
 export const getKey = async (sb: SupabaseClient) =>
   (await sb.from("keys").select("*").maybeSingle().then(warnIfError(sbLogger(sb))("getKey"))).data?.key || undefined
 
-export const pick = <T, K extends keyof T>(obj: T, keys: Readonly<K[]>): Pick<T, K> => {
+export const pick = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = {}
   for (const key of keys) {
@@ -216,3 +216,9 @@ export const pick = <T, K extends keyof T>(obj: T, keys: Readonly<K[]>): Pick<T,
   }
   return result
 }
+
+// export const pickFields = <T, K extends keyof T>(obj: T, keys: Readonly<K[]>) => A.map()
+export const pickFields = <T, K extends keyof T>(obj: T) => A.map((k: K) => obj[k])
+
+export const union = <T, U>(obj1: T, obj2: U): T & U => ({ ...obj1, ...obj2 })
+

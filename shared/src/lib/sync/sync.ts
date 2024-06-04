@@ -100,9 +100,11 @@ export class NoteSync {
     const log = funLog2(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
     const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    log("redresh time_latest")(latest)
-    log("#nns")(await this._fetchNewNotes(latest))
-    log("#nss")(await this._fetchNewSources())
+    // log("redresh time_latest")(latest)
+    // log("#nns")
+    await this._fetchNewNotes(latest)
+    // log("#nss")
+    await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
   }
 
@@ -169,7 +171,6 @@ export class NoteSync {
   _xxdo = (patchTup: PatchTup) => {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
-    console.log("patches:", patchTup)
     updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
     this.actionQueue.act(this._user_id)(pTInverted)
     return pTInverted

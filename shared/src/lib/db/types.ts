@@ -151,6 +151,7 @@ export type Database = {
           predicted_topic: string | null
           prioritised: number
           quote: string
+          referer: string | null
           serialized_highlight: string | null
           snippet_uuid: string | null
           source_id: string
@@ -168,6 +169,7 @@ export type Database = {
           predicted_topic?: string | null
           prioritised?: number
           quote: string
+          referer?: string | null
           serialized_highlight?: string | null
           snippet_uuid?: string | null
           source_id: string
@@ -185,6 +187,7 @@ export type Database = {
           predicted_topic?: string | null
           prioritised?: number
           quote?: string
+          referer?: string | null
           serialized_highlight?: string | null
           snippet_uuid?: string | null
           source_id?: string
@@ -270,21 +273,21 @@ export type Database = {
       saves: {
         Row: {
           created_at: string
-          encrypted_data: string
+          encrypted_data: number[]
           id: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          encrypted_data: string
+          encrypted_data: number[]
           id: string
           updated_at?: string
           user_id?: string
         }
         Update: {
           created_at?: string
-          encrypted_data?: string
+          encrypted_data?: number[]
           id?: string
           updated_at?: string
           user_id?: string
