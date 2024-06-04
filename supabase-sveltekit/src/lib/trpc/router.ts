@@ -14,7 +14,6 @@ export const t = initTRPC.context<Context>().create()
 const serviceSb = createClient<Database>(PUBLIC_SUPABASE_URL, SERVICE_ROLE_KEY)
 const warnIfErr = warnIfError(sbLogger(serviceSb))
 const encoder = new TextEncoder()
-const decoder = new TextDecoder()
 
 // unfortunately to have type inference in the extension you need to do it manually
 const tokens = z.object({

@@ -30,7 +30,7 @@
     <a
       class="btn btn-ghost p-2 tooltip tooltip-left"
       href="https://discord.gg/6TvDFPA6bs"
-      data-tip="Join the server!"><IconDiscord font-size={24} /></a>
+      data-tip="Join the server;]"><IconDiscord font-size={24} /></a>
     <a class="btn btn-ghost" href="/contact">Contact</a>
     <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
       <li>
