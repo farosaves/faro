@@ -58,3 +58,6 @@ that's all I got in store for the presentation, faros chrome webstore should now
 It helps you stay on top of online reading - you save sentences from pages to go back to them later.
 Chrome ext for staying on top of online reading - highlight bookmarks / web clipper meets bookmark manager
 Online reading total recall ?
+
+That helps with online reading. Save anything you've read online to get back to it later.
+I guess no [comparison with bookmarks](http://localhost:5173/notes/fe3327f3-7639-49eb-a7ed-13c8122667d9) %% http://farosapp.com/notes/fe3327f3-7639-49eb-a7ed-13c8122667d9 doesnt work???? %%

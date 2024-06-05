@@ -56,6 +56,7 @@
   }
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
+  const perm = { permissions: ["bookmarks"] }
 </script>
 
 <svelte:window
@@ -104,7 +105,7 @@
         on:contextmenu|preventDefault={() => TB.disconnect.query()}>
         <IconRefresh font-size={iconSize} />
       </button>
-      <div class="dropdown dropdown-end">
+      <!-- <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
         <div class="dropdown-content join join-vertical z-20">
           {#each themes as value}
@@ -115,6 +116,38 @@
               on:click={() => setTimeout(updateTheme, 100)}
               >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
           {/each}
+        </div>
+      </div> -->
+      <!-- so far copied 1-1 -->
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
+        <div class="dropdown-content menu z-20 bg-base-200">
+          <li>
+            <button
+              class="btn z-20"
+              on:click={async () => {
+                if (!(await chrome.permissions.contains(perm))) await chrome.permissions.request(perm)
+                if (!(await chrome.permissions.contains(perm))) return // rejected
+                TB.syncBookmarks.query()
+              }}>Sync with bookmarks</button>
+          </li>
+          <li>
+            <details>
+              <summary>Theme</summary>
+              <ul class="join join-vertical">
+                {#each themes as value}
+                  <li>
+                    <button
+                      class="btn join-item z-20 btn-sm"
+                      data-set-theme={value}
+                      data-act-class="ACTIVECLASS"
+                      on:click={() => setTimeout(updateTheme, 100)}
+                      >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+                  </li>
+                {/each}
+              </ul>
+            </details>
+          </li>
         </div>
       </div>
     </div>

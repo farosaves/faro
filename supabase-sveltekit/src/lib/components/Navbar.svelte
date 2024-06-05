@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconDiscord from "~icons/logos/discord-icon"
+  import IconCog from "~icons/jam/cog"
 
   import { replacer, themeStore, updateTheme } from "shared"
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
@@ -11,6 +12,7 @@
     window.lololo = () => get(themeStore)
     themeChange(false)
   })
+  const iconSize = 15
 </script>
 
 <div class="navbar z-30 relative bg-base-100">
