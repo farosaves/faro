@@ -18,7 +18,6 @@ import {
   funLog,
   funWarn,
   sbLogger,
-  funLog2,
   maxDate,
 } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
@@ -28,7 +27,7 @@ import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
-import { xxdoStacks, type PatchTup } from "./xxdo"
+import { getNotesOps, xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
@@ -53,6 +52,8 @@ if (get(noteStore).values.length) // checking the length doesnt matter it's only
 const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
 if (get(stuMapStore).values.length)
   stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+
+const perm = { permissions: ["bookmarks"] }
 
 export class NoteSync {
   sb: SupabaseClient
@@ -97,12 +98,13 @@ export class NoteSync {
 
   refresh = async () => {
     const warn = funWarn(sbLogger(this.sb))
-    const log = funLog2(sbLogger(this.sb))
+    // const log = funLog2(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
     const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
     // log("redresh time_latest")(latest)
     // log("#nns")
     await this._fetchNewNotes(latest)
+    // Bookmarks sync here
     // log("#nss")
     await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
@@ -193,6 +195,9 @@ export class NoteSync {
   stackNAct = async (patchTup: PatchTup) => {
     this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
     await this.actionQueue.act(this._user_id)(patchTup)
+    // Bookmarks update here
+    if (await chrome.permissions.contains(perm)) // chrome.permissions.request(perm)
+      getNotesOps(patchTup.patches, get(this.noteStore))
   }
 
   updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>

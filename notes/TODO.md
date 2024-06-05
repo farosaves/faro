@@ -22,13 +22,20 @@
 - [x] insert that key into the table for my account
 - [x] write a function that retrieves the key for the currently logged in user
 - [x] add a flag in keys I guess, to mark if user agreed to password recovery
-- [x] modify the sync go online function to require this flag
 - [x] add a flag to mark that the key is derived from the password
+- [ ] modify the sync go online function to require this flag
 - [ ] Modify sync go online to accept the password derived key
 
 ## interlude
 - [x] Add a field for the referer.
 - [x] Add to enc
+- [x] see if hash links work on PubMed.
+- [ ] If bookmarks are synced, then replace the previous button with latest new bookmarks.
+	a [push](https://dev.farosapp.com/notes/6b92d44f-cfa6-4257-a97a-34b58c2d65b6) notification when someone made new bookmarks elsewhere?
+
+## bookmark sync
+- [ ] Change the current URL query param with the "**fragment identifier** or **anchor link**."
+
 ## enc2
 - [ ] Decide what to do with the IV.
 - [ ] write an encrypting function that takes a key and converts a note row to a save row.
@@ -42,14 +49,16 @@
 - [ ] Look at the set password page
 
 ## debug
-Performance in the built-in dashboard to win the extension is much better.
-An example of that is starring a save. 
-One possible cause for that could be the layout within which the web app dashboard is presented.
-Removed the flex but hasn't changed much.
+Performance in the built-in dashboard within the extension is much better.
+E.g. starring a save. 
+Because of the layout within which the web app dashboard is presented?
+Removed the flex - hasn't changed much.
 I don't know if they can be batched in any better way.
 ## ideas
 - [ ] Check out Mastodon, Blue Sky and so on for making accounts
 - [ ] reach out to https://skyhook.be / https://west.io
+- [ ] When I'm hovering over a section or title, perhaps I can bring all of starred, archived and neutral ones.
+	It's because I can see one note and not remember that I may have more from the same website in the archive.
 ### support
 - [ ] support prompt if anything not working???
 - [ ] debug turn-on-able?

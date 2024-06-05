@@ -23,6 +23,7 @@
     }
   ],
   "permissions": ["scripting", "storage", "contextMenus", "sidePanel", "commands"],
+  "optional_permissions": ["bookmarks"],
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+D" },

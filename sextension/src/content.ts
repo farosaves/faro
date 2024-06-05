@@ -83,12 +83,11 @@ const subSelection = async (selectedText: string) => {
 }
 
 getHighlightedText.sub(async ([uuid]) => {
+  // for testing I could wrap this in a function and tryna invoke it from playwright
   const selectedText = window.getSelection()?.toString()
   if (!selectedText) return
   // now check if we're in a quote already
   if (await subSelection(selectedText)) return
-
-
   DEBUG && console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
   DEBUG && console.log(rangy.createRange())
   const serialized = wrapSelectedText(uuid)

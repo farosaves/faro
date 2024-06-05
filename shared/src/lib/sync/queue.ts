@@ -1,6 +1,6 @@
 import { ifErr, updateStore, type Src, applyPatches, funLog, warnIfError, sbLogger } from "$lib/utils"
 import type { UUID } from "crypto"
-import { getNotesOps, type PatchTup } from "./xxdo"
+import { getNotesOps, type PatchTup } from "./notes_ops"
 import { either as E, array as A, string as S, tuple as T } from "fp-ts"
 import { type Writable, get } from "svelte/store"
 import { persisted } from "./persisted-store"
