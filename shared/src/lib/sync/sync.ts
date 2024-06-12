@@ -31,6 +31,7 @@ import { getNotesOps, xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
+import { toastNotify } from "$lib/stores"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -182,6 +183,7 @@ export class NoteSync {
     const pT = undo.pop()
     console.log("undo", pT)
     if (!pT) return ({ undo, redo })
+    toastNotify("Undo")
     return ({ undo, redo: [...redo, this._xxdo(pT)] })
   })
 
@@ -189,6 +191,7 @@ export class NoteSync {
     const pT = redo.pop()
     console.log("redo", pT)
     if (!pT) return ({ undo, redo })
+    toastNotify("Redo")
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 

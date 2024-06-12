@@ -61,3 +61,5 @@ Online reading total recall ?
 
 That helps with online reading. Save anything you've read online to get back to it later.
 I guess no [comparison with bookmarks](http://localhost:5173/notes/fe3327f3-7639-49eb-a7ed-13c8122667d9) %% http://farosapp.com/notes/fe3327f3-7639-49eb-a7ed-13c8122667d9 doesnt work???? %%
+
+It's about connecting the dots so you have to connect them yourself but it's easier when you have them in one place.

@@ -6,7 +6,7 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import type { PendingNote, Src } from "shared"
-  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive } from "shared"
+  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive, toastNotify } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -129,6 +129,7 @@
                 if (!(await chrome.permissions.contains(perm))) await chrome.permissions.request(perm)
                 if (!(await chrome.permissions.contains(perm))) return // rejected
                 TB.syncBookmarks.query()
+                toastNotify("Exported to Other Bookmarks/Faros Bookmarks", 5000)
               }}>Sync with bookmarks</button>
           </li>
           <li>
