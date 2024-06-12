@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte"
+  import VirtualList from "svelte-tiny-virtual-list"
   import Note from "../_Note.svelte"
   import Search from "./components/Search.svelte"
   import DomainFilter from "./components/DomainFilter.svelte"
@@ -69,28 +70,36 @@
       <div
         class="flex flex-row flex-wrap border-secondary pb-2 pt-2"
         class:border-b-2={!!$note_groupss[priority].length}>
-        {#each $note_groupss[priority] as [title, note_group]}
-          <div
-            class="border-2 text-center rounded-lg border-neutral flex flex-col"
-            style="max-width: {wRem * note_group.length + 0.25}rem;
-            min-width: {wRem + 0.15}rem">
-            <a target="_blank" href={note_group[0].url} class="text-lg text-wrap flex-grow-0 hover:underline"
-              >{@html title}</a>
-            <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
-              {#each note_group as note (note.id)}
-                <Note
-                  note_data={note}
-                  isOpen={noteOpens[note.id]}
-                  {closeAll}
-                  goto_function={gotoFunction(note)}
-                  syncLike={noteSync}
-                  {wRem}
-                  {allTags}
-                  isHighlighted={note.id == $idHighlighted} />
-              {/each}
-            </div>
+        <!-- {#each $note_groupss[priority] as [title, note_group]} -->
+        <VirtualList itemCount={$note_groupss[priority].length} itemSize={10} height="100%">
+          <div slot="item" let:index>
+            {#each [$note_groupss[priority][index]] as [title, note_group]}
+              <div
+                class="border-2 text-center rounded-lg border-neutral flex flex-col"
+                style="max-width: {wRem * note_group.length + 0.25}rem;
+              min-width: {wRem + 0.15}rem">
+                <a
+                  target="_blank"
+                  href={note_group[0].url}
+                  class="text-lg text-wrap flex-grow-0 hover:underline">{@html title}</a>
+                <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
+                  {#each note_group as note (note.id)}
+                    <Note
+                      note_data={note}
+                      isOpen={noteOpens[note.id]}
+                      {closeAll}
+                      goto_function={gotoFunction(note)}
+                      syncLike={noteSync}
+                      {wRem}
+                      {allTags}
+                      isHighlighted={note.id == $idHighlighted} />
+                  {/each}
+                </div>
+              </div>
+            {/each}
           </div>
-        {/each}
+        </VirtualList>
+        <!-- {/each} -->
       </div>
     {/each}
 
