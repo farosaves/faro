@@ -1,3 +1,4 @@
+- [ ] virtual list
 - [x] identify which columns I want to have encrypted
 	tags, highlights, user_note, snippet_uuid, serialised_highlight, prioritised, quote, url, source_id
 - [x] create a new database table with part of the columns encrypted

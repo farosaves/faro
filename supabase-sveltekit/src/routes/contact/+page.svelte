@@ -13,7 +13,7 @@
     Suggest feature:
     <form method="POST">
       <label class="input input-bordered flex items-center gap-2">
-        <input name="message" class="grow" placeholder="e.g. firefox pls" />
+        <inp ut name="message" class="grow" placeholder="e.g. firefox pls" />
         <button type="submit"><IconWrench /></button>
       </label>
     </form>
