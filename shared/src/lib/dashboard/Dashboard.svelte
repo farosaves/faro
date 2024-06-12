@@ -71,7 +71,7 @@
         class="flex flex-row flex-wrap border-secondary pb-2 pt-2"
         class:border-b-2={!!$note_groupss[priority].length}>
         <!-- {#each $note_groupss[priority] as [title, note_group]} -->
-        <VirtualList itemCount={$note_groupss[priority].length} itemSize={10} height="100%">
+        <VirtualList itemCount={$note_groupss[priority].length} itemSize={10} height="600">
           <div slot="item" let:index>
             {#each [$note_groupss[priority][index]] as [title, note_group]}
               <div
