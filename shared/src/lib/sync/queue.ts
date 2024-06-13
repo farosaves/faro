@@ -8,6 +8,7 @@ import * as devalue from "devalue"
 import type { SupabaseClient } from "$lib/db/typeExtras"
 import type { Notes } from "$lib/db/types"
 import { flow, pipe } from "fp-ts/lib/function"
+import type { STUMap } from "./sync"
 
 
 export type Action = E.Either<Src & { id: UUID }, PatchTup>
@@ -23,13 +24,15 @@ export class ActionQueue {
   noteStore: Writable<Map<string, Notes>>
   warnIfErr: (where?: string) => <T extends { error: unknown }>(r: T) => T
   log: (where?: string, from?: string) => <T>(n: T) => T
-  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>) {
+  stuMapStore: Writable<STUMap>
+  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>, stuMapStore: Writable<STUMap>) {
     this.queueStore = persisted("actionQueue", [], { serializer: devalue })
     this.sb = sb
     this.online = online
     this.noteStore = noteStore
     this.warnIfErr = warnIfError(sbLogger(sb))
     this.log = funLog2(sbLogger(sb))
+    this.stuMapStore = stuMapStore
   }
 
   goOnline = async (user_id: UUID) => {
@@ -64,9 +67,9 @@ export class ActionQueue {
       note.user_id = user_id
 
     console.log("notesOps: ", notesOps)
-    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
-
-    const op = notesOps.map(x => x.op)[0]
+    const ops = notesOps.map(x => x.op)
+    if (A.uniq(S.Eq)(ops).length > 1) throw new Error("nore than 1 operation in action")
+    const [op] = ops
     let error: unknown
     if (op == "upsert")
       error = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error
@@ -74,6 +77,13 @@ export class ActionQueue {
       error = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error
     else throw new Error("unreachable")
     this.log("push action error")(error)
+    // TODO should I check for error here? or push source again and retry...
+    if (error) // remove src from stumapstore just in case
+      this.stuMapStore.update((m) => { // superhacky
+        m.delete(notesOps[0].note.source_id)
+        return m
+      })
+
     return error == null
   }
 

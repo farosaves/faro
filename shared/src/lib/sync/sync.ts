@@ -38,7 +38,7 @@ const validateNs = z.map(z.string(), notesRowSchema).parse
 export type NoteStoreR = Readable<ReturnType<typeof validateNs>>
 const allNotesR: ReturnType<typeof validateNs> = new Map()
 
-type STUMap = Map<UUID, Src>
+export type STUMap = Map<UUID, Src>
 const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.string(), domain: z.string() })).parse(o) as STUMap
 export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
@@ -78,7 +78,7 @@ export class NoteSync {
 
     this.xxdoStacks = xxdoStacks(storage)
 
-    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore)
+    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore, this.stuMapStore)
 
     this._user_id = user_id as UUID | undefined
     this._checkOnline = checkOnline
