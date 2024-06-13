@@ -1,4 +1,4 @@
-import { ifErr, updateStore, type Src, applyPatches, funLog, warnIfError, sbLogger } from "$lib/utils"
+import { ifErr, updateStore, type Src, applyPatches, warnIfError, sbLogger, funLog2 } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./notes_ops"
 import { either as E, array as A, string as S, tuple as T } from "fp-ts"
@@ -22,18 +22,19 @@ export class ActionQueue {
   online: () => boolean
   noteStore: Writable<Map<string, Notes>>
   warnIfErr: (where?: string) => <T extends { error: unknown }>(r: T) => T
+  log: (where?: string, from?: string) => <T>(n: T) => T
   constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>) {
     this.queueStore = persisted("actionQueue", [], { serializer: devalue })
     this.sb = sb
     this.online = online
     this.noteStore = noteStore
     this.warnIfErr = warnIfError(sbLogger(sb))
-    // this.stuMapStore = stuMapStore
+    this.log = funLog2(sbLogger(sb))
   }
 
   goOnline = async (user_id: UUID) => {
     const successes = []
-    const { data } = (await this.sb.from("keys").select("*").maybeSingle())
+    // const { data } = (await this.sb.from("keys").select("*").maybeSingle())
     // if (data?.using_stored || data?.using_derived) // if hasn't deicded don't go online
     for (const action of get(this.queueStore)) {
     //   await match(action)  // if ever more than 2 e.g. tabs
@@ -49,7 +50,7 @@ export class ActionQueue {
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
     updateStore(this.noteStore)(applyPatches(patchTup.patches))
-    funLog("pushAction")("puuushing") // can do funWarn IF I do encrypted here
+    this.log("pushAction")("puuushing") // can do funWarn IF I do encrypted here
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) =>
         f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
@@ -66,14 +67,14 @@ export class ActionQueue {
     if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
 
     const op = notesOps.map(x => x.op)[0]
-    let success: boolean
+    let error: unknown
     if (op == "upsert")
-      success = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error == null
+      error = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error
     else if (op == "delete")
-      success = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error == null
+      error = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error
     else throw new Error("unreachable")
-    funLog("pushActionSuccess")(success)
-    return success
+    this.log("push action error")(error)
+    return error == null
   }
 
   act = (user_id: UUID | undefined) => async (patchTup: PatchTup) => {
@@ -82,15 +83,12 @@ export class ActionQueue {
   }
 
   pushActionSrc = async (src: Src & { id: UUID }) => {
-    // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
     const { id, title, domain } = src
-    // TODO HERE
-    // check if already was added by prolly someone else
     const { data } = await this.sb.from("sources").select().eq("id", id).maybeSingle().then(this.warnIfErr("check for sources"))
+    this.log("pushSrc pre-check")(data)
     if (data?.domain == src.domain && data?.title == title) return true
-    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.warnIfErr("insert sources"))
+    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.log("insert sources"))
     const success = (error == null)
-    console.log("pushed source", success)
     if (success) return success
     throw new Error("neither present nor can push")
   }
