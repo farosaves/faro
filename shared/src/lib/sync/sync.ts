@@ -158,7 +158,6 @@ export class NoteSync {
     return id
   }
 
-  // chainN(get(this.invStuMapStore).get), DOESNT WORK
   getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
   newNote = async (note: PendingNote & { tags: string[] }, src: Src) => {

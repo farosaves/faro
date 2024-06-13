@@ -1,4 +1,16 @@
+## I didn't have a complete refresh.
+So when I had locally a source not in the db - it failed
+	All I need for full refresh is delete all local data 
+- [ ] Do a button for a complete refresh.
+- [ ] investigate why on a failed push it still appeared locally
+	Well, it should. The question is why was it removed from the queue?
+
 - [ ] virtual list
+	- [x] first test
+	- [ ] check if performance is due to this - i.e on a loaded vs emptyish account
+	- [ ] if yes - consider going month by month 
+	- [ ] if not - still, just not that urgent
+	- [ ] 
 - [x] identify which columns I want to have encrypted
 	tags, highlights, user_note, snippet_uuid, serialised_highlight, prioritised, quote, url, source_id
 - [x] create a new database table with part of the columns encrypted
