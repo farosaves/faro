@@ -99,8 +99,7 @@ export class ActionQueue {
     if (data?.domain == src.domain && data?.title == title) return true
     const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.log("insert sources"))
     const success = (error == null)
-    if (success) return success
-    throw new Error("neither present nor can push")
+    return success
   }
 
   actSrc = async (src: Src & { id: UUID }) => {
