@@ -1,9 +1,8 @@
-export function clickOutside(node: Node) {
+export function clickOutside(node: Node, cb: () => void) {
   const handleClick = (event: Event) => {
     // @ts-expect-error
     if (node && !node.contains(event.target) && !event.defaultPrevented) {
-      // @ts-expect-error
-      node.dispatchEvent(new CustomEvent("click_outside", node))
+      cb()
     }
   }
 
