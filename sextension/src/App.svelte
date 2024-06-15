@@ -102,7 +102,8 @@
         class="tooltip tooltip-left"
         data-tip={"Logged in as: \n" + ($email || "...not logged in")}
         on:click={() => TB.refresh.query()}
-        on:contextmenu|preventDefault={() => TB.disconnect.query()}>
+        on:dblclick={() => setTimeout(TB.disconnect.query, 1000)}
+        on:contextmenu|preventDefault={() => TB.hardReset.query()}>
         <IconRefresh font-size={iconSize} />
       </button>
       <!-- <div class="dropdown dropdown-end">

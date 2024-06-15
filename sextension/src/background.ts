@@ -84,6 +84,7 @@ const appRouter = (() => {
       ({ input }) => chrome.tabs.update({ url: chrome.runtime.getURL("prompt.html") + "?id=" + input })),
     refresh: t.procedure.query(() => refresh()),
     disconnect: t.procedure.query(() => refresh(false)),
+    hardReset: t.procedure.query(() => note_sync.hardReset()),
     // prompt
     requestedNoPrompt: t.procedure.query(() => get(wantsNoPrompt)),
     toggleNoPrompt: t.procedure.mutation(() => wantsNoPrompt.update(x => !x)),
@@ -167,10 +168,10 @@ const refreshOnline = async () => {
   return s
 }
 
-chrome.runtime.onMessageExternal.addListener(
-  function (request, sender, sendResponse) {
+// chrome.runtime.onMessageExternal.addListener(
+//   function (request, sender, sendResponse) {
 
-  })
+//   })
 
 
 // let lastSess: O.Option<Session> = O.none
