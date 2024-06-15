@@ -143,8 +143,7 @@ const onLoad = () => sem.use(async () => {
   funLog("successes")(successes)
   toDeserialise = pipe(toDeserialise, // keep unsuccessful
     A.zip(successes), A.filter(([_, success]) => !success), A.map(([x, _y]) => x))
-  const oldGoto = new URLSearchParams(window.location.search).get("highlightUuid")
-  const goto = oldGoto || (window.location.hash.charAt(1) == "_" ? window.location.hash.slice(2) : undefined)
+  const goto = window.location.hash.charAt(1) == "_" ? window.location.hash.slice(2) : undefined
   await sleep(50)
   DEBUG && console.log("goto", goto, window.location.hash)
   try {
