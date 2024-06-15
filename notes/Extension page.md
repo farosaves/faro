@@ -17,7 +17,7 @@ Save:
 
 When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
 
-Faros is an extension designed exactly to make revisiting the easiest possible.
+Faros is an extension designed to make revisiting the easiest possible.
 You save both the URL and a highlighted snippet from the page.
 So you can:
 ➣ remember better what the page is about
