@@ -8,7 +8,6 @@ import * as devalue from "devalue"
 import type { SupabaseClient } from "$lib/db/typeExtras"
 import type { Notes } from "$lib/db/types"
 import { flow, pipe } from "fp-ts/lib/function"
-import type { STUMap } from "./sync"
 
 
 export type Action = E.Either<Src & { id: UUID }, PatchTup>
@@ -24,15 +23,15 @@ export class ActionQueue {
   noteStore: Writable<Map<string, Notes>>
   warnIfErr: (where?: string) => <T extends { error: unknown }>(r: T) => T
   log: (where?: string, from?: string) => <T>(n: T) => T
-  stuMapStore: Writable<STUMap>
-  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>, stuMapStore: Writable<STUMap>) {
+  stuMapStoreDelete: (by: UUID) => void // currently not in use
+  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>, stuMapStoreDelete: (by: UUID) => void) {
     this.queueStore = persisted("actionQueue", [], { serializer: devalue })
     this.sb = sb
     this.online = online
     this.noteStore = noteStore
     this.warnIfErr = warnIfError(sbLogger(sb))
     this.log = funLog2(sbLogger(sb))
-    this.stuMapStore = stuMapStore
+    this.stuMapStoreDelete = stuMapStoreDelete
   }
 
   goOnline = async (user_id: UUID) => {
@@ -79,10 +78,7 @@ export class ActionQueue {
     this.log("push action error")(error)
     // TODO should I check for error here? or push source again and retry...
     if (error) // remove src from stumapstore just in case
-      this.stuMapStore.update((m) => { // superhacky
-        m.delete(notesOps[0].note.source_id)
-        return m
-      })
+      this.stuMapStoreDelete(notesOps[0].note.source_id)
 
     return error == null
   }

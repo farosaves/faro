@@ -32,6 +32,7 @@ import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
 import { toastNotify } from "$lib/stores"
+import { noop } from "rxjs"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -78,7 +79,11 @@ export class NoteSync {
 
     this.xxdoStacks = xxdoStacks(storage)
 
-    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore, this.stuMapStore)
+    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore, noop)
+    // u => this.stuMapStore.update((m) => { // superhacky
+    //   m.delete(u)
+    //   return m
+    // })
 
     this._user_id = user_id as UUID | undefined
     this._checkOnline = checkOnline
@@ -109,6 +114,13 @@ export class NoteSync {
     // log("#nss")
     await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
+  }
+
+  hardReset = () => {
+    this.noteStore.set(new Map())
+    this.stuMapStore.set(new Map())
+    this.actionQueue.queueStore.set([])
+    return this.refresh()
   }
 
 

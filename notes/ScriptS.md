@@ -6,7 +6,7 @@ Instead of bookmarking a whole page, I first ask myself - why do I care about th
 So here it was about the centipede with developed eyes.
 So I highlight and save this sentence for reference.
 All saves go to my dashboard, which looks like this:
-So imagine if I had a bookmark titled "Scutigera coleoptrata", I'd have no clue what it is in a week - here with this tagline I'll remember what it was in a month. 
+So imagine if I had a bookmark titled "Scutigera coleoptrata"- a week later - I'd have no clue what that is - here with this tagline I'll remember what it was in a month. 
 
 
 ## tut

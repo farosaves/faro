@@ -1,9 +1,6 @@
-## I didn't have a complete refresh.
-So when I had locally a source not in the db - it failed
-	All I need for full refresh is delete all local data 
+
 - [ ] Do a button for a complete refresh.
-- [ ] investigate why on a failed push it still appeared locally
-	Well, it should. The question is why was it removed from the queue?
+- [ ] Think more about SEO if I can just write more stuff 
 
 - [ ] virtual list
 	- [x] first test
