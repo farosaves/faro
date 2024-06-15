@@ -203,7 +203,7 @@ export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry"
 }
 
 export const isMac = () => navigator.userAgent.includes("Mac OS X")
-export const isCmd = (e: KeyboardEvent) => isMac() ? e.metaKey : e.ctrlKey
+export const isCmd = (e: KeyboardEvent | MouseEvent) => isMac() ? e.metaKey : e.ctrlKey
 
 export const getKey = async (sb: SupabaseClient) =>
   (await sb.from("keys").select("*").maybeSingle().then(warnIfError(sbLogger(sb))("getKey"))).data?.key || undefined
