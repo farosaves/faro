@@ -51,15 +51,15 @@
       return s
     })
   const toggle = groupize(_toggleTag, _toggleTagGroup)
-  const _onDblClick = (tag: string) => () => {
+  const _makeOnly = (tag: string) => () => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTag(tag)
   }
-  const _onDblClickGroup = (tags: string[]) => () => {
+  const _makeOnlyGroup = (tags: string[]) => () => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
   }
-  const onDbl = groupize(_onDblClick, _onDblClickGroup)
+  const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
   let myModal: HTMLDialogElement | null = null
   let currTag: string
@@ -115,9 +115,12 @@
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={`${$untagged} untagged`}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
-        on:click={() => _toggleTag("")}
-        on:dblclick={_onDblClick("")}
+        on:click={(e) => {
+          e.shiftKey
+          _makeOnly("")
+        }}
         class:btn-outline={$exclTagSet.has("")}>
+        <!-- on:dblclick={_makeOnly("")} -->
         <IconTagOff />
       </button>
     </div>
@@ -130,7 +133,7 @@
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => toggle(tgc)}
         on:contextmenu|preventDefault={onContextMenu(tag)}
-        on:dblclick={onDbl(tgc)}
+        on:dblclick={makeOnly(tgc)}
         class:btn-outline={$excl(tgc)}
         >{tag}
       </button>
