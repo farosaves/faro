@@ -3,6 +3,7 @@ import type { NotesOps } from "./notes_ops"
 import { array as A, option as O, eq, string as S } from "fp-ts"
 import type { NoteEx } from "$lib/db/typeExtras"
 import { pipe } from "fp-ts/lib/function"
+import { note2Url } from "$lib/dashboard/utils"
 
 export const f = (t: NotesOps) => 3
 export const dontTrigger = writable(false)
@@ -30,7 +31,7 @@ const subTree = async (id: string) => await chrome.bookmarks.getSubTree("2") as 
 
 type MyBookmark = { title: string, url: string }
 const MBEq = eq.contramap((b: MyBookmark) => b.title + ";;" + b.url)(S.Eq)
-const note2Bookmark = (n: NoteEx): MyBookmark => ({ url: n.url, title: n.sources.title + " " + n.quote })
+const note2Bookmark = (n: NoteEx): MyBookmark => ({ url: note2Url(n).href, title: n.sources.title + " " + n.quote })
 const unsafeBookmark2Id = (f: Folder) => (b: MyBookmark): string =>
   f.children.filter(c => c.title == b.title).filter(c => c.url == b.url)[0].id
 

@@ -1,4 +1,4 @@
-
+- [ ] banner
 - [ ] Do a button for a complete refresh.
 - [ ] Think more about SEO if I can just write more stuff 
 

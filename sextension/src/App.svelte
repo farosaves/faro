@@ -102,8 +102,8 @@
         class="tooltip tooltip-left"
         data-tip={"Logged in as: \n" + ($email || "...not logged in")}
         on:click={() => TB.refresh.query()}
-        on:dblclick={() => setTimeout(TB.disconnect.query, 1000)}
-        on:contextmenu|preventDefault={() => TB.hardReset.query()}>
+        on:contextmenu|preventDefault={() => TB.disconnect.query()}>
+        <!-- on:dblclick={() => setTimeout(TB.disconnect.query, 1000)} -->
         <IconRefresh font-size={iconSize} />
       </button>
       <!-- <div class="dropdown dropdown-end">
@@ -149,6 +149,14 @@
                 {/each}
               </ul>
             </details>
+          </li>
+          <li>
+            <button
+              class="btn z-20 text-error"
+              on:click={async () => {
+                await TB.hardReset.query()
+                toastNotify("Local data deleted", 5000)
+              }}>Delete local data</button>
           </li>
         </div>
       </div>
