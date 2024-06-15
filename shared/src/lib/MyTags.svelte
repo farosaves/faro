@@ -9,11 +9,9 @@
   let id: string
 </script>
 
-<div
-  tabindex="-1"
-  class="border-t border-primary w-full"
-  use:clickOutside
-  on:click_outside={() => (open = false)}>
+<!-- @ts-ignore -->
+<div tabindex="-1" class="border-t border-primary w-full" use:clickOutside={() => (open = false)}>
+  <!-- on:click_outside={() => (open = false)} -->
   <button
     class="bg-base-100 w-full min-h-6 flex justify-around"
     data-tip="Add tags here"

@@ -16,26 +16,30 @@ import {
   uuidv5,
   fillInTitleDomain,
   funLog,
+  funWarn,
+  sbLogger,
   maxDate,
 } from "$lib/utils"
-import { option as O, string as S, map as M } from "fp-ts"
+import { option as O, string as S, map as M, array as A } from "fp-ts"
 
 import { flow, pipe } from "fp-ts/lib/function"
 import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
-import { xxdoStacks, type PatchTup } from "./xxdo"
+import { getNotesOps, xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
+import { toastNotify } from "$lib/stores"
+import { noop } from "rxjs"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
 export type NoteStoreR = Readable<ReturnType<typeof validateNs>>
 const allNotesR: ReturnType<typeof validateNs> = new Map()
 
-type STUMap = Map<UUID, Src>
+export type STUMap = Map<UUID, Src>
 const validateSTUMap = (o: unknown) => z.map(z.string(), z.object({ title: z.string(), domain: z.string() })).parse(o) as STUMap
 export type STUMapStoreR = Readable<STUMap>
 const stuMap: STUMap = new Map()
@@ -50,6 +54,8 @@ if (get(noteStore).values.length) // checking the length doesnt matter it's only
 const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, storage })
 if (get(stuMapStore).values.length)
   stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
+
+const perm = { permissions: ["bookmarks"] }
 
 export class NoteSync {
   sb: SupabaseClient
@@ -73,7 +79,11 @@ export class NoteSync {
 
     this.xxdoStacks = xxdoStacks(storage)
 
-    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore)
+    this.actionQueue = new ActionQueue(this.sb, this.online, this.noteStore, noop)
+    // u => this.stuMapStore.update((m) => { // superhacky
+    //   m.delete(u)
+    //   return m
+    // })
 
     this._user_id = user_id as UUID | undefined
     this._checkOnline = checkOnline
@@ -89,32 +99,43 @@ export class NoteSync {
     if (user_id === undefined || !online) return
     this._sub(user_id)
     this.noteStore.update(M.filter(n => n.user_id == user_id))
-    // do actions from queue
-    // if (oldUser_id !== user_id) { // added this but probably redundant
-    // }
+    this.refresh()
+  }
+
+  refresh = async () => {
+    const warn = funWarn(sbLogger(this.sb))
+    // const log = funLog2(sbLogger(this.sb))
+    if (this._user_id === undefined) return warn("sync refresh")("undefined user")
     const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    const newNoteSrcIds = (await this._fetchNewNotes(latest)).map(nn => nn.source_id)
-    await this._fetchNewSources(newNoteSrcIds)
-    await this.actionQueue.goOnline(user_id as UUID)
+    // log("redresh time_latest")(latest)
+    // log("#nns")
+    await this._fetchNewNotes(latest)
+    // Bookmarks sync here
+    // log("#nss")
+    await this._fetchNewSources()
+    await this.actionQueue.goOnline(this._user_id as UUID)
+  }
+
+  hardReset = () => {
+    this.noteStore.set(new Map())
+    this.stuMapStore.set(new Map())
+    this.actionQueue.queueStore.set([])
+    return this.refresh()
   }
 
 
-  _fetchNewSources = async (newNoteIds: string[]) => {
-    if (this._user_id == undefined) return
-    // const nss = (await this.sb.from("sources").select("*, notes!inner(user_id, updated_at)").eq("notes.user_id", this._user_id).gte("notes.updated_at", latestTs)).data || []
-    const nss = (await this.sb.from("sources").select("*").in("id", newNoteIds)).data || []
+  _fetchNewSources = async () => {
+    if (this._user_id == undefined) return 0
+    const missingIds = pipe(Array.from(get(this.noteStore).values()),
+      A.map(x => x.source_id),
+      A.difference(S.Eq)(Array.from(get(this.stuMapStore).keys())),
+    )
+    const nss = (await this.sb.from("sources").select("*").in("id", missingIds)).data || []
     this.stuMapStore.update((ss) => {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
-    })// set())
-
-    // unwrapTo(
-    //   pipe( // .gt("notes.updated_at", this.latest())
-    //     O.fromNullable,
-    //     funLog("refreshed_sources"),
-    //     O.map(data => new Map(data.map(n => [n.id as UUID, fillInTitleDomain(n)]))),
-    //   ),
-    // ),
+    })
+    return nss.length
   }
 
   _filter4Present = async (user_id: string, lastDate: string) => {
@@ -129,15 +150,14 @@ export class NoteSync {
   }
 
   _fetchNewNotes = async (latestTs: string) => {
-    if (this._user_id == undefined) return []
+    if (this._user_id == undefined) return 0
     await this._filter4Present(this._user_id, latestTs)
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
     this.noteStore.update((ns) => {
       nns.forEach(nn => ns.set(nn.id, nn))
       return ns
     })
-    // return updated ones
-    return nns
+    return nns.length
   }
 
 
@@ -150,7 +170,6 @@ export class NoteSync {
     return id
   }
 
-  // chainN(get(this.invStuMapStore).get), DOESNT WORK
   getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
   newNote = async (note: PendingNote & { tags: string[] }, src: Src) => {
@@ -166,7 +185,6 @@ export class NoteSync {
   _xxdo = (patchTup: PatchTup) => {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
-    console.log("patches:", patchTup)
     updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
     this.actionQueue.act(this._user_id)(pTInverted)
     return pTInverted
@@ -176,6 +194,7 @@ export class NoteSync {
     const pT = undo.pop()
     console.log("undo", pT)
     if (!pT) return ({ undo, redo })
+    toastNotify("Undo")
     return ({ undo, redo: [...redo, this._xxdo(pT)] })
   })
 
@@ -183,12 +202,16 @@ export class NoteSync {
     const pT = redo.pop()
     console.log("redo", pT)
     if (!pT) return ({ undo, redo })
+    toastNotify("Redo")
     return ({ redo, undo: [...undo, this._xxdo(pT)] })
   })
 
   stackNAct = async (patchTup: PatchTup) => {
     this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
     await this.actionQueue.act(this._user_id)(patchTup)
+    // Bookmarks update here
+    if (await chrome.permissions.contains(perm)) // chrome.permissions.request(perm)
+      getNotesOps(patchTup.patches, get(this.noteStore))
   }
 
   updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>
@@ -243,7 +266,7 @@ export class NoteSync {
               ns.set(nn.id, nn)
             })
             if (!(get(this.stuMapStore).has(nn.source_id)))
-              this._fetchNewSources([nn.source_id])
+              this._fetchNewSources()
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
           } else this._filter4Present(user_id, new Date().toISOString())
         },

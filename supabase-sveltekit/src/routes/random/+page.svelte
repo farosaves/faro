@@ -1,57 +1,60 @@
 <script lang="ts">
   import { trpc } from "$lib/trpc/client"
   import { page } from "$app/stores"
-  const { subtle } = crypto
   import { onMount } from "svelte"
-  const encoder = new TextEncoder()
-  const decoder = new TextDecoder()
+  import {
+    arr32_2Bytes,
+    decrypt,
+    decryptSave,
+    encrypt,
+    encryptSave,
+    exportRawKey,
+    getKey,
+    hashPwd,
+    importRawKey,
+    sbLogger,
+    warnIfError,
+  } from "shared"
+  export let data
+  const { supabase } = data
+
   const T = trpc($page)
-  const importPassword = (password: string) =>
-    subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"])
-
-  const hashPwd = (password: string, salt: Uint8Array) =>
-    importPassword(password).then((k) =>
-      subtle.deriveKey(
-        { name: "PBKDF2", hash: "SHA-256", salt, iterations: 500000 },
-        k,
-        { name: "AES-GCM", length: 256 },
-        true,
-        ["encrypt", "decrypt"],
-      ),
-    )
-
-  const yoo = async (ts: string) => (await subtle.digest("SHA-256", encoder.encode(ts))).slice(0, 16)
-
-  const iv = crypto.getRandomValues(new Uint8Array(128 / 8))
-
-  const encrypt = async (key: CryptoKey, plaintext: string, ts: string) =>
-    subtle.encrypt(
-      { name: "AES-GCM", iv: encoder.encode(await T.nonce.query("hi")) },
-      key,
-      encoder.encode(plaintext),
-    )
-  const decrypt = async (key: CryptoKey, cyphertext: ArrayBuffer) =>
-    decoder.decode(
-      await subtle.decrypt(
-        { name: "AES-GCM", iv: encoder.encode(await T.nonce.query("hi")) },
-        key,
-        cyphertext,
-      ),
-    )
-
   const yo = async () => {
     console.log(umami.track)
-    const salt = crypto.getRandomValues(new Uint8Array(128 / 8))
-    // const iv =
+    const salt = arr32_2Bytes((await T.userSalt.query()) || [])
+    const iv = arr32_2Bytes(await T.nonce.query("yo"))
     const key = await hashPwd("heyy", salt)
+    const rawKey = await exportRawKey(key)
+    const k = await getKey(supabase)
+    console.log(k)
+    if (!k) {
+      await supabase
+        .from("keys")
+        .insert({ key: rawKey })
+        .then(warnIfError(sbLogger(supabase))("key insert"))
+      return
+    }
+
+    const key2 = await importRawKey(k)
+    console.log("raws", rawKey, await exportRawKey(key2))
+
     const enc = await encrypt(
       key,
       "this is some longer message. It's gonna be like 3 sentence long. This is the third. Now let's Try a fourth one, and another one still",
-      "henlo",
+      iv,
     )
-    console.log(enc)
-    const dec = await decrypt(key, enc)
-    console.log(dec)
+
+    console.log(enc, "enc")
+    console.log(await decrypt(key2, enc, iv))
+    // console.log(await decrypt(key2, enc, iv))
+
+    // console.log(dec)
+    const { data } = await supabase.from("notes").select("*").limit(1).maybeSingle()
+    if (!data) return
+    console.log(data, "data")
+    const save = await encryptSave(key)(data)
+    const note = await decryptSave(key)(save)
+    console.log(save, note)
   }
 
   onMount(yo)

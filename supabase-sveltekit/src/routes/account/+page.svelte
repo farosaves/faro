@@ -52,7 +52,7 @@
       bind:this={profileForm}>
       <label class="input-group">
         <span>Email</span>
-        <input type="text" value={session.user.email} class="w-full input input-bordered" disabled />
+        <input type="email" value={session.user.email} class="w-full input input-bordered" disabled />
       </label>
 
       <!-- <label class="input-group">

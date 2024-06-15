@@ -9,6 +9,7 @@
     "lz-string": "^1.5.0",
     "nodemon": "^3.1.0",
     "npm-watch": "^0.11.0",
+    "pdfjs-serverless": "^0.4.2",
     "playwright": "^1.42.1",
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.2",

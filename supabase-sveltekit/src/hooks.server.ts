@@ -1,5 +1,5 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
-import { funLog, sleep, type Database, type SupabaseClient } from "shared"
+import { sleep, type Database, type SupabaseClient } from "shared"
 import { createContext } from "$lib/trpc/context"
 import { router } from "$lib/trpc/router"
 import { createServerClient } from "@supabase/ssr"
@@ -107,10 +107,6 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (event.url.pathname.endsWith(".mjs") || event.url.pathname.endsWith(".js"))
     response.headers.set("Content-Type", "application/javascript")
 
-  funLog("getset")(response.headers.getSetCookie())
-  funLog("cookie")((response.headers.get("Cookie") || ""))
-  if (failedSets.length) funLog("failedSets")(failedSets)
-  if (failedRemoves.length) funLog("failedRemoves")(failedRemoves)
   // response.headers.set("Set-Cookie", xx)
 
 

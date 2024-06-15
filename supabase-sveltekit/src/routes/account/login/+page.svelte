@@ -1,31 +1,27 @@
 <script lang="ts">
-  import { ThemeSupa, type ViewType } from "@supabase/auth-ui-shared"
+  import { ThemeSupa } from "@supabase/auth-ui-shared"
   import { Auth } from "@supabase/auth-ui-svelte"
   export let data
-  import Radio from "$lib/Radio.svelte"
   import { onMount } from "svelte"
   import { goto } from "$app/navigation"
-  let view: ViewType = "sign_in"
-  let view_options = ["sign_in", "sign_up", "magic_link", "forgotten_password"]
-  import { DEBUG, sessStore } from "shared"
+  import { sessStore } from "shared"
   import { option as O } from "fp-ts"
-  import type { SupabaseClient } from "@supabase/supabase-js"
   import { page } from "$app/stores"
   import { get } from "svelte/store"
 
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
-        DEBUG && console.log(session)
         if (session) $sessStore = O.some(session)
-        setTimeout(() => {
-          DEBUG && console.log("url", $page.url.pathname) // omfg $page binds immediately, and get(page) on call
-          get(page).url.pathname == "/account/login" && goto("/account?from=login")
-        }, 50)
+        setTimeout(() => /\/account\//.test(get(page).url.pathname) && goto("/account?from=login"), 50)
       }
     }),
   )
-  $: supabaseClient = data.supabase as unknown as SupabaseClient
+  $: supabaseClient = data.supabase
+  // if (ThemeSupa.default.colors) {
+  //   ThemeSupa.default.colors.brand = ""
+  //   ThemeSupa.default.colors.brandAccent = ""
+  // }
 </script>
 
 <svelte:head>
@@ -33,16 +29,16 @@
 </svelte:head>
 
 <div class="flex justify-center">
-  <div class="w-64">
-    <!-- border-dotted border-gray-500 border-2 -->
+  <div class="w-64 my-4">
     <Auth
       {supabaseClient}
-      redirectTo={`${data.url}/auth/callback?view=${view}`}
+      redirectTo={`${data.url}/auth/callback?view=sign_in`}
       showLinks={false}
       providers={["google", "github"]}
-      view={view == "sign_up" ? "magic_link" : view}
+      view="sign_in"
       appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
-    <!-- <Auth supabaseClient={data.supabase} {view} {providers} /> -->
-    <Radio options={view_options} bind:userSelected={view} />
+    <div class="divider"></div>
+    <a href="/account/login/sign-up" class="underline">New user? Sign Up</a><br />
+    <a href="/account/login/forgotten-password" class="underline">Forgotten password?</a>
   </div>
 </div>

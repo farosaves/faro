@@ -4,7 +4,7 @@
   import { goto, invalidate } from "$app/navigation"
   import { onMount } from "svelte"
   import Navbar from "$lib/components/Navbar.svelte"
-  import { API_ADDRESS, DEBUG } from "shared"
+  import { API_ADDRESS, DEBUG, funErr, sbLogger } from "shared"
 
   export let data
 
@@ -13,9 +13,6 @@
 
   onMount(() => {
     supabase.auth.onAuthStateChange((event, _session) => {
-      // if (_session?.expires_at !== session?.expires_at) {
-      //   invalidate("supabase:auth")
-      // }
       if (event === "SIGNED_OUT")
         setTimeout(() => {
           goto("/")
@@ -35,12 +32,18 @@
       data-website-id="d6ea5b3a-1a06-4012-8968-336951400cb0"></script>
   {/if}
 </svelte:head>
+<svelte:window
+  on:error={(e) => {
+    if (DEBUG) return
+    e.preventDefault()
+    funErr(sbLogger(supabase))("error interept")(e)
+  }} />
 
-<div class="min-h-screen flex flex-col bg-base-300 text-base-content">
+<div class="min-h-screen bg-base-300 text-base-content">
   <Navbar />
-  <div class="flex-grow">
-    <slot />
-  </div>
+  <!-- <div class="flex-grow"> -->
+  <slot />
+  <!-- </div> -->
 
   <footer class="footer place-content-between p-4 bg-base-100 text-base-content">
     <!-- <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">yo</nav> -->

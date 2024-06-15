@@ -1,6 +1,6 @@
-import { ifErr, updateStore, type Src, applyPatches, funLog, warnIfError, sbLogger } from "$lib/utils"
+import { ifErr, updateStore, type Src, applyPatches, warnIfError, sbLogger, funLog2 } from "$lib/utils"
 import type { UUID } from "crypto"
-import { getNotesOps, type PatchTup } from "./xxdo"
+import { getNotesOps, type PatchTup } from "./notes_ops"
 import { either as E, array as A, string as S, tuple as T } from "fp-ts"
 import { type Writable, get } from "svelte/store"
 import { persisted } from "./persisted-store"
@@ -22,23 +22,28 @@ export class ActionQueue {
   online: () => boolean
   noteStore: Writable<Map<string, Notes>>
   warnIfErr: (where?: string) => <T extends { error: unknown }>(r: T) => T
-  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>) {
+  log: (where?: string, from?: string) => <T>(n: T) => T
+  stuMapStoreDelete: (by: UUID) => void // currently not in use
+  constructor(sb: SupabaseClient, online: () => boolean, noteStore: Writable<Map<string, Notes>>, stuMapStoreDelete: (by: UUID) => void) {
     this.queueStore = persisted("actionQueue", [], { serializer: devalue })
     this.sb = sb
     this.online = online
     this.noteStore = noteStore
     this.warnIfErr = warnIfError(sbLogger(sb))
-    // this.stuMapStore = stuMapStore
+    this.log = funLog2(sbLogger(sb))
+    this.stuMapStoreDelete = stuMapStoreDelete
   }
 
   goOnline = async (user_id: UUID) => {
     const successes = []
+    // const { data } = (await this.sb.from("keys").select("*").maybeSingle())
+    // if (data?.using_stored || data?.using_derived) // if hasn't deicded don't go online
     for (const action of get(this.queueStore)) {
-      //   await match(action)  // if ever more than 2 e.g. tabs
-      //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
-      //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
-      //     .exhaustive()
-      // https://farosapp.com/notes/ac6f8223-fa95-4b4d-b7e8-1960db532dc1
+    //   await match(action)  // if ever more than 2 e.g. tabs
+    //     .with({ type: "src" }, ({ data }) => this.pushActionSrc(data))
+    //     .with({ type: "patchTup" }, ({ data }) => this.pushAction(user_id)(data))
+    //     .exhaustive()
+    // or: https://farosapp.com/notes/ac6f8223-fa95-4b4d-b7e8-1960db532dc1
       successes.push(await pipe(action, E.bimap(this.pushActionSrc, this.pushAction(user_id)), E.toUnion))
     }
     this.queueStore.update(flow( // keep unsuccessful
@@ -47,7 +52,7 @@ export class ActionQueue {
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
     updateStore(this.noteStore)(applyPatches(patchTup.patches))
-    funLog("pushAction")("puuushing")
+    this.log("pushAction")("puuushing") // can do funWarn IF I do encrypted here
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) =>
         f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
@@ -61,17 +66,21 @@ export class ActionQueue {
       note.user_id = user_id
 
     console.log("notesOps: ", notesOps)
-    if (A.uniq(S.Eq)(notesOps.map(x => x.op)).length > 1) throw new Error("nore than 1 operation in xxdo")
-
-    const op = notesOps.map(x => x.op)[0]
-    let success: boolean
+    const ops = notesOps.map(x => x.op)
+    if (A.uniq(S.Eq)(ops).length > 1) throw new Error("nore than 1 operation in action")
+    const [op] = ops
+    let error: unknown
     if (op == "upsert")
-      success = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error == null
+      error = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error
     else if (op == "delete")
-      success = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error == null
+      error = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error
     else throw new Error("unreachable")
-    funLog("pushActionSuccess")(success)
-    return success
+    this.log("push action error")(error)
+    // TODO should I check for error here? or push source again and retry...
+    if (error) // remove src from stumapstore just in case
+      this.stuMapStoreDelete(notesOps[0].note.source_id)
+
+    return error == null
   }
 
   act = (user_id: UUID | undefined) => async (patchTup: PatchTup) => {
@@ -80,17 +89,13 @@ export class ActionQueue {
   }
 
   pushActionSrc = async (src: Src & { id: UUID }) => {
-    // this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(src.id, src)) // unnecessary? because sync.sub() refreshes if new note has no src
     const { id, title, domain } = src
-    // TODO HERE
-    // check if already was added by prolly someone else
     const { data } = await this.sb.from("sources").select().eq("id", id).maybeSingle().then(this.warnIfErr("check for sources"))
+    this.log("pushSrc pre-check")(data)
     if (data?.domain == src.domain && data?.title == title) return true
-    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.warnIfErr("insert sources"))
+    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.log("insert sources"))
     const success = (error == null)
-    console.log("pushed source", success)
-    if (success) return success
-    throw new Error("neither present nor can push")
+    return success
   }
 
   actSrc = async (src: Src & { id: UUID }) => {

@@ -1,7 +1,7 @@
 import { get, set } from "idb-keyval"
-let importing = false
-chrome.bookmarks.onImportBegan.addListener(() => importing = true)
-chrome.bookmarks.onImportEnded.addListener(() => importing = false)
+import { dontTrigger } from "shared"
+chrome.bookmarks.onImportBegan.addListener(() => dontTrigger.set(true))
+chrome.bookmarks.onImportEnded.addListener(() => dontTrigger.set(false))
 
 chrome.bookmarks.onCreated.addListener((_id, b) => b.url && !get("dismissed_bookmark_help") && set("dismissed_bookmark_help", true))
 chrome.bookmarks.onCreated.addListener((_id, b) =>

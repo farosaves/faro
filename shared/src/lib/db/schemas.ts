@@ -80,11 +80,39 @@ export const emails2sendUpdateSchema = z.object({
   id: z.number().optional(),
 })
 
+export const keysRowSchema = z.object({
+  created_at: z.string(),
+  id: z.number(),
+  key: z.array(z.number()).nullable(),
+  user_id: z.string(),
+  using_derived: z.boolean(),
+  using_stored: z.boolean(),
+})
+
+export const keysInsertSchema = z.object({
+  created_at: z.string().optional(),
+  id: z.number().optional(),
+  key: z.array(z.number()).optional().nullable(),
+  user_id: z.string().optional(),
+  using_derived: z.boolean().optional(),
+  using_stored: z.boolean().optional(),
+})
+
+export const keysUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  id: z.number().optional(),
+  key: z.array(z.number()).optional().nullable(),
+  user_id: z.string().optional(),
+  using_derived: z.boolean().optional(),
+  using_stored: z.boolean().optional(),
+})
+
 export const mylogsRowSchema = z.object({
   created_at: z.string(),
   from: z.string(),
   id: z.number(),
   msg: jsonSchema,
+  severity: z.string(),
   user_id: z.string().nullable(),
   where: z.string(),
 })
@@ -94,6 +122,7 @@ export const mylogsInsertSchema = z.object({
   from: z.string(),
   id: z.number().optional(),
   msg: jsonSchema,
+  severity: z.string(),
   user_id: z.string().optional().nullable(),
   where: z.string(),
 })
@@ -103,6 +132,7 @@ export const mylogsUpdateSchema = z.object({
   from: z.string().optional(),
   id: z.number().optional(),
   msg: jsonSchema.optional(),
+  severity: z.string().optional(),
   user_id: z.string().optional().nullable(),
   where: z.string().optional(),
 })
@@ -115,6 +145,7 @@ export const notesRowSchema = z.object({
   predicted_topic: z.string().nullable(),
   prioritised: z.number(),
   quote: z.string(),
+  referer: z.string().nullable(),
   serialized_highlight: z.string().nullable(),
   snippet_uuid: z.string().nullable(),
   source_id: z.string(),
@@ -133,6 +164,7 @@ export const notesInsertSchema = z.object({
   predicted_topic: z.string().optional().nullable(),
   prioritised: z.number().optional(),
   quote: z.string(),
+  referer: z.string().optional().nullable(),
   serialized_highlight: z.string().optional().nullable(),
   snippet_uuid: z.string().optional().nullable(),
   source_id: z.string(),
@@ -151,6 +183,7 @@ export const notesUpdateSchema = z.object({
   predicted_topic: z.string().optional().nullable(),
   prioritised: z.number().optional(),
   quote: z.string().optional(),
+  referer: z.string().optional().nullable(),
   serialized_highlight: z.string().optional().nullable(),
   snippet_uuid: z.string().optional().nullable(),
   source_id: z.string().optional(),
@@ -207,6 +240,30 @@ export const profilesUpdateSchema = z.object({
   updated_at: z.string().optional().nullable(),
   username: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
+})
+
+export const savesRowSchema = z.object({
+  created_at: z.string(),
+  encrypted_data: z.array(z.number()),
+  id: z.string(),
+  updated_at: z.string(),
+  user_id: z.string(),
+})
+
+export const savesInsertSchema = z.object({
+  created_at: z.string().optional(),
+  encrypted_data: z.array(z.number()),
+  id: z.string(),
+  updated_at: z.string().optional(),
+  user_id: z.string().optional(),
+})
+
+export const savesUpdateSchema = z.object({
+  created_at: z.string().optional(),
+  encrypted_data: z.array(z.number()).optional(),
+  id: z.string().optional(),
+  updated_at: z.string().optional(),
+  user_id: z.string().optional(),
 })
 
 export const sourcesRowSchema = z.object({

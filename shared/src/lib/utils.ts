@@ -78,15 +78,26 @@ export const funLog = (where = "", from = "") => <T>(n: T) => {
 }
 export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from: string, msg: string }
 type _F = (m: DebugMsg) => Promise<unknown>
-export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)
+export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)// .then(console.log)
 
+export const funLog2 = (f: _F) => (where = "", from = "") => <T>(n: T) => {
+  if (DEBUG) console.log(from, n, where && ("at" + where))
+  else f({ where, from, severity: "info", msg: JSON.stringify(n) })
+  return n
+}
 export const funWarn = (f: _F) => (where = "", from = "") => <T>(n: T) => {
   if (DEBUG) console.warn(from, n, where && ("at" + where))
   else f({ where, from, severity: "warn", msg: JSON.stringify(n) })
+  return n
+}
+export const funErr = (f: _F) => (where = "", from = "") => <T>(n: T) => {
+  if (DEBUG) console.error(from, n, where && ("at" + where))
+  else f({ where, from, severity: "err", msg: JSON.stringify(n) })
+  return n
 }
 
 export const logIfError = (where = "") => ifErr(funLog(where, "logIfError log"))
-export const warnIfError = (f: _F) => (where = "") => ifErr(funWarn(f)(where, "logIfError log"))
+export const warnIfError = (f: _F) => (where = "") => ifErr(funWarn(f)(where, "warnIfError log"))
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const host = (s: string) => O.tryCatch(() => new URL(s).host)
@@ -129,13 +140,13 @@ export const toStore = <T>(Sub: Observable<T>, init: T) => {
 }
 
 export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
-export const maxDate = flow(A.map(parseISO), A.append(new Date(0)), max, x => x.toISOString())
+export const maxDate = (dateStrs: string[]) => pipe(
+  () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
+  O.tryCatch,
+  O.getOrElse(() => new Date(0).toISOString()))
+
 
 export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
-  // query = O.match(
-  //   () => query,
-  //   (id: string) => query.eq("source_id", id),
-  // )(source_id)
   const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
   return data || []
 }
@@ -192,4 +203,22 @@ export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry"
 }
 
 export const isMac = () => navigator.userAgent.includes("Mac OS X")
-export const isCmd = (e: KeyboardEvent) => isMac() ? e.metaKey : e.ctrlKey
+export const isCmd = (e: KeyboardEvent | MouseEvent) => isMac() ? e.metaKey : e.ctrlKey
+
+export const getKey = async (sb: SupabaseClient) =>
+  (await sb.from("keys").select("*").maybeSingle().then(warnIfError(sbLogger(sb))("getKey"))).data?.key || undefined
+
+export const pick = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = {}
+  for (const key of keys) {
+    result[key] = obj[key]
+  }
+  return result
+}
+
+// export const pickFields = <T, K extends keyof T>(obj: T, keys: Readonly<K[]>) => A.map()
+export const pickFields = <T, K extends keyof T>(obj: T) => A.map((k: K) => obj[k])
+
+export const union = <T, U>(obj1: T, obj2: U): T & U => ({ ...obj1, ...obj2 })
+

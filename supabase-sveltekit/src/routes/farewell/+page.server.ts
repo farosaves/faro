@@ -1,5 +1,5 @@
 import { trpc } from "$lib/trpc/client"
-import { API_ADDRESS, logIfError } from "shared"
+import { API_ADDRESS } from "shared"
 
 const T = trpc({ url: { origin: API_ADDRESS } })
 
@@ -8,7 +8,7 @@ export const actions = {
     const fdata = (await request.formData())
     console.log(fdata)
     const message = fdata.get("message")!.toString()
-    T.partingMsg.mutate(message).then(logIfError("add Email"))
+    T.partingMsg.mutate(message)
     return { success: !!message.length }
   },
 }

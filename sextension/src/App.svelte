@@ -6,7 +6,7 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import type { PendingNote, Src } from "shared"
-  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive } from "shared"
+  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive, toastNotify } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -56,6 +56,7 @@
   }
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
+  const perm = { permissions: ["bookmarks"] }
 </script>
 
 <svelte:window
@@ -100,11 +101,12 @@
       <button
         class="tooltip tooltip-left"
         data-tip={"Logged in as: \n" + ($email || "...not logged in")}
-        on:click={() => TB.refresh.query().then(console.log)}
-        on:contextmenu|preventDefault={() => TB.disconnect.query()}>
+        on:click={() => TB.refresh.query()}
+        on:dblclick={() => setTimeout(TB.disconnect.query, 1000)}
+        on:contextmenu|preventDefault={() => TB.hardReset.query()}>
         <IconRefresh font-size={iconSize} />
       </button>
-      <div class="dropdown dropdown-end">
+      <!-- <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
         <div class="dropdown-content join join-vertical z-20">
           {#each themes as value}
@@ -115,6 +117,39 @@
               on:click={() => setTimeout(updateTheme, 100)}
               >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
           {/each}
+        </div>
+      </div> -->
+      <!-- so far copied 1-1 -->
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
+        <div class="dropdown-content menu z-20 bg-base-200">
+          <li>
+            <button
+              class="btn z-20"
+              on:click={async () => {
+                if (!(await chrome.permissions.contains(perm))) await chrome.permissions.request(perm)
+                if (!(await chrome.permissions.contains(perm))) return // rejected
+                TB.syncBookmarks.query()
+                toastNotify("Exported to Other Bookmarks/Faros Bookmarks", 5000)
+              }}>Sync with bookmarks</button>
+          </li>
+          <li>
+            <details>
+              <summary>Theme</summary>
+              <ul class="join join-vertical">
+                {#each themes as value}
+                  <li>
+                    <button
+                      class="btn join-item z-20 btn-sm"
+                      data-set-theme={value}
+                      data-act-class="ACTIVECLASS"
+                      on:click={() => setTimeout(updateTheme, 100)}
+                      >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+                  </li>
+                {/each}
+              </ul>
+            </details>
+          </li>
         </div>
       </div>
     </div>

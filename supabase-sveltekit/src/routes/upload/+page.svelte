@@ -2,6 +2,7 @@
   let files: FileList
   export let form
   $: files && console.log("less than 10 MB?", files[0].size < Math.pow(10, 7))
+  // $: if (form?.success) console.log(form.output?.pages.at(0))
 </script>
 
 <div class="hero min-h-screen bg-base-200">

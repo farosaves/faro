@@ -40,7 +40,6 @@
   const handle_keydown = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore && !$tagModalOpenStore) {
       e.preventDefault()
-      toastNotify(e.shiftKey ? "Redo" : "Undo")
       ;(e.shiftKey ? noteDeri.sync.redo : noteDeri.sync.undo)()
     }
   }

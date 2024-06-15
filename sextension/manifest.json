@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Faros",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -23,6 +23,7 @@
     }
   ],
   "permissions": ["scripting", "storage", "contextMenus", "sidePanel", "commands"],
+  "optional_permissions": ["bookmarks"],
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+D" },
@@ -32,6 +33,10 @@
   "side_panel": {
     "default_path": "index.html"
   },
+  "externally_connectable": {
+    "matches": ["https://farosapp.com/*", "https://dev.farosapp.com/*", "<all_urls>"]
+  },
+
   "web_accessible_resources": [
     {
       "resources": ["icon.svg"],

@@ -6,7 +6,7 @@
 
   import { flow, pipe } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { NoteDeri, tagModalOpenStore } from "shared"
+  import { NoteDeri, isCmd, tagModalOpenStore } from "shared"
   import { derived, get } from "svelte/store"
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   import { getGroupTagCounts, groupize, type TGC } from "./tagViewStores"
@@ -51,15 +51,15 @@
       return s
     })
   const toggle = groupize(_toggleTag, _toggleTagGroup)
-  const _onDblClick = (tag: string) => () => {
+  const _makeOnly = (tag: string) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTag(tag)
   }
-  const _onDblClickGroup = (tags: string[]) => () => {
+  const _makeOnlyGroup = (tags: string[]) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
   }
-  const onDbl = groupize(_onDblClick, _onDblClickGroup)
+  const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
   let myModal: HTMLDialogElement | null = null
   let currTag: string
@@ -115,9 +115,9 @@
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={`${$untagged} untagged`}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
-        on:click={() => _toggleTag("")}
-        on:dblclick={_onDblClick("")}
+        on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
         class:btn-outline={$exclTagSet.has("")}>
+        <!-- on:dblclick={_makeOnly("")} -->
         <IconTagOff />
       </button>
     </div>
@@ -128,9 +128,8 @@
     <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
       <button
         class="btn btn-neutral btn-sm text-nowrap"
-        on:click={() => toggle(tgc)}
+        on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
         on:contextmenu|preventDefault={onContextMenu(tag)}
-        on:dblclick={onDbl(tgc)}
         class:btn-outline={$excl(tgc)}
         >{tag}
       </button>

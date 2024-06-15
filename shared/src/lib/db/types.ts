@@ -77,12 +77,48 @@ export type Database = {
         }
         Relationships: []
       }
+      keys: {
+        Row: {
+          created_at: string
+          id: number
+          key: number[] | null
+          user_id: string
+          using_derived: boolean
+          using_stored: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          key?: number[] | null
+          user_id?: string
+          using_derived?: boolean
+          using_stored?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          key?: number[] | null
+          user_id?: string
+          using_derived?: boolean
+          using_stored?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "keys_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mylogs: {
         Row: {
           created_at: string
           from: string
           id: number
           msg: Json
+          severity: string
           user_id: string | null
           where: string
         }
@@ -91,6 +127,7 @@ export type Database = {
           from: string
           id?: number
           msg: Json
+          severity: string
           user_id?: string | null
           where: string
         }
@@ -99,6 +136,7 @@ export type Database = {
           from?: string
           id?: number
           msg?: Json
+          severity?: string
           user_id?: string | null
           where?: string
         }
@@ -113,6 +151,7 @@ export type Database = {
           predicted_topic: string | null
           prioritised: number
           quote: string
+          referer: string | null
           serialized_highlight: string | null
           snippet_uuid: string | null
           source_id: string
@@ -130,6 +169,7 @@ export type Database = {
           predicted_topic?: string | null
           prioritised?: number
           quote: string
+          referer?: string | null
           serialized_highlight?: string | null
           snippet_uuid?: string | null
           source_id: string
@@ -147,6 +187,7 @@ export type Database = {
           predicted_topic?: string | null
           prioritised?: number
           quote?: string
+          referer?: string | null
           serialized_highlight?: string | null
           snippet_uuid?: string | null
           source_id?: string
@@ -224,6 +265,38 @@ export type Database = {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]
             isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saves: {
+        Row: {
+          created_at: string
+          encrypted_data: number[]
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_data: number[]
+          id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_data?: number[]
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saves_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -353,6 +426,10 @@ export type Emails2send = Database["public"]["Tables"]["emails2send"]["Row"]
 export type InsertEmails2send = Database["public"]["Tables"]["emails2send"]["Insert"]
 export type UpdateEmails2send = Database["public"]["Tables"]["emails2send"]["Update"]
 
+export type Keys = Database["public"]["Tables"]["keys"]["Row"]
+export type InsertKeys = Database["public"]["Tables"]["keys"]["Insert"]
+export type UpdateKeys = Database["public"]["Tables"]["keys"]["Update"]
+
 export type Mylogs = Database["public"]["Tables"]["mylogs"]["Row"]
 export type InsertMylogs = Database["public"]["Tables"]["mylogs"]["Insert"]
 export type UpdateMylogs = Database["public"]["Tables"]["mylogs"]["Update"]
@@ -368,6 +445,10 @@ export type UpdatePartingMsgs = Database["public"]["Tables"]["partingMsgs"]["Upd
 export type Profiles = Database["public"]["Tables"]["profiles"]["Row"]
 export type InsertProfiles = Database["public"]["Tables"]["profiles"]["Insert"]
 export type UpdateProfiles = Database["public"]["Tables"]["profiles"]["Update"]
+
+export type Saves = Database["public"]["Tables"]["saves"]["Row"]
+export type InsertSaves = Database["public"]["Tables"]["saves"]["Insert"]
+export type UpdateSaves = Database["public"]["Tables"]["saves"]["Update"]
 
 export type Sources = Database["public"]["Tables"]["sources"]["Row"]
 export type InsertSources = Database["public"]["Tables"]["sources"]["Insert"]
