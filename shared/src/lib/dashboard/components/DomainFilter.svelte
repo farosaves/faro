@@ -43,11 +43,6 @@
       Toggle All
     </button>
 
-    <!-- <label class="label cursor-pointer">
-        <span class="label-text">Toggle All</span>
-        <input type="checkbox" checked on:change={toggleAll} class="checkbox" />
-      </label> -->
-
     {#each $domains as [domain, num], i}
       <div class="tooltip tooltip-top tooltip-secondary p-0 join-item" data-tip={num}>
         <button
@@ -57,17 +52,6 @@
           {domain}
         </button>
       </div>
-
-      <!-- <li>
-        <label class="label cursor-pointer">
-          <span class="label-text tooltip tooltip-left tooltip-primary" data-tip={num}>{domain}</span>
-          <input
-            type="checkbox"
-            checked={!$uncheckedDomains.has(domain)}
-            on:click={toggleDomain(domain)}
-            class="checkbox" />
-        </label>
-      </li> -->
     {/each}
   </div>
 </details>
