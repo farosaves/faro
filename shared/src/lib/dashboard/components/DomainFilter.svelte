@@ -2,7 +2,7 @@
   import { derived } from "svelte/store"
   import { record as R, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
-  import { desc, host } from "shared"
+  import { desc, host, isCmd } from "shared"
   import { uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   import { onMount } from "svelte"
@@ -23,7 +23,7 @@
     if ($uncheckedDomains.size > 0) $uncheckedDomains = new Set()
     else $uncheckedDomains = new Set($domains.map(([x, y]) => x))
   }
-  const onDblClick = (domain: string) => () =>
+  const makeOnly = (domain: string) => () =>
     ($uncheckedDomains = new Set($domains.map(([x, y]) => x).filter((t) => t != domain)))
 
   let details: HTMLDetailsElement
@@ -52,8 +52,7 @@
       <div class="tooltip tooltip-top tooltip-secondary p-0 join-item" data-tip={num}>
         <button
           class="btn btn-neutral btn-sm text-nowrap join-item w-full"
-          on:click={toggleDomain(domain)}
-          on:dblclick={onDblClick(domain)}
+          on:click={(e) => (e.shiftKey || isCmd(e) ? toggleDomain(domain) : makeOnly(domain))}
           class:btn-outline={$uncheckedDomains.has(domain)}>
           {domain}
         </button>
