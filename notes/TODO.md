@@ -1,6 +1,7 @@
 - [ ] banner 4 webstore
 - [x] REMOVED don't copy with noteId, just the`#_uuid`
-- [ ] make note redirect fast ~~- content 2 bg?~~
+- [x] make note redirect fast ~~- content 2 bg?~~
+	- [x] moved to server part
 - [x] Think more about SEO if I can just write more stuff 
 
 - [ ] virtual list
