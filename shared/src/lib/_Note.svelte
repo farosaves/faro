@@ -73,6 +73,7 @@
   // })
 
   let hovered = false
+  // const cls = wRem ? `md:max-w-[${wRem * 4}] md:min-w-[${wRem * 4}]` : "" // this actually made the layout interesting
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
