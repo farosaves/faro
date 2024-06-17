@@ -1,5 +1,5 @@
-- [ ] banner
-- [ ] Do a button for a complete refresh.
+- [ ] banner 4 webstore
+- [ ] don't copy with noteId, just the`#_uuid`
 - [ ] Think more about SEO if I can just write more stuff 
 
 - [ ] virtual list
@@ -7,11 +7,11 @@
 	- [ ] check if performance is due to this - i.e on a loaded vs emptyish account
 	- [ ] if yes - consider going month by month 
 	- [ ] if not - still, just not that urgent
-	- [ ] 
-- [x] identify which columns I want to have encrypted
-	tags, highlights, user_note, snippet_uuid, serialised_highlight, prioritised, quote, url, source_id
-- [x] create a new database table with part of the columns encrypted
-- [ ] write an  encrypting, and decrypting functions that convert between the two row types
+- [ ] encryption
+	- [x] identify which columns I want to have encrypted
+		tags, highlights, user_note, snippet_uuid, serialised_highlight, prioritised, quote, url, source_id
+	- [x] create a new database table with part of the columns encrypted
+	- [ ] write an  encrypting, and decrypting functions that convert between the two row types
 
 - [x] write a function to insert into Supabase log table
 - [x] convert probably all log if error invocations to warn if error
@@ -40,11 +40,11 @@
 - [x] Add a field for the referer.
 - [x] Add to enc
 - [x] see if hash links work on PubMed.
-- [ ] If bookmarks are synced, then replace the previous button with latest new bookmarks.
+- [ ] If bookmarks are synced, then replace the sync bookmarks with latest new bookmarks added from outside of Faros.
 	a [push](https://dev.farosapp.com/notes/6b92d44f-cfa6-4257-a97a-34b58c2d65b6) notification when someone made new bookmarks elsewhere?
 
 ## bookmark sync
-- [ ] Change the current URL query param with the "**fragment identifier** or **anchor link**."
+- [x] Change the current URL query param with the "**fragment identifier** or **anchor link**."
 
 ## enc2
 - [ ] Decide what to do with the IV.

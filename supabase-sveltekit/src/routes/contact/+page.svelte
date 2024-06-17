@@ -7,13 +7,13 @@
   <div class="hero-content text-center text-2xl flex-col">
     Send any email:
     <div class="flex">
-      <IconEnvelope /><a href="mailto:pawel@farosapp.com">pawel@farosapp.com</a>
+      <a href="mailto:pawel@farosapp.com">pawel@farosapp.com</a>
     </div>
     <div class="divider"></div>
     Suggest feature:
     <form method="POST">
       <label class="input input-bordered flex items-center gap-2">
-        <inp ut name="message" class="grow" placeholder="e.g. firefox pls" />
+        <input name="message" class="grow" placeholder="e.g. firefox pls" />
         <button type="submit"><IconWrench /></button>
       </label>
     </form>

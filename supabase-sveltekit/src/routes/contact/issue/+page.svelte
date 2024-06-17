@@ -9,7 +9,7 @@
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-center p-4">Currently known issues</div>
       <ul class="collapse-content mx-4 text-lg list-disc text-nowrap w-min text-left">
-        <li>Not highlighting on pubmed</li>
+        <!-- <li>Not highlighting on pubmed</li> -->
         <li>Reddit usually doesn't highlight</li>
         <li>YT video titles don't highlight</li>
         <li>Table data not formatted correctly</li>

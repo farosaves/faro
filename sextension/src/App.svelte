@@ -34,6 +34,7 @@
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
   import { derived, writable } from "svelte/store"
+  import { hasOrGivesPerm } from "$lib/utils"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -127,8 +128,7 @@
             <button
               class="btn z-20"
               on:click={async () => {
-                if (!(await chrome.permissions.contains(perm))) await chrome.permissions.request(perm)
-                if (!(await chrome.permissions.contains(perm))) return // rejected
+                if (!(await hasOrGivesPerm(perm))) return //rejected
                 TB.syncBookmarks.query()
                 toastNotify("Exported to Other Bookmarks/Faros Bookmarks", 5000)
               }}>Sync with bookmarks</button>
