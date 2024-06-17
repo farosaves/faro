@@ -3,6 +3,7 @@
 - [x] make note redirect fast ~~- content 2 bg?~~
 	- [x] moved to server part
 - [x] Think more about SEO if I can just write more stuff 
+- [ ] Ctrl Z didnt work
 
 - [ ] virtual list
 	- [x] first test
