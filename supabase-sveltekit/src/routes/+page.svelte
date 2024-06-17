@@ -72,8 +72,7 @@
         <!-- <span class="my-2 block"
           >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span> -->
         <span class="my-2 block">If you bookmark it you'll likely forget why you did it in a few weeks.</span>
-        <span class="my-2 block"
-          >Enter Faros: it's designed to make remembering & revisiting it as easy as possible.</span>
+        <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
       </div>
     </div>
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
