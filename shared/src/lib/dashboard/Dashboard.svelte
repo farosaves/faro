@@ -10,7 +10,15 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { desc, modalOpenStore, tagModalOpenStore, toastNotify, toastStore, windowActive } from "$lib"
+  import {
+    desc,
+    hasExtensionStore,
+    modalOpenStore,
+    tagModalOpenStore,
+    toastNotify,
+    toastStore,
+    windowActive,
+  } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
@@ -49,6 +57,9 @@
   onMount(() => {
     modalOpenStore.set(false)
     windowActive.set(true)
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch((_r) =>
+      hasExtensionStore.set(true),
+    )
   })
   let innerWidth: number
 </script>

@@ -1,5 +1,8 @@
 import type { NoteEx } from "$lib/db/typeExtras"
 import type { Notes } from "$lib/db/types"
+import { hasExtensionStore } from "$lib/stores"
+import { API_ADDRESS } from "$lib/utils"
+import { get } from "svelte/store"
 
 export const note2Url = (n: Notes) => {
   const url = new URL(n.url)
@@ -9,6 +12,9 @@ export const note2Url = (n: Notes) => {
 
 export const gotoFunction = (nd: NoteEx | undefined) => () => {
   if (nd === undefined) return
-  const url = note2Url(nd)
+  const hasExt = get(hasExtensionStore)
+  let url: URL | string
+  if (hasExt) url = note2Url(nd)
+  else url = API_ADDRESS + "/notes/" + nd.id
   url && open(url)
 }
