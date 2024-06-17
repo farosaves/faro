@@ -50,6 +50,7 @@
     modalOpenStore.set(false)
     windowActive.set(true)
   })
+  let innerWidth: number
 </script>
 
 <svelte:head>
@@ -57,7 +58,7 @@
 </svelte:head>
 
 <!-- <LoginPrompt bind:showLoginPrompt /> -->
-<svelte:window on:keydown={handle_keydown} />
+<svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
 <TagView {noteDeri} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
@@ -72,8 +73,9 @@
         {#each $note_groupss[priority] as [title, note_group]}
           <div
             class="border-2 text-center rounded-lg border-neutral flex flex-col"
-            style="max-width: {wRem * note_group.length + 0.25}rem;
+            style="max-width: {innerWidth > 768 ? wRem * note_group.length + 0.25 : 250}rem;
             min-width: {wRem + 0.15}rem">
+            <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
             <a target="_blank" href={note_group[0].url} class="text-lg text-wrap flex-grow-0 hover:underline"
               >{@html title}</a>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow">
@@ -84,7 +86,7 @@
                   {closeAll}
                   goto_function={gotoFunction(note)}
                   syncLike={noteSync}
-                  {wRem}
+                  wRem={innerWidth > 768 ? wRem : undefined}
                   {allTags}
                   isHighlighted={note.id == $idHighlighted} />
               {/each}
@@ -98,7 +100,7 @@
   </div>
   <div class="drawer-side z-10 border-r border-neutral">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4">
+    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4 mt-24 md:mt-0">
       <li class="pt-4">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"

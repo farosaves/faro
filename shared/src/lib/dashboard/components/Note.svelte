@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import type { SyncLike } from "$lib"
   import { _Note as Note, type NoteEx } from "shared"
   import type { Readable } from "svelte/store"
@@ -16,4 +16,4 @@
 
 <div class="relative" style="max-width: {w_rem}rem; min-width: {w_rem}rem ">
   <Note {note_data} bind:isOpen {closeAll} syncLike={noteSync} {goto_function} {allTags} />
-</div>
+</div> -->
