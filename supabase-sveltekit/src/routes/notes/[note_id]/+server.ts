@@ -17,6 +17,11 @@ export const GET = async ({ params }) => {
     return t.test(s)
   }
   // const domain = new URL(pageUrl).host
+  const hrefApp = data.url + "#_" + data.snippet_uuid
+  $("head").append(
+  `<script>
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").then(() => window.location.href = "${hrefApp}")
+  </script>`)
 
   for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js"])
     $("head").append(`<script src="${module}"></script>`)
