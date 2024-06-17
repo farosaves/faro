@@ -69,9 +69,11 @@
       <div class="collapse-content">
         <span class="my-2 block"
           >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
+        <!-- <span class="my-2 block"
+          >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span> -->
+        <span class="my-2 block">If you bookmark it you'll likely forget why you did it in a few weeks.</span>
         <span class="my-2 block"
-          >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span>
-        <span class="my-2 block">Or use Faros: it's designed to make revisiting as easy as possible.</span>
+          >Enter Faros: it's designed to make remembering & revisiting it as easy as possible.</span>
       </div>
     </div>
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
