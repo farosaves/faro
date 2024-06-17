@@ -16,7 +16,8 @@ test("check version is current", async ({ page }) => {
 
 test("login flow", async ({ page }) => {
   await page.goto(dev)
-  await page.getByText("Account", { exact: true }).click()
+  await page.getByText("Dashboard", { exact: true }).click()
+  await page.getByText("Click here", { exact: true }).click()
   // await expect(page).toHaveTitle("Faros - Login")
   await expect(page).toHaveURL(/login/)
   await page.waitForTimeout(50)

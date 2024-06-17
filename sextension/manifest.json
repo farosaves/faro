@@ -40,7 +40,7 @@
   "web_accessible_resources": [
     {
       "resources": ["icon.svg"],
-      "matches": ["https://farosapp.com/*", "https://dev.farosapp.com/*"]
+      "matches": ["https://farosapp.com/*", "https://dev.farosapp.com/*", "http://localhost:5173/*"]
     },
     {
       "resources": ["prompt.html"],

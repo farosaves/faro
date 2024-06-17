@@ -22,7 +22,7 @@
       <div class="flex flex-col w-full place-items-center">
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
-          <h2 class="text-4xl font-bold">Stay on top of online reading <br /> Bookmark highlights</h2>
+          <h2 class="text-3xl font-bold">Stay on top of online reading <br /> Bookmark highlights</h2>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
           {#if !extInstalled}
@@ -69,9 +69,10 @@
       <div class="collapse-content">
         <span class="my-2 block"
           >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
-        <span class="my-2 block"
-          >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span>
-        <span class="my-2 block">Or use Faros: it's designed to make revisiting as easy as possible.</span>
+        <!-- <span class="my-2 block"
+          >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span> -->
+        <span class="my-2 block">If you bookmark it you'll likely forget why you did it in a few weeks.</span>
+        <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
       </div>
     </div>
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->

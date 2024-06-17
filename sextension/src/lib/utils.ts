@@ -43,3 +43,7 @@ export async function deleteSnippet(uuid: UUID, serialized: string) {
 }
 export { DEBUG }
 
+export const hasOrGivesPerm = async (perm: chrome.permissions.Permissions) => {
+  if (!(await chrome.permissions.contains(perm))) await chrome.permissions.request(perm)
+  return await chrome.permissions.contains(perm)
+}

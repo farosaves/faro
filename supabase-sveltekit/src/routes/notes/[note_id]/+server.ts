@@ -1,6 +1,6 @@
 import { trpc } from "$lib/trpc/client"
 import * as cheerio from "cheerio/lib/slim"
-import { API_ADDRESS, getOrElse, host } from "shared"
+import { API_ADDRESS, getOrElse, host, note_idKey } from "shared"
 
 
 const T = trpc({ url: { origin: API_ADDRESS } })
@@ -16,7 +16,13 @@ export const GET = async ({ params }) => {
     const t = /^\/\w/ // starts: / character
     return t.test(s)
   }
-  // const domain = new URL(pageUrl).host
+  const newUrl = new URL(data.url) // = data.url + "#_" + data.snippet_uuid // but only works when...
+  newUrl.searchParams.set(note_idKey, note_id) // copied from background - updateCurrUrl
+
+  $("head").append( // seems to have helped
+  `<script>
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").then(() => window.location.href = "${newUrl.toString()}")
+  </script>`)
 
   for (const module of ["/rangy/rangy-core.min.js", "/rangy/rangy-classapplier.min.js", "/rangy/rangy-highlighter.min.js", "/applierOptions.js"])
     $("head").append(`<script src="${module}"></script>`)
