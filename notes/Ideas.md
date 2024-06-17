@@ -1,5 +1,4 @@
-If I launch on producthunt or HN i can link to it on my page / chrome listing, to show it's fresh
-Or how do I approach freshness at all?
+If I launch on producthunt or HN i can link to it on my page / chrome listing?
 ##### on webstore
 write that it's being actively developed, appeared 6th May, can check when last update was 
 

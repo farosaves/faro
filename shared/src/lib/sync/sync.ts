@@ -209,9 +209,9 @@ export class NoteSync {
   stackNAct = async (patchTup: PatchTup) => {
     this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
     await this.actionQueue.act(this._user_id)(patchTup)
-    // Bookmarks update here
-    if (await chrome.permissions.contains(perm)) // chrome.permissions.request(perm)
-      getNotesOps(patchTup.patches, get(this.noteStore))
+    // Bookmarks update here?
+    // if (await chrome.permissions.contains(perm)) syncBookmarks()
+    getNotesOps(patchTup.patches, get(this.noteStore))
   }
 
   updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>
