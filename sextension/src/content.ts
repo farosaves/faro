@@ -182,7 +182,7 @@ window.addEventListener("keydown", async (e) => {
       height: 6rem;
       position: sticky;
       top: 0;
-      z-index: 50;"
+      z-index: 999;"
       ></iframe>`, "text/html",
     ).body.firstElementChild as HTMLElement | null
     if (!iframe) return
