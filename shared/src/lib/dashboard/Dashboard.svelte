@@ -57,7 +57,7 @@
   onMount(() => {
     modalOpenStore.set(false)
     windowActive.set(true)
-    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch((_r) =>
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").then((_r) =>
       hasExtensionStore.set(true),
     )
   })

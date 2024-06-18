@@ -1,11 +1,13 @@
 <script>
-  import { altKey, funLog, replacer } from "shared"
+  import { altKey, funLog, hasExtensionStore, replacer } from "shared"
   import { onMount } from "svelte"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
-  let extInstalled = true
+  // let extInstalled = true
   onMount(async () => {
     // failed to fetch if not installed
-    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").catch((r) => (extInstalled = false))
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").then((r) =>
+      hasExtensionStore.set(true),
+    )
   })
 </script>
 
@@ -25,7 +27,7 @@
           <h2 class="text-3xl font-bold">Stay on top of online reading <br /> Bookmark highlights</h2>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
-          {#if !extInstalled}
+          {#if !$hasExtensionStore}
             <a
               id="farosgetitlink"
               class="btn btn-lg btn-primary text-xl"
