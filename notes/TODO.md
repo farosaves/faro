@@ -1,6 +1,4 @@
-- [ ] 4 Ali like project management
-	- [ ] tag input
-	- [ ] 
+- [ ] github oauth fix - shouldnt be my account when someone else is signing up
 - [ ] banner 4 webstore
 - [ ] extra prompt to download on the dashboard
 - [x] REMOVED don't copy with noteId, just the`#_uuid`
