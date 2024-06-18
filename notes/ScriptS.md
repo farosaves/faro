@@ -1,6 +1,7 @@
 # V1
 ## promo
-Faros is a browser extension that helps you manage online reading.
+Faros is a browser extension for online reading.
+It helps you save and revisit pages
 You use it instead of bookmarks.
 Say I'm on this page and want to get back to it later. 
 Instead of bookmarking a whole page, I first ask myself - why do I care about this page?
