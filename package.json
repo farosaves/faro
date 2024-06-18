@@ -19,7 +19,8 @@
   },
   "scripts": {
     "watch": "npm-watch buildShared",
-    "watchf": "npm-watch ",
+    "watchf": "npm-watch",
+    "dev": "npm run dev -w=supabase-sveltekit/",
     "check": "svelte-check --workspace=shared/; svelte-check --workspace=supabase-sveltekit/; svelte-check --workspace=sextension/",
     "format": "# find */src/**/*.ts -mtime -5s -exec npx eslint --fix {} \\; #npx prettier --write '*/src/**/*.{ts,svelte}' --config=.prettierrc.yaml",
     "b": "npm run bnr -w=sextension/   #&& npm run bz -w=sextension/ && npm run build -w=supabase-sveltekit/",
