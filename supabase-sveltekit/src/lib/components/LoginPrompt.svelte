@@ -23,7 +23,7 @@
   {#if !$hasExtensionStore}
     <a
       id="farosgetitlink"
-      class="btn btn-primary text-xl"
+      class="btn btn-primary text-xl flex-grow"
       target="_blank"
       data-umami-event="WebStore"
       href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
