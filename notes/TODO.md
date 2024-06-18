@@ -1,9 +1,13 @@
+- [ ] 4 Ali like project management
+	- [ ] tag input
+	- [ ] 
 - [ ] banner 4 webstore
+- [ ] extra prompt to download on the dashboard
 - [x] REMOVED don't copy with noteId, just the`#_uuid`
 - [x] make note redirect fast ~~- content 2 bg?~~
 	- [x] moved to server part
 - [x] Think more about SEO if I can just write more stuff 
-- [ ] Ctrl Z didnt work
+- [ ] Ctrl Z didnt work - seemingly deleted the note in the ext but appeared on website - what would a refresh do?
 
 - [ ] virtual list
 	- [x] first test
