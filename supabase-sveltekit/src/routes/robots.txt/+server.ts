@@ -1,7 +1,10 @@
+import { DEBUG } from "shared"
+
 export const GET = async () => {
+  const d = DEBUG ? "/" : ""
   const content = `
         User-agent: *
-        Disallow: /
+        Disallow: ${d}
     `
 
   return new Response(content, {
