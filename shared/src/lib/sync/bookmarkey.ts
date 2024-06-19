@@ -41,12 +41,12 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
   if (treeInit.title !== "Other Bookmarks" || !treeInit.children) {
     throw new Error("other root bookmark structures not implemented yet")
   }
-  if (!treeInit.children.map(x => x.title == "Faros Bookmarks").reduce((x, y) => x || y)) {
-    await createBookmark({ parentId: "2", title: "Faros Bookmarks" })
+  if (!treeInit.children.map(x => x.title == "Faros").reduce((x, y) => x || y)) {
+    await createBookmark({ parentId: "2", title: "Faros" })
   }
   const tree = (await subTree("2"))[0]
   if (tree.children === undefined) throw new Error("unreachable (bookmarkey)")
-  const farosFolder = tree.children.filter(x => x.title == "Faros Bookmarks")[0] as Node
+  const farosFolder = tree.children.filter(x => x.title == "Faros")[0] as Node
   if (farosFolder.children === undefined) throw new Error("farosFolder undefined children")
 
   const desired = notes.map(note2Bookmark)

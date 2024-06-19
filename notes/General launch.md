@@ -8,6 +8,8 @@ Making stuff is a perfect Faros use case - to keep track of docs, github repos e
 
 
 I built this tool for myself and liked it so much I decided to ~complete it. 
+	no! this is self-validation like or YC wouldn't take me - but they didn't
+
 
 The code itself is as type-safe as possible (with fp-ts & tRPC all over) and <6000 LOC.
 I'm looking for people who would find it the most useful, so if you have ideas lmk, thanks!

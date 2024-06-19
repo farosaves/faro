@@ -258,3 +258,25 @@ chrome.runtime.onInstalled.addListener((e) => {
     chrome.tabs.create({ url: API_ADDRESS + "/welcome" })
 })
 chrome.runtime.setUninstallURL(API_ADDRESS + "/farewell")
+
+const setIcon = async () => {
+  const canvas = new OffscreenCanvas(16, 16)
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  const response = await fetch(chrome.runtime.getURL("icon.svg"))
+  const svgText = await response.text()
+  const svgBlob = new Blob([svgText], { type: "image/svg+xml" })
+
+  const imgBitmap = await createImageBitmap(svgBlob)
+  ctx.drawImage(imgBitmap, 0, 0)
+
+  // Draw an ellipse on top of the SVG image
+  ctx.beginPath()
+  ctx.fillStyle = "#a066d0" // primary color
+  ctx.ellipse(10, 10, 2, 5, 0, 0, Math.PI * 2) // Proper ellipse parameters
+  ctx.fill()
+
+  const imageData = ctx.getImageData(0, 0, 16, 16)
+  chrome.action.setIcon({ path: chrome.runtime.getURL("icon.svg") }).catch(console.log)
+}
+setIcon().catch(console.log)
