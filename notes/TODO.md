@@ -1,6 +1,6 @@
 - [ ] github oauth fix - shouldnt be my account when someone else is signing up
 - [ ] banner 4 webstore
-- [ ] extra prompt to download on the dashboard
+- [x] extra prompt to download on the dashboard
 - [x] REMOVED don't copy with noteId, just the`#_uuid`
 - [x] make note redirect fast ~~- content 2 bg?~~
 	- [x] moved to server part

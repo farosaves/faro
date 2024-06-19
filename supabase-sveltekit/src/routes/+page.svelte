@@ -15,7 +15,7 @@
   <title>Faros - Stay on top of online reading - bookmark highlights</title>
   <meta
     property="description"
-    content="Faros: Effortlessly save and revisit your favourite online readings. Chrome extension for students, researchers, and readers. Highlight, save & organize." />
+    content="Effortlessly save and revisit your online reading with Faros browser extension. Highlight, save & organize." />
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">

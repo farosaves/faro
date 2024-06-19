@@ -79,7 +79,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- class:p-0={hovered && $windowActive}border p-[1px]
   class:border-2={hovered && $windowActive} -->
-<div class="relative" style={wRem ? `max-width: ${wRem}rem; min-width: ${wRem}rem` : ""}>
+<div class="relative p-1" style={wRem ? `max-width: ${wRem}rem; min-width: ${wRem}rem` : ""}>
   <div
     class="collapse bg-base-200 border-primary"
     style="border-width: {1 + +(hovered && $windowActive) + 2 * +isHighlighted}px;
