@@ -1,4 +1,6 @@
+
 - [ ] github oauth fix - shouldnt be my account when someone else is signing up - create an org and put faros there
+- [ ] currSrc (&currSrcs) potentially undefined - rn it persists from the last page you were at
 - [x] The in app dashboard should always redirect to the URL and not the note.
 - [ ] banner 4 webstore
 - [ ] improve my [screenshots](https://farosapp.com/notes/ffce59d7-ce19-426d-8a4c-bcc069de99c9) 4 webstore
