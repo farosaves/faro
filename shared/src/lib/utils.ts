@@ -70,6 +70,7 @@ export const ifErr
     }
 
 export const DEBUG = import.meta.env.VITE_DEBUG == "true" || false
+export const uuidRegex = /^([0-9a-e]*-){4}[0-9a-e]*$/
 
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
 export const funLog = (where = "", from = "") => <T>(n: T) => {
