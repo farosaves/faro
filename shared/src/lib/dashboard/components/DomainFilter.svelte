@@ -15,7 +15,7 @@
       R.toArray,
     ).toSorted(desc(([x, y]) => y)),
   )
-  const toggleDomain = (domain: string) => () => {
+  const toggleDomain = (domain: string) => {
     $uncheckedDomains.has(domain) ? $uncheckedDomains.delete(domain) : $uncheckedDomains.add(domain)
     $uncheckedDomains = $uncheckedDomains // store signal
   }
@@ -23,7 +23,7 @@
     if ($uncheckedDomains.size > 0) $uncheckedDomains = new Set()
     else $uncheckedDomains = new Set($domains.map(([x, y]) => x))
   }
-  const makeOnly = (domain: string) => () =>
+  const makeOnly = (domain: string) =>
     ($uncheckedDomains = new Set($domains.map(([x, y]) => x).filter((t) => t != domain)))
 
   let details: HTMLDetailsElement
