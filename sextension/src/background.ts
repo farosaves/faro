@@ -23,7 +23,8 @@ pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
 pushStore("allTags", noteDeri.allTags)
 note_sync.DEBUG = DEBUG
-const note_mut: NoteMut = new NoteMut(note_sync)
+const currWindowId = writable(-1)
+const note_mut: NoteMut = new NoteMut(note_sync, currWindowId)
 pushStore("panels", note_mut.panels)
 const sess = writable<O.Option<Session>>(O.none)
 pushStore("session", sess)
@@ -148,7 +149,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
 
   const domain = O.toNullable(host(url || "")) // "" is fine here because it fails host()
   DEBUG && console.log(domain, title)
-  note_mut.currWindowId.set(tab.windowId)
+  currWindowId.set(tab.windowId)
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
 }
 
@@ -259,24 +260,13 @@ chrome.runtime.onInstalled.addListener((e) => {
 })
 chrome.runtime.setUninstallURL(API_ADDRESS + "/farewell")
 
-const setIcon = async () => {
-  const canvas = new OffscreenCanvas(16, 16)
-  const ctx = canvas.getContext("2d")
-  if (!ctx) return
-  const response = await fetch(chrome.runtime.getURL("icon.svg"))
-  const svgText = await response.text()
-  const svgBlob = new Blob([svgText], { type: "image/svg+xml" })
-
-  const imgBitmap = await createImageBitmap(svgBlob)
-  ctx.drawImage(imgBitmap, 0, 0)
-
-  // Draw an ellipse on top of the SVG image
-  ctx.beginPath()
-  ctx.fillStyle = "#a066d0" // primary color
-  ctx.ellipse(10, 10, 2, 5, 0, 0, Math.PI * 2) // Proper ellipse parameters
-  ctx.fill()
-
-  const imageData = ctx.getImageData(0, 0, 16, 16)
-  chrome.action.setIcon({ path: chrome.runtime.getURL("icon.svg") }).catch(console.log)
+const notesCurrWindow = derived([currWindowId, note_mut.panels], ([id, panels]) =>
+  panels.get(id)?.length || 0,
+)
+const setIcon = async (n: number) => {
+  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+  return await chrome.action.setIcon({ path: chrome.runtime.getURL(
+    n > 0 ? `icons/n_saved/icon${Math.min(n, 9)}.png` : "icons/icon48.png",
+  ), tabId: tab.id }).catch(console.log)
 }
-setIcon().catch(console.log)
+notesCurrWindow.subscribe(setIcon)

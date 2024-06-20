@@ -11,11 +11,11 @@ export class NoteMut {
   currSrc: Readable<Src>
   panels: Readable<Map<number, Notes[]>>
   currSrcs: Writable<Map<number, Src>>
-  currWindowId: Writable<number>
-  constructor(ns: NoteSync) {
+  currWindowId: Readable<number>
+  constructor(ns: NoteSync, currWindowId: Readable<number>) {
     this.ns = ns
     // this.currSrc = writable({ title: "", domain: "" })
-    this.currWindowId = writable(NaN)
+    this.currWindowId = currWindowId
     this.currSrcs = writable(new Map())
     this.currSrc = derived([this.currSrcs, this.currWindowId], ([srcs, id]) => srcs.get(id) || { title: "", domain: "" })
 
