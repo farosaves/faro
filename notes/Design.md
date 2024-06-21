@@ -1,7 +1,12 @@
 ### Canva
 I can technically make everything but the thing that is my font and then fill that in or pay for the pro version.
+### stuff
+Redressed font
 
 ### Needed
+```sh
+osascript -e 'tell application "System Events" to tell process "Google Chrome" to set the size of window 1 to {1248, 768}'
+```
 Chrome webstore:
 * Promo tile: 440x280
 * Marquee: 1400x560
