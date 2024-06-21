@@ -2,7 +2,7 @@
   import type { MouseEventHandler } from "svelte/elements"
 
   import type { SyncLike } from "./sync/sync"
-  import { option as O, array as A } from "fp-ts"
+  import { option as O, array as A, predicate } from "fp-ts"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
@@ -30,6 +30,8 @@
     for (const hl of note_data.highlights) escaped = escaped.replace(hl, $replacer)
     return escaped
   }
+  $: [a1, b1] = escapeHTML($replacer("split")).split("split")
+  $: [a2, b2] = $replacer("split").split("split")
 
   $: text = pipe(
     note_data.searchArt,
@@ -43,10 +45,11 @@
           selectedKeys,
           A.findIndex((n) => n == "quote"),
           O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
-          O.map((r) => {
-            const target = escapeHTML(r.target)
-            return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
-          }),
+          O.map(
+            (r) =>
+              escapeHTML(r.highlight($replacer)?.join("")).replaceAll(a1, a2).replaceAll(b1, b2) || undefined,
+          ),
+
           O.chain(O.fromNullable),
           O.getOrElse(() => escapeHTML(note_data.quote)),
         ),
