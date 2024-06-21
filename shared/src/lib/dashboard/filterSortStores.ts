@@ -7,6 +7,7 @@ import { identity, pipe } from "fp-ts/lib/function"
 import { derived, writable } from "svelte/store"
 import { z } from "zod"
 import * as devalue from "devalue"
+import fuzzysort from "fuzzysort"
 
 const _exclTagSets = {
   sets: { "": new Set([]) } as Record<string, Set<string>>,
@@ -93,7 +94,9 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
               A.findIndex(n => n == "sources.title"),
               chainN(i => optKR[i]),
               chainN(r => // no empty string
-                escapeHTML(r.highlight(replacer)?.join("")).replaceAll(a1, a2).replaceAll(b1, b2) || undefined,
+                escapeHTML(fuzzysort.highlight(r, replacer)?.join("") || "")
+                  .replaceAll(a1, a2)
+                  .replaceAll(b1, b2) || undefined,
               ),
             ),
           ),
