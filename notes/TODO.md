@@ -1,8 +1,13 @@
-- [ ] 4 Ali like project management
-	- [ ] tag input
-	- [ ] 
+
+- [ ] github oauth fix - shouldnt be my account when someone else is signing up - create an org and put faros there
+- [ ] currSrc (&currSrcs) potentially undefined - rn it persists from the last page you were at
+- [x] The in app dashboard should always redirect to the URL and not the note.
 - [ ] banner 4 webstore
-- [ ] extra prompt to download on the dashboard
+- [ ] improve my [screenshots](https://farosapp.com/notes/ffce59d7-ce19-426d-8a4c-bcc069de99c9) 4 webstore
+- [ ] consider [canva](https://farosapp.com/notes/20b65fbc-fdb4-48de-a725-a365000b8aa7) for *parts* of the video 
+- [ ] option to close sidebar on any navigation
+- [ ] ...and display # of saves for curr page in the icon
+- [x] extra prompt to download on the dashboard
 - [x] REMOVED don't copy with noteId, just the`#_uuid`
 - [x] make note redirect fast ~~- content 2 bg?~~
 	- [x] moved to server part
@@ -11,9 +16,8 @@
 
 - [ ] virtual list
 	- [x] first test
-	- [ ] check if performance is due to this - i.e on a loaded vs emptyish account
-	- [ ] if yes - consider going month by month 
-	- [ ] if not - still, just not that urgent
+	- [x] check if performance is due to this - i.e on a loaded vs emptyish account
+	- [x] if yes - consider going month by month
 - [ ] encryption
 	- [x] identify which columns I want to have encrypted
 		tags, highlights, user_note, snippet_uuid, serialised_highlight, prioritised, quote, url, source_id
@@ -33,37 +37,22 @@
 	- [ ] Think more about what the flow should look like.
 		1. submit your email 
 		2. either give the password or click the sign up button.
-## enc1
-- [x] Make a table where I will store the keys.
-- [x] generate some random encryption key with the proper format
-- [x] insert that key into the table for my account
-- [x] write a function that retrieves the key for the currently logged in user
-- [x] add a flag in keys I guess, to mark if user agreed to password recovery
-- [x] add a flag to mark that the key is derived from the password
-- [ ] modify the sync go online function to require this flag
-- [ ] Modify sync go online to accept the password derived key
 
-## interlude
-- [x] Add a field for the referer.
-- [x] Add to enc
-- [x] see if hash links work on PubMed.
-- [ ] If bookmarks are synced, then replace the sync bookmarks with latest new bookmarks added from outside of Faros.
-	a [push](https://dev.farosapp.com/notes/6b92d44f-cfa6-4257-a97a-34b58c2d65b6) notification when someone made new bookmarks elsewhere?
 
 ## bookmark sync
-- [x] Change the current URL query param with the "**fragment identifier** or **anchor link**."
-
+- [ ] If bookmarks are synced, then replace the sync bookmarks with latest new bookmarks added from outside of Faros.
+	a [push](https://dev.farosapp.com/notes/6b92d44f-cfa6-4257-a97a-34b58c2d65b6) notification when someone made new bookmarks elsewhere?
 ## enc2
 - [ ] Decide what to do with the IV.
-- [ ] write an encrypting function that takes a key and converts a note row to a save row.
-- [ ] Write an inverse function that also takes a key.
+- [x] write an encrypting function that takes a key and converts a note row to a save row.
+- [x] Write an inverse function that also takes a key.
 - [ ] Remember the next deployment should be like 0.2 and wait for approval so I deploy simultaneously.
 
 ## login page
 - [x] Create two routes.
 - [x] For now duplicate the code into both.
 - [x] Remove the magic link option.
-- [ ] Look at the set password page
+- [x] Look at the set password page
 
 ## debug
 Performance in the built-in dashboard within the extension is much better.

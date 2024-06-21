@@ -1,3 +1,8 @@
+### Keywords
+Research, sources, save, reading, extension?, 
+The page is soo not seo optimized.
+### Old
+
 Save & organize snippets - use like bookmarks
 
 **what is the wording for??**

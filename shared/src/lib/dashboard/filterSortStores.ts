@@ -4,10 +4,10 @@ import { persisted } from "$lib/sync/persisted-store"
 import { chainN, escapeHTML, getOrElse } from "$lib/utils"
 import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
 import { identity, pipe } from "fp-ts/lib/function"
-import fuzzysort from "fuzzysort"
 import { derived, writable } from "svelte/store"
 import { z } from "zod"
 import * as devalue from "devalue"
+import fuzzysort from "fuzzysort"
 
 const _exclTagSets = {
   sets: { "": new Set([]) } as Record<string, Set<string>>,
@@ -67,6 +67,9 @@ const fuzzySortDef = (newestFirst: boolean) => ({ f: (n: NoteEx): NoteEx & { pri
 
 export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
   if (res && res.length) {
+    const [a1, b1] = escapeHTML(replacer("split")).split("split")
+    const [a2, b2] = replacer("split").split("split")
+
     return ({ f: (n: NoteEx) => {
       let priority: number
       let searchArt
@@ -90,10 +93,11 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst],
               selectedKeys,
               A.findIndex(n => n == "sources.title"),
               chainN(i => optKR[i]),
-              chainN((r) => {
-                const target = escapeHTML(r.target)
-                return fuzzysort.highlight({ ...r, target }, replacer)?.join("")
-              }),
+              chainN(r => // no empty string
+                escapeHTML(fuzzysort.highlight(r, replacer)?.join("") || "")
+                  .replaceAll(a1, a2)
+                  .replaceAll(b1, b2) || undefined,
+              ),
             ),
           ),
           O.getOrElse(() => n.sources.title),

@@ -23,7 +23,7 @@
     }
     sessStore.set(O.fromNullable(sess))
     DEBUG && console.log(sess)
-    if (sess) await noteSync.setUser_id(sess.user.id)
+    if (sess) await noteSync.setUser_id(sess.user.id) // refreshes
     showLoginPrompt = O.isNone($sessStore)
     // at the end so np if fails
     // should it be here or at which page?
@@ -32,5 +32,6 @@
 </script>
 
 <!-- <button class="btn" on:click={() => {}}>ref</button> -->
+<svelte:window on:focus={noteSync.refresh} />
 <LoginPrompt {showLoginPrompt} />
 <Dashboard {noteSync} />

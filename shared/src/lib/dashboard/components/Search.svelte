@@ -5,6 +5,7 @@
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   import type { Readable } from "svelte/store"
+  import { identity } from "fp-ts/lib/function"
 
   export let noteDeri: NoteDeri
   export let openFirst: Readable<() => void>
@@ -15,6 +16,19 @@
   const entries = A.zip(possibleSelections)(texts)
   let selectedKeys = possibleSelections // : (typeof possibleSelections)[number][]
   const norm = (s: number) => Math.max(s / 5000 + 1, 0) ** 8
+  // const norm = (s: number) => s ** 8
+  // const go = (
+  //   search: string | string[],
+  //   targets: readonly (string | Fuzzysort.Prepared)[],
+  //   options: Fuzzysort.Options,
+  // ) => {
+  //   if (!Array.isArray(search)) return fuzzysort.go(search, targets, options)
+  //   const r = search
+  //     .filter((s, i) => search.indexOf(s) === i)
+  //     .flatMap((s) => fuzzysort.go(s, targets, options))
+  //     .filter((result, i, results) => i === results.findIndex((r) => r.target === result.target))
+  //   return { ...r, total: r.length }
+  // }
   $: fzRes.set(
     !!query &&
       fuzzysort.go(query, $notes, {

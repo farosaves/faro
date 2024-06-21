@@ -5,11 +5,24 @@
   import IconArchiveFill from "~icons/tabler/archive-filled"
   import { shortcut } from "./shortcut"
   import { altKey } from "./utils"
+  import { toastNotify } from "./stores"
   export let hovered: boolean
   const defaultP = 0
   export let p: number
   export let changeP: (p: number) => void
-  const onClick = (n: number) => () => hovered && changeP((p = p == n ? defaultP : n))
+  const toggleP = (n: number) => changeP((p = p == n ? defaultP : n))
+  const star = () => {
+    if (hovered) {
+      toggleP(5)
+      toastNotify("Starred")
+    }
+  }
+  const archive = () => {
+    if (hovered) {
+      toggleP(-5)
+      toastNotify("Archived")
+    }
+  }
 </script>
 
 <span class="flex w-full">
@@ -20,7 +33,7 @@
       data-umami-event="Note Star"
       data-tip="{altKey}+S"
       checked={false}
-      on:click|preventDefault={onClick(5)}
+      on:click|preventDefault={star}
       use:shortcut={{ alt: true, code: "KeyS" }} />
     <IconStar class="swap-off" />
     <IconStarFill class="swap-on text-primary" />
@@ -38,7 +51,7 @@
       data-umami-event="Note Arch"
       data-tip="{altKey}+X"
       checked={false}
-      on:click|preventDefault={onClick(-5)}
+      on:click|preventDefault={archive}
       use:shortcut={{ alt: true, code: "KeyX" }} />
 
     <IconArchive class="swap-off" />

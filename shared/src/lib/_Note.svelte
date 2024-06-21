@@ -2,14 +2,14 @@
   import type { MouseEventHandler } from "svelte/elements"
 
   import type { SyncLike } from "./sync/sync"
-  import { option as O, array as A } from "fp-ts"
+  import { option as O, array as A, predicate } from "fp-ts"
   import { escapeHTML, sleep } from "./utils"
   import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
-  import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
+  import fuzzysort from "fuzzysort"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
@@ -30,6 +30,8 @@
     for (const hl of note_data.highlights) escaped = escaped.replace(hl, $replacer)
     return escaped
   }
+  $: [a1, b1] = escapeHTML($replacer("split")).split("split")
+  $: [a2, b2] = $replacer("split").split("split")
 
   $: text = pipe(
     note_data.searchArt,
@@ -43,10 +45,13 @@
           selectedKeys,
           A.findIndex((n) => n == "quote"),
           O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
-          O.map((r) => {
-            const target = escapeHTML(r.target)
-            return fuzzysort.highlight({ ...r, target }, $replacer)?.join("")
-          }),
+          O.map(
+            (r) =>
+              escapeHTML(fuzzysort.highlight(r, $replacer)?.join("") || "")
+                .replaceAll(a1, a2)
+                .replaceAll(b1, b2) || undefined,
+          ),
+
           O.chain(O.fromNullable),
           O.getOrElse(() => escapeHTML(note_data.quote)),
         ),
@@ -79,7 +84,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- class:p-0={hovered && $windowActive}border p-[1px]
   class:border-2={hovered && $windowActive} -->
-<div class="relative" style={wRem ? `max-width: ${wRem}rem; min-width: ${wRem}rem` : ""}>
+<div class="relative p-1" style={wRem ? `max-width: ${wRem}rem; min-width: ${wRem}rem` : ""}>
   <div
     class="collapse bg-base-200 border-primary"
     style="border-width: {1 + +(hovered && $windowActive) + 2 * +isHighlighted}px;

@@ -1,6 +1,6 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, funLog, isCmd, makeQH, note_idKey, Semaphore, sleep } from "shared"
+import { DEBUG, elemsOfClass, funLog, isCmd, makeQH, note_idKey, Semaphore, sleep, uuidRegex } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
@@ -63,11 +63,11 @@ const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/htm
 // check if it's part of another already
 const subSelection = async (selectedText: string) => {
   const anchorClasses = Array.from(window.getSelection()?.anchorNode?.parentElement?.classList || [])
-  const potentialHighlights = anchorClasses.filter(s => s.startsWith("_")).map(s => s.slice(1))
+  const potentialHighlights = anchorClasses.filter(s => s.startsWith("_")).map(s => s.slice(1)).filter(x => uuidRegex.test(x))
   if (potentialHighlights.length) {
     const ids = (await T.serializedHighlights.query()).map(([s, _serialized]) => s as UUID)
     const int = A.intersection(S.Eq)(ids)(potentialHighlights)
-    if (int) {
+    if (int.length) {
       if (int.length > 1) console.log("what the heck?")
       T.singleNoteBySnippetId.query(int[0])
       const note = await T.singleNoteBySnippetId.query(int[0])
@@ -182,7 +182,7 @@ window.addEventListener("keydown", async (e) => {
       height: 6rem;
       position: sticky;
       top: 0;
-      z-index: 50;"
+      z-index: 999;"
       ></iframe>`, "text/html",
     ).body.firstElementChild as HTMLElement | null
     if (!iframe) return

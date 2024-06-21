@@ -10,15 +10,7 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import {
-    desc,
-    hasExtensionStore,
-    modalOpenStore,
-    tagModalOpenStore,
-    toastNotify,
-    toastStore,
-    windowActive,
-  } from "$lib"
+  import { hasExtensionStore, modalOpenStore, tagModalOpenStore, toastStore, windowActive } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
@@ -26,6 +18,7 @@
   import { gotoFunction } from "./utils"
 
   export let noteSync: SyncLikeNStores
+  export let isInExt = false
   const noteDeri = new NoteDeri(noteSync)
   const idHighlighted = noteDeri.idHighlighted
   const allTags = noteDeri.allTags
@@ -57,6 +50,7 @@
   onMount(() => {
     modalOpenStore.set(false)
     windowActive.set(true)
+    isInExt && hasExtensionStore.set(true)
     fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").then((_r) =>
       hasExtensionStore.set(true),
     )
