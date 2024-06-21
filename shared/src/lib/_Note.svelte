@@ -9,6 +9,7 @@
   import { pipe } from "fp-ts/lib/function"
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
+  import fuzzysort from "fuzzysort"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void
@@ -46,7 +47,9 @@
           O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map(
             (r) =>
-              escapeHTML(r.highlight($replacer)?.join("")).replaceAll(a1, a2).replaceAll(b1, b2) || undefined,
+              escapeHTML(fuzzysort.highlight(r, $replacer)?.join("") || "")
+                .replaceAll(a1, a2)
+                .replaceAll(b1, b2) || undefined,
           ),
 
           O.chain(O.fromNullable),
