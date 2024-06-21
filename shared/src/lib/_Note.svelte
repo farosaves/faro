@@ -7,7 +7,6 @@
   import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
-  import fuzzysort from "fuzzysort"
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   export let note_data: Omit<NoteEx, keyof SourceData>
