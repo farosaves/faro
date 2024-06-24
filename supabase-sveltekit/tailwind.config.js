@@ -18,7 +18,7 @@ export default {
         default: {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           ...require("daisyui/src/theming/themes")["night"],
-          "primary": "oklch(61.77% 0.163 307.59)",
+          "primary": "oklch(61.77% 0.163 307.59)", // closest web is #9966cc
           // secondary: "oklch(53.53% 0.2365 269.97)",
           // secondary: "oklch(70.58% 0.1581 252)", // ph
           "secondary": "oklch(75.72% 0.1387 252)", // id rather do reddish..

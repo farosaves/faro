@@ -1,6 +1,13 @@
-
+- [ ] watch some tutorials before making a video for webstore
+	- [ ] can record the screen physically
+	- [ ] build a story/narrative - why valuable
+	- [ ] easy music
+	- [ ] doesn't need voiceover  🤯😱
+	- [ ] motion
 - [ ] github oauth fix - shouldnt be my account when someone else is signing up - create an org and put faros there
 - [ ] currSrc (&currSrcs) potentially undefined - rn it persists from the last page you were at
+- [ ] Instead of the first question in the collapses, why would I need it? I can write the whole thing out so that it's below the video.
+	- [ ] Or I can make a carousel with the pictures I have for the web store listing.
 - [x] The in app dashboard should always redirect to the URL and not the note.
 - [ ] banner 4 webstore
 - [ ] improve my [screenshots](https://farosapp.com/notes/ffce59d7-ce19-426d-8a4c-bcc069de99c9) 4 webstore
