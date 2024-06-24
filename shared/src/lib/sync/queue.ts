@@ -52,7 +52,7 @@ export class ActionQueue {
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
     updateStore(this.noteStore)(applyPatches(patchTup.patches))
-    this.log("pushAction")("puuushing") // can do funWarn IF I do encrypted here
+    // this.log("pushAction")("puuushing") // can do funWarn IF I do encrypted here
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
       (patchTup: PatchTup) =>
         f(this.sb.from("notes")) // note that the stacks on failed update from xxdo don't get updated properly yet..
@@ -65,7 +65,7 @@ export class ActionQueue {
     for (const { note } of notesOps)
       note.user_id = user_id
 
-    console.log("notesOps: ", notesOps)
+    // console.log("notesOps: ", notesOps)
     const ops = notesOps.map(x => x.op)
     if (A.uniq(S.Eq)(ops).length > 1) throw new Error("nore than 1 operation in action")
     const [op] = ops
