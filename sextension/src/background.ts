@@ -2,7 +2,7 @@ import { currTab, getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funLog, funLog2, host, internalSearchParams, note_idKey, persisted, sbLogger, syncBookmarks, typeCast, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, sbLogger, syncBookmarks, typeCast, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -62,6 +62,9 @@ const email = derived(sess, s => O.toNullable(s)?.user?.email)
 const wantsNoPrompt = persisted<boolean>("wantsNoPrompt", false, { serializer: devalue })
 // const tabs2Check: number[] = []
 const log = funLog2(sbLogger(supabase))
+const err = funErr(sbLogger(supabase))
+const warn = funWarn(sbLogger(supabase))
+
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
   const changePInput = z.tuple([z.string(), z.number()])
@@ -270,3 +273,10 @@ const setIcon = async (n: number) => {
   ), tabId: tab.id }).catch(console.log)
 }
 notesCurrWindow.subscribe(setIcon)
+
+// erros
+
+self.addEventListener("error", event =>
+  err("unhandled error")(["Error:", event.message, "at", event.filename, "line", event.lineno, "column", event.colno].join(" ")),
+)
+self.addEventListener("unhandledrejection", event => warn("unhandled rejection")(event.reason))
