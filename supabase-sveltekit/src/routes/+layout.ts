@@ -24,8 +24,8 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
       },
     },
     auth: {
-      autoRefreshToken: !isBrowser(),
-      detectSessionInUrl: !isBrowser(),
+      autoRefreshToken: isBrowser(),
+      detectSessionInUrl: isBrowser(),
     },
   }) as unknown as SupabaseClient
   return { supabase }

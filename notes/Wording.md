@@ -1,6 +1,10 @@
 ### Keywords
 Research, sources, save, reading, extension?, 
 The page is soo not seo optimized.
+
+## Calling it app
+makes it sound like it's for phones
+how can i fix it?
 ### Old
 
 Save & organize snippets - use like bookmarks
@@ -69,3 +73,8 @@ I guess no [comparison with bookmarks](http://localhost:5173/notes/fe3327f3-7639
 
 It's about connecting the dots so you have to connect them yourself but it's easier when you have them in one place.
 
+### V6
+#### landing page
+For whom is it? Entrepreneurs, researchers, students etc.
+#### AppSumo
+Great for entrepreneurs researching everything from tech and finance, to marketing and design - have all topics in one place.
