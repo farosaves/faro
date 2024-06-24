@@ -4,6 +4,10 @@
 	- [ ] easy music
 	- [ ] doesn't need voiceover  🤯😱
 	- [ ] motion
+- [ ] Capture line breaks inside quote
+- [ ] TF-IDF for keywords
+	- which can then be used for autocomplete when searching
+	- I can use sources other than just quotes, get like general frequencies of certain words in the language and then filter out the frequent ones from the keyword list
 - [ ] github oauth fix - shouldnt be my account when someone else is signing up - create an org and put faros there
 - [ ] currSrc (&currSrcs) potentially undefined - rn it persists from the last page you were at
 - [ ] Instead of the first question in the collapses, why would I need it? I can write the whole thing out so that it's below the video.
