@@ -5,6 +5,7 @@
 	- [ ] doesn't need voiceover  🤯😱
 	- [ ] motion
 - [ ] Capture line breaks inside quote
+- [ ] Javascript for the dashboard layout.
 - [ ] TF-IDF for keywords
 	- which can then be used for autocomplete when searching
 	- I can use sources other than just quotes, get like general frequencies of certain words in the language and then filter out the frequent ones from the keyword list

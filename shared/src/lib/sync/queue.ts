@@ -93,7 +93,7 @@ export class ActionQueue {
     const { data } = await this.sb.from("sources").select().eq("id", id).maybeSingle().then(this.warnIfErr("check for sources"))
     this.log("pushSrc pre-check")(data)
     if (data?.domain == src.domain && data?.title == title) return true
-    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.log("insert sources"))
+    const { error } = await this.sb.from("sources").insert({ id, title, domain }).then(this.warnIfErr("insert sources"))
     const success = (error == null)
     return success
   }
