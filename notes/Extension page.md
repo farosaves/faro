@@ -28,6 +28,8 @@ They're also presented as a scrollable feed with most recent saves first - so yo
 ➣ remind yourself what you saved recently
 ➣ organise your saves with tags later
 
+Moreover, you can copy a link to your highlight and share it, or paste into Notion, Obsidian, etc.
+
 I've been using it since February and really liked it, so I hope you'll like it too.
 
 
@@ -37,5 +39,35 @@ The only information that ever gets uploaded (when signed in) when you use it to
 ➣ Open page address
 ➣ Saved highlight/quote - what's visible in the sidebar
 ➣ Timestamp
+➣ Debug info e.g. errors
+
+The extension also keeps track the currently open tab for each window - to update the sidebar as you navigate - but doesn't save or upload that data.
+
+## V3
+
+
+
+Faros is an extension designed to make revisiting the easiest possible.
+You save both the URL and a highlighted snippet from the page.
+So you can:
+➣ remember better what the page is about
+➣ search by text
+➣ get back to exactly where you were in text - no need to scroll 
+
+They're also presented as a scrollable feed with most recent saves first - so you can:
+➣ remind yourself what you saved recently
+➣ organise your saves with tags later
+
+Moreover, you can copy a link to your highlight and share it, or paste into Notion, Obsidian, etc.
+
+I've been using it since February and really liked it, so I hope you'll like it too.
+
+ℹ️ About your data:
+When installing you can read: "it can read and change all your data on all websites"
+The only information that ever gets uploaded (when signed in) when you use it to save:
+➣ Open page address
+➣ Saved highlight/quote - what's visible in the sidebar
+➣ Timestamp
+➣ Debug info e.g. errors
 
 The extension also keeps track the currently open tab for each window - to update the sidebar as you navigate - but doesn't save or upload that data.
