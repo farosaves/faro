@@ -61,9 +61,9 @@ export const GET = async ({ params }) => {
   original at <a href="${data.url}">${getOrElse(() => "this url")(host(data.url))}</a>
   
   </div>`)
-  $("head>[href]").each((i, e) => isLocal(e.attribs["href"]) ? !!(e.attribs["href"] = domain + e.attribs["href"]).length : true)
-  $("body [src]").each((i, e) => isLocal(e.attribs["src"]) ? !!(e.attribs["src"] = domain + e.attribs["src"]).length : true)
-  $("body [srcset]").each((i, e) => isLocal(e.attribs["srcset"]) ? !!(e.attribs["srcset"] = domain + e.attribs["src"]).length : true)
+  $("head>[href]").each((_i, e) => isLocal(e.attribs["href"]) ? !!(e.attribs["href"] = domain + e.attribs["href"]).length : true)
+  $("body [src]").each((_i, e) => isLocal(e.attribs["src"]) ? !!(e.attribs["src"] = domain + e.attribs["src"]).length : true)
+  $("body [srcset]").each((_i, e) => isLocal(e.attribs["srcset"]) ? !!(e.attribs["srcset"] = domain + e.attribs["src"]).length : true)
 
   return new Response($.html(), { headers: { "Content-Type": "text/html" } })
 }

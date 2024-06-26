@@ -4,6 +4,8 @@
 	- [ ] easy music
 	- [ ] doesn't need voiceover  🤯😱
 	- [ ] motion
+- [ ] I can put one tag in the fragment identifier\
+	only undo it when clicked another, so adding new tag doesn't do weird behaviour
 - [ ] Capture line breaks inside quote
 - [ ] Javascript for the dashboard layout.
 - [ ] TF-IDF for keywords
@@ -80,6 +82,7 @@ I don't know if they can be batched in any better way.
 ### support
 - [ ] support prompt if anything not working???
 - [ ] debug turn-on-able?
+- [ ] Don't log access token except when debug is on
 
 - [x] Improve dictation for writing my notes.
 - [x] Learn to break up tasks better.

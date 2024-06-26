@@ -6,7 +6,16 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import type { PendingNote, Src } from "shared"
-  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive, toastNotify } from "shared"
+  import {
+    CmModal,
+    API_ADDRESS,
+    updateTheme,
+    toastStore,
+    funLog,
+    windowActive,
+    toastNotify,
+    altKey,
+  } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -95,8 +104,8 @@
         href={$email ? `${API_ADDRESS}/dashboard` : dashboardURL}
         target="_blank"
         class="tooltip tooltip-left"
-        data-tip="Go to dashboard (alt+F)"
-        use:shortcut={{ alt: true, code: "KeyF" }}
+        data-tip="Go to dashboard ({altKey}+C)"
+        use:shortcut={{ alt: true, code: "KeyC" }}
         ><IconLayoutDashboard transform="rotate(90)" font-size={iconSize} /></a>
 
       <button
