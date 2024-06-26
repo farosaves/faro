@@ -139,7 +139,7 @@
               on:click={async () => {
                 if (!(await hasOrGivesPerm(perm))) return //rejected
                 TB.syncBookmarks.query()
-                toastNotify("Exported to Other Bookmarks/Faros Bookmarks", 5000)
+                toastNotify("Exported to Other Bookmarks/Faros", 5000)
               }}>Sync with bookmarks</button>
           </li>
           <li>
