@@ -13,3 +13,5 @@ Chrome webstore:
 * Screenshots: 1280x800 and [FabPic](https://farosapp.com/notes/ffce59d7-ce19-426d-8a4c-bcc069de99c9)
 Appsumo:
 * 1280x720px
+[Devpost](https://devpost.com/software/faros/edit) - 3:2 ratio
+also: alternativeto, crunchbase, stackshare
