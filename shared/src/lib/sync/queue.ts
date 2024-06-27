@@ -65,7 +65,6 @@ export class ActionQueue {
     for (const { note } of notesOps)
       note.user_id = user_id
 
-    // console.log("notesOps: ", notesOps)
     const ops = notesOps.map(x => x.op)
     if (A.uniq(S.Eq)(ops).length > 1) throw new Error("nore than 1 operation in action")
     const [op] = ops
