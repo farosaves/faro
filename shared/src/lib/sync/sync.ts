@@ -19,6 +19,7 @@ import {
   funWarn,
   sbLogger,
   maxDate,
+  sleep,
 } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
@@ -104,14 +105,8 @@ export class NoteSync {
 
   refresh = async () => {
     const warn = funWarn(sbLogger(this.sb))
-    // const log = funLog2(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
-    const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    // log("redresh time_latest")(latest)
-    // log("#nns")
-    await this._fetchNewNotes(latest)
     // Bookmarks sync here
-    // log("#nss")
     await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
   }
@@ -124,8 +119,8 @@ export class NoteSync {
   }
 
 
-  _fetchNewSources = async () => {
-    if (this._user_id == undefined) return 0
+  _fetchNewSources = async (): Promise<true | undefined> => { // true
+    if (this._user_id == undefined) return
     const missingIds = pipe(Array.from(get(this.noteStore).values()),
       A.map(x => x.source_id),
       A.difference(S.Eq)(Array.from(get(this.stuMapStore).keys())),
@@ -135,7 +130,7 @@ export class NoteSync {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
     })
-    return nss.length
+    return nss.length < 1000 || this._fetchNewSources()
   }
 
   _filter4Present = async (user_id: string, lastDate: string) => {
@@ -149,15 +144,17 @@ export class NoteSync {
     this.noteStore.update(M.filter(n => presentIds.has(n.id)))
   }
 
-  _fetchNewNotes = async (latestTs: string) => {
-    if (this._user_id == undefined) return 0
+  _fetchNewNotes = async (ts?: string): Promise<true | undefined> => {
+    const latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    if (this._user_id == undefined) return
     await this._filter4Present(this._user_id, latestTs)
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
     this.noteStore.update((ns) => {
       nns.forEach(nn => ns.set(nn.id, nn))
       return ns
     })
-    return nns.length
+    await sleep(1)
+    return nns.length < 1000 || this._fetchNewNotes()
   }
 
 
