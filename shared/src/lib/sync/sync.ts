@@ -107,6 +107,7 @@ export class NoteSync {
     const warn = funWarn(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
     // Bookmarks sync here
+    await this._fetchNewNotes()
     await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
   }
@@ -153,6 +154,7 @@ export class NoteSync {
       nns.forEach(nn => ns.set(nn.id, nn))
       return ns
     })
+    funLog("nns.length")(nns.length)
     await sleep(1)
     return nns.length < 1000 || this._fetchNewNotes()
   }
