@@ -61,6 +61,7 @@
   const handle_keydown = (e: KeyboardEvent) => {
     if (e.metaKey && e.key === "z") {
       e.preventDefault()
+      toastNotify(e.shiftKey ? "Redo" : "Undo")
       ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
     }
   }
