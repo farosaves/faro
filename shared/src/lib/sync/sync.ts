@@ -99,8 +99,8 @@ export class NoteSync {
     const online = await this._checkOnline().catch(() => false)
     if (user_id === undefined || !online) return
     this._sub(user_id)
+    await this.refresh()
     this.noteStore.update(M.filter(n => n.user_id == user_id))
-    this.refresh()
   }
 
   refresh = async () => {
