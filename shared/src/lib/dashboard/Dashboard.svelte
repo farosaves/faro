@@ -69,16 +69,19 @@
   const layoutey = derived(tilesWidth, (tW) => {
     const nNotes = Math.floor(tW / 256)
     const noteWidth = Math.floor(tW / nNotes) - 4
-    const groupize: (x: [string, NoteEx[]][]) => [string, NoteEx[]][][] = (x) => {
-      const ret: NonEmptyArray<[string, NoteEx[]][]> = [[]]
-      for (const [t, noteGroup] of x) {
-        const l = ret.at(-1)!.length // force cuz nonempty
-        if (l + noteGroup.length <= nNotes) ret.at(-1)!.push([t, noteGroup])
-        else ret.push([[t, noteGroup]])
-      }
-      return ret
-    }
-    return { noteWidth, groupize }
+
+    // I'll need this code when doing infinite scroll
+
+    // const groupize: (x: [string, NoteEx[]][]) => [string, NoteEx[]][][] = (x) => {
+    //   const ret: NonEmptyArray<[string, NoteEx[]][]> = [[]]
+    //   for (const [t, noteGroup] of x) {
+    //     const l = ret.at(-1)!.length // force cuz nonempty
+    //     if (l + noteGroup.length <= nNotes) ret.at(-1)!.push([t, noteGroup])
+    //     else ret.push([[t, noteGroup]])
+    //   }
+    //   return ret
+    // }
+    return { noteWidth }
   })
 </script>
 
