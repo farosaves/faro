@@ -44,11 +44,10 @@ The only information that ever gets uploaded (when signed in) when you use it to
 The extension also keeps track the currently open tab for each window - to update the sidebar as you navigate - but doesn't save or upload that data.
 
 ## V3
-
-
+When you want to save something you find online, you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
 
 Faros is an extension designed to make revisiting the easiest possible.
-You save both the URL and a highlighted snippet from the page.
+You save both the URL and a highlighted snippet - to act as a tagline - from the page.
 So you can:
 ➣ remember better what the page is about
 ➣ search by text
@@ -56,7 +55,7 @@ So you can:
 
 They're also presented as a scrollable feed with most recent saves first - so you can:
 ➣ remind yourself what you saved recently
-➣ organise your saves with tags later
+➣ organize your saves with tags later
 
 Moreover, you can copy a link to your highlight and share it, or paste into Notion, Obsidian, etc.
 
