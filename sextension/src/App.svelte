@@ -6,7 +6,16 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import type { PendingNote, Src } from "shared"
-  import { CmModal, API_ADDRESS, updateTheme, toastStore, funLog, windowActive, toastNotify } from "shared"
+  import {
+    CmModal,
+    API_ADDRESS,
+    updateTheme,
+    toastStore,
+    funLog,
+    windowActive,
+    toastNotify,
+    altKey,
+  } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -30,11 +39,11 @@
   const session = RemoteStore("session", O.none as O.Option<Session>)
   const email = derived(session, (s) => O.toNullable(s)?.user?.email)
 
-  let optimistic: O.Option<PendingNote> = O.none
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
   import { derived, writable } from "svelte/store"
   import { hasOrGivesPerm } from "$lib/utils"
+  import { optimistic } from "$lib/stores"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -42,8 +51,8 @@
     windowId.set(window.id || NaN)
     funLog("windowid")(window.id)
     optimisticNotes.stream.subscribe(([x]) => {
-      optimistic = O.some(x)
-      setTimeout(() => (optimistic = O.none), 2000)
+      optimistic.set(O.some(x))
+      setTimeout(() => optimistic.set(O.none), 2000)
     })
     TB.refresh.query()
     themeChange(false)
@@ -52,6 +61,7 @@
   const handle_keydown = (e: KeyboardEvent) => {
     if (e.metaKey && e.key === "z") {
       e.preventDefault()
+      toastNotify(e.shiftKey ? "Redo" : "Undo")
       ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
     }
   }
@@ -95,8 +105,8 @@
         href={$email ? `${API_ADDRESS}/dashboard` : dashboardURL}
         target="_blank"
         class="tooltip tooltip-left"
-        data-tip="Go to dashboard (alt+F)"
-        use:shortcut={{ alt: true, code: "KeyF" }}
+        data-tip="Go to dashboard ({altKey}+C)"
+        use:shortcut={{ alt: true, code: "KeyC" }}
         ><IconLayoutDashboard transform="rotate(90)" font-size={iconSize} /></a>
 
       <button
@@ -130,7 +140,7 @@
               on:click={async () => {
                 if (!(await hasOrGivesPerm(perm))) return //rejected
                 TB.syncBookmarks.query()
-                toastNotify("Exported to Other Bookmarks/Faros Bookmarks", 5000)
+                toastNotify("Exported to Other Bookmarks/Faros", 5000)
               }}>Sync with bookmarks</button>
           </li>
           <li>
@@ -163,7 +173,7 @@
     </div>
   </div>
 
-  <NotePanel bind:optimistic syncLike={bgSync} {windowId} />
+  <NotePanel syncLike={bgSync} {windowId} />
 
   <CmModal />
 

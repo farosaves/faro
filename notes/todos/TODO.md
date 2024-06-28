@@ -4,11 +4,13 @@
 	- [ ] easy music
 	- [ ] doesn't need voiceover  🤯😱
 	- [ ] motion
-- [ ] Capture line breaks inside quote
-- [ ] Javascript for the dashboard layout.
-- [ ] TF-IDF for keywords
-	- which can then be used for autocomplete when searching
-	- I can use sources other than just quotes, get like general frequencies of certain words in the language and then filter out the frequent ones from the keyword list
+- [ ] I can put one tag in the fragment identifier\
+	only undo it when clicked another, so adding new tag doesn't auto-activate it
+	then i can do links to tags
+- [ ] Capture line breaks inside quote?
+- [ ] Javascript for the dashboard layout
+- [ ] debug changing titles in sources
+
 - [ ] github oauth fix - shouldnt be my account when someone else is signing up - create an org and put faros there
 - [ ] currSrc (&currSrcs) potentially undefined - rn it persists from the last page you were at
 - [ ] Instead of the first question in the collapses, why would I need it? I can write the whole thing out so that it's below the video.
@@ -80,6 +82,7 @@ I don't know if they can be batched in any better way.
 ### support
 - [ ] support prompt if anything not working???
 - [ ] debug turn-on-able?
+- [ ] Don't log access token except when debug is on
 
 - [x] Improve dictation for writing my notes.
 - [x] Learn to break up tasks better.
@@ -89,3 +92,8 @@ I don't know if they can be batched in any better way.
 - [ ] YouTube comments should save URL of the comment.
 - [ ] Quora should save the shareable link in the bottom right corner.
 - [ ] Reddit probably also just the comment url
+
+### extras
+- [ ] TF-IDF for keywords
+	- which can then be used for autocomplete when searching
+	- I can use sources other than just quotes, get like general frequencies of certain words in the language and then filter out the frequent ones from the keyword list

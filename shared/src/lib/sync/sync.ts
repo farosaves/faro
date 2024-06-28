@@ -19,6 +19,7 @@ import {
   funWarn,
   sbLogger,
   maxDate,
+  sleep,
 } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
@@ -27,7 +28,7 @@ import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
-import { getNotesOps, xxdoStacks, type PatchTup } from "./notes_ops"
+import { xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
@@ -55,7 +56,7 @@ const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, stor
 if (get(stuMapStore).values.length)
   stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
 
-const perm = { permissions: ["bookmarks"] }
+// const perm = { permissions: ["bookmarks"] }
 
 export class NoteSync {
   sb: SupabaseClient
@@ -98,20 +99,15 @@ export class NoteSync {
     const online = await this._checkOnline().catch(() => false)
     if (user_id === undefined || !online) return
     this._sub(user_id)
+    await this.refresh()
     this.noteStore.update(M.filter(n => n.user_id == user_id))
-    this.refresh()
   }
 
   refresh = async () => {
     const warn = funWarn(sbLogger(this.sb))
-    // const log = funLog2(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
-    const latest = maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
-    // log("redresh time_latest")(latest)
-    // log("#nns")
-    await this._fetchNewNotes(latest)
     // Bookmarks sync here
-    // log("#nss")
+    await this._fetchNewNotes()
     await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
   }
@@ -124,8 +120,8 @@ export class NoteSync {
   }
 
 
-  _fetchNewSources = async () => {
-    if (this._user_id == undefined) return 0
+  _fetchNewSources = async (): Promise<true | undefined> => { // true
+    if (this._user_id == undefined) return
     const missingIds = pipe(Array.from(get(this.noteStore).values()),
       A.map(x => x.source_id),
       A.difference(S.Eq)(Array.from(get(this.stuMapStore).keys())),
@@ -135,7 +131,7 @@ export class NoteSync {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
     })
-    return nss.length
+    return nss.length < 1000 || this._fetchNewSources()
   }
 
   _filter4Present = async (user_id: string, lastDate: string) => {
@@ -149,15 +145,18 @@ export class NoteSync {
     this.noteStore.update(M.filter(n => presentIds.has(n.id)))
   }
 
-  _fetchNewNotes = async (latestTs: string) => {
-    if (this._user_id == undefined) return 0
+  _fetchNewNotes = async (ts?: string): Promise<true | undefined> => {
+    const latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    if (this._user_id == undefined) return
     await this._filter4Present(this._user_id, latestTs)
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
     this.noteStore.update((ns) => {
       nns.forEach(nn => ns.set(nn.id, nn))
       return ns
     })
-    return nns.length
+    funLog("nns.length")(nns.length)
+    await sleep(1)
+    return nns.length < 1000 || this._fetchNewNotes()
   }
 
 
@@ -211,7 +210,7 @@ export class NoteSync {
     await this.actionQueue.act(this._user_id)(patchTup)
     // Bookmarks update here?
     // if (await chrome.permissions.contains(perm)) syncBookmarks()
-    getNotesOps(patchTup.patches, get(this.noteStore))
+    // getNotesOps(patchTup.patches, get(this.noteStore))
   }
 
   updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>

@@ -75,6 +75,10 @@ It's about connecting the dots so you have to connect them yourself but it's eas
 
 ### V6
 #### landing page
+**tagline** better than bookmarks / never use bookmarks again
 For whom is it? Entrepreneurs, researchers, students etc.
+### company section on faros page
+* About me 
+* Vision
 #### AppSumo
 Great for entrepreneurs researching everything from tech and finance, to marketing and design - have all topics in one place.

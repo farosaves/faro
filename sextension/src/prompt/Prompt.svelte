@@ -24,7 +24,7 @@
   </h3>
   <ul class="flex-grow">
     <li class="text-lg text-center">Find a sentence that'd help you remember it</li>
-    <li class="text-lg text-center">Highlight it and save with {altKey} + D</li>
+    <li class="text-lg text-center">Highlight it and save with {altKey} + X</li>
   </ul>
   <!-- <div class="flex w-full justify-around my-2"> -->
   <button

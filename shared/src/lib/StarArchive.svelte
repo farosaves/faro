@@ -4,7 +4,7 @@
   import IconArchive from "~icons/tabler/archive"
   import IconArchiveFill from "~icons/tabler/archive-filled"
   import { shortcut } from "./shortcut"
-  import { altKey } from "./utils"
+  import { altKey, ctrlKey } from "./utils"
   import { toastNotify } from "./stores"
   export let hovered: boolean
   const defaultP = 0
@@ -31,10 +31,10 @@
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-right"
       data-umami-event="Note Star"
-      data-tip="{altKey}+S"
+      data-tip="{ctrlKey}+S"
       checked={false}
       on:click|preventDefault={star}
-      use:shortcut={{ alt: true, code: "KeyS" }} />
+      use:shortcut={{ control: true, code: "KeyS" }} />
     <IconStar class="swap-off" />
     <IconStarFill class="swap-on text-primary" />
     <!-- </div> -->
@@ -49,10 +49,10 @@
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-left"
       data-umami-event="Note Arch"
-      data-tip="{altKey}+X"
+      data-tip="{ctrlKey}+X"
       checked={false}
       on:click|preventDefault={archive}
-      use:shortcut={{ alt: true, code: "KeyX" }} />
+      use:shortcut={{ control: true, code: "KeyX" }} />
 
     <IconArchive class="swap-off" />
     <IconArchiveFill class="swap-on text-primary" />

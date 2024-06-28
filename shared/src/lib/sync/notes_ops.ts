@@ -2,7 +2,7 @@ import { option as O, record as R, string as S, array as A, map as M } from "fp-
 import { pipe } from "fp-ts/lib/function"
 import type { Notes } from "$lib/db/types"
 import type { Patch } from "immer"
-import { getOrElse } from "$lib/utils"
+import { funLog, getOrElse } from "$lib/utils"
 import { persisted, type StorageType } from "./persisted-store"
 import type { Note } from "$lib/db/typeExtras"
 import * as devalue from "devalue"
@@ -21,14 +21,14 @@ export type NotesOps = {
 const _getOp = (x: Patch): NotesOps[0]["op"] => (x.op == "remove" && x.path.length == 1) ? "delete" : "upsert"
 
 export const getNotesOps = (patches: Patch[], ns: Map<string, Notes>): NotesOps => patches
-// .filter(x => x.op != "remove")
+  .map(funLog("getNotesOps"))
   .map(x =>
     pipe(
       O.fromNullable(x.path[0] as string),
       O.chain(p => M.lookup(S.Eq)(p, ns)), // 1. from the store - e.g. tag udpate]
       O.map(note => ({ op: _getOp(x), note })), // if we got from store decide what to do
       getOrElse(() => { // not in store Or path wrong
-        if (x.path.length == 1) return { op: _getOp(x), note: x.value } // probably will fail but should chack - then x.value is note that was deleted
+        if (x.path.length == 1) return { op: _getOp(x), note: x.value || { id: x.path.at(0) } } // probably will fail but should chack - then x.value is note that was deleted
         // no path: means goddam patch contains all notes
         else {
           console.log("using patch fallback")

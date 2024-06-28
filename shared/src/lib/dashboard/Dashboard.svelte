@@ -10,12 +10,21 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { hasExtensionStore, modalOpenStore, tagModalOpenStore, toastStore, windowActive } from "$lib"
+  import {
+    hasExtensionStore,
+    modalOpenStore,
+    tagModalOpenStore,
+    toastStore,
+    windowActive,
+    type NoteEx,
+  } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
+  import { derived, readable, writable } from "svelte/store"
+  import type { NonEmptyArray } from "fp-ts/lib/NonEmptyArray"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
@@ -37,7 +46,6 @@
   }
   closeAll()
 
-  let wRem = 16
   const handle_keydown = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "z" && !$modalOpenStore && !$tagModalOpenStore) {
       e.preventDefault()
@@ -51,11 +59,30 @@
     modalOpenStore.set(false)
     windowActive.set(true)
     isInExt && hasExtensionStore.set(true)
-    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg").then((_r) =>
-      hasExtensionStore.set(true),
-    )
+    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg")
+      .then((_r) => hasExtensionStore.set(true))
+      .catch(() => undefined)
   })
   let innerWidth: number
+  const tilesWidth = writable(800)
+  // min width for note is 256px
+  const layoutey = derived(tilesWidth, (tW) => {
+    const nNotes = Math.floor(tW / 256)
+    const noteWidth = Math.floor(tW / nNotes) - 4
+
+    // I'll need this code when doing infinite scroll
+
+    // const groupize: (x: [string, NoteEx[]][]) => [string, NoteEx[]][][] = (x) => {
+    //   const ret: NonEmptyArray<[string, NoteEx[]][]> = [[]]
+    //   for (const [t, noteGroup] of x) {
+    //     const l = ret.at(-1)!.length // force cuz nonempty
+    //     if (l + noteGroup.length <= nNotes) ret.at(-1)!.push([t, noteGroup])
+    //     else ret.push([[t, noteGroup]])
+    //   }
+    //   return ret
+    // }
+    return { noteWidth }
+  })
 </script>
 
 <svelte:head>
@@ -69,7 +96,7 @@
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
 <div class="drawer md:drawer-open">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content z-0">
+  <div class="drawer-content z-0" bind:clientWidth={$tilesWidth}>
     <!-- my main here -->
     {#each priorities as priority}
       <div
@@ -78,8 +105,8 @@
         {#each $note_groupss[priority] as [title, note_group]}
           <div
             class="border-2 text-center rounded-lg border-neutral flex flex-col"
-            style="max-width: {innerWidth > 768 ? wRem * note_group.length + 0.25 : 250}rem;
-            min-width: {wRem + 0.15}rem">
+            style="max-width: {innerWidth > 768 ? $layoutey.noteWidth * note_group.length + 4 : 16000}px;
+            min-width: {$layoutey.noteWidth + 2}px">
             <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
             <a target="_blank" href={note_group[0].url} class="text-lg text-wrap flex-grow-0 hover:underline"
               >{@html title}</a>
@@ -91,7 +118,7 @@
                   {closeAll}
                   goto_function={gotoFunction(note)}
                   syncLike={noteSync}
-                  wRem={innerWidth > 768 ? wRem : undefined}
+                  px={innerWidth > 768 ? $layoutey.noteWidth : undefined}
                   {allTags}
                   isHighlighted={note.id == $idHighlighted} />
               {/each}
@@ -136,21 +163,3 @@
     </div>
   {/each}
 </div>
-
-<style>
-  /* @container (min-width: 16.15rem) {
-    .foo {
-      width: 16.15rem;
-    }
-  }
-  @container (min-width: 32.15rem) {
-    .foo {
-      width: 32.15rem;
-    }
-  }
-  @container (min-width: 48.15rem) {
-    .foo {
-      width: 48.15rem;
-    }
-  } */
-</style>

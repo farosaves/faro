@@ -172,7 +172,7 @@ setTimeout(onLoad, 5000) // wait 3 second
 
 let promptOpen = false
 window.addEventListener("keydown", async (e) => {
-  if (e.altKey && e.code == "KeyF") T.openDashboard.query()
+  if (e.altKey && e.code == "KeyC") T.openDashboard.query()
   if (isCmd(e) && e.code == "KeyD") {
     if (promptOpen || await T.requestedNoPrompt.query()) return
     promptOpen = true

@@ -27,7 +27,7 @@
     showLoginPrompt = O.isNone($sessStore)
     // at the end so np if fails
     // should it be here or at which page?
-    if (sess) await chrome.runtime.sendMessage(extId, { action: "key", key: "??", user_id: sess.user.id })
+    // if (sess) await chrome.runtime.sendMessage(extId, { action: "key", key: "??", user_id: sess.user.id })
   })
 </script>
 

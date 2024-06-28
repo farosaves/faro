@@ -1,4 +1,6 @@
 <script>
+  import { altKey } from "shared"
+
   function notifyMe() {
     if (!("Notification" in window)) {
       // Check if the browser supports notifications
@@ -34,7 +36,7 @@
   </h3>
   <ul>
     <li>Try to find a sentence which will make it easier for you to remember it</li>
-    <li>Then save it with Alt/Option + D</li>
+    <li>Then save it with {altKey} + X</li>
     <li>You can always export it to bookmarks later so why not!</li>
   </ul>
   <div class="flex w-full justify-around my-2">
