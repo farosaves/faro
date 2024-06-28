@@ -1,7 +1,15 @@
 # V1
 remember the girl texting guy - Even mentioning that saving is important can be helpful.
 ## promo
-Faros is a browser extension for (managing) online reading.
+Faros gives you a better way to save all the cool stuff you find online,
+by making it easier to remember what you saved and why.
+
+* It's really simple - I could bookmark this youtube page - but the important information here is that it's the Vsauce music.
+vs
+* With bookmarks remembering is hard. You can look at it and not remember what it was.  ![[bookmarks2.png]] Like what's a lesser Egyptian jerboa? ![[Pasted image 20240628180541.png]]
+ 
+
+
 It helps you save and revisit pages.
 Let's say you want to save this page. / Let's take this page.
 Before you save, you ask yourself, why would I ever care about it?

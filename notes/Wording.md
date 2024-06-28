@@ -76,9 +76,37 @@ It's about connecting the dots so you have to connect them yourself but it's eas
 ### V6
 #### landing page
 **tagline** better than bookmarks / never use bookmarks again
+* ***Save online reading - one sentence at a time**
+* Use it like bookmarks, but with highlighting a sentence that describes what the page is about.
+* A better way to save all the cool stuff you find online - (by making it easier to) remember what you saved and why.
+* 
+
+
+
 For whom is it? Entrepreneurs, researchers, students etc.
 ### company section on faros page
 * About me 
 * Vision
 #### AppSumo
 Great for entrepreneurs researching everything from tech and finance, to marketing and design - have all topics in one place.
+
+
+## [Indiehackers post](https://farosapp.com/notes/0d50be4c-241a-4449-b2cc-b187e5c0cb3d)
+
+| ?    | !                                           |
+| ---- | ------------------------------------------- |
+| what | Chrome extension                            |
+| how  | to save all the cool stuff you find online  |
+| who  | for those who love learning                 |
+| /    | *have too many interests*                   |
+| why  | but get overwhelmed                         |
+| when | when there's so much noise on the internet. |
+| /    | because the internet can be too much.       |
+| /    | **by having too many interests.**           |
+
+| ?          | !                                                                 |
+| ---------- | ----------------------------------------------------------------- |
+| Dream      | Whenever you remember, oh I saw this once... just find it!        |
+| Obj        | Even if you're bad at organizing with notes etc.                  |
+| Effort     | Without doing anything extra                                      |
+| Obj/effort | Integrate with anything like notion/obsidian with no extra steps. |
