@@ -39,11 +39,11 @@
   const session = RemoteStore("session", O.none as O.Option<Session>)
   const email = derived(session, (s) => O.toNullable(s)?.user?.email)
 
-  let optimistic: O.Option<PendingNote> = O.none
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
   import { derived, writable } from "svelte/store"
   import { hasOrGivesPerm } from "$lib/utils"
+  import { optimistic } from "$lib/stores"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -51,8 +51,8 @@
     windowId.set(window.id || NaN)
     funLog("windowid")(window.id)
     optimisticNotes.stream.subscribe(([x]) => {
-      optimistic = O.some(x)
-      setTimeout(() => (optimistic = O.none), 2000)
+      optimistic.set(O.some(x))
+      setTimeout(() => optimistic.set(O.none), 2000)
     })
     TB.refresh.query()
     themeChange(false)
@@ -173,7 +173,7 @@
     </div>
   </div>
 
-  <NotePanel bind:optimistic syncLike={bgSync} {windowId} />
+  <NotePanel syncLike={bgSync} {windowId} />
 
   <CmModal />
 

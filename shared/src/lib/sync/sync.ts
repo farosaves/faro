@@ -28,7 +28,7 @@ import { notesRowSchema } from "../db/schemas"
 import { z } from "zod"
 import { createMock, type PendingNote } from "../db/mock"
 import * as devalue from "devalue"
-import { getNotesOps, xxdoStacks, type PatchTup } from "./notes_ops"
+import { xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
@@ -56,7 +56,7 @@ const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, stor
 if (get(stuMapStore).values.length)
   stuMapStore.update(ns => pipe(() => validateSTUMap(ns), O.tryCatch, O.getOrElse(() => stuMap)))
 
-const perm = { permissions: ["bookmarks"] }
+// const perm = { permissions: ["bookmarks"] }
 
 export class NoteSync {
   sb: SupabaseClient
@@ -210,7 +210,7 @@ export class NoteSync {
     await this.actionQueue.act(this._user_id)(patchTup)
     // Bookmarks update here?
     // if (await chrome.permissions.contains(perm)) syncBookmarks()
-    getNotesOps(patchTup.patches, get(this.noteStore))
+    // getNotesOps(patchTup.patches, get(this.noteStore))
   }
 
   updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>
