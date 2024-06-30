@@ -3,3 +3,4 @@
 - [ ] Going by months into a virtual list would be cool, *but difficult to implement?*
 - [ ] Search inside the sidebar
 - [ ] Snoozing stars
+- [ ] Alt + C should switch tab to the Faros one if open already.
