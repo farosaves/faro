@@ -3,10 +3,13 @@
 
   import type { SyncLike } from "./sync/sync"
   import { option as O, array as A, predicate } from "fp-ts"
-  import { escapeHTML, sleep } from "./utils"
+  import { ctrlKey, escapeHTML, sleep } from "./utils"
   import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
+  import IconTrash from "~icons/tabler/trash"
+  import IconLink from "~icons/tabler/link"
+  import IconDotsVertical from "~icons/tabler/dots-vertical"
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   import fuzzysort from "fuzzysort"
@@ -76,7 +79,10 @@
   //     highlightMe() &&
   //     (note_data["highlightOnMount"] = false)
   // })
-
+  const showOptions = () => {
+    $modalNote = O.some(note_data)
+    $modalOpenStore = true
+  }
   let hovered = false
   // const cls = wRem ? `md:max-w-[${wRem * 4}] md:min-w-[${wRem * 4}]` : "" // this actually made the layout interesting
 </script>
@@ -94,10 +100,7 @@
       hovered = false
       isOpen = false
     }}
-    on:contextmenu|preventDefault={() => {
-      $modalNote = O.some(note_data)
-      $modalOpenStore = true
-    }}>
+    on:contextmenu|preventDefault={showOptions}>
     <input type="checkbox" class="-z-10" bind:checked={isOpen} />
     <div
       class="collapse-title text-center"
@@ -116,29 +119,36 @@
       </button>
       <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
     </div>
-    <div class="collapse-content z-40" style="grid-row-start: 2">
+    <div class="collapse-content z-40">
       {#if hovered}
+        <!--  -->
         <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
           <button
-            class="btn btn-xs text-error"
+            on:click={() => {
+              if (hovered) {
+                navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
+                toastNotify("Copied to clipboard.")
+              }
+            }}
+            class="tooltip tooltip-secondary"
+            data-tip="Copy link {ctrlKey}+C"
+            data-umami-event="Note Copy"
+            use:shortcut={{ control: true, code: "KeyC" }}><IconLink /></button>
+
+          <button
+            class="tooltip tooltip-secondary text-error"
+            data-tip="Delete"
             data-umami-event="Note Del"
             on:click={() => {
               syncLike.deleteit(note_data.id)
               // prettier-ignore
               pipe(deleteCbOpt, O.map(f => f()))
               closeAll()
-            }}>DELETE</button>
+            }}><IconTrash /></button>
+
+          <button class="tooltip tooltip-secondary" data-tip="More info..." on:click={showOptions}
+            ><IconDotsVertical /></button>
         </StarArchive>
-        <button
-          hidden
-          on:click={() => {
-            if (hovered) {
-              navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
-              toastNotify("Copied to clipboard.")
-            }
-          }}
-          data-umami-event="Note Copy"
-          use:shortcut={{ control: true, code: "KeyC" }} />
       {/if}
     </div>
   </div>
