@@ -117,7 +117,6 @@
         {@html text}
         <!-- <br />{note_data.priority || "noPriority"} -->
       </button>
-      <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
     </div>
     <div class="collapse-content z-40">
       {#if hovered}
@@ -152,6 +151,7 @@
       {/if}
     </div>
   </div>
+  <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
 </div>
 
 <!-- <style>

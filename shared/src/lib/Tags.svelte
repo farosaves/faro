@@ -495,19 +495,16 @@
     margin-left: 5px;
   }
 
-  /* svelte-tags-input-matchs */
-
   .svelte-tags-input-matchs-parent {
-    position: static;
+    position: relative;
   }
 
   .svelte-tags-input-matchs {
     position: absolute;
-    /* margin-top: -50px; */
     top: 0;
     left: 0;
     right: 0;
-    /* margin: 3px 0; */
+    margin: 3px 0;
     padding: 0px;
     background: #fff;
     border: solid 1px #ccc;
