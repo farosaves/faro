@@ -79,11 +79,8 @@ It's about connecting the dots so you have to connect them yourself but it's eas
 * ***Save online reading - one sentence at a time**
 * Use it like bookmarks, but with highlighting a sentence that describes what the page is about.
 * A better way to save all the cool stuff you find online - (by making it easier to) remember what you saved and why.
-* 
+* Save online reading / never forget what you saved and why
 
-
-
-For whom is it? Entrepreneurs, researchers, students etc.
 ### company section on faros page
 * About me 
 * Vision
@@ -103,6 +100,11 @@ Great for entrepreneurs researching everything from tech and finance, to marketi
 | when | when there's so much noise on the internet. |
 | /    | because the internet can be too much.       |
 | /    | **by having too many interests.**           |
+*For those who love learning, but have too many interests to keep track of.*
+Do you love learning, but have too many interests to keep track of?
+Faros makes it easier and you won't need to do (almost) anything extra.
+Watch the video below to learn how:
+
 
 | ?    | !                                              |
 | ---- | ---------------------------------------------- |

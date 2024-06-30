@@ -3,7 +3,7 @@
   import { trpc } from "$lib/trpc/client.js"
   import type { Session } from "@supabase/supabase-js"
   export let data
-  const { supabase } = data
+  const { supabase, slug } = data
   import { option as O, taskOption as TO } from "fp-ts"
   import { DEBUG, Dashboard, NoteSync, chainN, funLog, sessStore, windowActive } from "shared"
   import { onMount } from "svelte"
@@ -12,7 +12,9 @@
   const noteSync = new NoteSync(supabase, undefined, T.online.query)
   let showLoginPrompt = false
   const extId = DEBUG ? "iigdnlokbommcbpkhlafbkhgpbmeagfl" : "???"
+
   onMount(async () => {
+    console.log("slug", slug)
     const storedSess = get(sessStore)
     let sess: Session | null | undefined
     if (O.isNone(storedSess)) {

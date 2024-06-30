@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Stay on top of online reading - bookmark highlights</title>
+  <title>Faros - Save online reading - bookmark highlights</title>
   <meta
     property="description"
     content="Effortlessly save and revisit your online reading with Faros browser extension. Highlight, save & organize." />
@@ -24,9 +24,11 @@
       <div class="flex flex-col w-full place-items-center">
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
-          <h2 class="text-3xl font-bold">Stay on top of online reading <br /> Bookmark highlights</h2>
+          <h2 class="text-3xl font-bold">Save online reading</h2>
+          <h3 class="text-2xl font-bold">Never forget what you saved and why</h3>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <br />
+          <!-- For those who love learning, but have too many interests to keep track of. -->
           {#if !$hasExtensionStore}
             <a
               id="farosgetitlink"
@@ -38,20 +40,23 @@
           {/if}
         </div>
 
+        <!-- <div class="divider"></div>
+        yoo -->
         <div class="divider"></div>
         <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
-          <p class="py-1">
-            <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
+          <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
+          <p class="py-1">Faros makes it easy without doing (almost) anything extra.</p>
+          <p class="py-1">Watch the video to learn how:</p>
+          <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
             to see what it looks like
             <br />
             Or  -->
-            Watch the video introduction:
-          </p>
+          <!-- Watch the video introduction: -->
         </div>
       </div>
     </div>
   </div>
-  <div class="flex justify-center w-full">
+  <div class="flex justify-center w-full mt-2">
     <iframe
       loading="lazy"
       width="560"
@@ -65,8 +70,8 @@
   </div>
   <div class="my-8"></div>
   <div class="flex flex-col items-center">
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
+      <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
       <div class="collapse-content">
         <span class="my-2 block"
@@ -77,8 +82,9 @@
         <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
       </div>
     </div>
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
+      <input type="checkbox" />
+
       <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
       <div class="collapse-content mx-4">
         <ul class="list-disc text-nowrap w-min text-left">
@@ -91,22 +97,27 @@
         </ul>
       </div>
     </div>
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
+      <input type="checkbox" />
+
       <div class="collapse-title text-xl font-medium text-left">Where is it available?</div>
       <div class="collapse-content">
-        It's on chrome webstore: works on computers (no mobile sorry) and all browsers except: Firefox and
-        Safari.<br />
+        It's on <a
+          href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo"
+          class="underline">chrome webstore</a
+        >: for desktops.<br />
         I can do Firefox easily so <a href="/contact" class="underline">lmk if interested</a>.
       </div>
     </div>
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
+      <input type="checkbox" />
+
       <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
       <div class="collapse-content">No! Only to sync with other devices.</div>
     </div>
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg" tabindex="0">
+    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
+      <input type="checkbox" />
+
       <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
       <div class="collapse-content">
         Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option to
