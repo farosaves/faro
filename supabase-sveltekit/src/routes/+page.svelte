@@ -27,9 +27,9 @@
           <h2 class="text-3xl font-bold">Save online reading</h2>
           <h3 class="text-2xl font-bold">Never forget what you saved and why</h3>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
-          <br />
           <!-- For those who love learning, but have too many interests to keep track of. -->
           {#if !$hasExtensionStore}
+            <br />
             <a
               id="farosgetitlink"
               class="btn btn-lg btn-primary text-xl"
@@ -56,7 +56,7 @@
       </div>
     </div>
   </div>
-  <div class="flex justify-center w-full mt-2">
+  <div class="flex justify-center w-full mt-12">
     <iframe
       loading="lazy"
       width="560"
@@ -90,7 +90,7 @@
         <ul class="list-disc text-nowrap w-min text-left">
           <li class="list-item">Select text</li>
           <li class="list-item">
-            Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">D</kbd> <br />
+            Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
             or right-click and select "Faros save"
           </li>
           <li class="list-item">If something doesn't work try refreshing the webpage.</li>
