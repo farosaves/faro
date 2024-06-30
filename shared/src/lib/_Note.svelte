@@ -120,7 +120,7 @@
       <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
     </div>
     <div class="collapse-content z-40">
-      {#if hovered}
+      {#if hovered || isOpen}
         <!--  -->
         <StarArchive bind:hovered bind:p={note_data.prioritised} {changeP}>
           <button

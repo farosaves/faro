@@ -1,2 +1,2 @@
 what the heck is overview component?
-- [ ] Javascript for the dashboard layout
+- [ ] Javascript for the dashboard layout - omg

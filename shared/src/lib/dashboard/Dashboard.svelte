@@ -72,7 +72,7 @@
 
     // I'll need this code when doing infinite scroll
 
-    // const groupize: (x: [string, NoteEx[]][]) => [string, NoteEx[]][][] = (x) => {
+    // const rowize: (x: [string, NoteEx[]][]) => [string, NoteEx[]][][] = (x) => {
     //   const ret: NonEmptyArray<[string, NoteEx[]][]> = [[]]
     //   for (const [t, noteGroup] of x) {
     //     const l = ret.at(-1)!.length // force cuz nonempty
@@ -105,11 +105,13 @@
         {#each $note_groupss[priority] as [title, note_group]}
           <div
             class="border-2 text-center rounded-lg border-neutral flex flex-col"
-            style="max-width: {innerWidth > 768 ? $layoutey.noteWidth * note_group.length + 4 : 16000}px;
+            style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
             min-width: {$layoutey.noteWidth + 2}px">
             <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
-            <a target="_blank" href={note_group[0].url} class="text-lg text-wrap flex-grow-0 hover:underline"
-              >{@html title}</a>
+            <a
+              target="_blank"
+              href={note_group[0].url}
+              class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline">{@html title}</a>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
               {#each note_group as note (note.id)}
                 <Note
