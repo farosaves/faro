@@ -25,14 +25,14 @@
     <p class="py-4">
       Created at: {p((n) => fmt.format(Date.parse(n.created_at)), "")}
     </p>
-    <button class="flex flex-row relative" on:click={onclick}>
+    <!-- <button class="flex flex-row relative" on:click={onclick}>
       <IconLink font-size="24" />
       <IconCheck
         font-size="24"
         style="position: absolute; top: 0; left: 0; color:green; {!greenCheck ? 'display:none;' : ''}" />
-      <!-- <IconCheck font-size="24" style="position:" /> -->
+      <IconCheck font-size="24" style="position:" />
       <div>Copy Link</div>
-    </button>
+    </button> -->
   </div>
   <form method="dialog" class="modal-backdrop">
     <button>close</button>

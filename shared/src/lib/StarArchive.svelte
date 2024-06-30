@@ -25,13 +25,13 @@
   }
 </script>
 
-<span class="flex w-full">
+<span class="flex w-full justify-between">
   <label class="swap swap-flip grow-0" class:swap-active={p == 5}>
     <input
       type="checkbox"
       class="tooltip tooltip-secondary tooltip-right"
       data-umami-event="Note Star"
-      data-tip="{ctrlKey}+S"
+      data-tip="Star {ctrlKey}+S"
       checked={false}
       on:click|preventDefault={star}
       use:shortcut={{ control: true, code: "KeyS" }} />
@@ -40,16 +40,16 @@
     <!-- </div> -->
   </label>
 
-  <div class="grow flex justify-center">
-    <slot />
-  </div>
+  <!-- <div class="grow flex justify-center"> -->
+  <slot />
+  <!-- </div> -->
 
   <label class="swap swap-flip grow-0" class:swap-active={p == -5}>
     <input
       type="checkbox"
-      class="tooltip tooltip-secondary tooltip-left"
       data-umami-event="Note Arch"
-      data-tip="{ctrlKey}+X"
+      class="tooltip tooltip-secondary tooltip-left"
+      data-tip="Archive {ctrlKey}+X"
       checked={false}
       on:click|preventDefault={archive}
       use:shortcut={{ control: true, code: "KeyX" }} />
