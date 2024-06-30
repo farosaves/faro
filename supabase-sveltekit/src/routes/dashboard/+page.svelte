@@ -5,7 +5,7 @@
   export let data
   const { supabase } = data
   import { option as O, taskOption as TO } from "fp-ts"
-  import { DEBUG, Dashboard, NoteSync, chainN, funLog, sessStore } from "shared"
+  import { DEBUG, Dashboard, NoteSync, chainN, funLog, sessStore, windowActive } from "shared"
   import { onMount } from "svelte"
   import { get } from "svelte/store"
   const T = trpc()
@@ -32,6 +32,9 @@
 </script>
 
 <!-- <button class="btn" on:click={() => {}}>ref</button> -->
-<svelte:window on:focus={noteSync.refresh} />
+<svelte:window
+  on:focus={noteSync.refresh}
+  on:focus={() => ($windowActive = true)}
+  on:blur={() => ($windowActive = false)} />
 <LoginPrompt {showLoginPrompt} />
 <Dashboard {noteSync} />
