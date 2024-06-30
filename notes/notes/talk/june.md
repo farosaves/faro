@@ -4,3 +4,5 @@
 * sad didnt work on mobile
 * daaamn farosapp.com in google search
 
+### Gabi
+logowanie na welcome page zbyt nisko
