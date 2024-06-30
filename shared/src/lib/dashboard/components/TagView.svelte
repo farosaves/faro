@@ -6,10 +6,11 @@
 
   import { flow, pipe } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { NoteDeri, isCmd, tagModalOpenStore } from "shared"
+  import { NoteDeri, asc, funLog, isCmd, tagModalOpenStore } from "shared"
   import { derived, get } from "svelte/store"
   import { exclTagSet, exclTagSets } from "../filterSortStores"
-  import { getGroupTagCounts, groupize, type TGC } from "./tagViewStores"
+  exclTagSets.subscribe(funLog("exclTagSets"))
+  import { getGroupTagCounts, groupize } from "./tagViewStores"
 
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
@@ -28,36 +29,42 @@
   const allTags = derived(noteDeri.allTags, A.append(""))
   const excl = derived(exclTagSet, (s) =>
     groupize(
-      s.has.bind(s),
+      (x) => s.has(x),
       A.reduce(true, (prev, a: string) => prev && s.has(a)),
     ),
   )
 
   const checkClick = () => {
-    // assigns to trigger potential $:
+    // location.hash = ""
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
     else $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
   }
-  const _toggleTag = (tag: string) =>
+  const _toggleTag = (tag: string) => {
+    // location.hash = ""
     exclTagSets.update((s) => {
       s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
       return s
     })
-  const _toggleTagGroup = (tags: string[]) =>
+  }
+  const _toggleTagGroup = (tags: string[]) => {
+    // location.hash = ""
     exclTagSets.update((s) => {
       if (S.intersection(Str.Eq)(s.sets[s.currId])(new Set(tags)).size)
         for (const tag of tags) s.sets[s.currId].delete(tag)
       else for (const tag of tags) s.sets[s.currId].add(tag)
       return s
     })
+  }
   const toggle = groupize(_toggleTag, _toggleTagGroup)
   const _makeOnly = (tag: string) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTag(tag)
+    // location.hash = tag
   }
   const _makeOnlyGroup = (tags: string[]) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
+    // location.hash = tags.toSorted(asc((x) => x.length))[0] // the one without /xxxx is the shortest
   }
   const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
