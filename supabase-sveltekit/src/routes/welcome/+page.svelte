@@ -30,28 +30,34 @@
       <h1 class="py-2 text-5xl font-bold">Welcome onboard!</h1>
       <h2 class="py-2 text-3xl font-bold">Try it out</h2>
       <p class="py-2">
+        {#if !email}
+          You can <a href="/account/login" target="_blank" class="py-2 btn btn-sm btn-primary">Log in</a>
+          at any point
+        {:else}
+          You're logged in ✅
+        {/if}
+      </p>
+
+      <p class="py-2">
         Highlight this sentence and save with <kbd class="kbd">{altKey}</kbd> +
         <kbd class="kbd">X</kbd>
       </p>
-      <p class="py-2">
+      <!-- <p class="py-2">
         Now highlight this sentence, save it, then this <i class="font-semibold">word</i> and save again. It'll
         highlight that word inside your save.
-      </p>
-      <p class="py-2">Double click your saves in the panel on the right to get back to them.</p>
+      </p> -->
+      <p class="py-2">Double click your save in the panel on the right to get back to it.</p>
       <p class="py-2">
-        Also find them on the dashboard, open it with <kbd class="kbd">{altKey}</kbd> +
+        Also find it on the dashboard, open it with <kbd class="kbd">{altKey}</kbd> +
         <kbd class="kbd">C</kbd>
       </p>
-      <p class="py-2">Double clicking them on the dashboard also takes you right back.</p>
-      <p class="py-2">
-        Your saves will upload to the cloud once you: <a
-          href="/account/login"
-          class="py-2 btn btn-sm btn-primary">Log in</a>
-      </p>
-      <p class="py-2">
-        You can make an account whenever you're ready.<br />
-        Until then, the dashboard on the website here won't work - only the in-extension one.
-      </p>
+      <p class="py-2">Double clicking them on the dashboard also takes you back.</p>
+      {#if !email}
+        <p class="py-2">
+          You can make an account whenever you're ready.<br />
+          Until then, the dashboard on the website here won't work - only the in-extension one.
+        </p>
+      {/if}
       <p class="py-2">Other ways to save are using the (right-click) context menu...</p>
       <div class="collapse bg-base-100 my-2">
         <input type="checkbox" />
