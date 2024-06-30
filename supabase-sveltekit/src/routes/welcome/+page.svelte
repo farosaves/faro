@@ -31,7 +31,7 @@
       <h2 class="py-2 text-3xl font-bold">Try it out</h2>
       <p class="py-2">
         Highlight this sentence and save with <kbd class="kbd">{altKey}</kbd> +
-        <kbd class="kbd">D</kbd>
+        <kbd class="kbd">X</kbd>
       </p>
       <p class="py-2">
         Now highlight this sentence, save it, then this <i class="font-semibold">word</i> and save again. It'll
@@ -40,7 +40,7 @@
       <p class="py-2">Double click your saves in the panel on the right to get back to them.</p>
       <p class="py-2">
         Also find them on the dashboard, open it with <kbd class="kbd">{altKey}</kbd> +
-        <kbd class="kbd">F</kbd>
+        <kbd class="kbd">C</kbd>
       </p>
       <p class="py-2">Double clicking them on the dashboard also takes you right back.</p>
       <p class="py-2">

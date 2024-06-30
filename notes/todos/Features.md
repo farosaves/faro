@@ -2,3 +2,4 @@
 	- note rn it's careful to use as few nodes as possible unless you expand it
 - [ ] Going by months into a virtual list would be cool, *but difficult to implement?*
 - [ ] Search inside the sidebar
+- [ ] Snoozing stars
