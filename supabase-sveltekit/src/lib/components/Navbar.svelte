@@ -32,7 +32,7 @@
       id="farosgetitlink"
       class="btn btn-ghost p-2 tooltip tooltip-left invisible md:visible"
       data-umami-event="WebStore"
-      data-tip="Install"
+      data-tip="Webstore"
       href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
       <IconLogosChromeWebStore font-size="24" /></a>
     <a
