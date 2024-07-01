@@ -23,7 +23,7 @@
 <dialog id="modal$" class="modal" use:modalSub on:close={() => ($modalOpenStore = false)}>
   <div class="modal-box">
     <p class="py-4">
-      Created at: {p((n) => fmt.format(Date.parse(n.created_at)), "")}
+      Created: {p((n) => fmt.format(Date.parse(n.created_at)), "")}
     </p>
     <!-- <button class="flex flex-row relative" on:click={onclick}>
       <IconLink font-size="24" />

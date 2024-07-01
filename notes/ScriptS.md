@@ -6,7 +6,7 @@ by making it easier to remember what you saved and why.
 
 * It's really simple - I could bookmark this youtube page - but the important information here is that it's the Vsauce music.
 vs
-* With bookmarks remembering is hard. You can look at it and not remember what it was.  ![[bookmarks2.png]] Like what's a lesser Egyptian jerboa? ![[Pasted image 20240628180541.png]]
+* With bookmarks remembering what you saved can be hard.  ![[bookmarks2.png]] Like what's a lesser Egyptian jerboa? ![[Pasted image 20240628180541.png]]
  
 
 
