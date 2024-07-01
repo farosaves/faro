@@ -14,8 +14,8 @@
 <svelte:head>
   <title>Faros - Save online reading - bookmark highlights</title>
   <meta
-    property="description"
-    content="Effortlessly save and revisit your online reading with Faros browser extension. Highlight, save & organize." />
+    name="description"
+    content="Save web pages for later with Faros browser extension. Highlight, save & organize." />
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">
