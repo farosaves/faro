@@ -54,7 +54,7 @@
       optimistic.set(O.some(x))
       setTimeout(() => optimistic.set(O.none), 2000)
     })
-    TB.refresh.query()
+    setTimeout(TB.refresh.query, 300)
     themeChange(false)
   })
 
