@@ -11,6 +11,7 @@
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   exclTagSets.subscribe(funLog("exclTagSets"))
   import { getGroupTagCounts, groupize } from "./tagViewStores"
+  import { onMount } from "svelte"
 
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
@@ -35,19 +36,22 @@
   )
 
   const checkClick = () => {
-    // location.hash = ""
+    location.hash = ""
+    // location.href = location.href.replace(/#$/, "")
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
     else $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
   }
   const _toggleTag = (tag: string) => {
-    // location.hash = ""
+    location.hash = ""
+    // location.href = location.href.replace(/#$/, "")
     exclTagSets.update((s) => {
       s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
       return s
     })
   }
   const _toggleTagGroup = (tags: string[]) => {
-    // location.hash = ""
+    location.hash = ""
+    // location.href = location.href.replace(/#$/, "")
     exclTagSets.update((s) => {
       if (S.intersection(Str.Eq)(s.sets[s.currId])(new Set(tags)).size)
         for (const tag of tags) s.sets[s.currId].delete(tag)
@@ -59,12 +63,12 @@
   const _makeOnly = (tag: string) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTag(tag)
-    // location.hash = tag
+    location.hash = tag
   }
   const _makeOnlyGroup = (tags: string[]) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
-    // location.hash = tags.toSorted(asc((x) => x.length))[0] // the one without /xxxx is the shortest
+    location.hash = tags.toSorted(asc((x) => x.length))[0] // the one without /xxxx is the shortest
   }
   const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
@@ -89,6 +93,13 @@
   }
   // let dropdownOpen = false
   let hRem = 2
+  onMount(() => {
+    const hash = location.hash.slice(1)
+    if (hash) {
+      console.log("making only", hash)
+      _makeOnly(hash)
+    }
+  })
   // window.yo = () => (dropdownOpen = !dropdownOpen)
 </script>
 
