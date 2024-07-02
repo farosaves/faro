@@ -1,8 +1,5 @@
 - [x] One more webstore link.
-- [ ] 160 characters for meta description
-- [ ] 
-- [ ] 
-- [ ] starred / -> unstarred in toast
+
 - [ ] I can put one tag in the fragment identifier\
 	only undo it when clicked another, so adding new tag doesn't auto-activate it
 	then i can do links to tags

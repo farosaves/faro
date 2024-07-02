@@ -43,7 +43,7 @@
         <!-- <div class="divider"></div>
         yoo -->
         <div class="divider"></div>
-        <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
+        <div class="h-20 card bg-base-300 rounded-box place-items-center">
           <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
           <p class="py-1">Faros makes it easy without doing (almost) anything extra.</p>
           <p class="py-1">Watch the video to learn how:</p>
@@ -56,7 +56,7 @@
       </div>
     </div>
   </div>
-  <div class="flex justify-center w-full mt-12">
+  <div class="flex justify-center w-full my-12">
     <iframe
       loading="lazy"
       width="560"
@@ -67,6 +67,12 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen></iframe>
+  </div>
+  <div class="card items-center">
+    <h3 class="text-2xl font-bold">TL;DW</h3>
+    <p class="font-bold">Bookmarks ✕ Web Clipper</p>
+    <p>You highlight a snippet to remember the page better.</p>
+    <p>So a save shows both the page title and the snippet you picked.</p>
   </div>
   <div class="my-8"></div>
   <div class="flex flex-col items-center">
