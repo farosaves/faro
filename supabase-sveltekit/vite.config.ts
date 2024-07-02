@@ -9,5 +9,6 @@ export default defineConfig({
       compiler: "svelte",
     }),
   ],
-  build: { rollupOptions: { external: ["umami"] }, minify: false },
+  build: { rollupOptions: { external: ["umami"] }, minify: process.env.VITE_DEBUG === "false",
+  },
 })
