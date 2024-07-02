@@ -12,16 +12,14 @@
   export let changeP: (p: number) => void
   const toggleP = (n: number) => changeP((p = p == n ? defaultP : n))
   const star = () => {
-    if (hovered) {
-      toggleP(5)
-      toastNotify("Starred")
-    }
+    if (!hovered) return
+    toggleP(5)
+    toastNotify(p == defaultP ? "Unstarred" : "Starred")
   }
   const archive = () => {
-    if (hovered) {
-      toggleP(-5)
-      toastNotify("Archived")
-    }
+    if (!hovered) return
+    toggleP(-5)
+    toastNotify(p == defaultP ? "Unarchived" : "Archived")
   }
 </script>
 

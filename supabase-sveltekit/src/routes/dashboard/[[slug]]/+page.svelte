@@ -14,7 +14,7 @@
   const extId = DEBUG ? "iigdnlokbommcbpkhlafbkhgpbmeagfl" : "???"
 
   onMount(async () => {
-    console.log("slug", slug)
+    // console.log("slug", slug)
     const storedSess = get(sessStore)
     let sess: Session | null | undefined
     if (O.isNone(storedSess)) {

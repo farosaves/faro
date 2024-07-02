@@ -1,6 +1,7 @@
-- [ ] One more webstore link.
-- [ ] starred / -> unstarred
-- [ ] I can put one tag in the fragment identifier\
+- [x] One more webstore link.
+- [ ] Titles for urls - rather than tooltips
+
+- [x] I can put one tag in the fragment identifier\
 	only undo it when clicked another, so adding new tag doesn't auto-activate it
 	then i can do links to tags
 - [ ] Capture line breaks inside quote?

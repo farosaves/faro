@@ -4,3 +4,5 @@
 - [ ] Search inside the sidebar
 - [ ] Snoozing stars
 - [ ] Alt + C should switch tab to the Faros one if open already.
+- [ ] Update source when page title changes
+- [ ] Collapsible tags rather than carousel

@@ -29,17 +29,16 @@
   </div>
   <div class="navbar-end">
     <a
-      id="farosgetitlink"
-      class="btn btn-ghost p-2 tooltip tooltip-left invisible md:visible"
+      class="btn btn-ghost p-2 invisible md:visible"
       data-umami-event="WebStore"
-      data-tip="Install"
+      title="Webstore"
       href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
       <IconLogosChromeWebStore font-size="24" /></a>
     <a
-      class="btn btn-ghost p-2 tooltip tooltip-left"
+      class="btn btn-ghost p-2"
       target="_blank"
       href="https://discord.gg/6TvDFPA6bs"
-      data-tip="Join the server;]"><IconDiscord font-size={24} /></a>
+      title="Join Discord server"><IconDiscord font-size={24} /></a>
 
     <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
       <li>
