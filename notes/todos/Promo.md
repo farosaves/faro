@@ -5,5 +5,6 @@
 	- [ ] doesn't need voiceover  🤯😱
 	- [ ] motion
 - [x] Instead of the first question in the collapses, `why would I need it?` I can write the whole thing out so that it's below the video.
-- [ ] Or I can make a carousel with the pictures I have for the web store listing.
-- [ ] 160 characters for meta description
+- [ ] make a carousel with the pictures I have for the web store listing.
+- [ ] 160 characters for meta description (2x)
+- [ ] Never forget what you saved for 1st screenshot

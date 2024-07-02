@@ -72,7 +72,7 @@
     <h3 class="text-2xl font-bold">TL;DW</h3>
     <p class="font-bold">Bookmarks ✕ Web Clipper</p>
     <p>You highlight a snippet to remember the page better.</p>
-    <p>So a save shows both the page title and the snippet you picked.</p>
+    <p>Saves show both the page title and the snippet you picked.</p>
   </div>
   <div class="my-8"></div>
   <div class="flex flex-col items-center">
