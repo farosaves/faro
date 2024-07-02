@@ -45,7 +45,7 @@
         <div class="divider"></div>
         <div class="h-20 card bg-base-300 rounded-box place-items-center">
           <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
-          <p class="py-1">Faros makes it easy without doing (almost) anything extra.</p>
+          <p class="py-1">Now you manage it, doing (almost) nothing extra.</p>
           <p class="py-1">Watch the video to learn how:</p>
           <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
             to see what it looks like
@@ -76,60 +76,57 @@
   </div>
   <div class="my-8"></div>
   <div class="flex flex-col items-center">
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
-      <div class="collapse-content">
-        <span class="my-2 block"
-          >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
-        <!-- <span class="my-2 block"
-          >You could for example: keep the tab open, bookmark, copy the url to notion/obsidian etc.</span> -->
-        <span class="my-2 block">If you bookmark it you'll likely forget why you did it in a few weeks.</span>
-        <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
+    <div class="max-w-lg bg-base-100 rounded-2xl">
+      <!-- <div class="collapse collapse-arrow">
+        <input type="checkbox" />
+        <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
+        <div class="collapse-content">
+          <span class="my-2 block"
+            >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
+          <span class="my-2 block"
+            >If you bookmark it you'll likely forget why you did it in a few weeks.</span>
+          <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
+        </div>
+      </div> -->
+      <div class="collapse collapse-arrow">
+        <input type="checkbox" />
+        <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
+        <div class="collapse-content mx-4">
+          <ul class="list-disc text-nowrap w-min text-left">
+            <li class="list-item">Select text</li>
+            <li class="list-item">
+              Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
+              or right-click and select "Faros save"
+            </li>
+            <li class="list-item">If something doesn't work try refreshing the webpage.</li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
-      <input type="checkbox" />
-
-      <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
-      <div class="collapse-content mx-4">
-        <ul class="list-disc text-nowrap w-min text-left">
-          <li class="list-item">Select text</li>
-          <li class="list-item">
-            Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
-            or right-click and select "Faros save"
-          </li>
-          <li class="list-item">If something doesn't work try refreshing the webpage.</li>
-        </ul>
+      <div class="collapse collapse-arrow">
+        <input type="checkbox" />
+        <div class="collapse-title text-xl font-medium text-left">Where is it available?</div>
+        <div class="collapse-content">
+          It's on <a
+            href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo"
+            class="underline">chrome webstore</a
+          >: for desktops.<br />
+          I can do Firefox easily so <a href="/contact" class="underline">lmk if interested</a>.
+        </div>
       </div>
-    </div>
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
-      <input type="checkbox" />
-
-      <div class="collapse-title text-xl font-medium text-left">Where is it available?</div>
-      <div class="collapse-content">
-        It's on <a
-          href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo"
-          class="underline">chrome webstore</a
-        >: for desktops.<br />
-        I can do Firefox easily so <a href="/contact" class="underline">lmk if interested</a>.
+      <div class="collapse collapse-arrow">
+        <input type="checkbox" />
+        <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
+        <div class="collapse-content">No! It works on your computer without sign up.</div>
       </div>
-    </div>
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
-      <input type="checkbox" />
-
-      <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
-      <div class="collapse-content">No! Only to sync with other devices.</div>
-    </div>
-    <div class="collapse collapse-arrow bg-base-100 max-w-lg">
-      <input type="checkbox" />
-
-      <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
-      <div class="collapse-content">
-        Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option to
-        buy lifetime access for $10 on <a class="underline" href="https://ko-fi.com/farosapp">kofi</a>.<br />
-        <!-- I expect to charge ~$3/month later for other users. -->
-      </div>
+      <!-- <div class="collapse collapse-arrow">
+        <input type="checkbox" />
+        <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
+        <div class="collapse-content">
+          Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option
+          to buy lifetime access for $10 on
+          <a class="underline" href="https://ko-fi.com/farosapp">kofi</a>.<br />
+        </div>
+      </div> -->
     </div>
   </div>
 </div>
