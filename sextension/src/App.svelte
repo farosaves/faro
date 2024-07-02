@@ -51,10 +51,10 @@
     windowId.set(window.id || NaN)
     funLog("windowid")(window.id)
     optimisticNotes.stream.subscribe(([x]) => {
-      optimistic.set(O.some(x))
-      setTimeout(() => optimistic.set(O.none), 2000)
+      // optimistic.set(O.some(x))
+      // setTimeout(() => optimistic.set(O.none), 2000)
     })
-    setTimeout(TB.refresh.query, 300)
+    setTimeout(TB.refresh.query, 1000)
     themeChange(false)
   })
 
