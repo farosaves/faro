@@ -36,13 +36,13 @@
   )
 
   const checkClick = () => {
-    location.hash = ""
+    if (location.hash) history.replaceState("", document.title, location.pathname + location.search)
     // location.href = location.href.replace(/#$/, "")
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
     else $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
   }
   const _toggleTag = (tag: string) => {
-    location.hash = ""
+    if (location.hash) history.replaceState("", document.title, location.pathname + location.search)
     // location.href = location.href.replace(/#$/, "")
     exclTagSets.update((s) => {
       s.sets[s.currId].delete(tag) || s.sets[s.currId].add(tag)
@@ -50,7 +50,7 @@
     })
   }
   const _toggleTagGroup = (tags: string[]) => {
-    location.hash = ""
+    if (location.hash) history.replaceState("", document.title, location.pathname + location.search)
     // location.href = location.href.replace(/#$/, "")
     exclTagSets.update((s) => {
       if (S.intersection(Str.Eq)(s.sets[s.currId])(new Set(tags)).size)
