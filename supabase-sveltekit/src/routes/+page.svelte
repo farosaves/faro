@@ -72,10 +72,9 @@
     <h3 class="text-2xl font-bold">TL;DW</h3>
     <p class="font-bold">Bookmarks ✕ Web Clipper</p>
     <p>You highlight a snippet to remember the page better.</p>
-    <p>Saves show both the page title and the snippet you picked.</p>
+    <p>Your saves show both the page title and the snippet you picked.</p>
   </div>
-  <div class="my-8"></div>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center my-16">
     <div class="max-w-lg bg-base-100 rounded-2xl">
       <!-- <div class="collapse collapse-arrow">
         <input type="checkbox" />
