@@ -45,7 +45,7 @@
         <div class="divider"></div>
         <div class="h-20 card bg-base-300 rounded-box place-items-center">
           <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
-          <p class="py-1">Now you manage it, doing (almost) nothing extra.</p>
+          <p class="py-1">Now you can manage it - doing (almost) nothing extra.</p>
           <p class="py-1">Watch the video to learn how:</p>
           <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
             to see what it looks like
