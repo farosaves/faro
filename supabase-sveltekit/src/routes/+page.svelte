@@ -14,8 +14,8 @@
 <svelte:head>
   <title>Faros - Save online reading - bookmark highlights</title>
   <meta
-    property="description"
-    content="Effortlessly save and revisit your online reading with Faros browser extension. Highlight, save & organize." />
+    name="description"
+    content="Save web pages for later with Faros browser extension. Highlight, save & organize." />
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">
@@ -27,9 +27,9 @@
           <h2 class="text-3xl font-bold">Save online reading</h2>
           <h3 class="text-2xl font-bold">Never forget what you saved and why</h3>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
-          <br />
           <!-- For those who love learning, but have too many interests to keep track of. -->
           {#if !$hasExtensionStore}
+            <br />
             <a
               id="farosgetitlink"
               class="btn btn-lg btn-primary text-xl"
@@ -43,7 +43,7 @@
         <!-- <div class="divider"></div>
         yoo -->
         <div class="divider"></div>
-        <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
+        <div class="h-20 card bg-base-300 rounded-box place-items-center">
           <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
           <p class="py-1">Faros makes it easy without doing (almost) anything extra.</p>
           <p class="py-1">Watch the video to learn how:</p>
@@ -56,7 +56,7 @@
       </div>
     </div>
   </div>
-  <div class="flex justify-center w-full mt-2">
+  <div class="flex justify-center w-full my-12">
     <iframe
       loading="lazy"
       width="560"
@@ -67,6 +67,12 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen></iframe>
+  </div>
+  <div class="card items-center">
+    <h3 class="text-2xl font-bold">TL;DW</h3>
+    <p class="font-bold">Bookmarks ✕ Web Clipper</p>
+    <p>You highlight a snippet to remember the page better.</p>
+    <p>So a save shows both the page title and the snippet you picked.</p>
   </div>
   <div class="my-8"></div>
   <div class="flex flex-col items-center">
@@ -90,7 +96,7 @@
         <ul class="list-disc text-nowrap w-min text-left">
           <li class="list-item">Select text</li>
           <li class="list-item">
-            Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">D</kbd> <br />
+            Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
             or right-click and select "Faros save"
           </li>
           <li class="list-item">If something doesn't work try refreshing the webpage.</li>

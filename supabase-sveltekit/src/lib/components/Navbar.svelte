@@ -2,6 +2,7 @@
   import IconDiscord from "~icons/logos/discord-icon"
   import IconMenu from "~icons/jam/menu"
   import IconUser from "~icons/jam/user-circle"
+  import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import IconEnvelope from "~icons/jam/envelope"
 
   import { replacer, themeStore, updateTheme } from "shared"
@@ -28,7 +29,15 @@
   </div>
   <div class="navbar-end">
     <a
+      id="farosgetitlink"
+      class="btn btn-ghost p-2 tooltip tooltip-left invisible md:visible"
+      data-umami-event="WebStore"
+      data-tip="Webstore"
+      href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
+      <IconLogosChromeWebStore font-size="24" /></a>
+    <a
       class="btn btn-ghost p-2 tooltip tooltip-left"
+      target="_blank"
       href="https://discord.gg/6TvDFPA6bs"
       data-tip="Join the server;]"><IconDiscord font-size={24} /></a>
 
@@ -61,7 +70,6 @@
       <div tabindex="0" role="button" class="m-1"><IconMenu font-size="32" /></div>
       <ul class="menu dropdown-content bg-base-200 rounded-box mr-2 text-lg">
         <li><a href="/account" data-umami-event="Nav Acc">Account<IconUser font-size="16" /></a></li>
-
         <li><a class="" href="/contact">Contact<IconEnvelope font-size="16" /></a></li>
         <li>
           <!-- {#if option.isSome($sessStore)}<li><a>Submenu 1</a></li>{/if} -->

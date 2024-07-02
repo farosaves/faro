@@ -1,8 +1,9 @@
-- [ ] watch some tutorials before making a video for webstore
+- [x] watch some tutorials before making a video for webstore
 	- [ ] can record the screen physically
 	- [ ] build a story/narrative - why valuable
 	- [ ] easy music
 	- [ ] doesn't need voiceover  🤯😱
 	- [ ] motion
-- [ ] Instead of the first question in the collapses, `why would I need it?` I can write the whole thing out so that it's below the video.
-	- [ ] Or I can make a carousel with the pictures I have for the web store listing.
+- [x] Instead of the first question in the collapses, `why would I need it?` I can write the whole thing out so that it's below the video.
+- [ ] Or I can make a carousel with the pictures I have for the web store listing.
+- [ ] 160 characters for meta description
