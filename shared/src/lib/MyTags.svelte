@@ -13,7 +13,7 @@
 <div tabindex="-1" class="border-t border-primary w-full" use:clickOutside={() => (open = false)}>
   <!-- on:click_outside={() => (open = false)} -->
   <button
-    class="bg-base-100 w-full min-h-6 flex justify-around"
+    class="bg-base-100 w-full min-h-6 flex justify-around tooltip-secondary"
     data-tip="Add tags here"
     class:tooltip={!tags.length}
     class:hidden={open}
