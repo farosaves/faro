@@ -10,21 +10,13 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import {
-    hasExtensionStore,
-    modalOpenStore,
-    tagModalOpenStore,
-    toastStore,
-    windowActive,
-    type NoteEx,
-  } from "$lib"
+  import { hasExtensionStore, modalOpenStore, tagModalOpenStore, toastStore, windowActive } from "$lib"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, readable, writable } from "svelte/store"
-  import type { NonEmptyArray } from "fp-ts/lib/NonEmptyArray"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
