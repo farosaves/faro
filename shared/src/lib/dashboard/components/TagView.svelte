@@ -163,7 +163,7 @@
 <div
   popover="auto"
   id="addTags"
-  class="bg-base-300 max-w-96 rounded-2xl text-center p-4 border- border-neutral">
+  class="bg-base-300 max-w-96 rounded-2xl text-center p-4 border-4 border-neutral">
   <img alt="See how to add a tag 1." src={addTag} />
   Click here to edit tags
   <img alt="See how to add a tag 2." src={addTag2} />
