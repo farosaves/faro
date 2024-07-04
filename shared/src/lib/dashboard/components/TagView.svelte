@@ -6,7 +6,7 @@
 
   import { flow, pipe } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { NoteDeri, asc, funLog, isCmd, tagModalOpenStore } from "shared"
+  import { NoteDeri, asc, funLog, isCmd, tagModalOpenStore } from "$lib"
   import { derived, get } from "svelte/store"
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   exclTagSets.subscribe(funLog("exclTagSets"))
