@@ -13,6 +13,7 @@
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   import fuzzysort from "fuzzysort"
+  import Tagsvify from "./Tagsvify.svelte"
   export let note_data: Omit<NoteEx, keyof SourceData>
   export let isOpen: boolean
   export let closeAll: () => void

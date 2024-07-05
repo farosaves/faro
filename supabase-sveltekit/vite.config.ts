@@ -9,6 +9,8 @@ export default defineConfig({
       compiler: "svelte",
     }),
   ],
-  build: { rollupOptions: { external: ["umami"] }, minify: process.env.VITE_DEBUG === "false",
+  build: { rollupOptions: { external: ["umami"] }, minify: process.env.VITE_DEBUG === "false" },
+  ssr: {
+    noExternal: ["@yaireo/tagify"],
   },
 })

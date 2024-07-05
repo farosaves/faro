@@ -19,7 +19,6 @@ import {
 import type { UUID } from "crypto"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
-
 export type Src = SourceData["sources"]
 // strips trailing /
 export const delTr = (s: string | undefined) => s?.replace(/\/$/, "") || ""

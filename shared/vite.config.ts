@@ -13,4 +13,7 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{js,ts}"],
   },
   build: { minify: false },
+  ssr: {
+    noExternal: ["@yaireo/tagify"],
+  },
 })
