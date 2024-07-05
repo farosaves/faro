@@ -2,7 +2,7 @@
   import { derived } from "svelte/store"
   import { record as R, option as O, nonEmptyArray as NA } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
-  import { desc, host, isCmd } from "shared"
+  import { desc, isCmd } from "$lib"
   import { uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   import { onMount } from "svelte"

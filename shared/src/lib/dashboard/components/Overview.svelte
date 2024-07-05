@@ -1,6 +1,6 @@
 <script lang="ts">
   import { exclTagSet } from "../filterSortStores"
-  import { MyTags, sleep, NoteDeri } from "shared"
+  import { MyTags, sleep, NoteDeri } from "$lib"
   import { writable } from "svelte/store"
 
   // type OptionValueType<T> = T extends O.Option<infer R> ? R : never

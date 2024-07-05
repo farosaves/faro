@@ -62,8 +62,8 @@
   )
   // .replace(note_data.quote, quoteBoldReplace)
 
-  const onTagAdded = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
-  const onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  const onTagsChange = (tags: string[]) => syncLike.tagChange(note_data.id)(tags)
+  // const onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
   const changeP = syncLike.changePrioritised(note_data.id)
 
   // let highlighting = false
@@ -117,7 +117,7 @@
         {@html text}
         <!-- <br />{note_data.priority || "noPriority"} -->
       </button>
-      <MyTags tags={[...tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
+      <MyTags tags={[...tags]} autoComplete={$allTags} {onTagsChange} />
     </div>
     <div class="collapse-content z-40">
       {#if hovered || isOpen}

@@ -6,12 +6,14 @@
 
   import { flow, pipe } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { NoteDeri, asc, funLog, isCmd, tagModalOpenStore } from "shared"
+  import { NoteDeri, asc, funLog, isCmd, tagModalOpenStore } from "$lib"
   import { derived, get } from "svelte/store"
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   exclTagSets.subscribe(funLog("exclTagSets"))
   import { getGroupTagCounts, groupize } from "./tagViewStores"
   import { onMount } from "svelte"
+  import addTag from "$lib/assets/addTag.png"
+  import addTag2 from "$lib/assets/addTag2.png"
 
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
@@ -152,9 +154,21 @@
         >{tag}
       </button>
     </div>
+  {:else}
+    <button class="carousel-item m-auto underline" popovertarget="addTags"
+      >No tags yet, see how to add them</button>
   {/each}
 </div>
 
+<div
+  popover="auto"
+  id="addTags"
+  class="bg-base-300 max-w-96 rounded-2xl text-center p-4 border-4 border-neutral">
+  <img alt="See how to add a tag 1." src={addTag} />
+  Click here to edit tags
+  <img alt="See how to add a tag 2." src={addTag2} />
+  Type in the tag and press <kbd class="kbd">Enter</kbd>
+</div>
 <dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
     <button

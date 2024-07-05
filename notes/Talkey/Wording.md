@@ -48,7 +48,7 @@ More info on the web store page: https://chromewebstore.google.com/detail/faros/
 too much nujabes (cri)
 When reading online there's cool stuff you find, it's nice to be able to go back to it later.
 You go to a website find something interesting, highlight one sentence and then you just save it.
-It goes  to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
+It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
 to. You attend to it, whenever you're ready, there're a few ways to help you remembering
 
 pin, archive, tag, double-click takes you back,I don't mean to brag, but it's cool as fuck
@@ -60,7 +60,6 @@ up, at least to try it out, then you get back, up in the cloud
 that's all I got in store for the presentation, faros chrome webstore should now be your next station
 
 
-(the app built by the one man team of me)
 (dont think so)
 
 #### V5
@@ -117,3 +116,6 @@ Watch the video below to learn how:
 | Obj        | Even if you're bad at organizing with notes etc.                  |
 | Effort     | Without doing anything extra                                      |
 | Obj/effort | Integrate with anything like notion/obsidian with no extra steps. |
+### V7
+When reading online there's cool stuff you find, it's great to be able to go back to it later
+

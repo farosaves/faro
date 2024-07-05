@@ -1,6 +1,6 @@
 <script lang="ts">
   import { set as S, string as Str } from "fp-ts"
-  import { NoteDeri } from "shared"
+  import { NoteDeri } from "$lib"
   import { get } from "svelte/store"
   import { exclTagSets, exclTagSets as t } from "../filterSortStores"
   export let noteDeri: NoteDeri
