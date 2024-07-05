@@ -1,7 +1,6 @@
 // Reexport your entry components here
 // import SvelteComp from './SvelteComp.svelte';
 import _Note from "./_Note.svelte"
-import Tags from "./Tags.svelte"
 import MyTags from "./MyTags.svelte"
 import StarArchive from "./StarArchive.svelte"
 import Dashboard from "./dashboard/Dashboard.svelte"
@@ -24,7 +23,7 @@ import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
 
 export * from "./semaphore"
 
-export { Tags, MyTags, _Note, makeQH, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
+export { MyTags, _Note, makeQH, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
 

@@ -17,7 +17,6 @@
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, readable, writable } from "svelte/store"
-  import Tagsvify from "$lib/Tagsvify.svelte"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
@@ -85,8 +84,6 @@
 <!-- <LoginPrompt bind:showLoginPrompt /> -->
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
-<Tagsvify whitelist={$allTags} />
-<div class="divider"></div>
 
 <TagView {noteDeri} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
