@@ -19,4 +19,4 @@
   $: tagify && (tagify.whitelist = whitelist)
 </script>
 
-<input class="text-left" bind:this={inputElem} {id} />
+<input class="text-left w-full" bind:this={inputElem} {id} />
