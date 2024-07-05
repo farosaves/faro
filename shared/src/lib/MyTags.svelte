@@ -1,12 +1,13 @@
 <script lang="ts">
   import Tags from "./Tags.svelte"
+  import Tagsvify from "./Tagsvify.svelte"
   import { clickOutside } from "./click_outside"
   export let tags: string[]
   export let autoComplete: string[]
   export let onTagAdded: (...args: [string, string[]]) => void
   export let onTagRemoved: (...args: [string, string[]]) => void
   let open = false
-  let id: string
+  let div: HTMLDivElement
 </script>
 
 <!-- @ts-ignore -->
@@ -19,14 +20,15 @@
     class:hidden={open}
     on:click={() => {
       open = true
-      setTimeout(() => document.getElementById(id)?.focus(), 100) // omg
+      setTimeout(() => div.getElementsByClassName("tagify__input").item(0)?.focus(), 100) // omg // document.
     }}>
     {#each tags as tag}
       <span class="">{tag}</span>
     {/each}
   </button>
 
-  <div class:hidden={!open}>
-    <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique />
+  <div class:hidden={!open} bind:this={div}>
+    <Tagsvify whitelist={autoComplete} />
+    <!-- <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique /> -->
   </div>
 </div>
