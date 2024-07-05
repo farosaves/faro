@@ -7,3 +7,4 @@
 - [ ] Update source when page title changes
 - [ ] Collapsible tags rather than carousel
 - [ ] Work in google docs
+- [ ] Warn if saving stuff that won't open later - e.g. if dropdown, suggest the section text
