@@ -6,3 +6,4 @@ what the heck is overview component?
 	or should I just adjust it to wait for the mock?... like send it after 200ms?
 	no because 😊 it Presently refreshes all of them.
 - [x] starred / -> unstarred in toast
+- [ ] Double clicking the tag shouldn't edit with tagify but using my `rename this tag` modal
