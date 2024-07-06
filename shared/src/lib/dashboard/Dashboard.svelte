@@ -155,7 +155,7 @@
 </div>
 
 <CmModal />
-<div class="toast toast-top toast-end z-40">
+<div class="toast">
   {#if $activeLoadsStore}
     <span out:fade class="loading loading-spinner text-secondary loading-lg"></span>
   {/if}
