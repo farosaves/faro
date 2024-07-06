@@ -32,7 +32,7 @@ import { xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
-import { toastNotify } from "$lib/stores"
+import { activeLoadsStore, toastNotify } from "$lib/stores"
 import { noop } from "rxjs"
 // import * as lzString from "lz-string"
 
@@ -106,10 +106,12 @@ export class NoteSync {
   refresh = async () => {
     const warn = funWarn(sbLogger(this.sb))
     if (this._user_id === undefined) return warn("sync refresh")("undefined user")
+    activeLoadsStore.update(x => x + 1)
     // Bookmarks sync here
     await this._fetchNewNotes()
     await this._fetchNewSources()
     await this.actionQueue.goOnline(this._user_id as UUID)
+    activeLoadsStore.update(x => x - 1)
   }
 
   hardReset = () => {
