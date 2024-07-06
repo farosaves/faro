@@ -31,7 +31,7 @@
   {id}
   on:change={({ currentTarget }) => {
     // console.log(currentTarget.value)
-    const newTags = currentTarget.value ? JSON.parse(currentTarget.value).map(f) : "" // dont parse empty string
+    const newTags = currentTarget.value ? JSON.parse(currentTarget.value).map(f) : [] // dont parse empty string
     tags = newTags
     onTagsChange(tags)
   }} />
