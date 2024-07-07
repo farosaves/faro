@@ -74,7 +74,7 @@ const subSelection = async (selectedText: string) => {
       if (note?.quote.includes(selectedText)) {
         note?.highlights.push(selectedText)
         DEBUG && console.log("updated note", JSON.stringify(note))
-        if (note) T.updateNote.mutate(note)
+        if (note) T.updateNote.mutate(note).catch(console.error)
         return true
       }
     }
@@ -108,11 +108,13 @@ getHighlightedText.sub(async ([uuid]) => {
     url: window.location.href,
   }
   optimisticNotes.send(note_data)
-  const newNote = await T.newNote.mutate(note_data) // .catch(funLog("newNote"))
+  const newNote = await T.newNote.mutate(note_data).catch(console.error) // does this solve trpc using disconnected port?
   funLog("newNote")(newNote)
-  if (newNote == null) {
+  if (!newNote) {
     deleteSelection(uuid)
+    return
   }
+  newNote
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

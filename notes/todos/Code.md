@@ -7,3 +7,4 @@ what the heck is overview component?
 	no because 😊 it Presently refreshes all of them.
 - [x] starred / -> unstarred in toast
 - [ ] Double clicking the tag shouldn't edit with tagify but using my `rename this tag` modal
+- [ ] Adding 
