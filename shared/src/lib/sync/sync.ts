@@ -142,8 +142,8 @@ export class NoteSync {
     const [nLocal, nServer] = [get(this.noteStore).size, count || 0]
     funLog("filter4Present")([nLocal, nServer])
     if (nLocal == nServer) return
-    // more in the db
-    if (nLocal < nServer) this.noteStore.set(new Map())
+    // more in the db - reset
+    if (nLocal < nServer) return this.noteStore.set(new Map())
     // if fewer in db delete something here
     const { data } = await this.sb.from("notes").select("id").eq("user_id", user_id).lte("created_at", lastDate)
     funLog("filter4Present")(data)
