@@ -10,13 +10,20 @@
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
-  import { hasExtensionStore, modalOpenStore, tagModalOpenStore, toastStore, windowActive } from "$lib"
+  import {
+    activeLoadsStore,
+    hasExtensionStore,
+    modalOpenStore,
+    tagModalOpenStore,
+    toastStore,
+    windowActive,
+  } from "../stores"
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
-  import { derived, readable, writable } from "svelte/store"
+  import { derived, writable } from "svelte/store"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
@@ -122,8 +129,6 @@
         {/each}
       </div>
     {/each}
-
-    <div class="toast toast-end z-10"></div>
   </div>
   <div class="drawer-side z-10 border-r border-neutral">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -150,6 +155,11 @@
 </div>
 
 <CmModal />
+<div class="toast">
+  {#if $activeLoadsStore}
+    <span out:fade class="loading loading-spinner text-secondary loading-lg"></span>
+  {/if}
+</div>
 
 <div class="toast">
   {#each $toastStore as [toastMsg, n] (n)}

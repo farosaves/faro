@@ -22,7 +22,7 @@
       setTimeout(() => div.getElementsByClassName("tagify__input").item(0)?.focus(), 100) // omg // document.
     }}>
     {#each tags as tag}
-      <span class="kbd kbd-sm">{tag}</span>
+      <span class="kbd kbd-sm mt-1">{tag}</span>
     {/each}
   </button>
 

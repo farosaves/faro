@@ -31,6 +31,7 @@ export const modalNote = writable<O.Option<Notes>>(O.none)
 
 let nToast = 0
 export const toastStore = writable<[string, number][]>([])
+export const activeLoadsStore = writable<number>(0)
 export const toastNotify = (msg: string, delay = 2000) => {
   toastStore.update(A.append([msg, nToast += 1]))
   setTimeout(() => toastStore.update(A.dropLeft(1)), delay)
