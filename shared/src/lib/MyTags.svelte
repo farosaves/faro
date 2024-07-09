@@ -26,6 +26,7 @@
     {/each}
   </button>
 
+  <!-- tagify performance much worse-->
   {#if open}
     <div bind:this={div} class="text-left">
       <Tagsvify whitelist={autoComplete} bind:tags {onTagsChange} />
