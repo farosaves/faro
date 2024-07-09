@@ -53,6 +53,7 @@ export const deserialize = (applierOptions: unknown) => ([uuid, serialized]: [st
   if (!serialized) return
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _rangy = rangy as any
+  if (document.getElementsByClassName("_" + uuid).length) return
   const hl = _rangy.createHighlighter()
   const app = _rangy.createClassApplier("_" + uuid, applierOptions)
   hl.addClassApplier(app)
