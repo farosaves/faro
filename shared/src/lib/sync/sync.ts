@@ -152,9 +152,10 @@ export class NoteSync {
   }
 
   _fetchNewNotes = async (ts?: string): Promise<true | undefined> => {
-    const latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    const _latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
     if (this._user_id == undefined) return
-    await this._filter4Present(this._user_id, latestTs)
+    await this._filter4Present(this._user_id, _latestTs)
+    const latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
     this.noteStore.update((ns) => {
       nns.forEach(nn => ns.set(nn.id, nn))

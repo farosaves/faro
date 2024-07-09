@@ -7,7 +7,6 @@ import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
 import { closeSavePrompt, getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
 import type { UUID } from "crypto"
-import { pipe } from "fp-ts/lib/function"
 // import { trpc2 } from "$lib/trpc-client"
 
 if (DEBUG) console.log("hello")
@@ -141,10 +140,10 @@ const onLoad = () => sem.use(async () => {
   loaded = true
   DEBUG && console.log("sers", toDeserialise)
   batchDeserialize(toDeserialise)
-  const successes = toDeserialise.map(x => document.getElementsByClassName("_" + x[0]).length)
-  funLog("successes")(successes)
-  toDeserialise = pipe(toDeserialise, // keep unsuccessful
-    A.zip(successes), A.filter(([_, success]) => !success), A.map(([x, _y]) => x))
+  // const successes = toDeserialise.map(x => document.getElementsByClassName("_" + x[0]).length)
+  // funLog("successes")(successes)
+  // toDeserialise = pipe(toDeserialise, // keep unsuccessful
+  //   A.zip(successes), A.filter(([_, success]) => !success), A.map(([x, _y]) => x))
   const goto = window.location.hash.charAt(1) == "_" ? window.location.hash.slice(2) : undefined
   await sleep(50)
   DEBUG && console.log("goto", goto, window.location.hash)
