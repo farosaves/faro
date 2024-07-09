@@ -139,8 +139,11 @@ export class NoteSync {
   _filter4Present = async (user_id: string, lastDate: string) => {
     const { count } = await this.sb.from("notes").select("", { count: "exact", head: true }).eq("user_id", user_id).lte("created_at", lastDate)
     // if as many notes in db as here don't do anything
-    funLog("filter4Present")([count, get(this.noteStore).size])
-    if ((count || 0) >= get(this.noteStore).size) return // more in db than here, so do what?
+    const [nLocal, nServer] = [get(this.noteStore).size, count || 0]
+    funLog("filter4Present")([nLocal, nServer])
+    if (nLocal == nServer) return
+    // more in the db
+    if (nLocal < nServer) this.noteStore.set(new Map())
     // if fewer in db delete something here
     const { data } = await this.sb.from("notes").select("id").eq("user_id", user_id).lte("created_at", lastDate)
     funLog("filter4Present")(data)
