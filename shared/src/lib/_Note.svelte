@@ -103,7 +103,7 @@
     on:contextmenu|preventDefault={showOptions}>
     <input type="checkbox" class="-z-10" bind:checked={isOpen} />
     <div
-      class="collapse-title text-center overflow-hidden"
+      class="collapse-title overflow-hidden"
       bind:this={this_element}
       style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
       <button
@@ -114,8 +114,9 @@
           isOpen = !saveIsOpen
         }}
         on:dblclick={goto_function}>
+        <!-- class="h-16 text-ellipsis" -->
+        <!-- class:overflow-hidden={!isOpen} omg :( -->
         {@html text}
-        <!-- <br />{note_data.priority || "noPriority"} -->
       </button>
       <MyTags tags={[...tags]} autoComplete={$allTags} {onTagsChange} />
     </div>
