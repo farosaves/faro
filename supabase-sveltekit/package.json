@@ -56,6 +56,7 @@
     "@trpc/server": "^10.45.0",
     "cheerio": "^1.0.0-rc.12",
     "date-fns": "^3.3.1",
+    "effect": "^3.4.8",
     "fp-ts": "^2.16.2",
     "fsrs.js": "^1.2.0",
     "mhtml2html": "^3.0.0",

@@ -4,6 +4,7 @@
   import Search from "./components/Search.svelte"
   import DomainFilter from "./components/DomainFilter.svelte"
   import { flow, pipe } from "fp-ts/lib/function"
+  import { Effect } from "effect"
   import { record as R, tuple as T, array as A } from "fp-ts"
   import TagView from "./components/TagView.svelte"
   import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
@@ -54,6 +55,7 @@
 
   let Xview = false
   const priorities = ["5", "0", "-5"] as const
+
   onMount(() => {
     modalOpenStore.set(false)
     windowActive.set(true)

@@ -16,6 +16,7 @@
   import { onMount } from "svelte"
   import addTag from "$lib/assets/addTag.png"
   import addTag2 from "$lib/assets/addTag2.png"
+  import { Effect, Schedule } from "effect"
 
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
@@ -97,20 +98,19 @@
     myModal && myModal.close()
     noteDeri.sync.tagUpdate(currTag, O.none)
   }
-  // let dropdownOpen = false
-  let hRem = 4 // style="height: {hRem}rem
+  const doHash = (tag: string): Effect.Effect<void, string> => {
+    if (!$allTags.filter((x) => x.startsWith(tag)).length) return Effect.fail("not yet?")
+    const toToggle = $allTags.filter((x) => x.startsWith(tag))
+    console.log("making only", tag, toToggle)
+    return Effect.succeed(_makeOnlyGroup(toToggle))
+  }
   onMount(async () => {
     const hash = decodeURIComponent(location.hash.slice(1))
-    if (hash) {
-      if (!$allTags.filter((x) => x.startsWith(hash)).length) await sleep(500) // ! hack
-      const toToggle = $allTags.filter((x) => x.startsWith(hash))
-      console.log("making only", hash, toToggle)
-      _makeOnlyGroup(toToggle)
-    }
+    if (hash)
+      Effect.runPromise(Effect.retry(doHash(hash), Schedule.fibonacci("100 millis"))).then(console.log)
   })
-  // let dropdownOpen = false
   let moreTags = false
-  const twoPlusTags = writable(false)
+  // const twoPlusTags = writable(false)
 </script>
 
 <div class="bg-base-200 sticky top-0 z-20">

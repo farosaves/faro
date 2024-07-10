@@ -4,6 +4,7 @@
     "@yaireo/tagify": "^4.27.0",
     "aws-sdk": "^2.1607.0",
     "devalue": "^4.3.2",
+    "effect": "^3.4.8",
     "fflate": "^0.8.2",
     "fp-ts-std": "^0.19.1",
     "idb-keyval": "^6.2.1",
