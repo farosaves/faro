@@ -19,15 +19,18 @@
     class:hidden={open}
     on:click={() => {
       open = true //@ts-expect-error
-      setTimeout(() => div.getElementsByClassName("tagify__input").item(0)?.focus(), 100) // omg // document.
+      setTimeout(() => div.getElementsByClassName("tagify__input").item(0)?.focus(), 100)
     }}>
     {#each tags as tag}
       <span class="kbd kbd-sm mt-1">{tag}</span>
     {/each}
   </button>
 
-  <div class:hidden={!open} bind:this={div} class="text-left">
-    <Tagsvify whitelist={autoComplete} bind:tags {onTagsChange} />
-    <!-- <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique /> -->
-  </div>
+  <!-- tagify performance much worse-->
+  {#if open}
+    <div bind:this={div} class="text-left">
+      <Tagsvify whitelist={autoComplete} bind:tags {onTagsChange} />
+      <!-- <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique /> -->
+    </div>
+  {/if}
 </div>

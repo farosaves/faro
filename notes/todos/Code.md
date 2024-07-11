@@ -8,3 +8,7 @@ what the heck is overview component?
 - [x] starred / -> unstarred in toast
 - [ ] Double clicking the tag shouldn't edit with tagify but using my `rename this tag` modal
 - [ ] Adding 
+- [ ] I'm not cleaning up the hash when making the link - There was faros parameters cleanup, but it only handled query parameters and not the hash.
+- [ ] Logging out, I did not get the prompt on the dashboard page without refreshing.
+- [ ] rename this tag group when right click on the tag group - currently only updates the tag so only the strict matches and not the startsWiths
+- [ ]  text overflow so that it does 3 or 4 lines - https://web.dev/learn/css/overflow#single_line_overflow_with_text-overflow

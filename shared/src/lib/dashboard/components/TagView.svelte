@@ -3,11 +3,13 @@
   // import { IconCheckbox, IconTagOff } from "@tabler/icons-svelte"
   import IconCheckbox from "~icons/tabler/checkbox"
   import IconTagOff from "~icons/tabler/tag-off"
+  import ChevronDown from "~icons/jam/chevron-down"
+  import ChevronUp from "~icons/jam/chevron-up"
 
   import { flow, pipe } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { NoteDeri, asc, funLog, isCmd, tagModalOpenStore } from "$lib"
-  import { derived, get } from "svelte/store"
+  import { NoteDeri, asc, funLog, isCmd, sleep, tagModalOpenStore } from "$lib"
+  import { derived, get, writable } from "svelte/store"
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   exclTagSets.subscribe(funLog("exclTagSets"))
   import { getGroupTagCounts, groupize } from "./tagViewStores"
@@ -33,7 +35,8 @@
   const excl = derived(exclTagSet, (s) =>
     groupize(
       (x) => s.has(x),
-      A.reduce(true, (prev, a: string) => prev && s.has(a)),
+      A.some((a) => s.has(a)),
+      // A.reduce(true, (prev, a: string) => prev && s.has(a)),
     ),
   )
 
@@ -70,7 +73,8 @@
   const _makeOnlyGroup = (tags: string[]) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
-    location.hash = tags.toSorted(asc((x) => x.length))[0] // the one without /xxxx is the shortest
+    const shortest = tags.toSorted(asc((x) => x.length))[0] // just in case
+    if (shortest) location.hash = shortest
   }
   const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
@@ -94,70 +98,95 @@
     noteDeri.sync.tagUpdate(currTag, O.none)
   }
   // let dropdownOpen = false
-  let hRem = 2
-  onMount(() => {
-    const hash = location.hash.slice(1)
+  let hRem = 4 // style="height: {hRem}rem
+  onMount(async () => {
+    const hash = decodeURIComponent(location.hash.slice(1))
     if (hash) {
-      console.log("making only", hash)
-      _makeOnly(hash)
+      if (!$allTags.filter((x) => x.startsWith(hash)).length) await sleep(500) // ! hack
+      const toToggle = $allTags.filter((x) => x.startsWith(hash))
+      console.log("making only", hash, toToggle)
+      _makeOnlyGroup(toToggle)
     }
   })
-  // window.yo = () => (dropdownOpen = !dropdownOpen)
+  // let dropdownOpen = false
+  let moreTags = false
+  const twoPlusTags = writable(false)
 </script>
 
-<div class="bg-base-200 sticky top-0 z-20 carousel w-[99%]" style="height: {hRem}rem">
-  <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="toggle all">
-    <!--   <details class="dropdown" bind:open={dropdownOpen}> -->
-    <button
-      class="btn btn-neutral btn-sm text-nowrap"
-      on:click|preventDefault={checkClick}
-      class:btn-outline={$exclTagSet.size}>
-      <!-- <button -->
-      <IconCheckbox />
-      <!-- </button> -->
-    </button>
-    <!-- <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-        <li>yo</li>
-        <li>ya</li>
-      </ul>
-    </details>-->
+<div class="bg-base-200 sticky top-0 z-20">
+  <button
+    class="btn btn-sm btn-square btn-secondary absolute right-0 z-10 mt-[1px]"
+    on:click={() => (moreTags = !moreTags)}>
+    <label class="swap swap-flip" style="transform: rotate(-90deg)">
+      <input disabled type="checkbox" checked={!moreTags} />
+      <div class="swap-on"><ChevronDown font-size={24} style="transform: rotate(90deg)" /></div>
+      <div class="swap-off"><ChevronUp font-size={24} style="transform: rotate(90deg)" /></div>
+    </label>
+  </button>
+
+  <div class="flex overflow-x-clip" class:flex-wrap={moreTags}>
+    <div class="tooltip tooltip-right tooltip-secondary" data-tip="toggle all">
+      <button
+        tabindex="0"
+        class="btn btn-neutral btn-sm text-nowrap"
+        on:click={checkClick}
+        class:btn-outline={$exclTagSet.size}>
+        <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
+        <IconCheckbox />
+      </button>
+    </div>
+
+    <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
+      <button
+        class="btn btn-neutral btn-sm text-nowrap"
+        on:click={() => ($twoPlusTags = !$twoPlusTags)}
+        class:btn-outline={!$twoPlusTags}>
+        <IconCheckbox />
+      </button>
+    </div> -->
+    {#if $untagged}
+      <div class="tooltip tooltip-right tooltip-secondary" data-tip={`${$untagged} untagged`}>
+        <button
+          class="btn btn-neutral btn-sm text-nowrap"
+          on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
+          class:btn-outline={$exclTagSet.has("")}>
+          <!-- on:dblclick={_makeOnly("")} -->
+          <IconTagOff />
+        </button>
+      </div>
+    {/if}
+
+    {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
+      {@const [tag, cnt, tags] = E.toUnion(tgc)}
+      <div class="tooltip tooltip-right tooltip-secondary" data-tip={cnt} class:dropdown={tags}>
+        <button
+          class="btn btn-neutral btn-sm text-nowrap"
+          on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
+          on:contextmenu|preventDefault={onContextMenu(tag)}
+          class:btn-outline={$excl(tgc)}
+          >{tag}
+        </button>
+        {#if tags}
+          <ul class="p-2 dropdown-content bg-base-200">
+            {#each tags as tc}
+              {@const [subTag, count] = tc}
+              {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
+              <button
+                class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary"
+                data-tip={count}
+                on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
+                on:contextmenu|preventDefault={onContextMenu(subTag)}
+                class:btn-outline={$excl(E.left(tc))}>
+                {displayedTag}
+              </button>
+            {/each}
+          </ul>
+        {/if}
+      </div>
+    {:else}
+      <button class=" m-auto underline" popovertarget="addTags">No tags yet, see how to add them</button>
+    {/each}
   </div>
-
-  <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
-    <button
-      class="btn btn-neutral btn-sm text-nowrap"
-      on:click={() => ($twoPlusTags = !$twoPlusTags)}
-      class:btn-outline={!$twoPlusTags}>
-      <IconCheckbox />
-    </button>
-  </div> -->
-  {#if $untagged}
-    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={`${$untagged} untagged`}>
-      <button
-        class="btn btn-neutral btn-sm text-nowrap"
-        on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
-        class:btn-outline={$exclTagSet.has("")}>
-        <!-- on:dblclick={_makeOnly("")} -->
-        <IconTagOff />
-      </button>
-    </div>
-  {/if}
-
-  {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
-    {@const [tag, cnt] = E.toUnion(tgc)}
-    <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip={cnt}>
-      <button
-        class="btn btn-neutral btn-sm text-nowrap"
-        on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
-        on:contextmenu|preventDefault={onContextMenu(tag)}
-        class:btn-outline={$excl(tgc)}
-        >{tag}
-      </button>
-    </div>
-  {:else}
-    <button class="carousel-item m-auto underline" popovertarget="addTags"
-      >No tags yet, see how to add them</button>
-  {/each}
 </div>
 
 <div
