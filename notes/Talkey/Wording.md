@@ -119,3 +119,7 @@ Watch the video below to learn how:
 ### V7
 When reading online there's cool stuff you find, it's great to be able to go back to it later
 
+Do you have chaos in your bookmarks and they end up just gathering dust?
+Do you find all alternative ways of saving pages wanting?
+
+

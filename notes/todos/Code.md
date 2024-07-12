@@ -20,11 +20,14 @@ what the heck is overview component?
 
 
 ### Book mark sync 2
-- [ ] Create a store in shared for tracking if user requests thinking bookmarks
-	- [ ] should be false by default
-	- [ ] should be changed in the side panel cog button
-	- [ ] The button should display syncing or not syncing depending on what's set.
+- [x] Create a store in shared for tracking if user requests thinking bookmarks
+	- [x] should be false by default
+	- [x] should be changed in the side panel cog button
+	- [x] The button should display syncing or not syncing depending on what's set.
 	If it is syncing, I should...
-	- [ ] sync on refresh
-	- [ ] and on a pulse every minute
-	- [ ] by checking the hash
+	- [x] sync on refresh
+	- [x] and on a pulse every minute
+	- [x] by checking the hash
+- [ ] Check existing bookmarks
+- [ ] See if any bookmark is newer than the newest note
+- [ ] Walk existing bookmarks

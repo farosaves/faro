@@ -4,7 +4,7 @@ import { array as A, option as O, eq, string as S, number as N } from "fp-ts"
 import type { NoteEx } from "$lib/db/typeExtras"
 import { pipe } from "fp-ts/lib/function"
 import { note2Url } from "$lib/dashboard/utils"
-import { funLog } from "$lib/utils"
+import { asc, funLog } from "$lib/utils"
 const { subtle } = crypto
 
 export const f = (t: NotesOps) => 3
@@ -91,3 +91,20 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
 
   // chrome.bookmarks.create({url, title})
 }
+
+let lastChecked = 0
+const yo = async (latestNote: O.Option<NoteEx>) => {
+  const lastBMAdd = (await chrome.bookmarks.getRecent(1)).at(1)?.dateAdded
+  lastChecked = Date.now()
+  if (!lastBMAdd) return
+  // todo: this breaks cuz bookmarks created from notes will always be more recent
+  const lastNoteAdd = pipe(latestNote, O.match(() => 0, n => Date.parse(n.created_at)))
+  if (lastNoteAdd >= lastBMAdd) return //
+}
+
+const walkBookmarksTree = (folder: Folder, parentFolders: string[] = []): (Bookmark & { folders: string[] })[] =>
+  (folder.children as Node[]).flatMap(node =>
+    (node.url !== undefined)
+      ? [{ folders: parentFolders, ...node }] // bookmark
+      : walkBookmarksTree(node, [...parentFolders, node.title]), // folder
+  ).toSorted(asc(x => x.dateAdded || 0))
