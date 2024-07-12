@@ -29,7 +29,7 @@ interface Folder extends chrome.bookmarks.BookmarkTreeNode {
 }
 type Node = Folder | Bookmark
 
-const subTree = async (id: string) => await chrome.bookmarks.getSubTree("2") as Node[]
+const otherBookmarks = async () => (await chrome.bookmarks.getSubTree("2"))[0] as Node
 
 type MyBookmark = { title: string, url: string }
 const MBEq = eq.contramap((b: MyBookmark) => b.title + ";;" + b.url)(S.Eq)
@@ -46,7 +46,7 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
   const hash = await subtle.digest("SHA-256", encoder.encode(notes.map(x => x.id).join("")))
   if (abEq(hash, prevHash)) return funLog("syncBookmarks hash same")(hash) // & noop
   prevHash = hash
-  const treeInit = (await chrome.bookmarks.getSubTree("2"))[0]
+  const treeInit = await otherBookmarks()
   // ! fix it for Firefox: "Unfiled bookmarks" ?
   if (treeInit.title !== "Other Bookmarks" || !treeInit.children) {
     throw new Error("other root bookmark structures not implemented yet")
@@ -54,7 +54,7 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
   if (!treeInit.children.map(x => x.title == "Faros").reduce((x, y) => x || y)) {
     await createBookmark({ parentId: "2", title: "Faros" })
   }
-  const tree = (await subTree("2"))[0]
+  const tree = await otherBookmarks()
   if (tree.children === undefined) throw new Error("unreachable (bookmarkey)")
   const farosFolder = tree.children.filter(x => x.title == "Faros")[0] as Node
   if (farosFolder.children === undefined) throw new Error("farosFolder undefined children")
@@ -92,14 +92,15 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
   // chrome.bookmarks.create({url, title})
 }
 
-let lastChecked = 0
-const yo = async (latestNote: O.Option<NoteEx>) => {
+let lastUpdated = 0
+export const walker = async () => {
   const lastBMAdd = (await chrome.bookmarks.getRecent(1)).at(1)?.dateAdded
-  lastChecked = Date.now()
   if (!lastBMAdd) return
-  // todo: this breaks cuz bookmarks created from notes will always be more recent
-  const lastNoteAdd = pipe(latestNote, O.match(() => 0, n => Date.parse(n.created_at)))
-  if (lastNoteAdd >= lastBMAdd) return //
+  if (lastBMAdd <= lastUpdated) return // no new since last updated
+  // do some updates
+  const allBookmarks = walkBookmarksTree((await chrome.bookmarks.getTree())[0] as Folder)
+  funLog("allBookmarks")(allBookmarks)
+  lastUpdated = Date.now()
 }
 
 const walkBookmarksTree = (folder: Folder, parentFolders: string[] = []): (Bookmark & { folders: string[] })[] =>
