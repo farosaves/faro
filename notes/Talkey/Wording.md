@@ -119,3 +119,5 @@ Watch the video below to learn how:
 ### V7
 When reading online there's cool stuff you find, it's great to be able to go back to it later
 
+### V8 - listing
+If 
