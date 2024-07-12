@@ -8,3 +8,4 @@
 - [ ] make a carousel with the pictures I have for the web store listing.
 - [ ] 160 characters for meta description (2x)
 - [ ] Never forget what you saved for 1st screenshot
+- [ ] Write the landing page text and perhaps promotional video introduction for each (or at least some) of the five awareness levels.

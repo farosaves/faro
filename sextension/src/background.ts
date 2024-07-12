@@ -2,7 +2,7 @@ import { currTab, getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, sbLogger, syncBookmarks, typeCast, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, requestedSync, sbLogger, syncBookmarks, typeCast, type Notes, type PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -92,7 +92,7 @@ const appRouter = (() => {
     // prompt
     requestedNoPrompt: t.procedure.query(() => get(wantsNoPrompt)),
     toggleNoPrompt: t.procedure.mutation(() => wantsNoPrompt.update(x => !x)),
-    // BOOKMARKS
+    // BOOKMARKS  -- assumes has perm
     syncBookmarks: t.procedure.query(() => syncBookmarks(get(noteDeri.noteArr)).then(log("syncBookmarks"))),
     // requestedNoPrompt: t.procedure.query(async () => await supabase.from("profiles").select("")),
     // forward note_sync
@@ -117,6 +117,8 @@ const appRouter = (() => {
   })
 })()
 export type AppRouter = typeof appRouter
+
+setInterval(() => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr)), 60 * 1000) // sync every minute
 
 // @ts-expect-error
 createChromeHandler({

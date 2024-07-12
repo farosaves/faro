@@ -1,7 +1,8 @@
 what the heck is overview component?
 - [ ] Javascript for the dashboard layout - omg
 - [x] Does 300 in `setTimeout(TB.refresh.query, 300)` fix flickering of notes? No
-- [x] does 1000?
+- [x] does 1000? no
+- [ ] I suspect the refresh problem is because the source ID is somehow disappearing.
 - [ ] No - because the flash appears to happen on refresh regardless - why?
 	or should I just adjust it to wait for the mock?... like send it after 200ms?
 	no because 😊 it Presently refreshes all of them.
@@ -12,3 +13,18 @@ what the heck is overview component?
 - [ ] Logging out, I did not get the prompt on the dashboard page without refreshing.
 - [ ] rename this tag group when right click on the tag group - currently only updates the tag so only the strict matches and not the startsWiths
 - [ ]  text overflow so that it does 3 or 4 lines - https://web.dev/learn/css/overflow#single_line_overflow_with_text-overflow
+- [ ] If I change the active tab while it's going to the snippet, so before it goes to the snippet, then it doesn't do it.
+	- [ ] Check if the underlining is still happening or no I think not.
+	- [ ] So have a variable for whether it has run or I think there is one already.
+	- [ ] and try running it when the window is focused
+
+
+### Book mark sync 2
+- [ ] Create a store in shared for tracking if user requests thinking bookmarks
+	- [ ] should be false by default
+	- [ ] should be changed in the side panel cog button
+	- [ ] The button should display syncing or not syncing depending on what's set.
+	If it is syncing, I should...
+	- [ ] sync on refresh
+	- [ ] and on a pulse every minute
+	- [ ] by checking the hash

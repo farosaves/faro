@@ -104,7 +104,7 @@
     if (hash) {
       if (!$allTags.filter((x) => x.startsWith(hash)).length) await sleep(500) // ! hack
       const toToggle = $allTags.filter((x) => x.startsWith(hash))
-      console.log("making only", hash, toToggle)
+      // console.log("making only", hash, toToggle)
       _makeOnlyGroup(toToggle)
     }
   })
