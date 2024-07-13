@@ -25,7 +25,7 @@
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
           <h2 class="text-3xl font-bold">Save online reading</h2>
-          <h3 class="text-2xl font-bold">Never forget what you saved and why</h3>
+          <h3 class="text-2xl font-bold">Remembering what you saved and why</h3>
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <!-- For those who love learning, but have too many interests to keep track of. -->
           {#if !$hasExtensionStore}
@@ -44,8 +44,9 @@
         yoo -->
         <div class="divider"></div>
         <div class="h-20 card bg-base-300 rounded-box place-items-center">
-          <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
+          <p class="py-1">Chaos in your bookmarks? Can't find what you want? They end up gathering dust?</p>
           <p class="py-1">Now you can manage it - doing (almost) nothing extra.</p>
+          <p class="py-1">Faros combines .</p>
           <p class="py-1">Watch the video to learn how:</p>
           <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
             to see what it looks like
@@ -68,12 +69,12 @@
       referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen></iframe>
   </div>
-  <div class="card items-center">
+  <!-- <div class="card items-center">
     <h3 class="text-2xl font-bold">TL;DW</h3>
     <p class="font-bold">Bookmarks ✕ Web Clipper</p>
     <p>You highlight a snippet to remember the page better.</p>
     <p>Your saves show both the page title and the snippet you picked.</p>
-  </div>
+  </div> -->
   <div class="flex flex-col items-center my-16">
     <div class="max-w-lg bg-base-100 rounded-2xl">
       <!-- <div class="collapse collapse-arrow">

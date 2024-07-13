@@ -7,7 +7,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "description": "Stay on top of your reading - bookmark highlights",
+  "description": "Save online reading - bookmarks with highlights",
   "action": {
     "default_icon": "icons/icon48.png"
   },
