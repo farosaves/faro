@@ -32,6 +32,7 @@
     ),
   )
   const allTags = derived(noteDeri.allTags, A.append(""))
+
   const excl = derived(exclTagSet, (s) =>
     groupize(
       (x) => s.has(x),
@@ -68,13 +69,13 @@
   const _makeOnly = (tag: string) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTag(tag)
-    location.hash = tag
+    location.hash = tag || " " // empty tag
   }
   const _makeOnlyGroup = (tags: string[]) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
     const shortest = tags.toSorted(asc((x) => x.length))[0] // just in case
-    if (shortest) location.hash = shortest
+    if (shortest !== undefined) location.hash = shortest || " "
   }
   const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
@@ -98,19 +99,25 @@
     noteDeri.sync.tagUpdate(currTag, O.none)
   }
   // let dropdownOpen = false
-  let hRem = 4 // style="height: {hRem}rem
-  onMount(async () => {
+  // let hRem = 4 // style="height: {hRem}rem
+  const makeOnlyFromHash = (arr: Array<string>) => {
     const hash = decodeURIComponent(location.hash.slice(1))
-    if (hash) {
-      if (!$allTags.filter((x) => x.startsWith(hash)).length) await sleep(500) // ! hack
-      const toToggle = $allTags.filter((x) => x.startsWith(hash))
-      // console.log("making only", hash, toToggle)
-      _makeOnlyGroup(toToggle)
-    }
+    if (!hash) return false
+    const toToggle = arr.filter((tag) => tag.startsWith(hash + "/") || tag == (hash == " " ? "" : hash))
+    funLog("toToggle")(toToggle)
+    if (!toToggle.length) return false
+    _makeOnlyGroup(toToggle)
+    return true
+  }
+  onMount(() => {
+    makeOnlyFromHash($allTags) || sleep(500).then(() => makeOnlyFromHash($allTags))
   })
+
+  allTags.subscribe(makeOnlyFromHash)
+
   // let dropdownOpen = false
   let moreTags = false
-  const twoPlusTags = writable(false)
+  // const twoPlusTags = writable(false)
 </script>
 
 <div class="bg-base-200 sticky top-0 z-20">
