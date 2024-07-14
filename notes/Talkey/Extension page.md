@@ -102,3 +102,6 @@ The only information that ever gets uploaded (when signed in) when you use it to
 ➣ Debug info e.g. errors
 
 The extension also keeps track the currently open tab for each window - to update the sidebar as you navigate - but doesn't save or upload that data.
+
+### V5
+on wording page
