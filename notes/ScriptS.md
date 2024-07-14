@@ -44,3 +44,10 @@ So imagine if I had a bookmark titled "Scutigera coleoptrata"- a week later - I'
 
 
 ## tut
+
+### V ?
+Faro is a better way to save (all the cool) stuff you find online.
+Faro is a better way to save web pages.
+How is it better?
+With bookmarks remembering what you saved is hard. 
+Jake Chudnow - Moon Men ??
