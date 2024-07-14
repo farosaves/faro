@@ -130,15 +130,12 @@ createChromeHandler({
   router: appRouter,
   createContext,
 })
-// note_mut.currSrc
-// const currSrc = writable<Src>({ domain: "", title: "" })
 
 pushStore("currSrcs", note_mut.currSrcs)
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
-// const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
-const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
+const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/") // ! deprec: but fixes old notes
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title: _title } = tab
