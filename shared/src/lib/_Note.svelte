@@ -103,7 +103,7 @@
     on:contextmenu|preventDefault={showOptions}>
     <input type="checkbox" class="-z-10" bind:checked={isOpen} />
     <div
-      class="collapse-title overflow-hidden"
+      class="collapse-title overflow-hidden text-center"
       bind:this={this_element}
       style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
       <button

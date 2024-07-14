@@ -15,7 +15,7 @@
   <title>Faros - Save online reading - bookmark highlights</title>
   <meta
     name="description"
-    content="Save web pages for later with Faros browser extension. Highlight, save & organize." />
+    content="Save web pages for later with Faros browser extension. Highlight, save & organize. " />
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-base-300">
@@ -25,7 +25,8 @@
         <div class="max-w-md space-y-4">
           <h1 class="text-5xl py-4 mont">{@html $replacer("Faros")}</h1>
           <h2 class="text-3xl font-bold">Save online reading</h2>
-          <h3 class="text-2xl font-bold">Remembering what you saved and why</h3>
+          <h3 class="text-2xl font-bold">Remember what you saved and why</h3>
+          <!-- <h3 class="text-2xl font-bold">Web bookmarks with taglines</h3> -->
           <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
           <!-- For those who love learning, but have too many interests to keep track of. -->
           {#if !$hasExtensionStore}
@@ -43,10 +44,15 @@
         <!-- <div class="divider"></div>
         yoo -->
         <div class="divider"></div>
-        <div class="h-20 card bg-base-300 rounded-box place-items-center">
-          <p class="py-1">Chaos in your bookmarks? Can't find what you want? They end up gathering dust?</p>
-          <p class="py-1">Now you can manage it - doing (almost) nothing extra.</p>
-          <p class="py-1">Faros combines .</p>
+        <div class="card bg-base-300 rounded-box place-items-center">
+          <p class="py-1">
+            Chaos in your bookmarks? <br />Can't find what you want? <br />They end up gathering dust?
+          </p>
+          <div class="divider">Fix it!</div>
+          <p class="py-1">Use Faros to save pages instead.</p>
+          <p class="py-1">
+            It combines bookmarks with a webclipper <br />so you can pick taglines for the websites you save.
+          </p>
           <p class="py-1">Watch the video to learn how:</p>
           <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
             to see what it looks like
@@ -57,7 +63,7 @@
       </div>
     </div>
   </div>
-  <div class="flex justify-center w-full my-12">
+  <div class="flex justify-center w-full my-4">
     <iframe
       loading="lazy"
       width="560"
@@ -77,17 +83,6 @@
   </div> -->
   <div class="flex flex-col items-center my-16">
     <div class="max-w-lg bg-base-100 rounded-2xl">
-      <!-- <div class="collapse collapse-arrow">
-        <input type="checkbox" />
-        <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
-        <div class="collapse-content">
-          <span class="my-2 block"
-            >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
-          <span class="my-2 block"
-            >If you bookmark it you'll likely forget why you did it in a few weeks.</span>
-          <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
-        </div>
-      </div> -->
       <div class="collapse collapse-arrow">
         <input type="checkbox" />
         <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>

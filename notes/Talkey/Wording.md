@@ -116,8 +116,9 @@ Watch the video below to learn how:
 | Obj        | Even if you're bad at organizing with notes etc.                  |
 | Effort     | Without doing anything extra                                      |
 | Obj/effort | Integrate with anything like notion/obsidian with no extra steps. |
-### V7
-When reading online there's cool stuff you find, it's great to be able to go back to it later
+### V7 - extension
+%% When reading online there's cool stuff you find, it's great to be able to go back to it later %%
+Manifest: Save online reading - bookmarks with highlights
 
 Do you have chaos in your bookmarks? Can't find what you want? They end up gathering dust?
 *what about interests?*

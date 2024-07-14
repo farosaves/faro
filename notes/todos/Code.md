@@ -17,6 +17,7 @@ what the heck is overview component?
 	- [ ] Check if the underlining is still happening or no I think not.
 	- [ ] So have a variable for whether it has run or I think there is one already.
 	- [ ] and try running it when the window is focused
+- [ ] Potentially I can listen to updates and deserialize whenever one happens and the snippet appears.
 
 
 ### Book mark sync 2
