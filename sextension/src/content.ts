@@ -168,6 +168,7 @@ const onLoad = () => sem.use(async () => {
 })
 window.addEventListener("load", onLoad)
 window.addEventListener("DOMContentLoaded", onLoad)
+// window.addEventListener("focus", onLoad) doesnt fix this
 
 setTimeout(onLoad, 500) // wait half a second
 setTimeout(onLoad, 1000) // wait half a second
