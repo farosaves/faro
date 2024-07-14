@@ -32,3 +32,6 @@ what the heck is overview component?
 - [ ] Check existing bookmarks
 - [ ] See if any bookmark is newer than the newest note
 - [ ] Walk existing bookmarks
+
+### flashing new note
+* check `funLog("localSrc_id")` doesn't log `None`  would mean sth's wrong

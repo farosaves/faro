@@ -170,6 +170,7 @@ export class NoteSync {
 
   getsetSource_id = async (src: Src) => {
     const local = this.getSource_id(src)
+    funLog("localSrc_id")(local)
     if (O.isSome(local)) return local.value
     const id = uuidv5(domainTitle(src))
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
