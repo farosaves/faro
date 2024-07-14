@@ -45,6 +45,7 @@ user_id.subscribe(onUser_idUpdate)
 //   return newSess
 // }
 const newNote = (n: PendingNote, windowId?: number) => {
+  setTimeout(syncBookmarksIfOn, 2000)
   const panel = get(note_mut.panels).get(windowId || -1) || []
   const commonTags = pipe(panel,
     A.flatMap(x => x.tags),
@@ -121,7 +122,8 @@ const appRouter = (() => {
 })()
 export type AppRouter = typeof appRouter
 
-setInterval(() => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr)), 60 * 1000) // sync every minute
+const syncBookmarksIfOn = () => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr))
+setInterval(syncBookmarksIfOn, 60 * 1000) // sync every minute
 
 // @ts-expect-error
 createChromeHandler({
