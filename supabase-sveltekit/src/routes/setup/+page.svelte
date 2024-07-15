@@ -16,9 +16,9 @@
         err = "file access not supported"
         return
       }
-      window.dirHandle = await self.showDirectoryPicker({
-        startIn: "pictures",
-      })
+      // window.dirHandle = await self.showDirectoryPicker({
+      //   startIn: "pictures",
+      // })
     }}>Start</button>
 </div>
 

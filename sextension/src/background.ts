@@ -2,7 +2,7 @@ import { currTab, getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, requestedSync, sbLogger, syncBookmarks, typeCast } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, requestedSync, sbLogger, syncBookmarks, typeCast, walker } from "shared"
 import type { Notes, PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
@@ -96,7 +96,7 @@ const appRouter = (() => {
     toggleNoPrompt: t.procedure.mutation(() => wantsNoPrompt.update(x => !x)),
     // BOOKMARKS  -- assumes has perm
     syncBookmarks: t.procedure.query(() => syncBookmarks(get(noteDeri.noteArr)).then(log("syncBookmarks"))),
-    // walker: t.procedure.query(() => walker()),
+    walker: t.procedure.query(walker),
 
     // requestedNoPrompt: t.procedure.query(async () => await supabase.from("profiles").select("")),
     // forward note_sync
@@ -194,7 +194,7 @@ const refreshOnline = async () => {
 //   funLog("s.expires_in")(s.expires_in)
 //   // s.expires_at ? s.expires_at - Date.now() :
 //   const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
-//   setTimeout(refreshSess, retryInMs) // ! this will mess up trying to simulate offline
+//   setTimeout(refreshSess, retryInMs) // /! this will mess up trying to simulate offline
 // })
 
 const refresh = async (online = true) => {

@@ -1,21 +1,15 @@
 import type { SourceData, SupabaseClient } from "./db/typeExtras"
 import { array as A, option as O, either as E } from "fp-ts"
-import { parseISO, max } from "date-fns"
 import type { Option } from "fp-ts/lib/Option"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import type { LazyArg } from "fp-ts/lib/function"
-import { writable, type Writable } from "svelte/store"
+import { writable } from "svelte/store"
 import { Observable } from "rxjs"
-import type { Patch } from "immer"
 import { v5 } from "uuid"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
-import {
-  convertPatchesToStandard,
-  applyPatchesMutatively as _applyPatches,
-  type UnFreeze,
-  safeProduceWithPatches,
-} from "structurajs"
+export const domainTitle = (src: Src) => [src.domain, src.title].join(";")
+
 import type { UUID } from "crypto"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
@@ -103,9 +97,6 @@ export const warnIfError = (f: _F) => (where = "") => ifErr(funWarn(f)(where, "w
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 export const host = (s: string) => O.tryCatch(() => new URL(s).host)
 
-// export const domain_title = (url: string, title: string) => O.map(s => [s, title].join(";"))(hostname(url))
-export const domainTitle = (src: Src) => [src.domain, src.title].join(";")
-
 // sort descendingly but for negative scores filter out
 export const filterSort
   = <T>(first: (x: T) => number, second = first) =>
@@ -113,25 +104,7 @@ export const filterSort
       xs.filter(x => first(x) > 0).toSorted(desc(first, second))
 
 export const chainN = <T, U>(f: (a: T) => U | undefined | null) => O.chain(flow(f, O.fromNullable))
-// export const TOofPromise = <T>(x: Promise<T>) => pipe(() => x.then(O.fromNullable))
-// TO.fromTask,
-// TO.chain(x => async () => O.fromNullable(x)))
 
-// TODO x => () => f(x)
-
-// type T = {
-//   title: string | null
-//   urls: string[]
-// } | undefined
-// export const fillInTitleUrl = (v: T) => {
-//   return { title: v?.title || "missing Title", url: v?.urls[0] || "" }
-// }
-
-type _T = {
-  title: string | null
-  domain: string | null
-} | undefined
-export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
 
 // https://github.com/extend-chrome/messages?tab=readme-ov-file#rxjs-observables
 export const toStore = <T>(Sub: Observable<T>, init: T) => {
@@ -141,17 +114,7 @@ export const toStore = <T>(Sub: Observable<T>, init: T) => {
 }
 
 export const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // $& means the whole matched string
-export const maxDate = (dateStrs: string[]) => pipe(
-  () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
-  O.tryCatch,
-  O.getOrElse(() => new Date(0).toISOString()))
-
-
-export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
-  const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
-    .order("updated_at", { ascending: true }).limit(1000)
-  return data || []
-}
+export const invertMap = <K, V>(m: Map<K, V>) => new Map(Array.from(m, ([a, b]) => [b, a]))
 
 export const tup = <T extends [void] | object>(val: T) => val
 
@@ -173,29 +136,6 @@ export const unwrapTo
     (y: T) =>
       O.getOrElse(() => y)(x)
 
-export const invertMap = <K, V>(m: Map<K, V>) => new Map(Array.from(m, ([a, b]) => [b, a]))
-// curry
-export const applyPatches
-  = (ps: Patch[]) =>
-    <T>(s: T) => {
-      _applyPatches(s, ps)
-      DEBUG && console.log("applying patches")
-      return s
-    }
-
-export const updateStore
-  = <T>(store: Writable<T>) =>
-    (up: (arg: UnFreeze<T>) => void | T) => {
-      let [patches, inverse]: Patch[][] = [[], []]
-      store.update((storeVal) => {
-        const [result, ...pinv]
-          = safeProduceWithPatches(storeVal, up)
-          ;[patches, inverse] = A.map(convertPatchesToStandard)(pinv) as Patch[][]
-        return result as T
-      })
-      DEBUG && console.log(patches)
-      return { patches, inverse }
-    }
 
 export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry") => {
   const a = E.tryCatch(f, funLog(debugMsg, "retry"))
