@@ -103,7 +103,7 @@
     on:contextmenu|preventDefault={showOptions}>
     <input type="checkbox" class="-z-10" bind:checked={isOpen} />
     <div
-      class="collapse-title overflow-hidden"
+      class="collapse-title overflow-hidden text-center"
       bind:this={this_element}
       style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
       <button
@@ -127,7 +127,7 @@
           <button
             on:click={() => {
               if (hovered) {
-                navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/notes/" + note_data.id)
+                navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/" + note_data.id)
                 toastNotify("Copied to clipboard.")
               }
             }}

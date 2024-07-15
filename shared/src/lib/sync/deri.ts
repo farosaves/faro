@@ -2,10 +2,12 @@ import type { NoteEx } from "$lib"
 import { record as R, array as A, nonEmptyArray as NA, string as S, option as O, tuple as T } from "fp-ts"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
-import { pipe } from "fp-ts/lib/function"
-import { fillInTitleDomain, filterSort, desc } from "$lib"
+import { pipe, flow } from "fp-ts/lib/function"
+import { filterSort, desc } from "$lib"
 import type { UUID } from "crypto"
 import { gotoFunction } from "$lib/dashboard/utils"
+import type { Note } from "$lib/db/typeExtras"
+import { fillInTitleDomain } from "./utils"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)
@@ -26,10 +28,10 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     recordDefaults(["5", "0", "-5"]),
     R.map(NA.groupBy(n => n.sources.title)),
     R.map(R.toArray<string, (NoteEx & { priority: number })[]>),
-    R.map(filterSort(// ([st, nss]) => pipe(nss.map(x => x.prioritised + 1000), A.reduce(0, Math.max)), // // !hacky + 1000 // so I removed it because it does groups first anyway
-      ([st, nss]) => pipe(nss.map(x => x.priority), A.reduce(0, Math.max)),
+    R.map(filterSort(
+      flow(T.snd, A.map(x => x.priority), A.reduce(0, Math.max)), // sort groups by max highest priority
     )),
-    R.map(A.map(T.mapSnd(filterSort(x => x.priority)))),
+    R.map(A.map(T.mapSnd(filterSort(x => x.priority)))), // sort within groups by highest priority
   )
 
 export type SyncLikeNStores = SyncLike & { noteStore: NoteStoreR, stuMapStore: STUMapStoreR }
@@ -48,7 +50,7 @@ export class NoteDeri {
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
     this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([n, s]) => {
-      const vals = [...n.values()]
+      const vals = [...n.values()] as Note[] // !
       return vals.map(n => ({ ...n, sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none }))
     })
 

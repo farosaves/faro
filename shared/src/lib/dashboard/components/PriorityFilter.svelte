@@ -26,7 +26,6 @@
         class="join-item btn grow btn-sm"
         style="display: inline-flex"
         data-tip="hey;)"
-        type="checkbox"
         name="options"
         on:click={toggleValCb("star")}
         class:btn-secondary={$selectedPriorities.has("star")}>
@@ -36,7 +35,6 @@
         class="join-item btn grow btn-sm"
         style="display: inline-flex"
         data-tip="hey;)"
-        type="checkbox"
         name="options"
         on:click={toggleValCb("none")}
         class:btn-secondary={$selectedPriorities.has("none")}>
@@ -47,7 +45,6 @@
         class="join-item btn grow btn-sm"
         style="display: inline-flex"
         data-tip="hey;)"
-        type="checkbox"
         name="options"
         on:click={toggleValCb("archive")}
         class:btn-secondary={$selectedPriorities.has("archive")}>

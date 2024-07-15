@@ -108,11 +108,13 @@
             style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
             min-width: {$layoutey.noteWidth + 2}px">
             <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
-            <a
-              target="_blank"
-              title={title.replaceAll(/<\/?b[^>]*>/g, "")}
-              href={note_group[0].url}
-              class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20">{@html title}</a>
+            <span>
+              <a
+                target="_blank"
+                title={title.replaceAll(/<\/?b[^>]*>/g, "")}
+                href={note_group[0].url}
+                class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20">{@html title}</a>
+            </span>
             <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
               {#each note_group as note (note.id)}
                 <Note

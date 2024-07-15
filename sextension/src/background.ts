@@ -2,7 +2,8 @@ import { currTab, getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, requestedSync, sbLogger, syncBookmarks, typeCast, type Notes, type PendingNote } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, requestedSync, sbLogger, syncBookmarks, typeCast, walker } from "shared"
+import type { Notes, PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "$lib/chromey/bg"
@@ -44,6 +45,7 @@ user_id.subscribe(onUser_idUpdate)
 //   return newSess
 // }
 const newNote = (n: PendingNote, windowId?: number) => {
+  setTimeout(syncBookmarksIfOn, 2000)
   const panel = get(note_mut.panels).get(windowId || -1) || []
   const commonTags = pipe(panel,
     A.flatMap(x => x.tags),
@@ -94,6 +96,8 @@ const appRouter = (() => {
     toggleNoPrompt: t.procedure.mutation(() => wantsNoPrompt.update(x => !x)),
     // BOOKMARKS  -- assumes has perm
     syncBookmarks: t.procedure.query(() => syncBookmarks(get(noteDeri.noteArr)).then(log("syncBookmarks"))),
+    walker: t.procedure.query(walker),
+
     // requestedNoPrompt: t.procedure.query(async () => await supabase.from("profiles").select("")),
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
@@ -118,22 +122,20 @@ const appRouter = (() => {
 })()
 export type AppRouter = typeof appRouter
 
-setInterval(() => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr)), 60 * 1000) // sync every minute
+const syncBookmarksIfOn = () => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr))
+setInterval(syncBookmarksIfOn, 60 * 1000) // sync every minute
 
 // @ts-expect-error
 createChromeHandler({
   router: appRouter,
   createContext,
 })
-// note_mut.currSrc
-// const currSrc = writable<Src>({ domain: "", title: "" })
 
 pushStore("currSrcs", note_mut.currSrcs)
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
 const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
-// const noteTestRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/test/")
-const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/")
+const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/") // ! deprec: but fixes old notes
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title: _title } = tab
@@ -192,7 +194,7 @@ const refreshOnline = async () => {
 //   funLog("s.expires_in")(s.expires_in)
 //   // s.expires_at ? s.expires_at - Date.now() :
 //   const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
-//   setTimeout(refreshSess, retryInMs) // ! this will mess up trying to simulate offline
+//   setTimeout(refreshSess, retryInMs) // /! this will mess up trying to simulate offline
 // })
 
 const refresh = async (online = true) => {
