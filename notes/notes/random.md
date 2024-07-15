@@ -3,3 +3,10 @@
 	Voiceover that tells us more than what exactly is being said. 
 * [Pay?](https://farosapp.com/notes/de853943-3421-4ef6-9b24-cb8e02faf28c)
 * An audience is like a herd of cows, moving slowly in the direction they are being driven towards. https://www.ams.org/notices/199701/comm-rota.pdf
+* If you can motivate someone to lay the foundation, they can more easily motivate themselves to do the rest.
+	https://www.youtube.com/watch?v=_KqeLT-EOe0
+	how does this relate to Faro? 
+	* if I import 10 bookmarks they can go and label them
+		* this may be soo good
+	* I'd need on welcome page to create like a panel to import bookmarks
+		* Settings: export on off, import on off

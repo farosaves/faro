@@ -4,8 +4,6 @@ import type { PageServerLoad } from "./$types"
 import { type Notes, type Src } from "$lib"
 import { map as M } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
-import sb from "@supabase/supabase-js"
-const { SupabaseClient: SbClient } = sb
 type STUMap = Map<UUID, Src>
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -89,6 +87,5 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     const id = crypto.randomUUID()
     return [id, { ...n, id }]
   }))
-  //   const supabase = new SbClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY) as SupabaseClient
   return { mock: { notes, stuMap } }
 }

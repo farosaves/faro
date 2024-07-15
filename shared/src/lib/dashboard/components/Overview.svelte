@@ -1,4 +1,5 @@
 <script lang="ts">
+  // CURRENTLY UNUSED
   import { exclTagSet } from "../filterSortStores"
   import { MyTags, sleep, NoteDeri } from "$lib"
   import { writable } from "svelte/store"
@@ -12,7 +13,7 @@
   let tags = writable<string[]>([])
 
   // as long as open read from the top
-  $: if ($isOpen) $tags = $allTags.filter(x => !$exclTagSet.has(x))
+  $: if ($isOpen) $tags = $allTags.filter((x) => !$exclTagSet.has(x))
   const toggleOpen = async (e: MouseEvent) => {
     const _isOpen = $isOpen
     // close_all_notes()
@@ -83,7 +84,7 @@
       on:click={toggleOpen} />
     <!-- </button> -->
     <span>
-      <MyTags tags={[...$tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} />
+      <!-- <MyTags tags={[...$tags]} autoComplete={$allTags} {onTagAdded} {onTagRemoved} /> -->
       <!-- <div class="flex justify-center">
           <div class="py-4 border-2 border-red-600">
             lil cont
