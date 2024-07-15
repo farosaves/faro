@@ -1,4 +1,4 @@
-what the heck is overview component?
+wwhat the heck is overview component?
 - [ ] Javascript for the dashboard layout - omg
 - [ ] I suspect the refresh problem is because the source ID is somehow disappearing?
 - [ ] No - because the flash appears to happen on refresh regardless - why?
