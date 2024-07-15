@@ -1,4 +1,4 @@
-import { ifErr, updateStore, type Src, applyPatches, warnIfError, sbLogger, funLog2 } from "$lib/utils"
+import { ifErr, type Src, warnIfError, sbLogger, funLog2 } from "$lib/utils"
 import type { UUID } from "crypto"
 import { getNotesOps, type PatchTup } from "./notes_ops"
 import { either as E, array as A, string as S, tuple as T } from "fp-ts"
@@ -8,6 +8,7 @@ import * as devalue from "devalue"
 import type { SupabaseClient } from "$lib/db/typeExtras"
 import type { Notes } from "$lib/db/types"
 import { flow, pipe } from "fp-ts/lib/function"
+import { updateStore, applyPatches } from "./utils"
 
 
 export type Action = E.Either<Src & { id: UUID }, PatchTup>
@@ -77,7 +78,7 @@ export class ActionQueue {
     this.log("push action error")(error)
     // TODO should I check for error here? or push source again and retry...
     if (error) // remove src from stumapstore just in case
-      this.stuMapStoreDelete(notesOps[0].note.source_id)
+      this.stuMapStoreDelete(notesOps[0].note.source_id as UUID)
 
     return error == null
   }

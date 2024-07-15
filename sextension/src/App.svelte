@@ -5,7 +5,7 @@
 
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { requestedSync, type PendingNote, type Src } from "shared"
+  import { persisted, requestedImport, requestedSync, type PendingNote, type Src } from "shared"
   import {
     CmModal,
     API_ADDRESS,
@@ -43,7 +43,6 @@
   import { fade } from "svelte/transition"
   import { derived, writable } from "svelte/store"
   import { hasOrGivesPerm } from "$lib/utils"
-  import { optimistic } from "$lib/stores"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -148,6 +147,20 @@
                   toastNotify("Exporting to Other Bookmarks/Faros", 5000)
                 } else toastNotify("Sync turned off", 5000)
               }}>Sync with bookmarks</button>
+          </li>
+          <li>
+            <button
+              class="btn z-20 tooltip tooltip-left btn-primary"
+              data-tip={$requestedImport ? "Bookmark import on" : "Click for bookmark import"}
+              class:btn-outline={!$requestedImport}
+              on:click={async () => {
+                if (!(await hasOrGivesPerm(perm))) return //rejected
+                $requestedImport = !$requestedImport
+                if ($requestedImport) {
+                  TB.walker.query()
+                  toastNotify("Importing bookmarks", 5000)
+                } else toastNotify("Bookmark import off", 5000)
+              }}>Import from bookmarks</button>
           </li>
           <li>
             <details>

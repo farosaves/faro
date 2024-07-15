@@ -3,7 +3,7 @@
   import { trpc } from "$lib/trpc/client.js"
   import type { Session } from "@supabase/supabase-js"
   export let data
-  const { supabase, slug } = data
+  const { supabase } = data
   import { option as O, taskOption as TO } from "fp-ts"
   import { DEBUG, Dashboard, NoteSync, chainN, funLog, sessStore, windowActive } from "shared"
   import { onMount } from "svelte"

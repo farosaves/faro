@@ -94,11 +94,14 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
 
 let lastUpdated = 0
 export const walker = async () => {
-  const lastBMAdd = (await chrome.bookmarks.getRecent(1)).at(1)?.dateAdded
-  if (!lastBMAdd) return
-  if (lastBMAdd <= lastUpdated) return // no new since last updated
+  // const rec = (await chrome.bookmarks.getRecent(1))
+  const lastBMAdd = (await chrome.bookmarks.getRecent(1)).at(0)?.dateAdded
+  // funLog("lastBMAdd")([rec, lastBMAdd])
+  if (!lastBMAdd || lastBMAdd <= lastUpdated) return // no new bookmarks since last update
   // do some updates
-  const allBookmarks = walkBookmarksTree((await chrome.bookmarks.getTree())[0] as Folder)
+  // TODO instead of this filter I should filter for those that are locally already - because someone may make a new bookmark in the faros folder lol
+  // how would I check if the one in faros folder isn't just a leftover?????
+  const allBookmarks = walkBookmarksTree((await chrome.bookmarks.getTree())[0] as Folder).filter(b => b.folders[0] !== "Other Bookmarks" && b.folders[1] !== "Faros")
   funLog("allBookmarks")(allBookmarks)
   lastUpdated = Date.now()
 }
