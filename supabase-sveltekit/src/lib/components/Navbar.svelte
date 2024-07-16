@@ -5,7 +5,7 @@
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import IconEnvelope from "~icons/jam/envelope"
 
-  import { replacer } from "shared"
+  import { replacer, updateTheme } from "shared"
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   import { onMount } from "svelte"
   import { get } from "svelte/store"
@@ -17,7 +17,7 @@
 
 <div class="navbar z-30 h-20 relative">
   <div class="navbar-start">
-    <a class="btn btn-ghost text-xl mont" href="/">{@html $replacer("Faros")}</a>
+    <a class="btn btn-ghost text-xl mont" href="/">{@html replacer("Faros")}</a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-xl font-semibold">
@@ -51,7 +51,11 @@
             <summary>Theme</summary>
             {#each themes as value}
               <li>
-                <button class="btn join-item" data-set-theme={value} data-act-class="ACTIVECLASS"
+                <button
+                  class="btn join-item"
+                  data-set-theme={value}
+                  data-act-class="ACTIVECLASS"
+                  on:click={() => setTimeout(updateTheme, 100)}
                   >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
               </li>
             {/each}

@@ -5,7 +5,7 @@
 
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { persisted, requestedImport, requestedSync, type PendingNote, type Src } from "shared"
+  import { persisted, requestedImport, requestedSync, updateTheme, type PendingNote, type Src } from "shared"
   import { CmModal, API_ADDRESS, toastStore, funLog, windowActive, toastNotify, altKey } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
@@ -148,7 +148,9 @@
                     <button
                       class="btn join-item z-20 btn-sm"
                       data-set-theme={value}
-                      data-act-class="ACTIVECLASS">{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+                      data-act-class="ACTIVECLASS"
+                      on:click={() => setTimeout(updateTheme, 100)}
+                      >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
                   </li>
                 {/each}
               </ul>
