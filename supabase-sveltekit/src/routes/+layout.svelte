@@ -39,22 +39,25 @@
     funErr(sbLogger(supabase))("error interept")(e)
   }} />
 
-<div class="min-h-screen bg-base-300 text-base-content">
-  <Navbar />
-  <!-- <div class="flex-grow"> -->
-  <slot />
-  <!-- </div> -->
+<div
+  class="absolute -z-10 h-full overflow-y-auto w-full flex flex-col items-center px-5 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
+  <div class="w-full max-w-[1300px]">
+    <Navbar />
+    <!-- <div class="flex-grow"> -->
+    <slot />
+    <!-- </div> -->
 
-  <footer class="footer place-content-between p-4 bg-base-100 text-base-content">
-    <!-- <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">yo</nav> -->
-    <!-- yo -->
-    <aside>© 2024 - Pawel Paradysz</aside>
-    <nav class="flex">
-      <a class="underline" href="/legal/tos">Terms of Service</a>
-      <a class="underline" href="/legal/privacy">Privacy Policy</a>
-    </nav>
-    <aside>
-      <p>Made using <a href="https://jam-icons.com/" class="underline">Jam icons</a></p>
-    </aside>
-  </footer>
+    <footer class="footer place-content-between p-4 text-base-content">
+      <!-- <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">yo</nav> -->
+      <!-- yo -->
+      <aside>© 2024 - Pawel Paradysz</aside>
+      <nav class="flex">
+        <a class="underline" href="/legal/tos">Terms of Service</a>
+        <a class="underline" href="/legal/privacy">Privacy Policy</a>
+      </nav>
+      <aside>
+        <p>Made using <a href="https://jam-icons.com/" class="underline">Jam icons</a></p>
+      </aside>
+    </footer>
+  </div>
 </div>
