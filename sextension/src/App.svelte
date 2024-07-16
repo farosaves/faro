@@ -46,6 +46,7 @@
     })
     // setTimeout(TB.refresh.query, 1000) // doesnt work
     TB.refresh.query()
+    updateTheme()
     themeChange(false)
   })
 
