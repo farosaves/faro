@@ -4,7 +4,7 @@ import { array as A, option as O, eq, string as S, number as N } from "fp-ts"
 import type { NoteEx } from "$lib/db/typeExtras"
 import { pipe } from "fp-ts/lib/function"
 import { note2Url } from "$lib/dashboard/utils"
-import { funLog } from "$lib/utils"
+import { asc, funLog } from "$lib/utils"
 const { subtle } = crypto
 
 export const f = (t: NotesOps) => 3
@@ -29,7 +29,7 @@ interface Folder extends chrome.bookmarks.BookmarkTreeNode {
 }
 type Node = Folder | Bookmark
 
-const subTree = async (id: string) => await chrome.bookmarks.getSubTree("2") as Node[]
+const otherBookmarks = async () => (await chrome.bookmarks.getSubTree("2"))[0] as Node
 
 type MyBookmark = { title: string, url: string }
 const MBEq = eq.contramap((b: MyBookmark) => b.title + ";;" + b.url)(S.Eq)
@@ -46,7 +46,7 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
   const hash = await subtle.digest("SHA-256", encoder.encode(notes.map(x => x.id).join("")))
   if (abEq(hash, prevHash)) return funLog("syncBookmarks hash same")(hash) // & noop
   prevHash = hash
-  const treeInit = (await chrome.bookmarks.getSubTree("2"))[0]
+  const treeInit = await otherBookmarks()
   // ! fix it for Firefox: "Unfiled bookmarks" ?
   if (treeInit.title !== "Other Bookmarks" || !treeInit.children) {
     throw new Error("other root bookmark structures not implemented yet")
@@ -54,7 +54,7 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
   if (!treeInit.children.map(x => x.title == "Faros").reduce((x, y) => x || y)) {
     await createBookmark({ parentId: "2", title: "Faros" })
   }
-  const tree = (await subTree("2"))[0]
+  const tree = await otherBookmarks()
   if (tree.children === undefined) throw new Error("unreachable (bookmarkey)")
   const farosFolder = tree.children.filter(x => x.title == "Faros")[0] as Node
   if (farosFolder.children === undefined) throw new Error("farosFolder undefined children")
@@ -91,3 +91,24 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
 
   // chrome.bookmarks.create({url, title})
 }
+
+let lastUpdated = 0
+export const walker = async () => {
+  // const rec = (await chrome.bookmarks.getRecent(1))
+  const lastBMAdd = (await chrome.bookmarks.getRecent(1)).at(0)?.dateAdded
+  // funLog("lastBMAdd")([rec, lastBMAdd])
+  if (!lastBMAdd || lastBMAdd <= lastUpdated) return // no new bookmarks since last update
+  // do some updates
+  // TODO instead of this filter I should filter for those that are locally already - because someone may make a new bookmark in the faros folder lol
+  // how would I check if the one in faros folder isn't just a leftover?????
+  const allBookmarks = walkBookmarksTree((await chrome.bookmarks.getTree())[0] as Folder).filter(b => b.folders[0] !== "Other Bookmarks" && b.folders[1] !== "Faros")
+  funLog("allBookmarks")(allBookmarks)
+  lastUpdated = Date.now()
+}
+
+const walkBookmarksTree = (folder: Folder, parentFolders: string[] = []): (Bookmark & { folders: string[] })[] =>
+  (folder.children as Node[]).flatMap(node =>
+    (node.url !== undefined)
+      ? [{ folders: parentFolders, ...node }] // bookmark
+      : walkBookmarksTree(node, [...parentFolders, node.title]), // folder
+  ).toSorted(asc(x => x.dateAdded || 0))

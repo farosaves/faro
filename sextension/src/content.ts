@@ -133,9 +133,10 @@ sem.use(async () => { // here I can potentially defer loading if page has no hig
 let loaded = false
 let toDeserialise: [string, string][] = []
 let wentTo = false
+let wentToNote = false
 const onLoad = () => sem.use(async () => {
   document.getElementById("farosgetitlink")?.classList.add("hidden")
-  if (loaded && !toDeserialise.length) return
+  if (loaded && !toDeserialise.length) return // ! I don't know what's really going on here.
   if (!loaded) toDeserialise = await T.serializedHighlights.query()
   loaded = true
   DEBUG && console.log("sers", toDeserialise)
@@ -157,14 +158,17 @@ const onLoad = () => sem.use(async () => {
   const { data: note } = await T.singleNote.query(singleNote_id)
   if (!note) return
   // bind the note to uhh tabId until src changes?
-
   const { serialized_highlight, snippet_uuid } = note
   if (!serialized_highlight || !snippet_uuid) return
   batchDeserialize([[snippet_uuid, serialized_highlight]])
-  gotoText(snippet_uuid)
+  if (!wentToNote && snippet_uuid) {
+    gotoText(snippet_uuid)
+    wentToNote = true
+  }
 })
 window.addEventListener("load", onLoad)
 window.addEventListener("DOMContentLoaded", onLoad)
+// window.addEventListener("focus", onLoad) doesnt fix this
 
 setTimeout(onLoad, 500) // wait half a second
 setTimeout(onLoad, 1000) // wait half a second
