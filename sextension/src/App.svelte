@@ -133,7 +133,7 @@
       <!-- so far copied 1-1 -->
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
-        <div class="dropdown-content menu z-20 bg-base-200">
+        <div class="dropdown-content menu z-20">
           <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"

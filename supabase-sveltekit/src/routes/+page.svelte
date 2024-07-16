@@ -18,7 +18,7 @@
     content="Save web pages for later with Faros browser extension. Highlight, save & organize." />
 </svelte:head>
 
-<div class="min-h-screen flex flex-col bg-base-300">
+<div class="min-h-screen flex flex-col">
   <div class="hero flex-grow">
     <div class="hero-content text-center">
       <div class="flex flex-col w-full place-items-center">
@@ -43,7 +43,7 @@
         <!-- <div class="divider"></div>
         yoo -->
         <div class="divider"></div>
-        <div class="h-20 card bg-base-300 rounded-box place-items-center">
+        <div class="h-20 card rounded-box place-items-center">
           <p class="py-1">Do you love learning, but have too many interests to keep track of?</p>
           <p class="py-1">Now you can manage it - doing (almost) nothing extra.</p>
           <p class="py-1">Watch the video to learn how:</p>
@@ -75,7 +75,7 @@
     <p>Your saves show both the page title and the snippet you picked.</p>
   </div>
   <div class="flex flex-col items-center my-16">
-    <div class="max-w-lg bg-base-100 rounded-2xl">
+    <div class="max-w-lg rounded-2xl">
       <!-- <div class="collapse collapse-arrow">
         <input type="checkbox" />
         <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
