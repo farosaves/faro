@@ -8,3 +8,6 @@
 - [ ] Collapsible tags rather than carousel
 - [ ] Work in google docs
 - [ ] Warn if saving stuff that won't open later - e.g. if dropdown, suggest the section text
+- [ ] Bookmark import
+- [ ] I can send bookmarks every minute or every few minutes.
+	- [ ] look at say hash of all present IDs to see if it changed and update the bookmarks only if it has changed
