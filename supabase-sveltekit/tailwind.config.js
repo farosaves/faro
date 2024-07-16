@@ -8,6 +8,7 @@ export default {
     "./src/**/*.{svelte,ts}",
     "../node_modules/shared/**/*.{svelte,ts}",
   ],
+  darkMode: "class",
   theme: {
     extend: {},
   },
