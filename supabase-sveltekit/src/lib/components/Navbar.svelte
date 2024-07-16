@@ -12,6 +12,7 @@
   import { themeChange } from "theme-change"
   onMount(() => {
     themeChange(false)
+    updateTheme()
   })
 </script>
 

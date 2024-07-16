@@ -31,7 +31,9 @@ export const altKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1
 export const replacer = (capture: string) => "<b class=\"dark:text-yellow-100\">" + capture + "</b>"
 export const updateTheme = () => {
   if (window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") == "dark")
-    3
+    document.documentElement.classList.add("dark")
+  else
+    document.documentElement.classList.remove("dark")
 }
 
 export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
