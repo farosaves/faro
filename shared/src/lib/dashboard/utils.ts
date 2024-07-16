@@ -15,6 +15,6 @@ export const gotoFunction = (nd: NoteEx | undefined) => () => {
   const hasExt = get(hasExtensionStore)
   let url: URL | string
   if (hasExt) url = note2Url(nd)
-  else url = API_ADDRESS + "/notes/" + nd.id
+  else url = API_ADDRESS + "/" + nd.id
   url && open(url)
 }

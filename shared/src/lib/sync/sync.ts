@@ -5,22 +5,7 @@ import { persisted } from "./persisted-store"
 import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
 import { derived, get, type Readable, type Writable } from "svelte/store"
-import {
-  applyPatches,
-  neq,
-  getUpdatedNotes,
-  updateStore,
-  invertMap,
-  type Src,
-  domainTitle,
-  uuidv5,
-  fillInTitleDomain,
-  funLog,
-  funWarn,
-  sbLogger,
-  maxDate,
-  sleep,
-} from "$lib/utils"
+import { neq, type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
 import { flow, pipe } from "fp-ts/lib/function"
@@ -34,6 +19,7 @@ import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
 import { activeLoadsStore, requestedSync, toastNotify } from "$lib/stores"
 import { noop } from "rxjs"
+import { applyPatches, fillInTitleDomain, getUpdatedNotes, maxDate, updateStore } from "./utils"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -123,18 +109,22 @@ export class NoteSync {
   }
 
 
-  _fetchNewSources = async (): Promise<true | undefined> => { // true
+  _fetchNewSources = async (): Promise<true | undefined> => {
     if (this._user_id == undefined) return
+    const LIMIT = 100 // # at a time
     const missingIds = pipe(Array.from(get(this.noteStore).values()),
       A.map(x => x.source_id),
       A.difference(S.Eq)(Array.from(get(this.stuMapStore).keys())),
+      A.uniq(S.Eq),
+      A.takeLeft(LIMIT),
     )
-    const nss = (await this.sb.from("sources").select("*").in("id", missingIds)).data || []
+    const nss = (await this.sb.from("sources").select("*").in("id", missingIds).then(logIfError("nss @ _fetchNewSources"))).data || []
     this.stuMapStore.update((ss) => {
       nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
       return ss
     })
-    return nss.length < 1000 || this._fetchNewSources()
+    funLog("stuMapStore @ _fetchNewSources")(get(this.stuMapStore))
+    return nss.length < LIMIT || this._fetchNewSources()
   }
 
   _filter4Present = async (user_id: string, lastDate: string) => {
@@ -170,6 +160,7 @@ export class NoteSync {
 
   getsetSource_id = async (src: Src) => {
     const local = this.getSource_id(src)
+    funLog("localSrc_id")(local)
     if (O.isSome(local)) return local.value
     const id = uuidv5(domainTitle(src))
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))

@@ -29,7 +29,7 @@
   </div>
   <div class="navbar-end">
     <a
-      class="btn btn-ghost p-2 invisible md:visible"
+      class="btn btn-ghost p-2 hidden md:inline-flex"
       data-umami-event="WebStore"
       title="Webstore"
       href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
