@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Save online reading - bookmark highlights</title>
+  <title>Faro - Save online reading - bookmark highlights</title>
   <meta
     name="description"
     content="Save web pages for later with Faros browser extension. Highlight, save & organize. " />

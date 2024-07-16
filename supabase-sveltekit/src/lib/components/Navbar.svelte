@@ -17,7 +17,7 @@
 
 <div class="navbar z-30 h-20 relative">
   <div class="navbar-start">
-    <a class="btn btn-ghost text-xl mont" href="/">{@html $replacer("Faros")}</a>
+    <a class="btn btn-ghost text-xl mont" href="/">{@html $replacer("Faro")}</a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-xl font-semibold">
