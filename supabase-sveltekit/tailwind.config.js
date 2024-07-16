@@ -10,7 +10,11 @@ export default {
   ],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      height: {
+        "screen-minus-80": "calc(100vh - 80px)",
+      },
+    },
   },
   plugins: [require("daisyui")],
   daisyui: {
