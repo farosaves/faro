@@ -5,7 +5,7 @@
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import IconEnvelope from "~icons/jam/envelope"
 
-  import { replacer, themeStore, updateTheme } from "shared"
+  import { replacer } from "shared"
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   import { onMount } from "svelte"
   import { get } from "svelte/store"
@@ -40,31 +40,6 @@
       href="https://discord.gg/6TvDFPA6bs"
       title="Join Discord server"><IconDiscord font-size={24} /></a>
 
-    <!-- <ul class="menu lg:menu-horizontal bg-base-200 rounded-box mr-2">
-      <li>
-        <details>
-          <summary>Settings</summary>
-          <ul>
-            {#if option.isSome($sessStore)}<li><a>Submenu 1</a></li>{/if}
-            <li>
-              <details class="join">
-                <summary>Theme</summary>
-                {#each themes as value}
-                  <li>
-                    <button
-                      class="btn join-item"
-                      data-set-theme={value}
-                      data-act-class="ACTIVECLASS"
-                      on:click={() => setTimeout(updateTheme, 100)}
-                      >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
-                  </li>
-                {/each}
-              </details>
-            </li>
-          </ul>
-        </details>
-      </li>
-    </ul> -->
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="m-1"><IconMenu font-size="32" /></div>
       <ul class="menu dropdown-content bg-base-200 rounded-box mr-2 text-lg">
@@ -76,11 +51,7 @@
             <summary>Theme</summary>
             {#each themes as value}
               <li>
-                <button
-                  class="btn join-item"
-                  data-set-theme={value}
-                  data-act-class="ACTIVECLASS"
-                  on:click={() => setTimeout(updateTheme, 100)}
+                <button class="btn join-item" data-set-theme={value} data-act-class="ACTIVECLASS"
                   >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
               </li>
             {/each}
@@ -88,19 +59,5 @@
         </li>
       </ul>
     </div>
-
-    <!-- <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn m-1">Theme</div>
-      <div class="dropdown-content join join-vertical">
-        {#each themes as value}
-          <button
-            class="btn join-item"
-            data-set-theme={value}
-            data-act-class="ACTIVECLASS"
-            on:click={() => setTimeout(updateTheme, 100)}
-            >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
-        {/each}
-      </div>
-    </div> -->
   </div>
 </div>
