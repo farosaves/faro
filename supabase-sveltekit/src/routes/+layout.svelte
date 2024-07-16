@@ -41,7 +41,7 @@
 
 <div
   class="absolute -z-10 h-full overflow-y-auto w-full flex flex-col items-center px-5 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
-  <div class="w-full max-w-[1300px] border-2">
+  <div class="w-full max-w-[1300px]">
     <Navbar />
     <!-- <div class="flex-grow"> -->
     <slot />
