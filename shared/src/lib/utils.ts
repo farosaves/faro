@@ -28,6 +28,7 @@ export const browser = () => typeof window !== "undefined" && typeof document !=
 export const ctrlKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2318" : "Ctrl"
 export const altKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2325" : "Alt"
 
+export const replacer = (capture: string) => "<b class=\"dark:\"text-yellow-100\">" + capture + "</b>"
 
 export const getOrElse: <A>(onNone: LazyArg<NoInfer<A>>) => (ma: Option<A>) => A = O.getOrElse
 

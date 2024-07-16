@@ -1,5 +1,5 @@
 import type { Session } from "@supabase/supabase-js"
-import { derived, writable } from "svelte/store"
+import { writable } from "svelte/store"
 import { option as O, array as A } from "fp-ts"
 import type { Action } from "svelte/action"
 import type { Notes } from "./db/types"
@@ -17,16 +17,13 @@ export const windowActive = writable(false)
 const _sess: O.Option<Session> = O.none
 
 export const sessStore = writable(_sess)
-type ColorScheme = "light" | "dark"
+// type ColorScheme = "light" | "dark"
 
-const colorScheme: ColorScheme = "dark"
-export const themeStore = writable<ColorScheme>(colorScheme)
-export const replacer = derived(themeStore,
-  t => (capture: string) => `<b class="${t == "dark" ? "text-yellow-100" : ""}">` + capture + "</b>")
-
-export const updateTheme = () =>
-  themeStore.set(
-    window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme)
+// const colorScheme: ColorScheme = "dark"
+// export const themeStore = writable<ColorScheme>(colorScheme)
+// export const updateTheme = () =>
+//   themeStore.set(
+//     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme)
 
 export const modalNote = writable<O.Option<Notes>>(O.none)
 
