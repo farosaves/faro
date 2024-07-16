@@ -147,3 +147,4 @@ Landing page WIP:
 * Ditch bookmark chaos and start saving pages with highlights.
 * Remember better what the page is about with a single sentence highlight
 * View your saves in a scrollable Pinterest-like feed, and organize them with tags later
+* Say goodbye to the chaos of bookmarks. Save online pages with highlighted taglines for easy retrieval.
