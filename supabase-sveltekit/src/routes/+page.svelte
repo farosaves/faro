@@ -20,12 +20,14 @@
 
 <div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20">
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
-    <div class="h-1/2 w-1/2 xl:w-full pl-3 pt-10 pb-20">
+    <div class="h-1/2 w-full md:w-1/2 xl:w-full pl-3 pt-10 pb-20">
       <div class="w-full">
         <div class="flex flex-col w-full">
-          <div class="flex flex-col h-28 justify-between">
-            <h2 class="text-6xl font-bold">Save online reading</h2>
-            <h3 class="text-3xl font-bold">Never forget what you saved and why</h3>
+          <div class="flex flex-col h-28 w-full justify-around md:justify-between">
+            <h2 class="xl:text-6xl text-5xl text-center lg:text-left font-bold pb-4">Save online reading</h2>
+            <h3 class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold">
+              Never forget what you saved and why
+            </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
             <!-- For those who love learning, but have too many interests to keep track of. -->
             {#if !$hasExtensionStore}
@@ -73,27 +75,21 @@
     </div>
   </div>
 </div>
-<div class="min-h-screen flex flex-col w-full">
-  <div>
-    <div class="card items-center">
-      <h3 class="text-2xl font-bold">TL;DW</h3>
-      <p class="font-bold">Bookmarks ✕ Web Clipper</p>
-      <p>You highlight a snippet to remember the page better.</p>
-      <p>Your saves show both the page title and the snippet you picked.</p>
-    </div>
-    <div class="flex flex-col items-center my-16">
+<div class="flex flex-col xl:flex-row h-screen-minus-80 w-full pb-32">
+  <div class="xl:w-1/2 w-full h-full">
+    <div class=" h-full flex flex-col justify-center items-center xl:items-start my-16 w-full">
       <div class="max-w-lg rounded-2xl">
         <!-- <div class="collapse collapse-arrow">
-        <input type="checkbox" />
-        <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
-        <div class="collapse-content">
-          <span class="my-2 block"
-            >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
-          <span class="my-2 block"
-            >If you bookmark it you'll likely forget why you did it in a few weeks.</span>
-          <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
-        </div>
-      </div> -->
+      <input type="checkbox" />
+      <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
+      <div class="collapse-content">
+        <span class="my-2 block"
+          >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
+        <span class="my-2 block"
+          >If you bookmark it you'll likely forget why you did it in a few weeks.</span>
+        <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
+      </div>
+    </div> -->
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
@@ -125,14 +121,26 @@
           <div class="collapse-content">No! It works on your computer without sign up.</div>
         </div>
         <!-- <div class="collapse collapse-arrow">
-        <input type="checkbox" />
-        <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
-        <div class="collapse-content">
-          Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option
-          to buy lifetime access for $10 on
-          <a class="underline" href="https://ko-fi.com/farosapp">kofi</a>.<br />
-        </div>
-      </div> -->
+      <input type="checkbox" />
+      <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
+      <div class="collapse-content">
+        Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option
+        to buy lifetime access for $10 on
+        <a class="underline" href="https://ko-fi.com/farosapp">kofi</a>.<br />
+      </div>
+    </div> -->
+      </div>
+    </div>
+  </div>
+  <div class="xl:w-1/2 w-full h-full">
+    <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
+      <div class="w-full">
+        <h3 class="text-2xl p-3 xl:text-right text-center font-bold">TL;DW</h3>
+        <p class="p-3 xl:text-right text-center font-bold">Bookmarks ✕ Web Clipper</p>
+        <p class="p-3 xl:text-right text-center">You highlight a snippet to remember the page better.</p>
+        <p class="p-3 xl:text-right text-center">
+          Your saves show both the page title and the snippet you picked.
+        </p>
       </div>
     </div>
   </div>
