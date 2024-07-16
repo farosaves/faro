@@ -17,13 +17,6 @@ export const windowActive = writable(false)
 const _sess: O.Option<Session> = O.none
 
 export const sessStore = writable(_sess)
-// type ColorScheme = "light" | "dark"
-
-// const colorScheme: ColorScheme = "dark"
-// export const themeStore = writable<ColorScheme>(colorScheme)
-// export const updateTheme = () =>
-//   themeStore.set(
-//     window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") as ColorScheme)
 
 export const modalNote = writable<O.Option<Notes>>(O.none)
 
