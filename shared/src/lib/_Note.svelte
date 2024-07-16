@@ -3,8 +3,8 @@
 
   import type { SyncLike } from "./sync/sync"
   import { option as O, array as A, predicate } from "fp-ts"
-  import { ctrlKey, escapeHTML, sleep } from "./utils"
-  import { modalOpenStore, modalNote, replacer, toastNotify, windowActive } from "./stores"
+  import { ctrlKey, escapeHTML, sleep, replacer } from "./utils"
+  import { modalOpenStore, modalNote, toastNotify, windowActive } from "./stores"
   import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import IconTrash from "~icons/tabler/trash"
@@ -30,18 +30,18 @@
   $: tags = note_data.tags || []
 
   const replaceAll = (escaped: string, replacer: (c: string) => string) => {
-    for (const hl of note_data.highlights) escaped = escaped.replace(hl, $replacer)
+    for (const hl of note_data.highlights) escaped = escaped.replace(hl, replacer)
     return escaped
   }
-  $: [a1, b1] = escapeHTML($replacer("split")).split("split")
-  $: [a2, b2] = $replacer("split").split("split")
+  $: [a1, b1] = escapeHTML(replacer("split")).split("split")
+  $: [a2, b2] = replacer("split").split("split")
 
   $: text = pipe(
     note_data.searchArt,
     O.match(
       () => {
         const escaped = escapeHTML(note_data.quote)
-        return note_data.highlights ? replaceAll(escaped, $replacer) : escaped
+        return note_data.highlights ? replaceAll(escaped, replacer) : escaped
       }, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
@@ -50,7 +50,7 @@
           O.chain((i) => O.fromNullable(optKR[i])), // here I check that quote has a highlight
           O.map(
             (r) =>
-              escapeHTML(fuzzysort.highlight(r, $replacer)?.join("") || "")
+              escapeHTML(fuzzysort.highlight(r, replacer)?.join("") || "")
                 .replaceAll(a1, a2)
                 .replaceAll(b1, b2) || undefined,
           ),
