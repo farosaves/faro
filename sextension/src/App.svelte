@@ -6,16 +6,7 @@
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
   import { persisted, requestedImport, requestedSync, type PendingNote, type Src } from "shared"
-  import {
-    CmModal,
-    API_ADDRESS,
-    updateTheme,
-    toastStore,
-    funLog,
-    windowActive,
-    toastNotify,
-    altKey,
-  } from "shared"
+  import { CmModal, API_ADDRESS, toastStore, funLog, windowActive, toastNotify, altKey } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
@@ -117,20 +108,6 @@
         <!-- on:dblclick={() => setTimeout(TB.disconnect.query, 1000)} -->
         <IconRefresh font-size={iconSize} />
       </button>
-      <!-- <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
-        <div class="dropdown-content join join-vertical z-20">
-          {#each themes as value}
-            <button
-              class="btn join-item z-20"
-              data-set-theme={value}
-              data-act-class="ACTIVECLASS"
-              on:click={() => setTimeout(updateTheme, 100)}
-              >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
-          {/each}
-        </div>
-      </div> -->
-      <!-- so far copied 1-1 -->
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
         <div class="dropdown-content menu z-20">
@@ -171,9 +148,7 @@
                     <button
                       class="btn join-item z-20 btn-sm"
                       data-set-theme={value}
-                      data-act-class="ACTIVECLASS"
-                      on:click={() => setTimeout(updateTheme, 100)}
-                      >{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
+                      data-act-class="ACTIVECLASS">{value.replace(/\b\w/g, (s) => s.toUpperCase())}</button>
                   </li>
                 {/each}
               </ul>
