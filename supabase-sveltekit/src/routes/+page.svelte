@@ -67,22 +67,23 @@
   </div>
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-end items-start xl:items-center">
     <div class="h-1/2 px-3 pb-20">
-      <div class="carousel rounded-box">
+      <div class="carousel carousel-vertical rounded-box h-[21rem]">
         <div class="carousel-item">
-          <img src={scrn1} alt="Burger" width="560" height="315" />
+          <img src={scrn1} alt="Burger" width="560" />
         </div>
         <div class="carousel-item">
-          <img src={scrn2} alt="Burger" width="560" height="315" />
+          <img src={scrn2} alt="Burger" width="560" />
         </div>
         <div class="carousel-item">
-          <img src={scrn3} alt="Burger" width="560" height="315" />
+          <img src={scrn3} alt="Burger" width="560" />
         </div>
         <div class="carousel-item">
-          <img src={scrn4} alt="Burger" width="560" height="315" />
+          <img src={scrn4} alt="Burger" width="560" />
         </div>
         <div class="carousel-item">
           <iframe
             loading="lazy"
+            class="my-3"
             width="560"
             height="315"
             src="https://www.youtube.com/embed/aNaLN5J-Ei0?si=CjgEH5kWIckYKKE5"
