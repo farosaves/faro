@@ -104,7 +104,7 @@
         class:border-b-2={!!$note_groupss[priority].length}>
         {#each $note_groupss[priority] as [title, note_group]}
           <div
-            class="border-2 text-center rounded-lg border-neutral flex flex-col"
+            class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-300"
             style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
             min-width: {$layoutey.noteWidth + 2}px">
             <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
