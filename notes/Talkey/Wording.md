@@ -121,14 +121,15 @@ Watch the video below to learn how:
 Manifest: Save online reading - bookmarks with highlights
 
 Do you have chaos in your bookmarks? Can't find what you want? They end up gathering dust?
-*what about interests?*
+
 This extension is made to fix that!
 You use it instead of bookmarks to save pages.
 
 The main difference is that when saving a page, you highlight a sentence on it to act as a tagline. 
-It's simple but fixes most issues with normal bookmarks - check out the screenshots.
 
-For example you can:
+It's simple but fixes most issues with normal bookmarks.
+
+For example, you can:
 ➣ remember better what the page is about (by only reading 1 sentence)
 ➣ search by text
 ➣ get back to where you were in text without scrolling
@@ -138,6 +139,12 @@ They're presented in a dashboard with a scrollable Pinterest-like feed - so you 
 ➣ organize your saves with tags later
 
 Also:
-➣ export to bookmarks to keep them if you uninstall Faros
+➣ export to bookmarks to keep them if you uninstall Faro
 ➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.
 
+### V8
+Landing page WIP: 
+* Ditch bookmark chaos and start saving pages with highlights.
+* Remember better what the page is about with a single sentence highlight
+* View your saves in a scrollable Pinterest-like feed, and organize them with tags later
+* Say goodbye to the chaos of bookmarks. Save online pages with highlighted taglines for easy retrieval.
