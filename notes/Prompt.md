@@ -1,35 +1,29 @@
-I'm making a Chrome extension and I'd like your help with making a meta description, can you give a few suggestions?
-Here are the materials I have so far:
-A script for my promotional video:
-Faros - it's a browser extension that helps you stay on top of your online reading.
-When you find something interesting, it makes it easy to get back to it later. 
-What you do, is highlight a sentence or two, that are the most relevant to you, 
-And save it with the context menu, or a keyboard shortcut.
-Saves go to the dashboard, the most recent come first, so you won't forget about them.
-A double click takes you right back to where you were in text, both in the dashboard, and in the sidebar.
-You can organise them with tags, all of which are displayed at the top. Clicking toggles it, and double clicking makes it the only one active.
-It's also easy to search by text, cause you find keywords in the highlighted snippets
-When you're browsing and come across something you'd like to revisit later you have a few options: keeping the tab open, bookmarks, copying the url to notion/obsidian etc. 
+I'm making a Chrome extension called Faro, here's the Description from the Chrome Web Store page for context:
+Manifest: Save online reading - bookmarks with highlights
 
-Chrome webstore listing:
-Faros is an extension designed to make revisiting the easiest possible.
-You save both the URL and a highlighted snippet from the page.
-So you can:
-➣ remember better what the page is about
+Do you have chaos in your bookmarks? Can't find what you want? They end up gathering dust?
+
+This extension is made to fix that!
+You use it instead of bookmarks to save pages.
+
+The main difference is that when saving a page, you highlight a sentence on it to act as a tagline. 
+
+It's simple but fixes most issues with normal bookmarks.
+
+For example you can:
+➣ remember better what the page is about (by only reading 1 sentence)
 ➣ search by text
-➣ get back to exactly where you were in text - no need to scroll 
+➣ get back to where you were in text without scrolling
 
-They're also presented as a scrollable feed with most recent saves first - so you can:
+They're presented in a dashboard with a scrollable Pinterest-like feed - so you can:
 ➣ remind yourself what you saved recently
-➣ organise your saves with tags later
+➣ organize your saves with tags later
 
-I've been using it since February and really liked it, so I hope you'll like it too.
+Also:
+➣ export to bookmarks to keep them if you uninstall Faro
+➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.
 
-ℹ️ About your data:
-When installing you can read: "it can read and change all your data on all websites"
-The only information that ever gets uploaded (when signed in) when you use it to save:
-➣ Open page address
-➣ Saved highlight/quote - what's visible in the sidebar
-➣ Timestamp
-
-The extension also keeps track the currently open tab for each window - to update the sidebar as you navigate - but doesn't save or upload that data.
+I want to make a landing page for it with daisyUI and Tailwind CSS. 
+The page already runs on sveltekit, has footer and navbar already, so I just need the root +page.svelte. 
+What I need help with is the layout, I want it to be uncluttered when you first load the page, and then have more information about features etc as you scroll down.
+Can you help me get started?
