@@ -2,6 +2,11 @@
   import { altKey, funLog, hasExtensionStore, replacer } from "shared"
   import { onMount } from "svelte"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
+  import scrn1 from "$lib/assets/scrn1.png"
+  import scrn2 from "$lib/assets/scrn2.png"
+  import scrn3 from "$lib/assets/scrn3.png"
+  import scrn4 from "$lib/assets/scrn4.png"
+
   // let extInstalled = true
   onMount(async () => {
     // failed to fetch if not installed
@@ -19,7 +24,7 @@
 </svelte:head>
 
 <div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20">
-  <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
+  <div class=" w-full xl:w-4/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
     <div class="h-1/2 w-full md:w-1/2 xl:w-full pl-3 pt-10 pb-20">
       <div class="w-full">
         <div class="flex flex-col w-full">
@@ -62,16 +67,32 @@
   </div>
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-end items-start xl:items-center">
     <div class="h-1/2 px-3 pb-20">
-      <iframe
-        loading="lazy"
-        width="560"
-        height="315"
-        src="https://www.youtube.com/embed/aNaLN5J-Ei0?si=CjgEH5kWIckYKKE5"
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen></iframe>
+      <div class="carousel rounded-box">
+        <div class="carousel-item">
+          <img src={scrn1} alt="Burger" width="560" height="315" />
+        </div>
+        <div class="carousel-item">
+          <img src={scrn2} alt="Burger" width="560" height="315" />
+        </div>
+        <div class="carousel-item">
+          <img src={scrn3} alt="Burger" width="560" height="315" />
+        </div>
+        <div class="carousel-item">
+          <img src={scrn4} alt="Burger" width="560" height="315" />
+        </div>
+        <div class="carousel-item">
+          <iframe
+            loading="lazy"
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/aNaLN5J-Ei0?si=CjgEH5kWIckYKKE5"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
+      </div>
     </div>
   </div>
 </div>
