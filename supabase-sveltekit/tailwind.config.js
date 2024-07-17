@@ -8,8 +8,13 @@ export default {
     "./src/**/*.{svelte,ts}",
     "../node_modules/shared/**/*.{svelte,ts}",
   ],
+  darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      height: {
+        "screen-minus-80": "calc(100vh - 80px)",
+      },
+    },
   },
   plugins: [require("daisyui")],
   daisyui: {
