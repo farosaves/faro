@@ -54,7 +54,7 @@
             ><a class=" btn-ghost text-xl mont" href="/">Faro</a></span>
 
           <ul
-            class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
+            class="flex flex-wrap items-center mb-3 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
             <li>
               <a href="/legal/tos" class="hover:underline me-4 md:me-6">Terms of Service</a>
             </li>
@@ -65,7 +65,10 @@
         </div>
         <div class="divider"></div>
         <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400"
-          >© 2024 - Pawel Paradysz, All Rights Reserved.</span>
+          >© 2024 - Pawel Paradysz, All Rights Reserved. Created using <a
+            href="https://jam-icons.com/"
+            class="hover:underline">Jam Icons</a
+          ></span>
       </div>
     </footer>
   </div>
