@@ -15,7 +15,7 @@
   })
 </script>
 
-<div class="navbar z-30 relative bg-base-100">
+<div class="navbar z-30 h-20 relative">
   <div class="navbar-start">
     <a class="btn btn-ghost text-xl mont" href="/">{@html $replacer("Faros")}</a>
   </div>
