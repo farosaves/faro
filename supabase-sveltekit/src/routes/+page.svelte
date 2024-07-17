@@ -30,16 +30,6 @@
             </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
             <!-- For those who love learning, but have too many interests to keep track of. -->
-            {#if !$hasExtensionStore}
-              <br />
-              <a
-                id="farosgetitlink"
-                class="btn btn-lg btn-primary text-xl"
-                target="_blank"
-                data-umami-event="WebStore"
-                href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
-                <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
-            {/if}
           </div>
           <!-- <div class="divider"></div>
           yoo -->
@@ -50,11 +40,17 @@
             </p>
             <p class="py-1 text-center xl:text-left">Now you can manage it - doing (almost) nothing extra.</p>
             <p class="py-1 text-center xl:text-left">Watch the video to learn how:</p>
-            <!-- You can check out the <u><b><a href="/dashboard/mock">mock dashboard</a></b></u>
-              to see what it looks like
-              <br />
-              Or  -->
-            <!-- Watch the video introduction: -->
+            {#if !$hasExtensionStore}
+              <div class="w-full my-2">
+                <a
+                  id="farosgetitlink"
+                  class="btn btn-lg btn-primary text-xl max-w-[19rem] m-auto"
+                  target="_blank"
+                  data-umami-event="WebStore"
+                  href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
+                  <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
+              </div>
+            {/if}
           </div>
         </div>
       </div>
