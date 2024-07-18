@@ -169,10 +169,14 @@
   </div>
 </div>
 <!-- End Icon Blocks -->
-<div class="flex flex-col xl:flex-row h-screen-minus-80 w-full pb-32">
-  <div class="xl:w-1/2 w-full h-full">
-    <div class=" h-full flex flex-col justify-center items-center xl:items-start my-16 w-full">
-      <div class="max-w-lg rounded-2xl">
+<div class="flex justify-center items-center h-[25rem] w-full mt-20 pb-32 relative">
+  <div
+    class="text-5xl font-bold mt-3 pt-3 top-0 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2">
+    FAQ's
+  </div>
+  <div class=" w-full lg:w-4/6 h-full">
+    <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
+      <div class="w-full rounded-2xl">
         <!-- <div class="collapse collapse-arrow">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
@@ -187,7 +191,7 @@
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
-          <div class="collapse-content mx-4">
+          <div class="collapse-content">
             <ul class="list-disc text-nowrap w-min text-left">
               <li class="list-item">Select text</li>
               <li class="list-item">
@@ -226,6 +230,7 @@
       </div>
     </div>
   </div>
+  <!--
   <div class="xl:w-1/2 w-full h-full">
     <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
       <div class="w-full">
@@ -238,4 +243,5 @@
       </div>
     </div>
   </div>
+  -->
 </div>
