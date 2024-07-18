@@ -70,7 +70,8 @@
         allowfullscreen></iframe>
     </div>
   </div>
-  <div class=" left-1/2 bottom-2 absolute transform -translate-x-1/2 -translate-y-1/2 text-center">
+  <div
+    class=" left-1/2 bottom-2 absolute hidden xl:inline transform -translate-x-1/2 -translate-y-1/2 text-center">
     <a href="#key-features">
       <svg
         class="size-16 opacity-35 m-auto cursor-pointer"
