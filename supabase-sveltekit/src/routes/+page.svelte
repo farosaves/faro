@@ -26,7 +26,7 @@
           <div class="flex flex-col h-28 w-full justify-around md:justify-between">
             <h2 class="xl:text-6xl text-5xl text-center lg:text-left font-bold pb-4">Save online reading</h2>
             <h3
-              class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold text-gray-900 dark:text-white">
+              class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold text-gray-700 dark:text-gray-400">
               Never forget what you saved and why
             </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
@@ -36,13 +36,13 @@
           yoo -->
           <div class="divider"></div>
           <div class="h-20 w-full card rounded-box">
-            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-white">
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
               Do you love learning, but have too many interests to keep track of?
             </p>
-            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-white">
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
               Now you can manage it - doing (almost) nothing extra.
             </p>
-            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-white">
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
               Watch the video to learn how:
             </p>
             {#if !$hasExtensionStore}
