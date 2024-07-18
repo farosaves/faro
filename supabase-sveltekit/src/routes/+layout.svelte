@@ -40,7 +40,7 @@
   }} />
 
 <div
-  class="absolute -z-10 h-full overflow-y-auto w-full flex flex-col items-center px-5 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
+  class="scroll-container absolute -z-10 h-full overflow-y-auto w-full flex flex-col items-center px-5 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
   <div class="w-full max-w-[1300px]">
     <Navbar />
     <!-- <div class="flex-grow"> -->
@@ -73,3 +73,9 @@
     </footer>
   </div>
 </div>
+
+<style>
+  .scroll-container {
+    scroll-behavior: smooth;
+  }
+</style>

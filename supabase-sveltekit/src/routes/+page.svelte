@@ -18,7 +18,7 @@
     content="Save web pages for later with Faros browser extension. Highlight, save & organize. " />
 </svelte:head>
 
-<div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20">
+<div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative">
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
     <div class="h-1/2 w-full md:w-1/2 xl:w-full pl-3 pt-10 pb-20">
       <div class="w-full">
@@ -74,8 +74,22 @@
         allowfullscreen></iframe>
     </div>
   </div>
+  <div class=" left-1/2 bottom-2 absolute transform -translate-x-1/2 -translate-y-1/2 text-center">
+    <a href="#key-features">
+      <svg
+        class="size-16 opacity-35 m-auto cursor-pointer"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="-5 -8 24 24"
+        width="28"
+        fill="currentColor"
+        ><path
+          d="M7.071 5.314l4.95-4.95a1 1 0 1 1 1.414 1.414L7.778 7.435a1 1 0 0 1-1.414 0L.707 1.778A1 1 0 1 1 2.121.364l4.95 4.95z"
+        ></path
+        ></svg>
+    </a>
+  </div>
 </div>
-<div class="w-full mt-4 h-fit flex flex-col justify-center items-center">
+<div class="w-full mt-4 h-fit flex flex-col justify-center items-center" id="key-features">
   <div class=" p-4 text-center text-5xl font-bold">Key Features</div>
   <div class=" p-4 text-xl text-gray-400">Explore how Faro transforms your reading experience:</div>
   <div class=" mt-12 w-full flex justify-center items-start">
