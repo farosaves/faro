@@ -85,13 +85,13 @@
     </a>
   </div>
 </div>
-<div class="w-full mt-4 h-fit flex flex-col justify-center items-center" id="key-features">
+<div class="w-full pt-6 h-fit flex flex-col justify-center items-center" id="key-features">
   <div class=" p-4 text-center text-5xl font-bold">Key Features</div>
   <div class=" p-4 text-xl text-gray-400">Explore how Faro transforms your reading experience:</div>
-  <div class=" mt-12 w-full flex justify-center items-start">
+  <div class=" mt-12 w-full flex flex-col lg:flex-row items-center justify-center lg:items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
-    <div class="w-1/3 m-3">
+    <div class=" w-1/2 lg:w-1/3 m-3">
       <div
         class=" relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
@@ -107,7 +107,7 @@
       </div>
       <div class="mt-5">
         <h3 class="text-lg font-semibold">Highlight and Save</h3>
-        <p class="mt-1 text-gray-600">
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Save your online readings with highlighted text snippets for quick and easy access later on.
         </p>
       </div>
@@ -115,7 +115,7 @@
     <!-- End Icon Block -->
 
     <!-- Icon Block -->
-    <div class="w-1/3 m-3">
+    <div class="w-1/2 lg:w-1/3 m-3">
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
@@ -140,7 +140,7 @@
     <!-- End Icon Block -->
 
     <!-- Icon Block -->
-    <div class="w-1/3 m-3">
+    <div class="w-1/2 lg:w-1/3 m-3">
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
