@@ -1,6 +1,3 @@
-import type { NoteEx } from "shared"
+import { writable } from "svelte/store"
 
-// export type SupabaseClient = _SupabaseClient<Database>;
-
-export type NoteFilter = (n: NoteEx & { priority: number }) => NoteEx & { priority: number }
-
+export const scrolled = writable(0)
