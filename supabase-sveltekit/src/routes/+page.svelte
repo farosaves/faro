@@ -25,7 +25,8 @@
         <div class="flex flex-col w-full">
           <div class="flex flex-col h-28 w-full justify-around md:justify-between">
             <h2 class="xl:text-6xl text-5xl text-center lg:text-left font-bold pb-4">Save online reading</h2>
-            <h3 class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold">
+            <h3
+              class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold text-gray-900 dark:text-white">
               Never forget what you saved and why
             </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
@@ -35,11 +36,15 @@
           yoo -->
           <div class="divider"></div>
           <div class="h-20 w-full card rounded-box">
-            <p class="py-1 text-center xl:text-left">
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-white">
               Do you love learning, but have too many interests to keep track of?
             </p>
-            <p class="py-1 text-center xl:text-left">Now you can manage it - doing (almost) nothing extra.</p>
-            <p class="py-1 text-center xl:text-left">Watch the video to learn how:</p>
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-white">
+              Now you can manage it - doing (almost) nothing extra.
+            </p>
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-white">
+              Watch the video to learn how:
+            </p>
             {#if !$hasExtensionStore}
               <div class="w-full my-2">
                 <a
@@ -71,7 +76,7 @@
     </div>
   </div>
   <div
-    class=" left-1/2 bottom-2 absolute hidden xl:inline transform -translate-x-1/2 -translate-y-1/2 text-center">
+    class=" left-1/2 bottom-2 absolute hidden xl:inline transform -translate-x-1/2 -translate-y-1/2 text-center opacity-40 hover:opacity-80 transition-opacity">
     <a href="#key-features">
       <svg
         class="size-16 opacity-35 m-auto cursor-pointer"
@@ -88,7 +93,9 @@
 </div>
 <div class="w-full pt-6 h-fit flex flex-col justify-center items-center" id="key-features">
   <div class=" p-4 text-center text-5xl font-bold">Key Features</div>
-  <div class=" p-4 text-xl text-gray-400">Explore how Faro transforms your reading experience:</div>
+  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">
+    Explore how Faro transforms your reading experience:
+  </div>
   <div class=" mt-12 w-full flex flex-col lg:flex-row items-center justify-center lg:items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
@@ -96,7 +103,7 @@
       <div
         class=" relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
-          class="flex-shrink-0 size-6 text-white"
+          class="flex-shrink-0 size-6 text-black dark:text-white"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="-0.5 -1 24 24"
           width="28"
@@ -108,7 +115,7 @@
       </div>
       <div class="mt-5">
         <h3 class="text-lg font-semibold">Highlight and Save</h3>
-        <p class="mt-1 text-gray-600 dark:text-neutral-400">
+        <p class="mt-1 text-gray-800 dark:text-neutral-400">
           Save your online readings with highlighted text snippets for quick and easy access later on.
         </p>
       </div>
@@ -120,7 +127,7 @@
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
-          class="flex-shrink-0 size-7 text-white"
+          class="flex-shrink-0 size-7 text-black dark:text-white"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="-5 -6 24 24"
           width="28"
@@ -131,8 +138,8 @@
           ></svg>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-white">Organize Seemlessly</h3>
-        <p class="mt-1 text-gray-600 dark:text-neutral-400">
+        <h3 class="text-lg font-semibold text-black dark:text-white">Organize Seemlessly</h3>
+        <p class="mt-1 text-gray-800 dark:text-neutral-400">
           Effortlessly organize your saved pages with tagged highlights, eliminating cluttered chaos found in
           traditional bookmarks
         </p>
@@ -145,7 +152,7 @@
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
-          class="flex-shrink-0 size-6 text-white"
+          class="flex-shrink-0 size-6 text-black dark:text-white"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="-5 -2 24 24"
           width="28"
@@ -156,8 +163,8 @@
           ></svg>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-white">Efficient Retrieval</h3>
-        <p class="mt-1 text-gray-600 dark:text-neutral-400">
+        <h3 class="text-lg font-semibold text-black dark:text-white">Efficient Retrieval</h3>
+        <p class="mt-1 text-gray-800 dark:text-neutral-400">
           Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
           productivity.
         </p>
