@@ -75,6 +75,100 @@
     </div>
   </div>
 </div>
+<div class="w-full mt-4 h-fit flex flex-col justify-center items-center">
+  <div class=" p-4 text-center text-5xl">Key Features</div>
+  <div class=" p-4 text-xl">Explore how Faro transforms your reading experience:</div>
+  <div class=" mt-12 w-full flex justify-center items-start border-2">
+    <!-- Icon Blocks -->
+    <!-- Icon Block -->
+    <div class="w-1/3 m-3">
+      <div
+        class=" relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
+        <svg
+          class="flex-shrink-0 size-6 text-blue-600 dark:text-blue-500"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><rect width="10" height="14" x="3" y="8" rx="2" /><path
+            d="M5 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-2.4" /><path d="M8 18h.01" /></svg>
+      </div>
+      <div class="mt-5">
+        <h3 class="text-lg font-semibold">Highlight and Save</h3>
+        <p class="mt-1">
+          Save your online readings with highlighted text snippets for quick and easy access later on.
+        </p>
+      </div>
+    </div>
+    <!-- End Icon Block -->
+
+    <!-- Icon Block -->
+    <div class="w-1/3 m-3">
+      <div
+        class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
+        <svg
+          class="flex-shrink-0 size-6 text-blue-600 dark:text-blue-500"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><path d="M20 7h-9" /><path d="M14 17H5" /><circle cx="17" cy="17" r="3" /><circle
+            cx="7"
+            cy="7"
+            r="3" /></svg>
+      </div>
+      <div class="mt-5">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Organize Seemlessly</h3>
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
+          Effortlessly organize your saved pages with tagged highlights, eliminating cluttered chaos found in
+          traditional bookmarks
+        </p>
+      </div>
+    </div>
+    <!-- End Icon Block -->
+
+    <!-- Icon Block -->
+    <div class="w-1/3 m-3">
+      <div
+        class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
+        <svg
+          class="flex-shrink-0 size-6 text-blue-600 dark:text-blue-500"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path
+            d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+      </div>
+      <div class="mt-5">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Efficient Retrieval</h3>
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
+          Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
+          productivity.
+        </p>
+      </div>
+    </div>
+    <!-- End Icon Block -->
+
+    <!-- End Icon Block -->
+  </div>
+</div>
+<!-- End Icon Blocks -->
 <div class="flex flex-col xl:flex-row h-screen-minus-80 w-full pb-32">
   <div class="xl:w-1/2 w-full h-full">
     <div class=" h-full flex flex-col justify-center items-center xl:items-start my-16 w-full">
