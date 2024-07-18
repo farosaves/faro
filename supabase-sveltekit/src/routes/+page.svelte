@@ -76,31 +76,28 @@
   </div>
 </div>
 <div class="w-full mt-4 h-fit flex flex-col justify-center items-center">
-  <div class=" p-4 text-center text-5xl">Key Features</div>
-  <div class=" p-4 text-xl">Explore how Faro transforms your reading experience:</div>
-  <div class=" mt-12 w-full flex justify-center items-start border-2">
+  <div class=" p-4 text-center text-5xl font-bold">Key Features</div>
+  <div class=" p-4 text-xl text-gray-400">Explore how Faro transforms your reading experience:</div>
+  <div class=" mt-12 w-full flex justify-center items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
     <div class="w-1/3 m-3">
       <div
         class=" relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
-          class="flex-shrink-0 size-6 text-blue-600 dark:text-blue-500"
+          class="flex-shrink-0 size-6 text-white"
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><rect width="10" height="14" x="3" y="8" rx="2" /><path
-            d="M5 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-2.4" /><path d="M8 18h.01" /></svg>
+          viewBox="-0.5 -1 24 24"
+          width="28"
+          fill="currentColor"
+          ><path
+            d="M8.038 11.06l-1.035 3.207 1.776 1.775 3.165-1.077-3.906-3.906zm1.24-1.59l4.242 4.243 6.364-6.364a2 2 0 0 0 0-2.829L18.47 3.106a2 2 0 0 0-2.829 0L9.277 9.47zm-3.503 6.4L3.88 17.765l1.653 1.151 1.644-1.644-1.402-1.402zM19.884 1.692l1.414 1.414a4 4 0 0 1 0 5.657l-7.778 7.778-4.22 1.437-3.536 3.535L.778 18.04l4.291-4.292L6.45 9.47l7.778-7.778a4 4 0 0 1 5.657 0z"
+          ></path
+          ></svg>
       </div>
       <div class="mt-5">
         <h3 class="text-lg font-semibold">Highlight and Save</h3>
-        <p class="mt-1">
+        <p class="mt-1 text-gray-600">
           Save your online readings with highlighted text snippets for quick and easy access later on.
         </p>
       </div>
@@ -112,23 +109,18 @@
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
-          class="flex-shrink-0 size-6 text-blue-600 dark:text-blue-500"
+          class="flex-shrink-0 size-7 text-white"
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><path d="M20 7h-9" /><path d="M14 17H5" /><circle cx="17" cy="17" r="3" /><circle
-            cx="7"
-            cy="7"
-            r="3" /></svg>
+          viewBox="-5 -6 24 24"
+          width="28"
+          fill="currentColor"
+          ><path
+            d="M4 1h9a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 8h9a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0-4h9a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zM.438.845h.72L1.111 3H.65L.7 1.28H.224L.438.845zM.523 5.59l-.45-.053c.011-.244.09-.439.234-.582a.76.76 0 0 1 .556-.214c.139 0 .263.03.37.089a.67.67 0 0 1 .26.258.677.677 0 0 1 .097.342.988.988 0 0 1-.115.435c-.075.153-.211.33-.407.535l-.158.17h.647V7H.014l.015-.231.666-.68c.158-.16.263-.288.313-.382a.531.531 0 0 0 .074-.245.227.227 0 0 0-.067-.17.242.242 0 0 0-.179-.067.233.233 0 0 0-.182.081c-.034.038-.077.132-.131.284zm.982 4.398c.08.106.121.23.121.373a.7.7 0 0 1-.23.528.813.813 0 0 1-.579.215.758.758 0 0 1-.545-.203c-.142-.136-.22-.32-.183-.603l.456.042c.015.101.05.174.1.22.05.045.115.068.194.068.083 0 .15-.026.203-.078a.253.253 0 0 0 .08-.19.256.256 0 0 0-.109-.209c-.075-.06-.187-.09-.386-.143l.046-.401a.622.622 0 0 0 .203-.042.223.223 0 0 0 .092-.077.175.175 0 0 0 .032-.1.142.142 0 0 0-.045-.109.176.176 0 0 0-.127-.044.211.211 0 0 0-.13.044.217.217 0 0 0-.08.113l-.048.035-.444-.056a.703.703 0 0 1 .185-.413.71.71 0 0 1 .53-.217c.189 0 .35.06.479.182a.58.58 0 0 1 .195.436.516.516 0 0 1-.087.29c-.056.085-.136.153-.246.12a.626.626 0 0 1 .323.219z"
+          ></path
+          ></svg>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Organize Seemlessly</h3>
+        <h3 class="text-lg font-semibold text-white">Organize Seemlessly</h3>
         <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Effortlessly organize your saved pages with tagged highlights, eliminating cluttered chaos found in
           traditional bookmarks
@@ -142,21 +134,18 @@
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <svg
-          class="flex-shrink-0 size-6 text-blue-600 dark:text-blue-500"
+          class="flex-shrink-0 size-6 text-white"
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path
-            d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+          viewBox="-5 -2 24 24"
+          width="28"
+          fill="currentColor"
+          ><path
+            d="M3 2a1 1 0 0 0-1 1v15l2.978-2.717a3 3 0 0 1 4.044 0L12 18V3a1 1 0 0 0-1-1H3zm0-2h8a3 3 0 0 1 3 3v15a2 2 0 0 1-3.348 1.477L7.674 16.76a1 1 0 0 0-1.348 0l-2.978 2.717A2 2 0 0 1 0 18V3a3 3 0 0 1 3-3z"
+          ></path
+          ></svg>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Efficient Retrieval</h3>
+        <h3 class="text-lg font-semibold text-white">Efficient Retrieval</h3>
         <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
           productivity.
