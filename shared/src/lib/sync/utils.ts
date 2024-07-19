@@ -51,5 +51,6 @@ export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title
 //   () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
 //   O.tryCatch,
 //   O.getOrElse(() => ))
+const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
 export const maxDate = (dateStrs: string[]) => dateStrs.reduce((max, current) =>
-  max.localeCompare(current) > 0 ? max : current, new Date(0).toISOString())
+  (isoRegex.test(current) && max.localeCompare(current) > 0) ? max : current, new Date(0).toISOString())
