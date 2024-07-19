@@ -130,12 +130,10 @@ export class NoteSync {
   _filter4Present = async (user_id: string, lastDate: string) => {
     const { count } = await this.sb.from("notes").select("", { count: "exact", head: true }).eq("user_id", user_id).lte("created_at", lastDate)
 
-    // So here the last date updated precisely why that function was running because of adding the new note
-    // if as many notes in db as here don't do anything
-
     const nLocal = pipe(get(this.noteStore), M.filter(n => n.created_at.localeCompare(lastDate) <= 0), M.size)
     const nServer = count || 0
-    funLog("filter4Present")([nLocal, count, lastDate])
+    funLog("filter4Present")([get(this.noteStore).size, nLocal, count, lastDate])
+    // if as many notes in db as here don't do anything
     if (nLocal == nServer) return
     // more in the db - reset
     if (nLocal < nServer) return this.noteStore.set(new Map())
