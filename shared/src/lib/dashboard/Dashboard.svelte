@@ -66,7 +66,7 @@
   const tilesWidth = writable(800)
   // min width for note is 256px
   const layoutey = derived(tilesWidth, (tW) => {
-    const nNotes = Math.floor(tW / 256)
+    const nNotes = Math.min(Math.floor(tW / 256), 5)
     const noteWidth = Math.floor(tW / nNotes) - 4
 
     // I'll need this code when doing infinite scroll
@@ -80,7 +80,7 @@
     //   }
     //   return ret
     // }
-    return { noteWidth }
+    return { noteWidth, nNotes }
   })
 </script>
 
@@ -100,13 +100,14 @@
     <!-- my main here -->
     {#each priorities as priority}
       <div
-        class="flex flex-row flex-wrap border-secondary pb-2 pt-2"
+        class="flex flex-row flex-wrap border-secondary py-2"
         class:border-b-2={!!$note_groupss[priority].length}>
         {#each $note_groupss[priority] as [title, note_group]}
           <div
             class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-300"
-            style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
-            min-width: {$layoutey.noteWidth + 2}px">
+            style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
+            <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
+            min-width: {$layoutey.noteWidth + 2}px" -->
             <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
             <span>
               <a
