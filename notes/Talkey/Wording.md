@@ -148,3 +148,8 @@ Landing page WIP:
 * Remember better what the page is about with a single sentence highlight
 * View your saves in a scrollable Pinterest-like feed, and organize them with tags later
 * Say goodbye to the chaos of bookmarks. Save online pages with highlighted taglines for easy retrieval.
+
+## V9
+_Saving_ made right
+Web clipper X bookmark manager
+Save pages with highlighted taglines
