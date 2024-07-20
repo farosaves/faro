@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { derived } from "svelte/store"
-  import { record as R, option as O, nonEmptyArray as NA } from "fp-ts"
+  import { derived, writable } from "svelte/store"
+  import { record as R, option as O, nonEmptyArray as NA, tuple } from "fp-ts"
   import { pipe } from "fp-ts/lib/function"
-  import { desc, isCmd } from "$lib"
-  import { uncheckedDomains } from "../filterSortStores"
+  import { desc, isCmd, replacer } from "$lib"
+  import { fzRes, uncheckedDomains } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   import { onMount } from "svelte"
+  import fuzzysort from "fuzzysort"
   export let noteDeri: NoteDeri
   const domains = derived(noteDeri.noteArr, (x) =>
     pipe(
@@ -31,25 +32,56 @@
     details = document.getElementById("details") as HTMLDetailsElement
     setTimeout(() => (details.open = !!$uncheckedDomains.size), 200)
   })
+  const hi = (r: Fuzzysort.Result) => fuzzysort.highlight(r, replacer)?.join("") || ""
+  const queryStore = writable("")
+  const res = derived([queryStore, domains], ([query, d]) =>
+    query
+      ? fuzzysort
+          .go(
+            query,
+            d.map(([domain, count]) => ({ domain, count })),
+            {
+              limit: 15,
+              key: "domain",
+            },
+          )
+          .toSorted(desc((x) => x.score))
+          .map((r) => ({ displayed: hi(r), ...r.obj }))
+      : d.map(([domain, count]) => ({ domain, count, displayed: domain })),
+  )
 </script>
 
 <details id="details" class="flex">
   <summary class="mb-2"> Sites </summary>
-  <div class="join join-vertical bg-base-200 w-56 m-auto">
-    <button
-      class="btn btn-neutral btn-sm text-nowrap join-item w-full"
-      on:click={toggleAll}
-      class:btn-outline={$uncheckedDomains.size}>
-      Toggle All
-    </button>
+  <form>
+    <!-- svelte-ignore a11y-autofocus -->
+    <input
+      type="text"
+      id="search_input"
+      autofocus
+      placeholder="Search sites"
+      class="input input-sm w-56 max-w-xs border-neutral mx-auto block mb-2"
+      bind:value={$queryStore} />
+    <button hidden on:click={() => $queryStore.length && console.log("hey")}></button>
+  </form>
 
-    {#each $domains as [domain, num], i}
-      <div class="tooltip tooltip-top tooltip-secondary p-0 join-item" data-tip={num}>
+  <div class="join join-vertical bg-base-200 w-56 m-auto">
+    {#if !$queryStore.length}
+      <button
+        class="btn btn-neutral btn-sm text-nowrap join-item w-full"
+        on:click={toggleAll}
+        class:btn-outline={$uncheckedDomains.size}>
+        Toggle All
+      </button>
+    {/if}
+
+    {#each $res as { domain, count, displayed }, i}
+      <div class="tooltip tooltip-top tooltip-secondary p-0 join-item" data-tip={count}>
         <button
-          class="btn btn-neutral btn-sm text-nowrap join-item w-full"
+          class="btn btn-neutral btn-sm text-nowrap join-item w-full gap-0"
           on:click={(e) => (e.shiftKey || isCmd(e) ? toggleDomain(domain) : makeOnly(domain))}
           class:btn-outline={$uncheckedDomains.has(domain)}>
-          {domain}
+          {@html displayed}
         </button>
       </div>
     {/each}

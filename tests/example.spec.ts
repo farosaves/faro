@@ -5,7 +5,7 @@ test("has title", async ({ page }) => {
   await page.goto(dev)
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Faros/)
+  await expect(page).toHaveTitle(/Faro/)
 })
 
 test("check version is current", async ({ page }) => {
