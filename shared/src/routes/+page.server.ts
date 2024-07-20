@@ -7,13 +7,14 @@ import { pipe } from "fp-ts/lib/function"
 type STUMap = Map<UUID, Src>
 
 export const load: PageServerLoad = async ({ locals, url }) => {
+  const urlOrig = url.origin.replace(/^https?:\/\//, "")
   const ids = [0, 0, 0, 0, 0].map(_ => crypto.randomUUID())
   const stuMap: STUMap = pipe(new Map([
-    [ids[0], { title: "Hey YC!", url: url.origin + "/account/login" }],
-    [ids[1], { title: "Tips", url: url.origin }],
+    [ids[0], { title: "Hey YC!", url: urlOrig + "/account/login" }],
+    [ids[1], { title: "Tips", url: urlOrig }],
     [ids[2], { title: "Kalanchoe - Wikipedia", url: "https://en.wikipedia.org/wiki/Kalanchoe" }],
-    [ids[3], { title: "Also check out!", url: url.origin + "/ext.zip" }],
-    [ids[4], { title: "Contact", url: url.origin + "/mail" }],
+    [ids[3], { title: "Also check out!", url: urlOrig + "/ext.zip" }],
+    [ids[4], { title: "Contact", url: urlOrig + "/mail" }],
   ]), M.map(t => ({ ...t, domain: t.url })))
   console.log(stuMap)
   let id = 0
