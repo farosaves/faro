@@ -112,7 +112,7 @@
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
         <div class="dropdown-content menu z-20">
-          <li>
+          <!-- <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
               data-tip={$requestedSync ? "Bookmark export on" : "Click for bookmark export"}
@@ -125,7 +125,7 @@
                   toastNotify("Exporting to Other Bookmarks/Faros", 5000)
                 } else toastNotify("Sync turned off", 5000)
               }}>Sync with bookmarks</button>
-          </li>
+          </li> -->
           <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
