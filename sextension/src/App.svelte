@@ -1,5 +1,6 @@
 <script lang="ts">
-  import IconRefresh from "~icons/tabler/refresh"
+  // import IconRefresh from "~icons/tabler/refresh"
+  import IconBookmark from "~icons/jam/bookmark"
   import IconCog from "~icons/jam/cog"
   import IconLayoutDashboard from "~icons/tabler/layout-dashboard"
 
@@ -101,18 +102,17 @@
         use:shortcut={{ alt: true, code: "KeyC" }}
         ><IconLayoutDashboard transform="rotate(90)" font-size={iconSize} /></a>
 
-      <button
+      <!-- <button
         class="tooltip tooltip-left"
         data-tip={"Logged in as: \n" + ($email || "...not logged in")}
         on:click={() => TB.refresh.query()}
         on:contextmenu|preventDefault={() => TB.disconnect.query()}>
-        <!-- on:dblclick={() => setTimeout(TB.disconnect.query, 1000)} -->
         <IconRefresh font-size={iconSize} />
-      </button>
+      </button> -->
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
-        <div class="dropdown-content menu z-20">
-          <!-- <li>
+        <div tabindex="0" role="button"><IconBookmark font-size={iconSize} /></div>
+        <div class="dropdown-content bg-base-100 menu z-20">
+          <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
               data-tip={$requestedSync ? "Bookmark export on" : "Click for bookmark export"}
@@ -124,8 +124,8 @@
                   TB.syncBookmarks.query()
                   toastNotify("Exporting to Other Bookmarks/Faros", 5000)
                 } else toastNotify("Sync turned off", 5000)
-              }}>Sync with bookmarks</button>
-          </li> -->
+              }}>Export to bookmarks</button>
+          </li>
           <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
@@ -140,6 +140,12 @@
                 } else toastNotify("Bookmark import off", 5000)
               }}>Import from bookmarks</button>
           </li>
+        </div>
+      </div>
+
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
+        <div class="dropdown-content bg-base-100 menu z-20">
           <li>
             <details>
               <summary>Theme</summary>
@@ -171,7 +177,6 @@
   </div>
 
   <NotePanel syncLike={bgSync} {windowId} />
-
   <CmModal />
 
   <div class="toast">
