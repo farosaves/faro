@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>Faro - Save online reading - bookmark highlights</title>
+  <title>Faro - Saving pages made right - save with highlighted taglines</title>
   <meta
     name="description"
     content="Save web pages for later with Faros browser extension. Highlight, save & organize. " />
@@ -26,10 +26,10 @@
       <div class="w-full">
         <div class="flex flex-col w-full">
           <div class="flex flex-col h-28 w-full justify-around md:justify-between">
-            <h2 class="xl:text-6xl text-5xl text-center lg:text-left font-bold pb-4">Save online reading</h2>
+            <h2 class="text-5xl text-center lg:text-left font-bold pb-4">Saving pages made right</h2>
             <h3
               class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold text-gray-700 dark:text-gray-400">
-              Never forget what you saved and why
+              With highlighted taglines
             </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
             <!-- For those who love learning, but have too many interests to keep track of. -->
@@ -38,9 +38,7 @@
           yoo -->
           <div class="divider"></div>
           <div class="h-20 w-full card rounded-box">
-            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
-              Do you love learning, but have too many interests to keep track of?
-            </p>
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
               Now you can manage it - doing (almost) nothing extra.
             </p>
