@@ -16,8 +16,8 @@ const _exclTagSets = {
 
 // const highlightId =
 
-// export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
-export const exclTagSets = persisted<typeof _exclTagSets>("exclTagSets", _exclTagSets, { serializer: devalue }) // )
+export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
+// export const exclTagSets = persisted<typeof _exclTagSets>("exclTagSets", _exclTagSets, { serializer: devalue }) // )
 const validate = z.object({ sets: z.record(z.string(), z.set(z.string())), currId: z.string() }).parse
 exclTagSets.update(ns => pipe(() => validate(ns), O.tryCatch, O.getOrElse(() => _exclTagSets)))
 
