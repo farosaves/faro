@@ -1,5 +1,5 @@
 import type { NoteEx } from "$lib/db/typeExtras"
-import { replacer } from "$lib/stores"
+import { replacer } from "$lib/utils"
 import { persisted } from "$lib/sync/persisted-store"
 import { chainN, escapeHTML, getOrElse } from "$lib/utils"
 import { array as A, nonEmptyArray as NA, option as O } from "fp-ts"
@@ -16,8 +16,8 @@ const _exclTagSets = {
 
 // const highlightId =
 
-// export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
-export const exclTagSets = persisted<typeof _exclTagSets>("exclTagSets", _exclTagSets, { serializer: devalue }) // )
+export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
+// export const exclTagSets = persisted<typeof _exclTagSets>("exclTagSets", _exclTagSets, { serializer: devalue }) // )
 const validate = z.object({ sets: z.record(z.string(), z.set(z.string())), currId: z.string() }).parse
 exclTagSets.update(ns => pipe(() => validate(ns), O.tryCatch, O.getOrElse(() => _exclTagSets)))
 
@@ -65,7 +65,7 @@ const fuzzySortDef = (newestFirst: boolean) => ({ f: (n: NoteEx): NoteEx & { pri
   priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
 }), overrideGroups: false })
 
-export const fuzzySort = derived([fzRes, fzSelectedKeys, replacer, newestFirst], ([res, selectedKeys, replacer, newestFirst]) => {
+export const fuzzySort = derived([fzRes, fzSelectedKeys, newestFirst], ([res, selectedKeys, newestFirst]) => {
   if (res && res.length) {
     const [a1, b1] = escapeHTML(replacer("split")).split("split")
     const [a2, b2] = replacer("split").split("split")

@@ -14,9 +14,8 @@ if (DEBUG) console.log("hello")
 // const Tserver = createTRPCProxyClient({ links: [httpBatchLink({ url: API_ADDRESS + "/trpc" })] }) // trpc({ url: { origin: API_ADDRESS } })
 // const Tserver = trpc2()
 
-const port = chrome.runtime.connect()
 export const T = createTRPCProxyClient<AppRouter>({
-  links: [chromeLink({ port })],
+  links: [chromeLink({ port: chrome.runtime.connect() })],
 })
 
 const ran2sel = (rann: Range) => {
@@ -60,7 +59,7 @@ const batchDeserialize = (uss: [string, string][]) => uss.map(deserialize(applie
 const htmlstr2body = (h: string) => new DOMParser().parseFromString(h, "text/html").body
 
 // check if it's part of another already
-const subSelection = async (selectedText: string) => {
+const subSelection = async (selectedText: string, T: ReturnType<typeof createTRPCProxyClient<AppRouter>>) => {
   const anchorClasses = Array.from(window.getSelection()?.anchorNode?.parentElement?.classList || [])
   const potentialHighlights = anchorClasses.filter(s => s.startsWith("_")).map(s => s.slice(1)).filter(x => uuidRegex.test(x))
   if (potentialHighlights.length) {
@@ -86,7 +85,8 @@ getHighlightedText.sub(async ([uuid]) => {
   const selectedText = window.getSelection()?.toString()
   if (!selectedText) return
   // now check if we're in a quote already
-  if (await subSelection(selectedText)) return
+  const T = createTRPCProxyClient<AppRouter>({ links: [chromeLink({ port: chrome.runtime.connect() })] })
+  if (await subSelection(selectedText, T)) return
   DEBUG && console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
   DEBUG && console.log(rangy.createRange())
   const serialized = wrapSelectedText(uuid)
@@ -137,6 +137,7 @@ let wentToNote = false
 const onLoad = () => sem.use(async () => {
   document.getElementById("farosgetitlink")?.classList.add("hidden")
   if (loaded && !toDeserialise.length) return // ! I don't know what's really going on here.
+  // I can look here on bg side to see if after naviagtion there's been no query for some time - meaning no content script.
   if (!loaded) toDeserialise = await T.serializedHighlights.query()
   loaded = true
   DEBUG && console.log("sers", toDeserialise)

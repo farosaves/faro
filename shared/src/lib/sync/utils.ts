@@ -1,9 +1,7 @@
 import type { SupabaseClient } from "$lib/db/typeExtras"
 import { DEBUG } from "$lib/utils"
-import { array as A, option as O } from "fp-ts"
-import { pipe } from "fp-ts/lib/function"
+import { array as A } from "fp-ts"
 import type { Patch } from "immer"
-import { parseISO, max } from "date-fns"
 
 
 export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
@@ -49,8 +47,10 @@ type _T = {
 } | undefined
 export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
 
-export const maxDate = (dateStrs: string[]) => pipe(
-  () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
-  O.tryCatch,
-  O.getOrElse(() => new Date(0).toISOString()))
-
+// export const maxDate = (dateStrs: string[]) => pipe(
+//   () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
+//   O.tryCatch,
+//   O.getOrElse(() => ))
+const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
+export const maxDate = (dateStrs: string[]) => dateStrs.reduce((max, current) =>
+  (isoRegex.test(current) && max.localeCompare(current) > 0) ? max : current, new Date(0).toISOString())

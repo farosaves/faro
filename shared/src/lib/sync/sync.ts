@@ -129,9 +129,11 @@ export class NoteSync {
 
   _filter4Present = async (user_id: string, lastDate: string) => {
     const { count } = await this.sb.from("notes").select("", { count: "exact", head: true }).eq("user_id", user_id).lte("created_at", lastDate)
+
+    const nLocal = pipe(get(this.noteStore), M.filter(n => n.created_at.localeCompare(lastDate) <= 0), M.size)
+    const nServer = count || 0
+    funLog("filter4Present")([get(this.noteStore).size, nLocal, count, lastDate])
     // if as many notes in db as here don't do anything
-    const [nLocal, nServer] = [get(this.noteStore).size, count || 0]
-    funLog("filter4Present")([nLocal, nServer])
     if (nLocal == nServer) return
     // more in the db - reset
     if (nLocal < nServer) return this.noteStore.set(new Map())
@@ -143,8 +145,9 @@ export class NoteSync {
   }
 
   _fetchNewNotes = async (ts?: string): Promise<true | undefined> => {
-    const _latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
     if (this._user_id == undefined) return
+    const _latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
+    // funLog("_fetchNewNotes")([_latestTs, ts, Array.from(get(this.noteStore).values()).map(x => x.updated_at)])
     await this._filter4Present(this._user_id, _latestTs)
     const latestTs = ts || maxDate(Array.from(get(this.noteStore).values()).map(x => x.updated_at))
     const nns = await getUpdatedNotes(this.sb, this._user_id, latestTs)
@@ -154,7 +157,7 @@ export class NoteSync {
     })
     funLog("nns.length")(nns.length)
     await sleep(1)
-    return nns.length < 1000 || this._fetchNewNotes()
+    return nns.length < 1000 || this._fetchNewNotes(ts)
   }
 
 
@@ -266,7 +269,7 @@ export class NoteSync {
             if (!(get(this.stuMapStore).has(nn.source_id)))
               this._fetchNewSources()
             // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-          } else this._filter4Present(user_id, new Date().toISOString())
+          } else this._filter4Present(user_id, new Date().toISOString())// .then(() => funLog("_sub")("_filter4Present"))
         },
       )
       .subscribe((status) => {

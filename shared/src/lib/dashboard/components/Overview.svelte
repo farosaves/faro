@@ -43,12 +43,12 @@
   //   $: onTagRemoved = note_sync.tagChange(note_data)
 
   let highlighting = false
-  const highlightMe = () => {
-    this_element.scrollIntoView({ block: "center" })
-    highlighting = true
-    setTimeout(() => (highlighting = false), 1000)
-    return true
-  }
+  // const highlightMe = () => {
+  //   this_element.scrollIntoView({ block: "center" })
+  //   highlighting = true
+  //   setTimeout(() => (highlighting = false), 1000)
+  //   return true
+  // }
   //   onMount(() => {
   //     "highlightOnMount" in note_data &&
   //       note_data["highlightOnMount"] &&
