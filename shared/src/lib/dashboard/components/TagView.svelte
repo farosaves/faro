@@ -112,9 +112,7 @@
   let div: HTMLDivElement
   onMount(() => {
     makeOnlyFromHash($allTags) || sleep(500).then(() => makeOnlyFromHash($allTags))
-    setTimeout(() => div.scrollIntoView(), 10)
   })
-
   allTags.subscribe(makeOnlyFromHash)
 
   // let dropdownOpen = false
