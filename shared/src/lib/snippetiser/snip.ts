@@ -162,7 +162,7 @@ export const makeQH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, select
     .join("")
     .trim()
 
-  const is4highlight = (t: string) => t.trim().split(" ").length < 4
+  const is4highlight = (t: string) => t.trim().split(" ").length < 3
 
   if (!is4highlight(selectedText))
     return {
@@ -193,7 +193,7 @@ export const makeQH = (htmlstr2body: Hs2t) => (d: Document, uuid: string, select
     .replaceAll(/\[\d{1,2}\]/g, "")
     .replaceAll(/\n+/g, " ")
     .trim()
-  const tooShort = (s: string) => s.trim().split(" ").length < 4
+  const tooShort = (s: string) => s.trim().split(" ").length < 3
   if (tooShort(quote)) {
     const quoteFromContextNode = getFullSentences(htmlstr2body)(contextNode, uuid)
     if (quoteFromContextNode.length < 1000) quote = quoteFromContextNode
