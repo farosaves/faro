@@ -7,7 +7,7 @@
   <div class="hero-content text-center text-2xl flex-col">
     Send any email:
     <div class="flex">
-      <a href="mailto:pawel@farosapp.com">pawel@farosapp.com</a>
+      <a href="mailto:pawel@farosaves.com">pawel@farosaves.com</a>
     </div>
     <div class="divider"></div>
     Suggest feature:

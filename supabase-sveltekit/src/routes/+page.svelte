@@ -19,7 +19,7 @@
   <title>Faro - Saving pages done right - save with highlighted taglines</title>
   <meta
     name="description"
-    content="Save web pages for later with Faros browser extension. Highlight, save & organize. " />
+    content="Save web pages for later with Faro browser extension. Highlight, save & organize. " />
 </svelte:head>
 
 <div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative">
@@ -41,14 +41,16 @@
           <div class="h-20 w-full card font-medium rounded-box">
             <!-- <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p> -->
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
-              Faro combines web highlighting with a bookmark manager<br /> to help you save and organize your web
-              pages.
+              Faro combines web highlighting with a bookmark manager
+            </p>
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
+              Making it easy to manage what you read and what you want to read
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}
               <div class="w-full my-2 flex justify-center xl:justify-start">
                 <a
-                  id="farosgetitlink"
+                  id="farogetitlink"
                   class="btn btn-lg btn-primary text-xl max-w-[19rem]"
                   target="_blank"
                   data-umami-event="WebStore"
@@ -126,7 +128,7 @@
           Organize your saves a day or a week later - easily remembering what they're about. Do it with <span
             class="underline tooltip"
             data-tip="Including Obsidian-like nested tags">tags</span
-          >, stars and archive.
+          >, and pinning and archiving features.
         </p>
       </div>
     </div>
@@ -180,7 +182,7 @@
               <li class="list-item">Select text</li>
               <li class="list-item">
                 Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
-                or right-click and select "Faros save"
+                or right-click and select "Faro save"
               </li>
               <li class="list-item">If something doesn't work try refreshing the webpage.</li>
             </ul>
@@ -193,14 +195,17 @@
             It's on <a
               href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo"
               class="underline">chrome webstore</a
-            >: for desktops.<br />
-            I can do Firefox easily so <a href="/contact" class="underline">lmk if interested</a>.
+            >(desktop only for now).<br />
+            Can do Firefox easily so <a href="/contact" class="underline">let us know if interested</a>.
           </div>
         </div>
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Do I need to sign up?</div>
-          <div class="collapse-content">No! It works on your computer without sign up.</div>
+          <div class="collapse-content">
+            No! It works locally without signing up. <br />Sign up is only required to use the webapp and sync
+            across devices.
+          </div>
         </div>
         <!-- <div class="collapse collapse-arrow">
       <input type="checkbox" />

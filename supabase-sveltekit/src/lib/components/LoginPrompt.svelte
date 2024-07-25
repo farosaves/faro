@@ -22,7 +22,7 @@
   {/if}
   {#if !$hasExtensionStore}
     <a
-      id="farosgetitlink"
+      id="farogetitlink"
       class="btn btn-primary text-xl flex-grow"
       target="_blank"
       data-umami-event="WebStore"
