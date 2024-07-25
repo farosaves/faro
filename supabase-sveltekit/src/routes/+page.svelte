@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>Faro - Saving pages made right - save with highlighted taglines</title>
+  <title>Faro - Saving pages done right - save with highlighted taglines</title>
   <meta
     name="description"
     content="Save web pages for later with Faros browser extension. Highlight, save & organize. " />
@@ -22,13 +22,12 @@
 
 <div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative">
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
-    <div class="h-1/2 w-full md:w-1/2 xl:w-full pl-3 pt-10 pb-20">
+    <div class="h-1/2 w-full pl-3 pt-10 pb-20">
       <div class="w-full">
         <div class="flex flex-col w-full">
-          <div class="flex flex-col h-28 w-full justify-around md:justify-between">
-            <h2 class="text-5xl text-center lg:text-left font-bold pb-4">Saving pages made right</h2>
-            <h3
-              class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold text-gray-700 dark:text-gray-400">
+          <div class="flex flex-col h-28 w-full text-center xl:text-left justify-around md:justify-between">
+            <h2 class="text-5xl font-bold pb-4">Saving pages done right</h2>
+            <h3 class="lg:text-3xl sm:text-xl font-bold text-gray-700 dark:text-gray-400">
               Ditch bookmark chaos and 100s of open tabs
             </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
@@ -37,19 +36,18 @@
           <!-- <div class="divider"></div>
           yoo -->
           <div class="divider"></div>
-          <div class="h-20 w-full card rounded-box">
+          <div class="h-20 w-full card font-medium rounded-box">
             <!-- <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p> -->
-            <p class="py-1 text-center font-medium xl:text-left text-gray-800 dark:text-neutral-400">
-              Faro combines web clipper with bookmark manager.
-            </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
-              Watch the video to learn how:
+              Faro combines web highlighting with a bookmark manager<br /> to help you save and organize your web
+              pages.
             </p>
+            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}
-              <div class="w-full my-2">
+              <div class="w-full my-2 flex justify-center">
                 <a
                   id="farosgetitlink"
-                  class="btn btn-lg btn-primary text-xl max-w-[19rem] m-auto"
+                  class="btn btn-lg btn-primary text-xl max-w-[19rem]"
                   target="_blank"
                   data-umami-event="WebStore"
                   href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
@@ -93,10 +91,8 @@
   </div>
 </div>
 <div class="w-full pt-6 h-fit flex flex-col justify-center items-center" id="key-features">
-  <div class=" p-4 text-center text-5xl font-bold">Key Features</div>
-  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">
-    Explore how Faro transforms your reading experience:
-  </div>
+  <div class=" p-4 text-center text-5xl font-bold">Dead simple</div>
+  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">See what makes it unique:</div>
   <div class=" mt-12 w-full flex flex-col lg:flex-row items-center justify-center lg:items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
@@ -117,7 +113,8 @@
       <div class="mt-5">
         <h3 class="text-lg font-semibold">Highlight and Save</h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          Save your online readings with highlighted text snippets for quick and easy access later on.
+          Pick a sentence to remember what the page is about and why you care about it, and save it.
+          <!-- Save your page with highlighted text snippets to remember what it is about and why you care about it. -->
         </p>
       </div>
     </div>
@@ -139,10 +136,12 @@
           ></svg>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-black dark:text-white">Organize Seemlessly</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white">Organize <i class="italic">later</i></h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          Effortlessly organize your saved pages with tagged highlights, eliminating cluttered chaos found in
-          traditional bookmarks
+          Organize your saves a day or a week later - easily remembering what they're about. Do it with <span
+            class="underline tooltip"
+            data-tip="Including Obsidian-like nested tags">tags</span
+          >, stars and archive.
         </p>
       </div>
     </div>
@@ -164,10 +163,11 @@
           ></svg>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-black dark:text-white">Efficient Retrieval</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white">Superb text search</h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
-          productivity.
+          <!-- Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
+          productivity. -->
+          Search for both titles and snippets at the same time - guaranteed to give you relevant results.
         </p>
       </div>
     </div>

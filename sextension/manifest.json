@@ -7,7 +7,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "description": "Web clipper ⨯ bookmark manager - Save pages with highlighted taglines",
+  "description": "Web highlighter ⨯ bookmark manager - Save pages with highlighted taglines",
   "action": {
     "default_icon": "icons/icon48.png"
   },
