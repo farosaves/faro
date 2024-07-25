@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Welcome</title>
+  <title>Faro - Welcome</title>
 </svelte:head>
 
 <svelte:window

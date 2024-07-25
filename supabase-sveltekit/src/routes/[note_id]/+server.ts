@@ -38,8 +38,8 @@ export const GET = async ({ params }) => {
       if (!loaded) {
         window.location.href = "${newHref}"
       } else {
-        document.getElementById("farosloading").style.display = "none"
-        document.getElementById("farosloaded").style.display = "inline"
+        document.getElementById("faroloading").style.display = "none"
+        document.getElementById("faroloaded").style.display = "inline"
       }
     }
     const f = () => {
@@ -55,9 +55,9 @@ export const GET = async ({ params }) => {
   
   </script>`)
   // $("head").prepend(`<meta property="og:image" content="${API_ADDRESS}/preview.png"/>`) // ! hack
-  $("body").prepend("<div id='farosloading' style='display:inline; position: sticky; top:0px; z-index:50; background:black'>loading...</div>")
-  $("body").prepend(`<div id='farosloaded' style='display:none; position: sticky; top:0px; z-index:50; background:black; color: white'>
-  rehosted with <a href="farosapp.com">farosapp.com</a>
+  $("body").prepend("<div id='faroloading' style='display:inline; position: sticky; top:0px; z-index:50; background:black'>loading...</div>")
+  $("body").prepend(`<div id='faroloaded' style='display:none; position: sticky; top:0px; z-index:50; background:black; color: white'>
+  rehosted with <a href="farosaves.com">farosaves.com</a>
   original at <a href="${data.url}">${getOrElse(() => "this url")(host(data.url))}</a>
   
   </div>`)

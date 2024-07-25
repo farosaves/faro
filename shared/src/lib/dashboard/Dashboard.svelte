@@ -85,7 +85,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Dashboard</title>
+  <title>Faro - Dashboard</title>
 </svelte:head>
 
 <!-- <LoginPrompt bind:showLoginPrompt /> -->

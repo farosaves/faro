@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Setup</title>
+  <title>Faro - Setup</title>
 </svelte:head>
 
 <div class="flex w-full justify-center">

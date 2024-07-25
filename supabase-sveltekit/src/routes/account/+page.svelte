@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Your Account</title>
+  <title>Faro - Your Account</title>
 </svelte:head>
 
 <!-- <div class="flex flex-col">
