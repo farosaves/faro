@@ -8,7 +8,7 @@
   import IconClipboard from "~icons/jam/clipboard"
   import IconSearch from "~icons/jam/search"
   onMount(async () => {
-    // failed to fetch if not instsearchalled
+    // failed to fetch if not installed
     fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg")
       .then((r) => hasExtensionStore.set(true))
       .catch(() => undefined)
