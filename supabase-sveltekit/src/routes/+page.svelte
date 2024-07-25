@@ -125,7 +125,7 @@
       <div class="mt-5">
         <h3 class="text-lg font-semibold text-black dark:text-white">Organize <i class="italic">later</i></h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          Organize your saves a day or a week later - easily remembering what they're about. Do it with <span
+          Organize your saves a day or a week later - you'll easily remember what they're about. Do it with <span
             class="underline tooltip"
             data-tip="Including Obsidian-like nested tags">tags</span
           >, and pinning and archiving features.
@@ -145,7 +145,8 @@
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
           <!-- Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
           productivity. -->
-          Search for both titles and snippets at the same time - guaranteed to give you the relevant results.
+          Search for both titles and snippets at the same time - guaranteed to give you the relevant results. No
+          more googling for things you've seen.
         </p>
       </div>
     </div>
@@ -176,20 +177,6 @@
     </div> -->
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
-          <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
-          <div class="collapse-content">
-            <ul class="list-disc text-nowrap w-min text-left">
-              <li class="list-item">Select text</li>
-              <li class="list-item">
-                Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
-                or right-click and select "Faro save"
-              </li>
-              <li class="list-item">If something doesn't work try refreshing the webpage.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="collapse collapse-arrow">
-          <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Where is it available?</div>
           <div class="collapse-content">
             It's on <a
@@ -207,6 +194,21 @@
             across devices.
           </div>
         </div>
+        <div class="collapse collapse-arrow">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
+          <div class="collapse-content">
+            <ul class="list-disc text-nowrap w-min text-left">
+              <li class="list-item">Select text</li>
+              <li class="list-item">
+                Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
+                or right-click and select "Faro save"
+              </li>
+              <li class="list-item">If something doesn't work try refreshing the webpage.</li>
+            </ul>
+          </div>
+        </div>
+
         <!-- <div class="collapse collapse-arrow">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
