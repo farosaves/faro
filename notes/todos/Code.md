@@ -1,9 +1,10 @@
 wwhat the heck is overview component?
-- [ ] Javascript for the dashboard layout - omg
-- [ ] I suspect the refresh problem is because the source ID is somehow disappearing?
-- [ ] No - because the flash appears to happen on refresh regardless - why?
+- [x] Javascript for the dashboard layout - omg
+- [x] I suspect the refresh problem is because the source ID is somehow disappearing?
+- [x] No - because the flash appears to happen on refresh regardless - why?
 	or should I just adjust it to wait for the mock?... like send it after 200ms?
 	no because 😊 it Presently refreshes all of them.
+- [ ] Remove!! persistence of exclTagSets
 
 - [ ] Double clicking the tag shouldn't edit with tagify but using my `rename this tag` modal
 - [ ] I'm not cleaning up the hash when making the link - There was faros parameters cleanup, but it only handled query parameters and not the hash.
