@@ -11,6 +11,7 @@
 
   let { supabase } = data
   $: ({ supabase } = data)
+  let myDiv: HTMLDivElement
 
   onMount(() => {
     supabase.auth.onAuthStateChange((event, _session) => {
@@ -42,9 +43,10 @@
 
 <div
   on:scroll={(e) => ($scrolled = e.currentTarget.scrollTop)}
+  bind:this={myDiv}
   class="scroll-container absolute -z-10 h-full overflow-y-auto w-full flex flex-col items-center px-5 [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
   <div class="w-full max-w-[1300px]">
-    <Navbar />
+    <Navbar scrollParent={(n) => myDiv.scrollTo({ top: n })} />
     <!-- <div class="flex-grow"> -->
     <slot />
     <!-- </div> -->
