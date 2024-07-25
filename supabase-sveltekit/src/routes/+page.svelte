@@ -106,7 +106,8 @@
       <div class="mt-5">
         <h3 class="text-lg font-semibold">Highlight and Save</h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          Pick a sentence to remember what the page is about and why you care about it, and save it.
+          Pick a sentence to remember what the page is about and why you care about it. Highlight it and save
+          it.
           <!-- Save your page with highlighted text snippets to remember what it is about and why you care about it. -->
         </p>
       </div>
@@ -142,7 +143,7 @@
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
           <!-- Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
           productivity. -->
-          Search for both titles and snippets at the same time - guaranteed to give you relevant results.
+          Search for both titles and snippets at the same time - guaranteed to give you the relevant results.
         </p>
       </div>
     </div>
