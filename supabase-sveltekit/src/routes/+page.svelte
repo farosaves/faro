@@ -29,7 +29,7 @@
             <h2 class="text-5xl text-center lg:text-left font-bold pb-4">Saving pages made right</h2>
             <h3
               class="lg:text-3xl sm:text-xl text-center lg:text-left font-bold text-gray-700 dark:text-gray-400">
-              With highlighted taglines
+              Ditch bookmark chaos and 100s of open tabs
             </h3>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
             <!-- For those who love learning, but have too many interests to keep track of. -->
@@ -38,9 +38,9 @@
           yoo -->
           <div class="divider"></div>
           <div class="h-20 w-full card rounded-box">
-            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
-            <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
-              Now you can manage it - doing (almost) nothing extra.
+            <!-- <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p> -->
+            <p class="py-1 text-center font-medium xl:text-left text-gray-800 dark:text-neutral-400">
+              Faro combines web clipper with bookmark manager.
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
               Watch the video to learn how:
