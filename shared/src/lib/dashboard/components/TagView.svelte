@@ -109,10 +109,10 @@
     _makeOnlyGroup(toToggle)
     return true
   }
+  let div: HTMLDivElement
   onMount(() => {
     makeOnlyFromHash($allTags) || sleep(500).then(() => makeOnlyFromHash($allTags))
   })
-
   allTags.subscribe(makeOnlyFromHash)
 
   // let dropdownOpen = false
@@ -120,7 +120,7 @@
   // const twoPlusTags = writable(false)
 </script>
 
-<div class="bg-base-200 sticky top-0 z-20">
+<div class="bg-base-200 sticky top-0 z-20" bind:this={div}>
   <button
     class="btn btn-sm btn-square btn-secondary absolute right-0 z-10 mt-[1px]"
     on:click={() => (moreTags = !moreTags)}>
@@ -174,18 +174,20 @@
           >{tag}
         </button>
         {#if tags}
-          <ul class="p-2 dropdown-content bg-base-200">
+          <ul class="p-2 dropdown-content menu">
             {#each tags as tc}
               {@const [subTag, count] = tc}
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
-              <button
-                class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary"
-                data-tip={count}
-                on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
-                on:contextmenu|preventDefault={onContextMenu(subTag)}
-                class:btn-outline={$excl(E.left(tc))}>
-                {displayedTag}
-              </button>
+              <li>
+                <button
+                  class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary"
+                  data-tip={count}
+                  on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
+                  on:contextmenu|preventDefault={onContextMenu(subTag)}
+                  class:btn-outline={$excl(E.left(tc))}>
+                  {displayedTag}
+                </button>
+              </li>
             {/each}
           </ul>
         {/if}

@@ -92,7 +92,7 @@
   class:border-2={hovered && $windowActive} -->
 <div class="relative p-1" style={px ? `max-width: ${px}px; min-width: ${px}px` : ""}>
   <div
-    class="collapse bg-base-200 border-primary"
+    class="collapse bg-base-100 border-primary"
     style="border-width: {1 + +(hovered && $windowActive) + 2 * +isHighlighted}px;
      padding: {+!((hovered && $windowActive) || isHighlighted)}px"
     on:mouseenter={() => (hovered = true)}
