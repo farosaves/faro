@@ -48,7 +48,7 @@
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}
-              <div class="w-full my-2 flex justify-center xl:justify-start">
+              <div class="w-full my-2 hidden md:flex justify-center xl:justify-start">
                 <a
                   id="farogetitlink"
                   class="btn btn-lg btn-primary text-xl max-w-[19rem]"
