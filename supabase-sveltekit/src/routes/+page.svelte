@@ -16,10 +16,10 @@
 </script>
 
 <svelte:head>
-  <title>Faro - Saving pages done right - save with highlighted taglines</title>
+  <title>Faro - Saving links done right - save with highlighted taglines</title>
   <meta
     name="description"
-    content="Save web pages for later with Faro browser extension. Highlight, save & organize. " />
+    content="Save website links for later with Faro browser extension. Highlight, save & organize. " />
 </svelte:head>
 
 <div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative">
