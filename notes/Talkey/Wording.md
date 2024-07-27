@@ -153,3 +153,7 @@ Landing page WIP:
 _Saving_ made right
 Web clipper X bookmark manager
 Save pages with highlighted taglines
+
+#### Seriously?
+Your solution to bookmark chaos is picking taglines?
+Yeah, I know. 

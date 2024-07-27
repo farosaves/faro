@@ -1,0 +1,15 @@
+- [ ] welcome page
+- [ ] extension page
+	- [ ] new screenshots
+		- [ ] merge updated wording for title
+- [ ] extension page 2
+	- [ ] new video
+		- [ ] video script
+- [ ] tiles on landing page
+- [ ] maybe then share on r/startups
+- [ ] auth ui
+- [ ] remove account page
+- [ ] meta description
+THEN
+- [ ] appsumo
+- [ ] show hn
