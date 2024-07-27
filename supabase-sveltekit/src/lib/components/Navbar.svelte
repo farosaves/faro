@@ -10,19 +10,28 @@
   import { onMount } from "svelte"
   import { get } from "svelte/store"
   import { themeChange } from "theme-change"
+  // let contentRect: DOMRectReadOnly
+  let navDiv: HTMLDivElement
+  export let scrollParent: (x: number) => void
   onMount(() => {
     themeChange(false)
     updateTheme()
+    if (/\/dashboard/.test(location.href)) scrollParent(navDiv.getBoundingClientRect().bottom)
   })
 </script>
 
-<div class="navbar z-30 h-20 relative">
+<div class="navbar z-30 h-20 relative" bind:this={navDiv}>
   <div class="navbar-start">
     <a class="btn btn-ghost text-xl mont" href="/">{@html replacer("Faro")}</a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-xl font-semibold">
-      <li><a href="/dashboard" data-umami-event="Nav DB">Dashboard</a></li>
+      <li>
+        <a
+          href="/dashboard"
+          on:click={() => scrollParent(navDiv.getBoundingClientRect().bottom)}
+          data-umami-event="Nav DB">Dashboard</a>
+      </li>
       <!-- <li><a href="/notes/pinned">Pinned</a></li>
       <li><a href="/notes/queue">Queue</a></li> -->
       <!-- <li><a href="upload">Upload</a></li> -->
