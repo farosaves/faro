@@ -250,7 +250,7 @@ chrome.action.onClicked.addListener(activate)
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "save",
-    title: "Faros save",
+    title: "Faro save",
     contexts: ["all"],
     documentUrlPatterns: ["<all_urls>"],
   })

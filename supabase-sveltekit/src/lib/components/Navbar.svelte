@@ -22,7 +22,7 @@
 
 <div class="navbar z-30 h-20 relative" bind:this={navDiv}>
   <div class="navbar-start">
-    <a class="btn btn-ghost text-xl mont" href="/">{@html replacer("Faros")}</a>
+    <a class="btn btn-ghost text-xl mont dark:text-yellow-100" href="/"><b>Faro</b></a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-xl font-semibold">

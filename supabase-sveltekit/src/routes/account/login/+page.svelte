@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Login</title>
+  <title>Faro - Login</title>
 </svelte:head>
 
 <div class="flex justify-center">

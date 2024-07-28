@@ -1,14 +1,14 @@
 <p>
-  <strong>Important:</strong> Before using this software (Faros), please carefully read this agreement under
-  which you are acquiring a license to use Faros. If you do not accept the the content of this agreement
-  please do not use Faros. If you access or use Faros, you will be accepting Faros
+  <strong>Important:</strong> Before using this software (Faro), please carefully read this agreement under
+  which you are acquiring a license to use Faro. If you do not accept the the content of this agreement please
+  do not use Faro. If you access or use Faro, you will be accepting Faro
   <a href="https://web-highlights.com/legal/terms-of-service">Terms and Conditions</a>,
   <a href="https://web-highlights.com/legal/privacy-policy">Privacy Policy</a>
   and <a href="https://web-highlights.com/legal/cookies">Cookie Policy</a>.
 </p>
 <h1 id="privacy-policy">Privacy Policy</h1>
 <p>
-  Faros is legally represented by Paweł Paradysz (me, I). In the following, &quot;Faros&quot; means the
+  Faro is legally represented by Paweł Paradysz (me, I). In the following, &quot;Faro&quot; means the
   representative natural entity &quot;Paweł Paradysz&quot; by which the software was developed.
 </p>
 <h2 id="overview">Overview</h2>
@@ -18,7 +18,7 @@
   gmail address and password. Cookies are only set when you log in and used to keep the information of who is
   logged in. No data is shared with, and in particular not sold to, external parties.
   <!-- ## Introduction
-Faros provides this Privacy Policy to inform you of our policies and procedures regarding the collection, use, disclosure and protection of information that apply to the Service, as well as your choices regarding the collection and use of information. No data is shared with, and in particular not sold to, external parties. -->
+Faro provides this Privacy Policy to inform you of our policies and procedures regarding the collection, use, disclosure and protection of information that apply to the Service, as well as your choices regarding the collection and use of information. No data is shared with, and in particular not sold to, external parties. -->
 </p>
 <h2 id="types-of-information-collected">Types of information collected</h2>
 <h3 id="personally-identifiable-information">Personally Identifiable Information</h3>
@@ -38,5 +38,5 @@ computer to provide undo functionality.
 <h2 id="children">Children</h2>
 I do not knowingly collect, maintain, or use Personal Information from children under 13 years of age, and no part
 of the Service is directed to children under the age of 13. If you learn that your child has provided me with personal
-information without your consent, then you may alert me a pawel@farosapp.com. If I learn that I have collected
+information without your consent, then you may alert me a pawel@farosaves.com. If I learn that I have collected
 any Personal Information from children under 13, it will be promptly deleted.
