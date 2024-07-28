@@ -1,1 +1,1 @@
-perl -pi -e 's/("Faros)"/\1Dev"/g' manifest.json
+perl -pi -e 's/("Faro)"/\1Dev"/g' manifest.json

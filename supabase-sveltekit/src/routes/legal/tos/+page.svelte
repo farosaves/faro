@@ -1,14 +1,14 @@
 <h1 id="terms-of-service">Terms of Service</h1>
 <h3 id="definitions">Definitions</h3>
 <p>
-  Faros is legally represented by Paweł Paradysz (me, I, we, our). In the following, &quot;Faros&quot; means
-  the representative natural entity &quot;Paweł Paradysz&quot; by which the software was developed.
+  Faro is legally represented by Paweł Paradysz (me, I, we, our). In the following, &quot;Faro&quot; means the
+  representative natural entity &quot;Paweł Paradysz&quot; by which the software was developed.
 </p>
 <p>
   &quot;User&quot; or &quot;You&quot; means the individual or the business entity to which a license is
   granted by Web Highlights for the use of the Software.
 </p>
-<p>“Licensed Software” means the web-based software extension called Faros.</p>
+<p>“Licensed Software” means the web-based software extension called Faro.</p>
 <!--“Licensee Data” means all electronic data or information submitted by User to the Service; -->
 <p>“Service” means the provision of access to the Licensed Software.</p>
 <!-- (vi) “Usage Data” means data collected about the User’s use of the Service. For example, how often the User accesses a to do list, or what photo(s) they favorite. -->
@@ -35,7 +35,7 @@
 </p>
 <h2 id="intellectual-proprerty">Intellectual proprerty</h2>
 <p>
-  All intellectual proprerty and trademark rights are owned by Faros and shall remain thus. Terms of Use
+  All intellectual proprerty and trademark rights are owned by Faro and shall remain thus. Terms of Use
   don&#39;t grant you any right to use the intellectual proprerty or trademarks.
 </p>
 <h2 id="license-grant">License grant</h2>
@@ -45,13 +45,13 @@
 </p>
 <h2 id="support">Support</h2>
 <p>
-  You may contact me by mail at pawel@farosapp.com. Support is only provided in English, Spanish, Portugese,
+  You may contact me by mail at pawel@Faroapp.com. Support is only provided in English, Spanish, Portugese,
   German and Polish.
 </p>
 <h2 id="copyright">Copyright</h2>
 <p>
   If you believe that the Service has been used in a way that consitutes copyright infringement, you should
-  send email at dmca@farosapp.com to commence the notice-and-takedown procedure.
+  send email at dmca@Faroapp.com to commence the notice-and-takedown procedure.
 </p>
 <h2 id="disclaimer-of-warranties">Disclaimer of Warranties</h2>
 <p>
@@ -61,13 +61,13 @@
 </p>
 <h2 id="limitation-of-liability">Limitation of Liability</h2>
 <p>
-  Faros shall not be liable for any direct, indirect, incidental, special, consequential or exemplary damages,
+  Faro shall not be liable for any direct, indirect, incidental, special, consequential or exemplary damages,
   including but not limited to, damages for loss of profits, goodwill, use, data or other intangible losses.
 </p>
 <h2 id="termination-or-suspension">Termination or Suspension</h2>
 <p>
-  Faros reserves right to terminate or suspend the Service for any user not complying with the terms, or who
-  we believe to be using the Service with a malicious intent or in a suspicious manner.
+  Faro reserves right to terminate or suspend the Service for any user not complying with the terms, or who we
+  believe to be using the Service with a malicious intent or in a suspicious manner.
 </p>
 <p>
   If you wish to terminate this agreement you may simply discontinue using the Service. All provisions of this

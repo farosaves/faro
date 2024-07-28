@@ -26,13 +26,13 @@
   }
 </script>
 
-<button popovertarget="farospopover">Toggle the popover</button>
+<button popovertarget="faropopover">Toggle the popover</button>
 <button on:click={notifyMe}>Notify me!</button>
 <button on:click={() => confirm("hey\nho")}>Alert</button>
 
-<div id="farospopover" popover="auto">
+<div id="faropopover" popover="auto">
   <h3 class="popovertitle">
-    Hey! Why not save it with <a href="https://farosapp.com" class="underline">Faros</a>?
+    Hey! Why not save it with <a href="https://farosaves.com" class="underline">Faro</a>?
   </h3>
   <ul>
     <li>Try to find a sentence which will make it easier for you to remember it</li>
@@ -40,8 +40,8 @@
     <li>You can always export it to bookmarks later so why not!</li>
   </ul>
   <div class="flex w-full justify-around my-2">
-    <button class="btn btn-sm" popovertarget="farospopover">Don't show again</button>
-    <button id="thanks" class="btn btn-sm btn-primary" popovertarget="farospopover">Thanks!</button>
+    <button class="btn btn-sm" popovertarget="faropopover">Don't show again</button>
+    <button id="thanks" class="btn btn-sm btn-primary" popovertarget="faropopover">Thanks!</button>
   </div>
 </div>
 
@@ -56,7 +56,7 @@
     border-radius: 0.5rem;
     font-weight: 600;
   }
-  #farospopover {
+  #faropopover {
     text-align: center;
     /* border-collapse: separate; */
     background-color: #0b1533;

@@ -112,7 +112,7 @@
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
         <div class="dropdown-content menu z-20">
-          <!-- <li>
+          <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
               data-tip={$requestedSync ? "Bookmark export on" : "Click for bookmark export"}
@@ -122,11 +122,11 @@
                 $requestedSync = !$requestedSync
                 if ($requestedSync) {
                   TB.syncBookmarks.query()
-                  toastNotify("Exporting to Other Bookmarks/Faros", 5000)
+                  toastNotify("Exporting to Other Bookmarks/Faro", 5000)
                 } else toastNotify("Sync turned off", 5000)
               }}>Sync with bookmarks</button>
-          </li> -->
-          <li>
+          </li>
+          <!-- <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
               data-tip={$requestedImport ? "Bookmark import on" : "Click for bookmark import"}
@@ -139,7 +139,7 @@
                   toastNotify("Importing bookmarks", 5000)
                 } else toastNotify("Bookmark import off", 5000)
               }}>Import from bookmarks</button>
-          </li>
+          </li> -->
           <li>
             <details>
               <summary>Theme</summary>

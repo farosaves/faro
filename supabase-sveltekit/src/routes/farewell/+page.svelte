@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Farewell</title>
+  <title>Faro - Farewell</title>
 </svelte:head>
 
 <div class="hero min-h-screen bg-base-300">
