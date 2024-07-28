@@ -22,8 +22,8 @@
   {/if}
   {#if !$hasExtensionStore}
     <a
-      id="farosgetitlink"
-      class="btn btn-primary text-xl flex-grow"
+      id="farogetitlink"
+      class="btn btn-primary text-xl flex-grow hidden md:block"
       target="_blank"
       data-umami-event="WebStore"
       href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">

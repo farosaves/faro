@@ -135,7 +135,7 @@ let toDeserialise: [string, string][] = []
 let wentTo = false
 let wentToNote = false
 const onLoad = () => sem.use(async () => {
-  document.getElementById("farosgetitlink")?.classList.add("hidden")
+  document.getElementById("farogetitlink")?.classList.add("hidden")
   if (loaded && !toDeserialise.length) return // ! I don't know what's really going on here.
   // I can look here on bg side to see if after naviagtion there's been no query for some time - meaning no content script.
   if (!loaded) toDeserialise = await T.serializedHighlights.query()

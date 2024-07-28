@@ -250,7 +250,7 @@ chrome.action.onClicked.addListener(activate)
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "save",
-    title: "Faros save",
+    title: "Faro save",
     contexts: ["all"],
     documentUrlPatterns: ["<all_urls>"],
   })
@@ -270,13 +270,14 @@ chrome.runtime.setUninstallURL(API_ADDRESS + "/farewell")
 const notesCurrWindow = derived([currWindowId, note_mut.panels], ([id, panels]) =>
   panels.get(id)?.length || 0,
 )
-const setIcon = async (n: number) => {
-  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+const setIcon = async (n: number, _tabId?: number) => {
+  const tabId = _tabId || (await chrome.tabs.query({ active: true, lastFocusedWindow: true })).at(0)?.id
   return await chrome.action.setIcon({ path: chrome.runtime.getURL(
     n > 0 ? `icons/n_saved/icon${Math.min(n, 9)}.png` : "icons/icon48.png",
-  ), tabId: tab.id }).catch(console.log)
+  ), tabId: tabId }).catch(console.log)
 }
 notesCurrWindow.subscribe(setIcon)
+chrome.tabs.onUpdated.addListener((tabId, _info, _tab) => setIcon(get(notesCurrWindow), tabId))
 
 // erros
 

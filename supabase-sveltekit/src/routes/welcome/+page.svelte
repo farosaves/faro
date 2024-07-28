@@ -15,13 +15,13 @@
 </script>
 
 <svelte:head>
-  <title>Faros - Welcome</title>
+  <title>Faro - Welcome</title>
 </svelte:head>
 
 <svelte:window
   on:keydown={(e) =>
     e.altKey &&
-    e.code == "KeyD" &&
+    e.code == "KeyX" &&
     window.umami.track("altD", { email, sel: window.getSelection()?.toString() })} />
 
 <div class="hero min-h-screen bg-base-300">

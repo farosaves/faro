@@ -17,7 +17,7 @@
     </div>
     Found a new one? Email:
     <div class="flex">
-      <IconEnvelope /><a href="mailto:pawel@farosapp.com">pawel@farosapp.com</a>
+      <IconEnvelope /><a href="mailto:pawel@farosaves.com">pawel@farosaves.com</a>
     </div>
   </div>
 </div>

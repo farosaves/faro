@@ -83,6 +83,8 @@
   let currTag: string
   let newTag: string
   const updateTag = () => {
+    if (newTag === "") return false
+    if (currTag === newTag) return true
     noteDeri.sync.tagUpdate(currTag, O.some(newTag))
     currTag = newTag
     return true
@@ -174,7 +176,7 @@
           >{tag}
         </button>
         {#if tags}
-          <ul class="p-2 dropdown-content menu">
+          <ul class="p-1 dropdown-content menu z-20 bg-base-100">
             {#each tags as tc}
               {@const [subTag, count] = tc}
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
@@ -217,7 +219,10 @@
       <input class="input input-bordered text-center" type="text" bind:value={newTag} />
       <button hidden on:click={updateTag} />
     </form>
-    <button class="btn text-error mt-2" on:click={deleteTag}>delete</button>
+    <button
+      class="btn text-error mt-2 tooltip"
+      data-tip="This only deletes the label not the saves"
+      on:click={deleteTag}>Delete</button>
     <!-- on:click={() => newTag && updateTag(currTag, newTag) && (currTag = newTag) && console.log("aa")} -->
   </div>
   <form method="dialog" class="modal-backdrop">
