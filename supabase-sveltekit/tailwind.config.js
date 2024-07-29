@@ -26,7 +26,7 @@ export default {
           "primary": "oklch(61.77% 0.163 307.59)", // #a066d0 closest web is  #9966cc
           // secondary: "oklch(53.53% 0.2365 269.97)",
           // secondary: "oklch(70.58% 0.1581 252)", // ph
-          "secondary": "oklch(75.72% 0.1387 252)", // id rather do reddish..
+          "secondary": "oklch(75.72% 0.1387 252)", // #6bb4ff
           "base-100": "oklch(20.77% 0.06 265.75)", // #0a1633
         },
       },
