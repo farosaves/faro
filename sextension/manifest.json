@@ -46,5 +46,11 @@
       "resources": ["prompt.html"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "faro@farosaves.com"
+    }
+  }
 }
