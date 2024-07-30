@@ -1,3 +1,5 @@
+#ext
+
 I'd never want to go back to bookmarks, so if you're anything like me I think you won't too;)
 
 I never remembered what was "inside" bookmarks and why I saved them, and it was hard to find anything.

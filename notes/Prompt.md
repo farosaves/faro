@@ -23,7 +23,3 @@ Also:
 ➣ export to bookmarks to keep them if you uninstall Faro
 ➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.
 
-I want to make a landing page for it with daisyUI and Tailwind CSS. 
-The page already runs on sveltekit, has footer and navbar already, so I just need the root +page.svelte. 
-What I need help with is the layout, I want it to be uncluttered when you first load the page, and then have more information about features etc as you scroll down.
-Can you help me get started?
