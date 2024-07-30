@@ -13,7 +13,7 @@
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
         if (session) $sessStore = O.some(session)
-        setTimeout(() => /\/account\//.test(get(page).url.pathname) && goto("/account?from=login"), 50)
+        setTimeout(() => /\/account\//.test(get(page).url.pathname) && goto("/dashboard?from=login"), 50)
       }
     }),
   )

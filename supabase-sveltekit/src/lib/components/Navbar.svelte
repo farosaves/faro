@@ -5,11 +5,12 @@
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import IconEnvelope from "~icons/jam/envelope"
 
-  import { replacer, updateTheme } from "shared"
+  import { sessStore, updateTheme } from "shared"
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   import { onMount } from "svelte"
   import { get } from "svelte/store"
   import { themeChange } from "theme-change"
+  import { option as O } from "fp-ts"
   // let contentRect: DOMRectReadOnly
   let navDiv: HTMLDivElement
   export let scrollParent: (x: number) => void
@@ -53,7 +54,25 @@
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="m-1"><IconMenu font-size="32" /></div>
       <ul class="menu dropdown-content bg-base-200 rounded-box mr-2 text-lg">
-        <li><a href="/account" data-umami-event="Nav Acc">Account<IconUser font-size="16" /></a></li>
+        <!-- <li><a href="/account" data-umami-event="Nav Acc">Account<IconUser font-size="16" /></a></li> -->
+        <li>
+          {#if O.isSome($sessStore)}
+            <!-- <a href="/account" data-umami-event="Nav Acc"></a> -->
+            <details class="text-center">
+              <summary>Account<IconUser font-size="16" /></summary>
+              <div class="text-sm">
+                <span>
+                  Logged in as:
+                  {$sessStore.value.user.email?.split("@").at(0)}
+                </span>
+                <a href="/account/sign-out" class="btn btn-sm text-error w-full" data-umami-event="Nav Logout"
+                  >Logout</a>
+              </div>
+            </details>
+          {:else}
+            <a href="/account/login" data-umami-event="Nav Login">Login</a>
+          {/if}
+        </li>
         <li><a class="" href="/contact">Contact<IconEnvelope font-size="16" /></a></li>
         <li>
           <!-- {#if option.isSome($sessStore)}<li><a>Submenu 1</a></li>{/if} -->
