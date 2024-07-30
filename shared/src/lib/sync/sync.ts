@@ -5,7 +5,7 @@ import { persisted } from "./persisted-store"
 import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
 import { derived, get, type Readable, type Writable } from "svelte/store"
-import { neq, type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle } from "$lib/utils"
+import { type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle, neq } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
 import { flow, pipe } from "fp-ts/lib/function"
@@ -233,16 +233,21 @@ export class NoteSync {
       ns.get(noteId)!.tags = tags
     })
 
-  tagUpdate = async (oldTag: string, newTag: O.Option<string>) =>
-    this.updateAct((ns) => {
-      ns.forEach((n) => {
-        const i = n.tags.indexOf(oldTag)
-        if (~i)
-          if (O.isSome(newTag))
-            n.tags[i] = newTag.value
-          else n.tags = n.tags.filter(neq(oldTag))
-      })
-    })
+  tagUpdate = async (oldTag: string, newTag: O.Option<string>, allTags: string[]) => {
+    const updateTag = (oldTag: string, newTag: O.Option<string>) => (n: Notes) => {
+      const i = n.tags.indexOf(oldTag)
+      if (~i)
+        if (O.isSome(newTag))
+          n.tags[i] = newTag.value
+        else n.tags = n.tags.filter(neq(oldTag))
+    }
+    // for (const tag of )
+    this.updateAct(ns =>
+      allTags.filter(x => x.split("/")[0] == oldTag).forEach(tag =>
+        ns.forEach(
+          updateTag(tag, pipe(newTag, O.map(s => tag.replace(RegExp(`^${oldTag}(?=/|$)`), s)))))))
+  }
+
 
   changePrioritised = (noteId: string) => async (prioritised: number) =>
     this.updateAct((ns) => {
