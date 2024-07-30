@@ -241,7 +241,6 @@ export class NoteSync {
           n.tags[i] = newTag.value
         else n.tags = n.tags.filter(neq(oldTag))
     }
-    // for (const tag of )
     this.updateAct(ns =>
       allTags.filter(x => x.split("/")[0] == oldTag).forEach(tag =>
         ns.forEach(
