@@ -101,7 +101,7 @@ const appRouter = (() => {
     // requestedNoPrompt: t.procedure.query(async () => await supabase.from("profiles").select("")),
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
-    tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
+    tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>, string[]]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
     changePrioritised: t.procedure.input(changePInput).mutation(({ input }) => note_sync.changePrioritised(input[0])(input[1])),
     deleteit: t.procedure.input(z.string()).mutation(({ input }) => note_sync.deleteit(input)),
     undo: t.procedure.query(() => note_sync.undo()),
