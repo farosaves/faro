@@ -27,8 +27,8 @@
     content="Save website links for later with Faro browser extension. Highlight, save & organize. " />
 </svelte:head>
 
-<div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative">
-  <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
+<div class="h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative py-2">
+  <div class="w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
     <div class="h-1/2 w-full pl-3 pt-10 pb-20">
       <div class="w-full">
         <div class="flex flex-col w-full">
