@@ -28,9 +28,9 @@ test("login flow", async ({ page }) => {
 
   await password.press("Enter")
 
-  await expect(page).toHaveURL(/account($|\?)/)
-  await page.getByText("Dashboard", { exact: true }).click()
-  await expect(page).toHaveURL(/dashboard/)
+  // await expect(page).toHaveURL(/account($|\?)/)
+  // await page.getByText("Dashboard", { exact: true }).click()
+  await expect(page).toHaveURL(/\/dashboard\?from=login/)
   // reactivity
   const loc = page.locator("button.btn-sm", { hasNotText: /./ })
   await expect(loc.nth(1)).not.toHaveClass(/btn-outline/)
