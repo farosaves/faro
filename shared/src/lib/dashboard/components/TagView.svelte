@@ -74,8 +74,11 @@
   const _makeOnlyGroup = (tags: string[]) => {
     $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
     _toggleTagGroup(tags)
-    const shortest = tags.toSorted(asc((x) => x.length))[0] // just in case
-    if (shortest !== undefined) location.hash = shortest || " "
+    // const shortest = tags.toSorted(asc((x) => x.length))[0] // just in case
+    // doesnt work if base is not a tag!!! so a/b is tag but a not tag
+    const group = tags[0].split("/")[0] // top lvl
+    if (group !== undefined) location.hash = group || " "
+    // if (shortest !== undefined) location.hash = shortest || " "
   }
   const makeOnly = groupize(_makeOnly, _makeOnlyGroup)
   // let modalPotential: boolean
@@ -85,7 +88,9 @@
   const updateTag = () => {
     if (newTag === "") return false
     if (currTag === newTag) return true
-    noteDeri.sync.tagUpdate(currTag, O.some(newTag))
+    // noteDeri.sync.tagUpdate(currTag, O.some(newTag))
+    noteDeri.sync.tagUpdate(currTag, O.some(newTag), get(allTags))
+    // noteDeri.sync.t
     currTag = newTag
     return true
   }
@@ -98,7 +103,7 @@
   }
   const deleteTag = () => {
     myModal && myModal.close()
-    noteDeri.sync.tagUpdate(currTag, O.none)
+    noteDeri.sync.tagUpdate(currTag, O.none, get(allTags))
   }
   // let dropdownOpen = false
   // let hRem = 4 // style="height: {hRem}rem
