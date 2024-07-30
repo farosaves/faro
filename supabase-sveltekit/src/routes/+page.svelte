@@ -1,17 +1,22 @@
 <script>
   import { scrolled } from "$lib/utils"
-  import { altKey, funLog, hasExtensionStore, replacer } from "shared"
+  import { altKey, funLog, hasExtensionStore, replacer, sessStore } from "shared"
   import { onMount } from "svelte"
   import { fade } from "svelte/transition"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import IconHighlighter from "~icons/jam/highlighter"
   import IconClipboard from "~icons/jam/clipboard"
   import IconSearch from "~icons/jam/search"
+  import { option as O } from "fp-ts"
+  export let data
+  const { supabase } = data
   onMount(async () => {
     // failed to fetch if not installed
     fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg")
       .then((r) => hasExtensionStore.set(true))
       .catch(() => undefined)
+    const { data } = await supabase.auth.getSession()
+    if (data) sessStore.set(O.fromNullable(data.session))
   })
 </script>
 
