@@ -157,3 +157,6 @@ Save pages with highlighted taglines
 #### Seriously?
 Your solution to bookmark chaos is picking taglines?
 Yeah, I know. 
+
+### AppSumo
+Faro is a chrome extension to 
