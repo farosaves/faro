@@ -158,6 +158,7 @@ const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   DEBUG && console.log(domain, title)
   currWindowId.set(tab.windowId)
   if (domain && title) note_mut.currSrcs.update(M.upsertAt(N.Eq)(tab.windowId, { domain, title }))
+  else note_mut.currSrcs.update(M.deleteAt(N.Eq)(tab.windowId)) // ! here check if it doesn't delete when I dont want it to
 }
 
 const tabQueryUpdate = () => chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(flow(A.lookup(0), O.map(updateCurrUrl)))

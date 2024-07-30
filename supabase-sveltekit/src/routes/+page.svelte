@@ -1,17 +1,22 @@
 <script>
   import { scrolled } from "$lib/utils"
-  import { altKey, funLog, hasExtensionStore, replacer } from "shared"
+  import { altKey, funLog, hasExtensionStore, replacer, sessStore } from "shared"
   import { onMount } from "svelte"
   import { fade } from "svelte/transition"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import IconHighlighter from "~icons/jam/highlighter"
   import IconClipboard from "~icons/jam/clipboard"
   import IconSearch from "~icons/jam/search"
+  import { option as O } from "fp-ts"
+  export let data
+  const { supabase } = data
   onMount(async () => {
     // failed to fetch if not installed
     fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg")
       .then((r) => hasExtensionStore.set(true))
       .catch(() => undefined)
+    const { data } = await supabase.auth.getSession()
+    if (data) sessStore.set(O.fromNullable(data.session))
   })
 </script>
 
@@ -22,8 +27,8 @@
     content="Save website links for later with Faro browser extension. Highlight, save & organize. " />
 </svelte:head>
 
-<div class=" h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative">
-  <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
+<div class="h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative py-2">
+  <div class="w-full xl:w-1/2 h-full flex justify-center xl:justify-start items-start xl:items-center">
     <div class="h-1/2 w-full pl-3 pt-10 pb-20">
       <div class="w-full">
         <div class="flex flex-col w-full">

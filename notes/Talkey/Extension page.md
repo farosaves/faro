@@ -26,7 +26,7 @@ So you can:
 
 They're also presented as a scrollable feed with most recent saves first - so you can:
 ➣ remind yourself what you saved recently
-➣ organise your saves with tags later
+➣ organize your saves with tags later
 
 Moreover, you can copy a link to your highlight and share it, or paste into Notion, Obsidian, etc.
 
@@ -105,3 +105,25 @@ The extension also keeps track the currently open tab for each window - to updat
 
 ### V5
 on wording page
+### V6
+Chaos in your bookmarks? Can't find what you want? They end up gathering dust? Or you don't even try and just have 100s of open tabs?
+
+Faro is made to fix that! You use it instead of bookmarks.
+
+The main difference is that when saving a page, you highlight a sentence to act as a tagline. 
+
+Super simple but fixes most problems with normal bookmarks - check out the screenshots!
+
+You can:
+➣ remember what the page is about
+➣ search by text
+➣ get back to where you were in text without scrolling
+
+They're presented in a dashboard with a scrollable Pinterest-like feed.
+So you can:
+➣ remind yourself what you saved recently
+➣ organize your saves with tags later
+
+Also:
+➣ export to bookmarks to keep them if you uninstall Faro
+➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.
