@@ -241,7 +241,7 @@ export class NoteSync {
           n.tags[i] = newTag.value
         else n.tags = n.tags.filter(neq(oldTag))
     }
-    this.updateAct(ns =>
+    this.updateAct(ns => // V this checks iff replace below succeedes
       allTags.filter(x => x.split("/")[0] == oldTag).forEach(tag =>
         ns.forEach(
           updateTag(tag, pipe(newTag, O.map(s => tag.replace(RegExp(`^${oldTag}(?=/|$)`), s)))))))
