@@ -50,22 +50,20 @@
     themeChange(false)
   })
 
-  const handle_keydown = (e: KeyboardEvent) => {
-    if (e.metaKey && e.key === "z") {
-      e.preventDefault()
-      toastNotify(e.shiftKey ? "Redo" : "Undo")
-      ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
-    }
-  }
+  // const handle_keydown = (e: KeyboardEvent) => {
+  //   if (e.metaKey && e.key === "z") {
+  //     e.preventDefault()
+  //     toastNotify(e.shiftKey ? "Redo" : "Undo")
+  //     ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
+  //   }
+  // }
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   const perm = { permissions: ["bookmarks"] }
 </script>
 
-<svelte:window
-  on:keydown={handle_keydown}
-  on:focus={() => ($windowActive = true)}
-  on:blur={() => ($windowActive = false)} />
+<!-- on:keydown={handle_keydown} -->
+<svelte:window on:focus={() => ($windowActive = true)} on:blur={() => ($windowActive = false)} />
 
 <!-- <a target="_blank" href={dashboardURL}>welcome?</a> -->
 
