@@ -97,3 +97,17 @@ Faros - it's a browser extension to manage online reading.
 Faros - it's a browser extension that helps you stay on top of your online reading.
 You save sentences from pages to go back to them later.
 wsa sas
+
+
+### V6
+If you're learning or researching a lot online, %% saving pages for later is crucial. %% you have to save a lot of pages to revisit later.
+If you're like me, you either have a mess in your bookmarks or 100s of open tabs.
+%% Would it help if you were better organized?  %%
+Maybe you're thinking - I should be better organized. 
+*sth about it shouldn't be so hard* 
+%% Maybe, but also it shouldn't be so hard - bookmarks are bad %%
+If you have this problem, you need *some* alternative.
+Like Faro.
+I won't tell you it's the best one, but I can sure say it's the simplest one.
+
+
