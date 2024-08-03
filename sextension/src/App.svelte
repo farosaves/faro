@@ -7,13 +7,13 @@
   import { onMount } from "svelte"
   import { persisted, requestedImport, requestedSync, updateTheme, type PendingNote, type Src } from "shared"
   import { CmModal, API_ADDRESS, toastStore, funLog, windowActive, toastNotify, altKey } from "shared"
-  import { shortcut } from "shared"
+  import { shortcut, hasChanged } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
   import { option as O } from "fp-ts"
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
-  import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
+  import { currDescMsg, getCurrDescMsg, optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
   let login_url = API_ADDRESS + "/account/login"
   // $: T = trpc2()
@@ -50,22 +50,35 @@
     themeChange(false)
   })
 
-  const handle_keydown = (e: KeyboardEvent) => {
-    if (e.metaKey && e.key === "z") {
-      e.preventDefault()
-      toastNotify(e.shiftKey ? "Redo" : "Undo")
-      ;(e.shiftKey ? TB.redo.query : TB.undo.query)()
-    }
-  }
+  // const handle_keydown = async (e: KeyboardEvent) => {
+  //   if (e.metaKey && e.key === "z") {
+  //     e.preventDefault()
+  //     const didIt = await (e.shiftKey ? TB.redo.query : TB.undo.query)()
+  //     if (didIt) toastNotify(e.shiftKey ? "Redo" : "Undo")
+  //   }
+  // }
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   const perm = { permissions: ["bookmarks"] }
+  let customNote = false
+  currSrc.subscribe(({ title }) => hasChanged("title")(title) && (customNote = false))
+  let textAreaValue = ""
+  let editingTabId: number | undefined = undefined
+  const addCustomNoteClick = async () => {
+    textAreaValue = ""
+    customNote = true
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    editingTabId = tab.id
+    getCurrDescMsg.send($currSrc.domain, { tabId: tab.id })
+    const [desc, sender] = await currDescMsg.wait()
+    if (sender.tab?.id !== tab.id) return funLog("wrong tab")([sender.tab?.id, tab.id])
+    funLog("desc")(desc)
+    if (desc.length) textAreaValue = desc
+  }
 </script>
 
-<svelte:window
-  on:keydown={handle_keydown}
-  on:focus={() => ($windowActive = true)}
-  on:blur={() => ($windowActive = false)} />
+<!-- on:keydown={handle_keydown} -->
+<svelte:window on:focus={() => ($windowActive = true)} on:blur={() => ($windowActive = false)} />
 
 <!-- <a target="_blank" href={dashboardURL}>welcome?</a> -->
 
@@ -173,6 +186,20 @@
   <NotePanel syncLike={bgSync} {windowId} />
 
   <CmModal />
+
+  <div class="divider mx-4" />
+  <div class="flex flex-col items-center mx-4">
+    {#if !customNote}
+      <button class="btn btn-primary btn-sm" on:click={addCustomNoteClick}> Save with a custom note </button>
+    {:else}
+      <div class="text-center text-lg mb-2">Write your note below</div>
+      <textarea
+        autofocus
+        class="textarea w-full border border-primary rounded-2xl"
+        bind:value={textAreaValue}
+        on:input={() => {}} />
+    {/if}
+  </div>
 
   <div class="toast">
     {#each $toastStore as [toastMsg, n] (n)}

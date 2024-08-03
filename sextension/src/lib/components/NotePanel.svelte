@@ -31,7 +31,7 @@
 {#each $withMocked as note_data, i}
   <Note note_data={{ ...note_data, searchArt: O.none }} bind:isOpen={noteOpens[i]} {closeAll} {syncLike} />
 {:else}
-  <div class="w-full text-center">
+  <div class="w-full text-center text-lg">
     No saves yet...<br />
     <div
       class="underline tooltip"

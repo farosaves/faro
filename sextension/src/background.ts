@@ -170,27 +170,6 @@ const refreshOnline = async () => {
   return s
 }
 
-// chrome.runtime.onMessageExternal.addListener(
-//   function (request, sender, sendResponse) {
-
-//   })
-
-
-// let lastSess: O.Option<Session> = O.none
-// sess.subscribe((sOpt) => {
-//   lastSess = sOpt
-//   funLog("sOpt")(sOpt)
-//   if (O.isNone(sOpt)) return
-
-//   const s = sOpt.value
-//   if (O.isSome(lastSess) && s.refresh_token == lastSess.value.refresh_token) return
-//   funLog("s.expires_at")(s.expires_at)
-//   funLog("s.expires_in")(s.expires_in)
-//   // s.expires_at ? s.expires_at - Date.now() :
-//   const retryInMs = (s.expires_in - 60) * 1000 // ms to refresh in - 60 secs before supabase client will retry, so get in front
-//   setTimeout(refreshSess, retryInMs) // /! this will mess up trying to simulate offline
-// })
-
 const refresh = async (online = true) => {
   tabQueryUpdate()
   if (online) return await refreshOnline()

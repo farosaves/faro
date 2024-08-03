@@ -28,6 +28,17 @@ export const browser = () => typeof window !== "undefined" && typeof document !=
 export const ctrlKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2318" : "Ctrl"
 export const altKey = browser() && navigator.userAgent.indexOf("Mac OS X") != -1 ? "\u2325" : "Alt"
 
+const hasChangedRecord: Record<string, string> = {}
+export const hasChanged = (key: string) => (val: string) => {
+  // not saved yet so changed
+  if (!(key in hasChangedRecord)) {
+    hasChangedRecord[key] = val
+    return true
+  } // no change
+  if (hasChangedRecord[key] == val) return false
+  hasChangedRecord[key] = val
+  return true
+}
 export const replacer = (capture: string) => "<b class=\"dark:text-yellow-100\">" + capture + "</b>"
 export const updateTheme = () => {
   if (window.getComputedStyle(document.documentElement).getPropertyValue("color-scheme") == "dark")

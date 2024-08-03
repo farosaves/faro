@@ -5,7 +5,7 @@ import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
-import { closeSavePrompt, currDescMsg, getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
+import { closeSavePrompt, currDescMsg, getCurrDescMsg, getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
 import type { UUID } from "crypto"
 // import { trpc2 } from "$lib/trpc-client"
 
@@ -128,9 +128,9 @@ sem.use(async () => { // here I can potentially defer loading if page has no hig
   await sleep(50)
   DEBUG && console.log("loaded bg")
 })
-
-// @ts-expect-error // content
-currDescMsg.send(document.head.querySelector("meta[name=description]")?.content || document.head.querySelector(".shortdescription.nomobile.noexcerpt.noprint.searchaux")?.textContent || "")
+getCurrDescMsg.sub(([_domain, _]) => { // @ts-expect-error // content
+  currDescMsg.send(document.head.querySelector("meta[name=description]")?.content || document.body.querySelector(".shortdescription.nomobile.noexcerpt.noprint.searchaux")?.textContent || "")
+})
 // see supabase-sveltekit/src/routes/notes/[note_id]/+server.ts
 let loaded = false
 let toDeserialise: [string, string][] = []

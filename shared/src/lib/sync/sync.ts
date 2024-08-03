@@ -191,21 +191,31 @@ export class NoteSync {
     return pTInverted
   }
 
-  undo = () => this.xxdoStacks.update(({ undo, redo }) => {
-    const pT = undo.pop()
-    console.log("undo", pT)
-    if (!pT) return ({ undo, redo })
-    toastNotify("Undo")
-    return ({ undo, redo: [...redo, this._xxdo(pT)] })
-  })
+  undo = () => {
+    let didIt = false
+    this.xxdoStacks.update(({ undo, redo }) => {
+      const pT = undo.pop()
+      console.log("undo", pT)
+      if (pT === undefined) return ({ undo, redo })
+      toastNotify("Undo")
+      didIt = true
+      return ({ undo, redo: [...redo, this._xxdo(pT)] })
+    })
+    return didIt
+  }
 
-  redo = () => this.xxdoStacks.update(({ undo, redo }) => {
-    const pT = redo.pop()
-    console.log("redo", pT)
-    if (!pT) return ({ undo, redo })
-    toastNotify("Redo")
-    return ({ redo, undo: [...undo, this._xxdo(pT)] })
-  })
+  redo = () => {
+    let didIt = false
+    this.xxdoStacks.update(({ undo, redo }) => {
+      const pT = redo.pop()
+      console.log("redo", pT)
+      if (pT === undefined) return ({ undo, redo })
+      toastNotify("Redo")
+      didIt = true
+      return ({ redo, undo: [...undo, this._xxdo(pT)] })
+    })
+    return didIt
+  }
 
   stackNAct = async (patchTup: PatchTup) => {
     this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))

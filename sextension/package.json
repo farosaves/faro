@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "bnr": "sh misc/devon; VITE_PI_IP=http://localhost:5173 vite build; sh misc/devoff",
+    "bnr": "sh misc/devon; VITE_PI_IP=http://localhost:5173 vite build; sh misc/devoff; sleep 0.5 && open \"http://reload.extensions\"",
     "b": "bnr && sleep 0.5 && open \"http://reload.extensions\"",
     "preview": "vite preview",
     "watch": "npm-watch",
