@@ -25,6 +25,8 @@ export const getHighlightedText = gmWrap<UUID>("getHighlightedText")
 export const gotoSnippetMsg = gmWrap<UUID>("gotoSnippet")
 export const deleteSnippetMsg = gmWrap<UUID>("deleteSnippet")
 
+export const currDescMsg = gmWrap<string>("currDesc")
+
 // export const loadDeps = gmWrap<void>("load deps")
 
 import { get, writable, type Readable } from "svelte/store"

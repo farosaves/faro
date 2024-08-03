@@ -37,13 +37,6 @@ const onUser_idUpdate = O.matchW(
 )
 user_id.subscribe(onUser_idUpdate)
 
-// const refreshIfNew = async () => {  // premature opt
-//   const toks = await T.my_tokens.query() // .then((x) => console.log("bg tokens", x))
-//   const newSess = O.fromNullable(await getSession(supabase, toks))
-//   const optMail = O.match<Session, string>(() => "", x => x.user.email || "")
-//   optMail(get(sess)) != optMail(newSess) && sess.set(newSess)
-//   return newSess
-// }
 const newNote = (n: PendingNote, windowId?: number) => {
   setTimeout(syncBookmarksIfOn, 2000)
   const panel = get(note_mut.panels).get(windowId || -1) || []
