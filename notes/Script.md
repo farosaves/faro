@@ -107,11 +107,16 @@ What you should is having a better *tool*.
 Faro is a tool for this. Don't know if it's the best one, but it *is* the simplest one.
 
 If you're like me, you either have a mess in your bookmarks or hundreds of open tabs.
-Perhaps now you're thinking - I should be better organized. 
+Perhaps you're thinking - I should be better organized. 
 It's not you - you just haven't found the right tool for you yet.
 Faro, hopefully, can be the one.
 It's the simplest tool for managing online reading.
-Featuring a scrollable feed of post-it notes
+%% Featuring a scrollable feed of post-it notes %%
+Two features set it apart.
+One: A scrollable feed with all your saves, a bit like Pinterest. 
+With taglines for your saves that help you remember them.
+Two: A web highlighter, that lets you save a piece of the page as tagline.
+
 
 
 Well, maybe now you have.
