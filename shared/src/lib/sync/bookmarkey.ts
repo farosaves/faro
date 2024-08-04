@@ -4,7 +4,7 @@ import { array as A, option as O, eq, string as S, number as N } from "fp-ts"
 import type { NoteEx } from "$lib/db/typeExtras"
 import { pipe } from "fp-ts/lib/function"
 import { note2Url } from "$lib/dashboard/utils"
-import { asc, funLog } from "$lib/utils"
+import { asc, funLog, uuidRegex } from "$lib/utils"
 const { subtle } = crypto
 
 export const f = (t: NotesOps) => 3
@@ -64,6 +64,7 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
     A.map(({ title, url }) => url ? ({ title, url }) : null),
     A.map(O.fromNullable),
     A.compact,
+    A.filter(({ url }) => uuidRegex.test(url.split("#_").at(-1) || "")),
   )
   A.difference(MBEq)(desired, present).forEach(b =>
     chrome.bookmarks.create({ parentId: faroFolder.id, ...b }),
