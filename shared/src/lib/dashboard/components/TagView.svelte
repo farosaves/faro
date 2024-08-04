@@ -124,7 +124,7 @@
 
 <div class="bg-base-200 sticky top-0 z-20" bind:this={div}>
   <button
-    class="btn btn-sm btn-square btn-secondary absolute right-0 z-10 mt-[1px]"
+    class="btn btn-sm btn-square btn-secondary absolute right-0 z-10 rounded-s-btn rounded-e-none"
     on:click={() => (moreTags = !moreTags)}>
     <label class="swap swap-flip" style="transform: rotate(-90deg)">
       <input disabled type="checkbox" checked={!moreTags} />
