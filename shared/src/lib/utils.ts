@@ -51,6 +51,10 @@ export const delete_by_id = (id: number) => A.filter((v: { id: number }) => v.id
 export function desc<T>(first: (t: T) => number, second: (t: T) => number = t => 0): (t1: T, t2: T) => number {
   return (t1, t2) => first(t2) - first(t1) || second(t2) - second(t1)
 }
+export function descS<T>(first: (t: T) => string, second: (t: T) => string = t => ""): (t1: T, t2: T) => number {
+  return (t1, t2) => first(t2).localeCompare(first(t1)) || second(t2).localeCompare(second(t1))
+}
+
 export const asc
   = <T>(f: (t: T) => number) =>
     (t1: T, t2: T) =>

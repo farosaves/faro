@@ -3,9 +3,11 @@
   import "./tagify.scss"
   import { onMount } from "svelte"
   import Tagify from "@yaireo/tagify"
+  import { funLog } from "./utils"
 
   export let whitelist: string[] = []
   export let tags: string[] = []
+  export let emptySugg: string[] = []
   const initTags = tags
   export let onTagsChange: (tags: string[]) => void
   export const id = "t_" + crypto.randomUUID()
@@ -14,10 +16,20 @@
   onMount(() => {
     tagify = new Tagify(inputElem, {
       whitelist: whitelist,
-      dropdown: { enabled: 1 },
+      dropdown: { enabled: 0 },
+    })
+    tagify.on("input", (e) => {
+      const value = "value" in e.detail ? e.detail.value : ""
+      funLog("value.lenggth")(value.length)
+      tagify.whitelist = value.length ? whitelist : emptySugg
+      funLog("tagify.whitelist")(tagify.whitelist)
+      tagify.dropdown.show(value)
+    })
+    tagify.on("focus", (_e) => {
+      tagify.whitelist = emptySugg
     })
   })
-  $: tagify && (tagify.whitelist = whitelist)
+  // $: tagify && (tagify.whitelist = whitelist)
   // tagify.DOM.originalInput.addEventListener('change', onTagsChange)
 
   const f = (x: { value: string }) => x.value
