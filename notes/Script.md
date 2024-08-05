@@ -116,7 +116,8 @@ Two features set it apart.
 One: A scrollable feed with all your saves, a bit like Pinterest. 
 With taglines for your saves that help you remember them.
 Two: A web highlighter, that lets you save a piece of the page as tagline.
-Let's see it in action.
+%% So if you're reading this page and want to save it, you highlight the snippet that you find the most important. %%
+For example, if you want to save this page because you find it interesting that it doesn't need to drink, you highlight and save it as you read it. 
 
 
 
