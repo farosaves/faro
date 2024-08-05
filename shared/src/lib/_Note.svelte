@@ -118,7 +118,7 @@
         <!-- class:overflow-hidden={!isOpen} omg :( -->
         {@html text}
       </button>
-      <MyTags tags={[...tags]} autoComplete={$allTags} {onTagsChange} lastTag={$allTags.at(0)} />
+      <MyTags tags={[...tags]} autoComplete={$allTags} {onTagsChange} />
     </div>
     <div class="collapse-content z-40">
       {#if hovered || isOpen}
