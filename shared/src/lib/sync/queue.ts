@@ -65,7 +65,6 @@ export class ActionQueue {
     if (user_id === undefined) throw new Error("tried pushing while not logged in")
     const notesOps = getNotesOps(patchTup.patches, get(this.noteStore))
     if (notesOps.length === 0) return this.log("empty Notes Ops")(true)
-    // funLog("notesOps")([notesOps, patchTup.patches])
     for (const { note } of notesOps)
       note.user_id = user_id
 
