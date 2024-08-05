@@ -116,6 +116,8 @@ Two features set it apart.
 One: A scrollable feed with all your saves, a bit like Pinterest. 
 With taglines for your saves that help you remember them.
 Two: A web highlighter, that lets you save a piece of the page as tagline.
+Let's see it in action.
+
 
 
 

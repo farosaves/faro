@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Faro",
+  "name": "FaroDev",
   "version": "0.2.0",
   "icons": {
     "16": "icons/icon16.png",

@@ -2,6 +2,7 @@
   import Tagsvify from "./Tagsvify.svelte"
   import { clickOutside } from "./click_outside"
   export let tags: string[]
+  export let lastTag: string | undefined
   export let autoComplete: string[]
   export let onTagsChange: (tags: string[]) => void
   // export let onTagRemoved: (...args: [string, string[]]) => void
@@ -29,7 +30,7 @@
   <!-- tagify performance much worse-->
   {#if open}
     <div bind:this={div} class="text-left">
-      <Tagsvify whitelist={autoComplete} bind:tags {onTagsChange} />
+      <Tagsvify whitelist={autoComplete} bind:tags {onTagsChange} emptySugg={lastTag ? [lastTag] : []} />
       <!-- <Tags bind:tags {autoComplete} {onTagAdded} {onTagRemoved} bind:id onlyUnique /> -->
     </div>
   {/if}
