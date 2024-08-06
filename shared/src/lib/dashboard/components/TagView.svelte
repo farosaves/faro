@@ -8,7 +8,7 @@
 
   import { flow, pipe } from "fp-ts/lib/function"
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
-  import { NoteDeri, asc, funLog, isCmd, sleep, tagModalOpenStore } from "$lib"
+  import { NoteDeri, asc, desc, funLog, isCmd, sleep, tagModalOpenStore } from "$lib"
   import { derived, get, writable } from "svelte/store"
   import { exclTagSet, exclTagSets } from "../filterSortStores"
   exclTagSets.subscribe(funLog("exclTagSets"))
@@ -176,13 +176,13 @@
           >{tag}
         </button>
         {#if tags}
-          <ul class="p-1 dropdown-content menu z-20 bg-base-100">
-            {#each tags as tc}
+          <ul class="p-1 dropdown-content menu z-20 bg-base-100 join join-vertical">
+            {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
               {@const [subTag, count] = tc}
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
               <li>
                 <button
-                  class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary"
+                  class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary join-item"
                   data-tip={count}
                   on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
                   on:contextmenu|preventDefault={onContextMenu(subTag)}
