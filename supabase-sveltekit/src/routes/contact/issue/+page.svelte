@@ -3,12 +3,12 @@
   //   import IconWrench from "~icons/jam/wrench"
 </script>
 
-<div class="hero min-h-screen bg-base-200">
+<div class="hero h-screen-minus-80">
   <div class="hero-content text-center text-2xl flex-col">
-    <div class="collapse bg-base-100">
+    <div class="collapse border-primary border hover:text-primary">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-center p-4">Currently known issues</div>
-      <ul class="collapse-content mx-4 text-lg list-disc text-nowrap w-min text-left">
+      <ul class="collapse-content mx-4 text-lg list-disc text-nowrap w-min text-left text-base-content">
         <!-- <li>Not highlighting on pubmed</li> -->
         <li>Reddit usually doesn't highlight</li>
         <li>YT video titles don't highlight</li>

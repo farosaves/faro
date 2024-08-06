@@ -3,7 +3,7 @@ import { record as R, array as A, nonEmptyArray as NA, string as S, option as O,
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
-import { filterSort, desc } from "$lib"
+import { filterSort, desc, descS } from "$lib"
 import type { UUID } from "crypto"
 import { gotoFunction } from "$lib/dashboard/utils"
 import type { Note } from "$lib/db/typeExtras"
@@ -55,7 +55,8 @@ export class NoteDeri {
     })
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
-    this.allTags = derived(this.noteArr, ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || [])))
+    this.allTags = derived(this.noteArr, ns => pipe(ns.toSorted(descS(x => x.updated_at)),
+      A.flatMap(n => n.tags || []), A.uniq(S.Eq))) // ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || []))
     this.first = derived(
       this.groupStore,
       r => pipe(r, R.toArray, A.map(T.snd), A.flatMap(A.flatMap(T.snd))).toSorted(desc(x => x.priority)).at(0),

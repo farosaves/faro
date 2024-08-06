@@ -49,7 +49,7 @@
               Faro combines web highlighting with a bookmark manager
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
-              Making it easy to manage what you read and what you want to read
+              So you can manage what you read and what you want to read with minimal effort
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}

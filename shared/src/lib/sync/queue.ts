@@ -52,6 +52,7 @@ export class ActionQueue {
   }
 
   pushAction = (user_id: UUID) => async (patchTup: PatchTup) => {
+    if (patchTup.patches.length === 0) return true
     updateStore(this.noteStore)(applyPatches(patchTup.patches))
     // this.log("pushAction")("puuushing") // can do funWarn IF I do encrypted here
     const _pushAction = <U, T extends PromiseLike<{ error: U }>>(f: (a: NQ) => T) =>
@@ -63,6 +64,7 @@ export class ActionQueue {
     // maps the operation with patchTup.patches to db update
     if (user_id === undefined) throw new Error("tried pushing while not logged in")
     const notesOps = getNotesOps(patchTup.patches, get(this.noteStore))
+    if (notesOps.length === 0) return this.log("empty Notes Ops")(true)
     for (const { note } of notesOps)
       note.user_id = user_id
 
@@ -74,7 +76,7 @@ export class ActionQueue {
       error = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error
     else if (op == "delete")
       error = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error
-    else throw new Error("unreachable")
+    else throw new Error("unreachable: " + op)
     this.log("push action error")(error)
     // TODO should I check for error here? or push source again and retry...
     if (error) // remove src from stumapstore just in case
