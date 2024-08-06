@@ -5,7 +5,7 @@
   import { fzRes, fzSelectedKeys } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   import type { Readable } from "svelte/store"
-  import { identity } from "fp-ts/lib/function"
+  import { onMount } from "svelte"
 
   export let noteDeri: NoteDeri
   export let openFirst: Readable<() => void>
@@ -41,7 +41,13 @@
   $: noteDeri.searching.set(query.length > 0 && focused)
   const callback = () => document.getElementById("search_input")?.focus()
   let focused = true
+  let innerWidth: number
+  onMount(() => {
+    if (innerWidth >= 768) callback()
+  })
 </script>
+
+<svelte:window bind:innerWidth />
 
 <div class="flex flex-col content-center">
   <form>
@@ -49,7 +55,6 @@
     <input
       type="text"
       id="search_input"
-      autofocus
       placeholder="Type here to search"
       class="input w-full max-w-xs min-w-32 border-neutral"
       use:shortcut={{ alt: true, code: "KeyF", callback }}
