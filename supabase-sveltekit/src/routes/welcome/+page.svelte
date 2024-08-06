@@ -18,35 +18,38 @@
   <title>Faro - Welcome</title>
 </svelte:head>
 
-<svelte:window
+<!-- <svelte:window
   on:keydown={(e) =>
     e.altKey &&
     e.code == "KeyX" &&
-    window.umami.track("altD", { email, sel: window.getSelection()?.toString() })} />
+    window.umami.track("altD", { email, sel: window.getSelection()?.toString() })} /> -->
 
-<div class="hero min-h-screen bg-base-300">
+<div class="hero h-screen-minus-80">
   <div class="hero-content text-center">
     <div class="max-w-lg">
-      <h1 class="py-2 text-5xl font-bold">Welcome onboard!</h1>
-      <h2 class="py-2 text-3xl font-bold">Try it out</h2>
-      <p class="py-2">
-        {#if !email}
-          You can <a href="/account/login" target="_blank" class="py-2 btn btn-sm btn-primary">Log in</a>
-          at any point
-        {:else}
-          You're logged in ✅
-        {/if}
-      </p>
+      <h1 class="py-8 text-5xl font-bold">Welcome onboard!</h1>
+      {#if !email}
+        <h2 class="pt-8 text-xl font-semibold">
+          <a href="/account/login" target="_blank" class="btn btn-sm btn-primary">Log in</a><br />
+          If you want to sync
+        </h2>
+        <p class="pb-8 font-medium">
+          Or just use it with the <span class="tooltip underline" data-tip="Open with {altKey} + C"
+            >in-extension dashboard</span>
+        </p>
+      {:else}
+        <p class="py-8 text-xl font-semibold">You're logged in ✅</p>
+      {/if}
 
-      <p class="py-2">
+      <!-- <p class="py-2">
         Highlight this sentence and save with <kbd class="kbd">{altKey}</kbd> +
         <kbd class="kbd">X</kbd>
-      </p>
+      </p> -->
       <!-- <p class="py-2">
         Now highlight this sentence, save it, then this <i class="font-semibold">word</i> and save again. It'll
         highlight that word inside your save.
       </p> -->
-      <p class="py-2">Double click your save in the panel on the right to get back to it.</p>
+      <!-- <p class="py-2">Double click your save in the panel on the right to get back to it.</p>
       <p class="py-2">
         Also find it on the dashboard, open it with <kbd class="kbd">{altKey}</kbd> +
         <kbd class="kbd">C</kbd>
@@ -57,14 +60,14 @@
           You can make an account whenever you're ready.<br />
           Until then, the dashboard on the website here won't work - only the in-extension one.
         </p>
-      {/if}
-      <p class="py-2">Other ways to save are using the (right-click) context menu...</p>
-      <div class="collapse bg-base-100 my-2">
+      {/if} -->
+      <!-- <p class="py-2">Other ways to save are using the (right-click) context menu...</p> -->
+      <div class="collapse my-2 border hover:text-primary hover:border-primary">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-center p-4">...or clicking the extension icon.</div>
+        <div class="collapse-title text-center font-semibold p-4">Recommended: pin the extension</div>
         <div class="collapse-content mx-4">
           Here's how you pin it so the icon stays on top:
-          <img alt="The project logo" src={pin} />
+          <img alt="Pin extension" src={pin} />
         </div>
       </div>
     </div>
