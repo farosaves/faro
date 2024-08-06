@@ -62,10 +62,10 @@
         </p>
       {/if} -->
       <!-- <p class="py-2">Other ways to save are using the (right-click) context menu...</p> -->
-      <div class="collapse my-2 border hover:text-primary hover:border-primary">
+      <div class="collapse my-2 border hover:text-primary border-primary">
         <input type="checkbox" />
         <div class="collapse-title text-center font-semibold p-4">Recommended: pin the extension</div>
-        <div class="collapse-content mx-4">
+        <div class="collapse-content mx-4 text-base-content">
           Here's how you pin it so the icon stays on top:
           <img alt="Pin extension" src={pin} />
         </div>
