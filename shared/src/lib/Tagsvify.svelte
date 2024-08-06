@@ -7,7 +7,6 @@
 
   export let whitelist: string[] = []
   export let tags: string[] = []
-  // export let emptySugg: string[]
   const initTags = tags
   export let onTagsChange: (tags: string[]) => void
   export const id = "t_" + crypto.randomUUID()
@@ -20,16 +19,13 @@
     })
     tagify.on("input", (e) => {
       const value = "value" in e.detail ? e.detail.value : ""
-      funLog("value.lenggth")(value.length)
       tagify.whitelist = value.length ? whitelist : whitelist.slice(0, 1)
-      funLog("tagify.whitelist")(tagify.whitelist)
       tagify.dropdown.show(value)
     })
     tagify.on("focus", (_e) => {
       tagify.whitelist = whitelist.slice(0, 1)
     })
   })
-  // $: tagify && (tagify.whitelist = whitelist)
   // tagify.DOM.originalInput.addEventListener('change', onTagsChange)
 
   const f = (x: { value: string }) => x.value
