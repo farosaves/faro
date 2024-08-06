@@ -94,7 +94,7 @@
 
 <TagView {noteDeri} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
-<div class="drawer md:drawer-open bg-base-300">
+<div class="drawer md:drawer-open bg-base-300 sticky top-8 min-h-dvh">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content z-0" bind:clientWidth={$tilesWidth}>
     <!-- my main here -->
@@ -132,7 +132,7 @@
       </div>
     {/each}
   </div>
-  <div class="drawer-side z-10 border-r border-neutral">
+  <div class="drawer-side z-10 border-r border-neutral top-8">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4 mt-24 md:mt-0">
       <li class="pt-4">
