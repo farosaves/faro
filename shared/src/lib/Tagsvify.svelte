@@ -3,6 +3,7 @@
   import "./tagify.scss"
   import { onMount } from "svelte"
   import Tagify from "@yaireo/tagify"
+  import { funLog } from "./utils"
 
   export let whitelist: string[] = []
   export let tags: string[] = []
@@ -14,10 +15,17 @@
   onMount(() => {
     tagify = new Tagify(inputElem, {
       whitelist: whitelist,
-      dropdown: { enabled: 1 },
+      dropdown: { enabled: 0 },
+    })
+    tagify.on("input", (e) => {
+      const value = "value" in e.detail ? e.detail.value : ""
+      tagify.whitelist = value.length ? whitelist : whitelist.slice(0, 1)
+      tagify.dropdown.show(value)
+    })
+    tagify.on("focus", (_e) => {
+      tagify.whitelist = whitelist.slice(0, 1)
     })
   })
-  $: tagify && (tagify.whitelist = whitelist)
   // tagify.DOM.originalInput.addEventListener('change', onTagsChange)
 
   const f = (x: { value: string }) => x.value

@@ -51,7 +51,7 @@ You go to a website find something interesting, highlight one sentence and then 
 It goes to a dashboard, most recent goes first, so it doesn't get buried like bookmarks do tend..
 to. You attend to it, whenever you're ready, there're a few ways to help you remembering
 
-pin, archive, tag, double-click takes you back,I don't mean to brag, but it's cool as fuck
+Pin, archive, tag, double-click takes you back,I don't mean to brag, but it's cool as fuck
 (tu chyba nic nie zrymuje z excellent, to moze wyjebie) did I mention text search it's an excellent
 way to find a save, saving your time, sure it works offline, you don't need to sign
 up, at least to try it out, then you get back, up in the cloud
