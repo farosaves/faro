@@ -78,26 +78,26 @@ export const uuidRegex = /^([0-9a-f]*-){4}[0-9a-f]*$/
 
 export const ifNErr = <T>(f: (e: T) => void) => ifErr(f, false)
 const doLog = () => DEBUG || (typeof window === typeof undefined) || window.location.href.startsWith("chrome-extension://")
-export const funLog = (where = "", from = "") => <T>(n: T) => {
-  doLog() && console.log(from, n, where && ("at" + where))
+export const funLog = (where = "", from = "", time = true) => <T>(n: T) => {
+  doLog() && console.log(from, n, where && ("at " + where), time && new Date().toISOString())
   return n
 }
 export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from: string, msg: string }
 type _F = (m: DebugMsg) => Promise<unknown>
 export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)// .then(console.log)
 
-export const funLog2 = (f: _F) => (where = "", from = "") => <T>(n: T) => {
-  if (doLog()) console.log(from, n, where && ("at" + where))
+export const funLog2 = (f: _F) => (where = "", from = "", time = true) => <T>(n: T) => {
+  if (doLog()) console.log(from, n, where && ("at " + where), time && new Date().toISOString())
   if (!DEBUG) f({ where, from, severity: "info", msg: JSON.stringify(n) })
   return n
 }
-export const funWarn = (f: _F) => (where = "", from = "") => <T>(n: T) => {
-  if (doLog()) console.warn(from, n, where && ("at" + where))
+export const funWarn = (f: _F) => (where = "", from = "", time = true) => <T>(n: T) => {
+  if (doLog()) console.warn(from, n, where && ("at " + where), time && new Date().toISOString())
   if (!DEBUG) f({ where, from, severity: "warn", msg: JSON.stringify(n) })
   return n
 }
-export const funErr = (f: _F) => (where = "", from = "") => <T>(n: T) => {
-  if (doLog()) console.error(from, n, where && ("at" + where))
+export const funErr = (f: _F) => (where = "", from = "", time = true) => <T>(n: T) => {
+  if (doLog()) console.error(from, n, where && ("at " + where), time && new Date().toISOString())
   if (!DEBUG) f({ where, from, severity: "err", msg: JSON.stringify(n) })
   return n
 }
