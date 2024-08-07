@@ -36,6 +36,7 @@ export async function gotoSnippet(uuid: UUID) {
   chrome.tabs.sendMessage(tab.id!, { action: "goto", uuid })
 }
 
+export const loc = (s: string) => chrome.i18n.getMessage(s)
 export async function deleteSnippet(uuid: UUID, serialized: string) {
   DEBUG && console.log("deleting..", uuid, serialized)
   const tab = await currTab()
@@ -46,4 +47,16 @@ export { DEBUG }
 export const hasOrGivesPerm = async (perm: chrome.permissions.Permissions) => {
   if (!(await chrome.permissions.contains(perm))) await chrome.permissions.request(perm)
   return await chrome.permissions.contains(perm)
+}
+
+export const localize = () => {
+  // document.addEventListener("DOMContentLoaded", function () {
+  const elements = document.querySelectorAll("[data-i18n]")
+  elements.forEach((element) => {
+    const messageName = element.getAttribute("data-i18n")
+    if (!messageName) return
+    const message = chrome.i18n.getMessage(messageName)
+    if (message) element.textContent = message
+  })
+  // })
 }
