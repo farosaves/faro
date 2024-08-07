@@ -108,11 +108,11 @@ The extension also keeps track the currently open tab for each window - to updat
 ### V5
 on wording page
 ### V6
-Chaos in your bookmarks? Can't find what you want? They end up gathering dust? Or you don't even try and just have 100s of open tabs?
+Chaos in your bookmarks? Can't find what you want? They end up gathering dust? Or you don't even try and end up with 100s of open tabs?
 
-Faro is made to fix that! You use it instead of bookmarks.
+Faro is made to fix that! Use it to save pages.
 
-The main difference is that when saving a page, you highlight a sentence to act as a tagline. 
+The main difference is that when saving, you highlight a sentence to act as a tagline. 
 
 Super simple but fixes most problems with normal bookmarks - check out the screenshots!
 
@@ -123,7 +123,7 @@ You can:
 
 They're presented in a dashboard with a scrollable Pinterest-like feed.
 So you can:
-➣ remind yourself what you saved recently
+➣ check what you saved recently
 ➣ organize your saves with tags later
 
 Also:

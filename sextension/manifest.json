@@ -7,7 +7,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "description": "Web highlighter ⨯ bookmark manager - Save pages with highlighted taglines",
+  "description": "__MSG_extDesc__",
   "action": {
     "default_icon": "icons/icon48.png"
   },
@@ -52,5 +52,6 @@
     "gecko": {
       "id": "faro@farosaves.com"
     }
-  }
+  },
+  "default_locale": "en"
 }

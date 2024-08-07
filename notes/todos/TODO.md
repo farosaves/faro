@@ -1,4 +1,4 @@
-- [ ] No input autofocus  on mobile.
+- [x] No input autofocus  on mobile.
 - [ ] ??
 - [x] One more webstore link.
 - [ ] Titles for urls - rather than tooltips
