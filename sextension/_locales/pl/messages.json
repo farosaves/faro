@@ -1,0 +1,49 @@
+{
+  "extDesc": {
+    "message": "Połączenie zakładek z zakreślaczem - zapisuj strony z zakreślonymi taglinami.",
+    "description": "The extension description."
+  },
+  "star": {
+    "message": "Pinka"
+  },
+  "archive": {
+    "message": "Archiwum"
+  },
+  "delete": {
+    "message": "Usuń"
+  },
+  "dashboard": {
+    "message": "Idź do panelu"
+  },
+  "loggedInAs": {
+    "message": "Zalogowano jako"
+  },
+  "noSavesYet": {
+    "message": "Żadnych zapisek."
+  },
+  "howToAdd": {
+    "message": "Jak dodać?"
+  },
+  "howToExpl": {
+    "message": "Zaznacz tekst na stronie i kliknij ikonę rozszerzenia lub"
+  },
+  "exportToBookmarks": {
+    "message": "Eksportuj do zakładek"
+  },
+  "theme": {
+    "message": "Motyw"
+  },
+  "deleteLocalData": {
+    "message": "Usuń dane lokalne"
+  },
+  "localDataDeleted": {
+    "message": "Dane lokalne usunięte"
+  },
+  "refreshPrompt": {
+    "message": "Jeśli właśnie zainstalowałeś wtyczkę, odśwież stronę."
+  },
+
+  "notLoggedIn": {
+    "message": "Niezalogowano"
+  }
+}

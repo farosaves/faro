@@ -7,6 +7,7 @@
   import type { NoteMut } from "$lib/note_mut"
   import { derived, type Readable } from "svelte/store"
   import { optimistic } from "$lib/stores"
+  import { loc } from "$lib/utils"
 
   export let windowId: Readable<number>
   export let syncLike: SyncLike & Pick<NoteMut, "panels"> & Pick<NoteDeri, "allTags">
@@ -32,11 +33,9 @@
   <Note note_data={{ ...note_data, searchArt: O.none }} bind:isOpen={noteOpens[i]} {closeAll} {syncLike} />
 {:else}
   <div class="w-full text-center">
-    No saves yet...<br />
-    <div
-      class="underline tooltip"
-      data-tip="Highlight a piece (e.g. a sentence) of the page and press {altKey} + X">
-      How to add?
+    {loc("noSavesYet")}...<br />
+    <div class="underline tooltip" data-tip="{loc('howToExpl')} {altKey} + X">
+      {loc("howToAdd")}
     </div>
   </div>
 {/each}

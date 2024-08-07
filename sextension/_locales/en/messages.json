@@ -1,0 +1,48 @@
+{
+  "extDesc": {
+    "message": "Web highlighter ⨯ bookmark manager - Save pages with highlighted taglines",
+    "description": "The extension description."
+  },
+  "star": {
+    "message": "Star"
+  },
+  "archive": {
+    "message": "Archive"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "dashboard": {
+    "message": "Go to dashboard"
+  },
+  "loggedInAs": {
+    "message": "Logged in as"
+  },
+  "noSavesYet": {
+    "message": "No saves yet"
+  },
+  "howToAdd": {
+    "message": "How to add them?"
+  },
+  "howToExpl": {
+    "message": "Highlight text on a page and click the extension icon or"
+  },
+  "exportToBookmarks": {
+    "message": "Export to bookmarks"
+  },
+  "theme": {
+    "message": "Theme"
+  },
+  "deleteLocalData": {
+    "message": "Delete local data"
+  },
+  "localDataDeleted": {
+    "message": "Local data deleted"
+  },
+  "refreshPrompt": {
+    "message": "If you just installed the extension refresh the page."
+  },
+  "notLoggedIn": {
+    "message": "Not logged in"
+  }
+}
