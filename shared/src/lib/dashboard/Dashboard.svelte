@@ -94,17 +94,18 @@
 
 <TagView {noteDeri} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
-<div class="drawer md:drawer-open bg-base-300 sticky top-8 min-h-dvh">
+<div class="drawer md:drawer-open bg-base-300 sticky top-8 min-h-dvh p-3">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content z-0" bind:clientWidth={$tilesWidth}>
     <!-- my main here -->
+
     {#each priorities as priority}
       <div
         class="flex flex-row flex-wrap border-secondary py-2"
         class:border-b-2={!!$note_groupss[priority].length}>
         {#each $note_groupss[priority] as [title, note_group]}
           <div
-            class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200"
+            class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 m-2"
             style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
             <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
             min-width: {$layoutey.noteWidth + 2}px" -->
