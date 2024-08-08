@@ -133,9 +133,9 @@
       </div>
     {/each}
   </div>
-  <div class="drawer-side z-10 border-r border-neutral top-8">
+  <div class="drawer-side z-10 top-8">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4 mt-24 md:mt-0">
+    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 mt-24 md:mt-0">
       <li class="pt-4">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"
@@ -146,7 +146,7 @@
         <Search {noteDeri} openFirst={noteDeri.openFirst} />
       </li>
       <li></li>
-      <li><DomainFilter {noteDeri} /></li>
+      <li class="my-4"><DomainFilter {noteDeri} /></li>
       {#if false}
         <li hidden class="fixed bottom-8 left-12"><PriorityFilter noteArr={noteDeri.noteArr} /></li>
         <li hidden>
