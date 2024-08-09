@@ -1,4 +1,4 @@
-import { option as O, record as R, string as S, array as A, map as M } from "fp-ts"
+import { option as O, record as R, string as S, array as A, map as M, eq } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import type { Notes } from "$lib/db/types"
 import type { Patch } from "immer"
@@ -40,3 +40,11 @@ export const getNotesOps = (patches: Patch[], ns: Map<string, Notes>): NotesOps 
       }),
     ),
   )
+
+export const opAndNotes = (notesOps: NotesOps) => {
+  const ops = notesOps.map(x => x.op)
+  const notes = pipe(notesOps, A.map(x => x.note), A.uniq(eq.contramap((n: Notes) => n.id)(S.Eq)))
+  if (A.uniq(S.Eq)(ops).length > 1) throw new Error("more than 1 operation type in action")
+  const [op] = ops
+  return { op, notes }
+}
