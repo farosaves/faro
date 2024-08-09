@@ -1,7 +1,7 @@
 import { ifErr, type Src, warnIfError, sbLogger, funLog2 } from "$lib/utils"
 import type { UUID } from "crypto"
-import { getNotesOps, type PatchTup } from "./notes_ops"
-import { either as E, array as A, string as S, tuple as T } from "fp-ts"
+import { getNotesOps, opAndNotes, type PatchTup } from "./notes_ops"
+import { either as E, array as A, tuple as T } from "fp-ts"
 import { type Writable, get } from "svelte/store"
 import { persisted } from "./persisted-store"
 import * as devalue from "devalue"
@@ -67,15 +67,13 @@ export class ActionQueue {
     if (notesOps.length === 0) return this.log("empty Notes Ops")(true)
     for (const { note } of notesOps)
       note.user_id = user_id
+    const { op, notes } = opAndNotes(notesOps)
 
-    const ops = notesOps.map(x => x.op)
-    if (A.uniq(S.Eq)(ops).length > 1) throw new Error("nore than 1 operation in action")
-    const [op] = ops
     let error: unknown
     if (op == "upsert")
-      error = (await _pushAction(x => x.upsert(notesOps.map(on => on.note)))(patchTup)).error
+      error = (await _pushAction(x => x.upsert(notes))(patchTup)).error
     else if (op == "delete")
-      error = (await _pushAction(x => x.delete().in("id", notesOps.map(on => on.note.id)))(patchTup)).error
+      error = (await _pushAction(x => x.delete().in("id", notes.map(n => n.id)))(patchTup)).error
     else throw new Error("unreachable: " + op)
     this.log("push action error")(error)
     // TODO should I check for error here? or push source again and retry...
