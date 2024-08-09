@@ -102,13 +102,17 @@
   }
   // let dropdownOpen = false
   // let hRem = 4 // style="height: {hRem}rem
+  const f =
+    <T, U>(l: (x: T[]) => U, r: (x: T) => U) =>
+    (x: T[]) =>
+      x.length == 1 ? r(x[0]) : l(x)
   const makeOnlyFromHash = (arr: Array<string>) => {
     const hash = decodeURIComponent(location.hash.slice(1))
     if (!hash) return false
     const toToggle = arr.filter((tag) => tag.startsWith(hash + "/") || tag == (hash == " " ? "" : hash))
     funLog("toToggle")(toToggle)
     if (!toToggle.length) return false
-    _makeOnlyGroup(toToggle)
+    f(_makeOnlyGroup, _makeOnly)(toToggle)
     return true
   }
   let div: HTMLDivElement
