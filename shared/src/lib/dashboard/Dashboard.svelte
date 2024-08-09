@@ -104,29 +104,30 @@
         class="flex flex-row flex-wrap border-secondary py-2"
         class:border-b-2={!!$note_groupss[priority].length}>
         {#each $note_groupss[priority] as [title, note_group]}
-          <div
-            class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 m-2"
-            style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
-            <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
-            min-width: {$layoutey.noteWidth + 2}px" -->
-            <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
-            <a
-              target="_blank"
-              title={title.replaceAll(/<\/?b[^>]*>/g, "")}
-              href={note_group[0].url}
-              class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20">{@html title}</a>
-            <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
-              {#each note_group as note (note.id)}
-                <Note
-                  note_data={note}
-                  isOpen={noteOpens[note.id]}
-                  {closeAll}
-                  goto_function={gotoFunction(note)}
-                  syncLike={noteSync}
-                  px={innerWidth > 768 ? $layoutey.noteWidth : undefined}
-                  {allTags}
-                  isHighlighted={note.id == $idHighlighted} />
-              {/each}
+          <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
+            <div class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 m-2">
+              <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
+              min-width: {$layoutey.noteWidth + 2}px" -->
+              <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
+              <a
+                target="_blank"
+                title={title.replaceAll(/<\/?b[^>]*>/g, "")}
+                href={note_group[0].url}
+                class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20">{@html title}</a>
+              <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
+                {#each note_group as note, i (note.id)}
+                  <Note
+                    note_data={note}
+                    isOpen={noteOpens[note.id]}
+                    {closeAll}
+                    goto_function={gotoFunction(note)}
+                    syncLike={noteSync}
+                    px={innerWidth > 768 ? $layoutey.noteWidth - 16 : undefined}
+                    {allTags}
+                    mr={i + 1 < note_group.length}
+                    isHighlighted={note.id == $idHighlighted} />
+                {/each}
+              </div>
             </div>
           </div>
         {/each}
