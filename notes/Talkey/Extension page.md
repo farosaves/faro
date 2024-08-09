@@ -117,7 +117,7 @@ The main difference is that when saving, you highlight a sentence to act as a ta
 Super simple but fixes most problems with normal bookmarks - check out the screenshots!
 
 You can:
-➣ remember what the page is about
+➣ remember easily what the page is about
 ➣ search by text
 ➣ get back to where you were in text without scrolling
 

@@ -129,20 +129,19 @@ And everything gets immediately synced with the cloud if you're logged in.
 
 ### V6.5
 Do you have a mess in your bookmarks? Hundreds of open tabs?
-Do you think you need to be better organized?
+Maybe you think you need to be better organized?
 You don't - what you need is a better tool - and a much better one at that.
 Presenting Faro. It's the simplest solution for managing your online reading.
 Two features set it apart.
-One: A scrollable feed with all your saves(, a bit like Pinterest).
-With taglines by which you remember them.
-Two: A web highlighter, that lets you save a piece of the page as tagline.
+First: A scrollable feed with all your saves, with taglines by which you remember them.
+Second: A web highlighter, so you can save a piece of the page as tagline.
 Let's say you want to save this page. You find it interesting that it doesn't need to drink, so you highlight and save it as you read it.
 Then, months pass by, and you want to find "the animal that doesn't need to drink in the desert". And you're able to find it - just like this.
 The remaining organization essentials, are standard, but solid. Pinning... archiving... and tags... including nested tags. 
 But the best part is: you can use them *later* - because you'll still remember what you saved and why.
 Finally, all data gets synced immediately, so you can access it anywhere.
-Get Faro now, with a generous free trial of 1000 saves, it doesn't cost you anything to give it a try.
-Chrome Web Store - Faro.
+Get Faro now, with a free trial of 1000 saves, it doesn't cost you anything to give it a try.
+Find Faro on Chrome Web Store.
 
 There's also undo and redo making it safe to experiment...
 And everything gets immediately synced with the cloud if you're logged in.
