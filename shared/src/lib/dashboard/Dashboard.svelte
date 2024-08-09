@@ -92,47 +92,48 @@
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
 
-<TagView {noteDeri} />
 <label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
 <div class="drawer md:drawer-open bg-base-300 sticky top-8 min-h-dvh p-3">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content z-0" bind:clientWidth={$tilesWidth}>
-    <!-- my main here -->
-
-    {#each priorities as priority}
-      <div
-        class="flex flex-row flex-wrap border-secondary py-2"
-        class:border-b-2={!!$note_groupss[priority].length}>
-        {#each $note_groupss[priority] as [title, note_group]}
-          <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
-            <div class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 m-2">
-              <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
-              min-width: {$layoutey.noteWidth + 2}px" -->
-              <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
-              <a
-                target="_blank"
-                title={title.replaceAll(/<\/?b[^>]*>/g, "")}
-                href={note_group[0].url}
-                class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20">{@html title}</a>
-              <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
-                {#each note_group as note, i (note.id)}
-                  <Note
-                    note_data={note}
-                    isOpen={noteOpens[note.id]}
-                    {closeAll}
-                    goto_function={gotoFunction(note)}
-                    syncLike={noteSync}
-                    px={innerWidth > 768 ? $layoutey.noteWidth - 16 : undefined}
-                    {allTags}
-                    mr={i + 1 < note_group.length}
-                    isHighlighted={note.id == $idHighlighted} />
-                {/each}
+  <div class="drawer-content z-0">
+    <aside class="fixed top-0 right-0 z-20 p-3"><TagView {noteDeri} /></aside>
+    <article bind:clientWidth={$tilesWidth}>
+      {#each priorities as priority}
+        <div
+          class="flex flex-row flex-wrap border-secondary py-2"
+          class:border-b-2={!!$note_groupss[priority].length}>
+          {#each $note_groupss[priority] as [title, note_group]}
+            <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
+              <div class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 m-2">
+                <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
+                min-width: {$layoutey.noteWidth + 2}px" -->
+                <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
+                <a
+                  target="_blank"
+                  title={title.replaceAll(/<\/?b[^>]*>/g, "")}
+                  href={note_group[0].url}
+                  class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20"
+                  >{@html title}</a>
+                <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
+                  {#each note_group as note, i (note.id)}
+                    <Note
+                      note_data={note}
+                      isOpen={noteOpens[note.id]}
+                      {closeAll}
+                      goto_function={gotoFunction(note)}
+                      syncLike={noteSync}
+                      px={innerWidth > 768 ? $layoutey.noteWidth - 16 : undefined}
+                      {allTags}
+                      mr={i + 1 < note_group.length}
+                      isHighlighted={note.id == $idHighlighted} />
+                  {/each}
+                </div>
               </div>
             </div>
-          </div>
-        {/each}
-      </div>
-    {/each}
+          {/each}
+        </div>
+      {/each}
+    </article>
   </div>
   <div class="drawer-side z-10 top-8">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>

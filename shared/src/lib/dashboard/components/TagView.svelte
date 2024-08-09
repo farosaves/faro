@@ -126,22 +126,23 @@
   // const twoPlusTags = writable(false)
 </script>
 
-<div class="bg-base-300 sticky top-0 z-20 p-3" bind:this={div}>
+<div bind:this={div}>
   <button
-    class=" m-1 btn btn-sm btn-square btn-secondary opacity-70 hover:opacity-100 absolute right-0 z-10 rounded-s-btn rounded-e-none"
+    class="btn btn-sm btn-square btn-secondary opacity-70 hover:opacity-100 absolute right-0 z-10 rounded-s-btn rounded-e-none"
     on:click={() => (moreTags = !moreTags)}>
-    <label class="swap swap-flip" style="transform: rotate(-90deg)">
+    <label class="swap swap-flip" style="transform: rotate(0)">
       <input disabled type="checkbox" checked={!moreTags} />
       <div class="swap-on"><ChevronDown font-size={24} style="transform: rotate(90deg)" /></div>
       <div class="swap-off"><ChevronUp font-size={24} style="transform: rotate(90deg)" /></div>
     </label>
   </button>
+  <!-- <div>tags</div> -->
 
-  <div class="flex overflow-x-clip" class:flex-wrap={moreTags}>
+  <div class="flex flex-col overflow-x-clip" class:flex-wrap={moreTags}>
     <div class="tooltip tooltip-right tooltip-secondary" data-tip="toggle all">
       <button
         tabindex="0"
-        class="btn btn-neutral btn-sm text-nowrap m-1"
+        class="btn btn-neutral btn-sm text-nowrap"
         on:click={checkClick}
         class:btn-outline={$exclTagSet.size}>
         <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
@@ -158,7 +159,7 @@
       </button>
     </div> -->
     {#if $untagged}
-      <div class="tooltip tooltip-right tooltip-secondary m-1" data-tip={`${$untagged} untagged`}>
+      <div class="tooltip tooltip-right tooltip-secondary" data-tip={`${$untagged} untagged`}>
         <button
           class="btn btn-neutral btn-sm text-nowrap"
           on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
@@ -171,7 +172,7 @@
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class="tooltip tooltip-right m-1 tooltip-secondary" data-tip={cnt} class:dropdown={tags}>
+      <div class="tooltip tooltip-right tooltip-secondary" data-tip={cnt} class:dropdown={tags}>
         <button
           class="btn btn-neutral btn-sm text-nowrap"
           on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
