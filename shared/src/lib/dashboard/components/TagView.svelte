@@ -126,30 +126,34 @@
   // const twoPlusTags = writable(false)
 </script>
 
-<div class="bg-base-300 sticky top-0 z-20 p-3" bind:this={div}>
-  <button
-    class=" m-1 btn btn-sm btn-square btn-secondary opacity-70 hover:opacity-100 absolute right-0 z-10 rounded-s-btn rounded-e-none"
+<div
+  class="sticky top-0 z-20 overflow-y-scroll overflow-x-visible max-h-screen no-scrollbar min-w-24"
+  bind:this={div}>
+  <!-- <button
+    class="btn btn-sm btn-square btn-secondary opacity-70 hover:opacity-100 absolute right-0 z-10 rounded-s-btn rounded-e-none"
     on:click={() => (moreTags = !moreTags)}>
-    <label class="swap swap-flip" style="transform: rotate(-90deg)">
+    <label class="swap swap-flip" style="transform: rotate(0deg)">
       <input disabled type="checkbox" checked={!moreTags} />
       <div class="swap-on"><ChevronDown font-size={24} style="transform: rotate(90deg)" /></div>
       <div class="swap-off"><ChevronUp font-size={24} style="transform: rotate(90deg)" /></div>
     </label>
-  </button>
+  </button> -->
 
-  <div class="flex overflow-x-clip" class:flex-wrap={moreTags}>
-    <div class="tooltip tooltip-right tooltip-secondary" data-tip="toggle all">
-      <button
-        tabindex="0"
-        class="btn btn-neutral btn-sm text-nowrap m-1"
-        on:click={checkClick}
-        class:btn-outline={$exclTagSet.size}>
-        <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
-        <IconCheckbox />
-      </button>
+  <div class="flex flex-col overflow-x-clip place-items-stretch" class:flex-wrap={moreTags}>
+    <div class="tooltip tooltip-bottom tooltip-secondary" data-tip="toggle all">
+      <div class="flex">
+        <button
+          tabindex="0"
+          class="btn btn-neutral btn-sm text-nowrap mt-1"
+          on:click={checkClick}
+          class:btn-outline={$exclTagSet.size}>
+          <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
+          <IconCheckbox />
+        </button>
+      </div>
     </div>
 
-    <!-- <div class="tooltip tooltip-right tooltip-secondary carousel-item" data-tip="2+ tags">
+    <!-- <div class="tooltip tooltip-top tooltip-secondary carousel-item" data-tip="2+ tags">
       <button
         class="btn btn-neutral btn-sm text-nowrap"
         on:click={() => ($twoPlusTags = !$twoPlusTags)}
@@ -158,27 +162,32 @@
       </button>
     </div> -->
     {#if $untagged}
-      <div class="tooltip tooltip-right tooltip-secondary m-1" data-tip={`${$untagged} untagged`}>
-        <button
-          class="btn btn-neutral btn-sm text-nowrap"
-          on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
-          class:btn-outline={$exclTagSet.has("")}>
-          <!-- on:dblclick={_makeOnly("")} -->
-          <IconTagOff />
-        </button>
+      <div class="tooltip tooltip-top tooltip-secondary mt-1" data-tip={`${$untagged} untagged`}>
+        <div class="flex">
+          <button
+            class="btn btn-neutral btn-sm text-nowrap mr-auto"
+            on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
+            class:btn-outline={$exclTagSet.has("")}>
+            <!-- on:dblclick={_makeOnly("")} -->
+            <IconTagOff />
+          </button>
+        </div>
       </div>
     {/if}
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class="tooltip tooltip-right m-1 tooltip-secondary" data-tip={cnt} class:dropdown={tags}>
-        <button
-          class="btn btn-neutral btn-sm text-nowrap"
-          on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
-          on:contextmenu|preventDefault={onContextMenu(tag)}
-          class:btn-outline={$excl(tgc)}
-          >{tag}
-        </button>
+      <div class=" mt-1" class:dropdown={tags}>
+        <div class="flex">
+          <button
+            class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-top tooltip-secondary"
+            on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
+            on:contextmenu|preventDefault={onContextMenu(tag)}
+            class:btn-outline={$excl(tgc)}
+            data-tip={cnt}
+            >{tag}
+          </button>
+        </div>
         {#if tags}
           <ul class="p-1 dropdown-content menu z-20 bg-base-100 join join-vertical">
             {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
@@ -186,7 +195,7 @@
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
               <li>
                 <button
-                  class=" btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary join-item"
+                  class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-top tooltip-secondary join-item"
                   data-tip={count}
                   on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
                   on:contextmenu|preventDefault={onContextMenu(subTag)}
@@ -216,7 +225,7 @@
 <dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
     <button
-      class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+      class="btn btn-sm btn-circle btn-ghost absolute top-2 top-2"
       on:click={() => myModal && myModal.close()}>✕</button>
     <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
     <form class=" ">
@@ -233,3 +242,16 @@
     <button>close</button>
   </form>
 </dialog>
+
+<style>
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+</style>
