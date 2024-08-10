@@ -92,8 +92,9 @@
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
 
-<label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
-<div class="drawer md:drawer-open bg-base-300 min-h-dvh">
+<label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden sticky top-0 z-20">
+  Open drawer</label>
+<div class="drawer mdlg:drawer-open bg-base-300 min-h-dvh">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <aside class="col-start-3 row-start-1 z-20"><TagView {noteDeri} /></aside>
   <div class="drawer-content z-0">
@@ -135,9 +136,9 @@
       {/each}
     </article>
   </div>
-  <div class="drawer-side z-10 top-8">
+  <div class="drawer-side z-10">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 mt-24 md:mt-0">
+    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-12 mdlg:pt-4">
       <li class="pt-4">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"

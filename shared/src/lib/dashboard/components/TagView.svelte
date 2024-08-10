@@ -127,7 +127,7 @@
 </script>
 
 <div
-  class="sticky top-0 z-20 overflow-y-scroll overflow-x-visible h-screen no-scrollbar min-w-24"
+  class="sticky top-0 z-20 overflow-y-scroll overflow-x-visible h-screen no-scrollbar min-w-24 lg:ml-4"
   bind:this={div}>
   <!-- <button  TODO: on phones it'd be nice for it to be collapsible the way left bar is
     class="btn btn-sm btn-square btn-secondary opacity-70 hover:opacity-100 absolute right-0 z-10 rounded-s-btn rounded-e-none"
