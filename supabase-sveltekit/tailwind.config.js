@@ -14,6 +14,7 @@ export default {
       height: {
         "screen-minus-80": "calc(100vh - 80px)",
       },
+      screens: { mdlg: "900px" },
     },
   },
   plugins: [require("daisyui")],
