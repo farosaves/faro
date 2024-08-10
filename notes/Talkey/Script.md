@@ -138,7 +138,8 @@ Second: A web highlighter, so you can save a piece of the page as tagline.
 Let's say you want to save this page. You find it interesting that it doesn't need to drink, so you highlight and save it as you read it.
 Then, months pass by, and you want to find "the animal that doesn't need to drink in the desert". And you're able to find it - just like this.
 The remaining organization essentials, are standard, but solid. Pinning... archiving... and tags... including nested tags. 
-But the best part is: you can use them *later* - because you'll still remember what you saved and why.
+But the best part is: you can use them *later* - because you'll still remember what you saved and why. 
+*So you don't need to worry about organizing while reading*
 Finally, all data gets synced immediately, so you can access it anywhere.
 Get Faro now, with a free trial of 1000 saves, it doesn't cost you anything to give it a try.
 Find Faro on Chrome Web Store.
