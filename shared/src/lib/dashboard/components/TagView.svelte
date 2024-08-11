@@ -140,7 +140,7 @@
   </button> -->
 
   <div class="flex flex-col overflow-x-clip place-items-stretch" class:flex-wrap={moreTags}>
-    <div class="tooltip tooltip-bottom tooltip-secondary" data-tip="toggle all">
+    <div class="flex tooltip tooltip-bottom tooltip-secondary m-1" data-tip="toggle all">
       <button
         class="font-bold kbd bg-base-100"
         on:click={checkClick}
@@ -160,7 +160,7 @@
       </button>
     </div> -->
     {#if $untagged}
-      <div class="tooltip tooltip-top tooltip-secondary m-1" data-tip={`${$untagged} untagged`}>
+      <div class="flex tooltip tooltip-top tooltip-secondary m-1" data-tip={`${$untagged} untagged`}>
         <button
           class="font-bold kbd bg-base-100"
           on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
