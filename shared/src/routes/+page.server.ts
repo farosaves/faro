@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
      = ({
        quote:
         "a genus of about 125 species of tropical, succulent plants in the stonecrop family Crassulaceae, mainly native to Madagascar and tropical Africa. A Kalanchoe species was one of the first plants to be sent into space, sent on a resupply to the Soviet Salyut 1 space station in 1979.",
-       tags: ["plants"],
+       tags: ["plants/som"],
        ...defs(2) })
 
   const mocknoteArr: Notes[] = [

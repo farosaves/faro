@@ -8,7 +8,7 @@ export default {
     "../node_modules/shared/**/*.{html,js,svelte,ts}",
   ],
   theme: {
-    extend: {},
+    extend: { screens: { mdlg: "900px" } },
   },
   plugins: [require("daisyui")],
   daisyui: {
