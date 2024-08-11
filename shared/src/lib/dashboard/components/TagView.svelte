@@ -204,7 +204,7 @@
         {/if}
       </div>
     {:else}
-      <button class=" m-auto underline" popovertarget="addTags">No tags yet, see how to add them</button>
+      <button class="m-auto underline w-24" popovertarget="addTags">No tags yet, see how to add them</button>
     {/each}
   </div>
 </div>
