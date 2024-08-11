@@ -138,12 +138,12 @@
   </button>
 
   <div class="flex overflow-x-clip" class:flex-wrap={moreTags}>
-    <div class="tooltip tooltip-right tooltip-secondary" data-tip="toggle all">
+    <div class="tooltip tooltip-right tooltip-secondary m-1" data-tip="toggle all">
       <button
-        tabindex="0"
-        class="btn btn-neutral btn-sm text-nowrap m-1"
+        class="font-bold kbd bg-base-100"
         on:click={checkClick}
-        class:btn-outline={$exclTagSet.size}>
+        class:opacity-50={$exclTagSet.size}
+        class:border-0={$exclTagSet.size}>
         <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
         <IconCheckbox />
       </button>
@@ -160,9 +160,10 @@
     {#if $untagged}
       <div class="tooltip tooltip-right tooltip-secondary m-1" data-tip={`${$untagged} untagged`}>
         <button
-          class="btn btn-neutral btn-sm text-nowrap"
+          class="font-bold kbd bg-base-100"
           on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
-          class:btn-outline={$exclTagSet.has("")}>
+          class:opacity-50={$exclTagSet.has("")}
+          class:border-0={$exclTagSet.has("")}>
           <!-- on:dblclick={_makeOnly("")} -->
           <IconTagOff />
         </button>
@@ -171,26 +172,30 @@
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class="tooltip tooltip-right m-1 tooltip-secondary" data-tip={cnt} class:dropdown={tags}>
+      <div class="m-1" data-tip={cnt} class:dropdown={tags}>
         <button
-          class="btn btn-neutral btn-sm text-nowrap"
+          class="tooltip tooltip-right tooltip-secondary font-bold kbd bg-base-100"
           on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
           on:contextmenu|preventDefault={onContextMenu(tag)}
-          class:btn-outline={$excl(tgc)}
+          class:opacity-50={$excl(tgc)}
+          class:border-0={$excl(tgc)}
+          data-tip={cnt}
           >{tag}
         </button>
         {#if tags}
-          <ul class="p-1 dropdown-content menu z-20 bg-base-100 join join-vertical">
+          <ul class="p-1 dropdown-content z-20 bg-base-300 rounded-box">
             {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
               {@const [subTag, count] = tc}
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
               <li>
                 <button
-                  class=" btn btn-neutral btn-sm text-nowrap tooltip tooltip-right tooltip-secondary join-item"
+                  class="tooltip tooltip-right tooltip-secondary font-bold kbd bg-base-100"
                   data-tip={count}
                   on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
                   on:contextmenu|preventDefault={onContextMenu(subTag)}
-                  class:btn-outline={$excl(E.left(tc))}>
+                  class:opacity-50={$excl(E.left(tc))}
+                  class:border-0={$excl(E.left(tc))}>
+                  <!-- class:p-y={$excl(E.left(tc))} -->
                   {displayedTag}
                 </button>
               </li>
