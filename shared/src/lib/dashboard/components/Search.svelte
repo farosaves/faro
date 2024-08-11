@@ -43,7 +43,7 @@
   let focused = true
   let innerWidth: number
   onMount(() => {
-    if (innerWidth >= 768) callback()
+    if (innerWidth >= 900) callback()
   })
 </script>
 
