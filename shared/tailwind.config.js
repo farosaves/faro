@@ -3,7 +3,7 @@ export default {
   content: ["./*.{svelte,ts}", "./src/**/*.{svelte,ts}"],
 
   theme: {
-    extend: {},
+    extend: { screens: { mdlg: "900px" } },
   },
   plugins: [require("daisyui")],
   daisyui: {
@@ -13,8 +13,8 @@ export default {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           ...require("daisyui/src/theming/themes")["night"],
           "primary": "oklch(61.77% 0.163 307.59)",
-          // secondary: "oklch(53.53% 0.2365 269.97)",
-          // secondary: "oklch(70.58% 0.1581 252)", // ph
+          // "secondary": "oklch(53.53% 0.2365 269.97)",
+          // "secondary": "oklch(70.58% 0.1581 252)", // ph
           "secondary": "oklch(75.72% 0.1387 252)",
           "base-100": "oklch(20.77% 0.06 265.75)", // #1A103D  // #1A103D
         },
