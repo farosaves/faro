@@ -126,9 +126,7 @@
   // const twoPlusTags = writable(false)
 </script>
 
-<div
-  class="sticky top-0 z-20 overflow-y-scroll overflow-x-visible h-screen no-scrollbar min-w-24 lg:ml-4"
-  bind:this={div}>
+<div class="sticky top-0 z-20 overflow-y-scroll h-screen no-scrollbar min-w-24 lg:ml-4" bind:this={div}>
   <!-- <button  TODO: on phones it'd be nice for it to be collapsible the way left bar is
     class="btn btn-sm btn-square btn-secondary opacity-70 hover:opacity-100 absolute right-0 z-10 rounded-s-btn rounded-e-none"
     on:click={() => (moreTags = !moreTags)}>
@@ -140,17 +138,15 @@
   </button> -->
 
   <div class="flex flex-col overflow-x-clip place-items-stretch" class:flex-wrap={moreTags}>
-    <div class="tooltip tooltip-bottom tooltip-secondary" data-tip="toggle all">
-      <div class="flex">
-        <button
-          tabindex="0"
-          class="btn btn-neutral btn-sm text-nowrap mt-1"
-          on:click={checkClick}
-          class:btn-outline={$exclTagSet.size}>
-          <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
-          <IconCheckbox />
-        </button>
-      </div>
+    <div class="flex tooltip tooltip-bottom tooltip-secondary m-1" data-tip="toggle all">
+      <button
+        class="font-bold kbd bg-base-100"
+        on:click={checkClick}
+        class:opacity-50={$exclTagSet.size}
+        class:border-0={$exclTagSet.size}>
+        <!-- on:contextmenu|preventDefault={() => (dropdownOpen = funLog("dropdownOpen")(!dropdownOpen))} -->
+        <IconCheckbox />
+      </button>
     </div>
 
     <!-- <div class="tooltip tooltip-top tooltip-secondary carousel-item" data-tip="2+ tags">
@@ -162,44 +158,44 @@
       </button>
     </div> -->
     {#if $untagged}
-      <div class="tooltip tooltip-top tooltip-secondary mt-1" data-tip={`${$untagged} untagged`}>
-        <div class="flex">
-          <button
-            class="btn btn-neutral btn-sm text-nowrap mr-auto"
-            on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
-            class:btn-outline={$exclTagSet.has("")}>
-            <!-- on:dblclick={_makeOnly("")} -->
-            <IconTagOff />
-          </button>
-        </div>
+      <div class="flex tooltip tooltip-top tooltip-secondary m-1" data-tip={`${$untagged} untagged`}>
+        <button
+          class="font-bold kbd bg-base-100"
+          on:click={(e) => (e.shiftKey || isCmd(e) ? _toggleTag("") : _makeOnly(""))}
+          class:opacity-50={$exclTagSet.has("")}
+          class:border-0={$exclTagSet.has("")}>
+          <!-- on:dblclick={_makeOnly("")} -->
+          <IconTagOff />
+        </button>
       </div>
     {/if}
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class=" mt-1" class:dropdown={tags}>
-        <div class="flex">
-          <button
-            class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-top tooltip-secondary"
-            on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
-            on:contextmenu|preventDefault={onContextMenu(tag)}
-            class:btn-outline={$excl(tgc)}
-            data-tip={cnt}
-            >{tag}
-          </button>
-        </div>
+      <div class="m-1" data-tip={cnt} class:dropdown={tags}>
+        <button
+          class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
+          on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
+          on:contextmenu|preventDefault={onContextMenu(tag)}
+          class:opacity-50={$excl(tgc)}
+          class:border-0={$excl(tgc)}
+          data-tip={cnt}
+          >{tag}
+        </button>
         {#if tags}
-          <ul class="p-1 dropdown-content menu z-20 bg-base-100 join join-vertical">
+          <ul class="p-1 dropdown-content z-20 bg-base-300 rounded-box">
             {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
               {@const [subTag, count] = tc}
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
               <li>
                 <button
-                  class="btn btn-neutral btn-sm text-nowrap tooltip tooltip-top tooltip-secondary join-item"
+                  class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
                   data-tip={count}
                   on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
                   on:contextmenu|preventDefault={onContextMenu(subTag)}
-                  class:btn-outline={$excl(E.left(tc))}>
+                  class:opacity-50={$excl(E.left(tc))}
+                  class:border-0={$excl(E.left(tc))}>
+                  <!-- class:p-y={$excl(E.left(tc))} -->
                   {displayedTag}
                 </button>
               </li>
