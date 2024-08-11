@@ -44,17 +44,19 @@
         theme: ThemeSupa,
         style: {
           button: "border-radius: 20px",
-          input: "border-radius: 20px;",
+          input: "border-radius: 20px; ",
           //..
         },
       }} />
     <div class=" w-full text-right py-1 pr-1">
-      <a href="/account/login/forgotten-password" class="text-orange-300 text-sm hover:underline"
-        >Forgotten password</a>
+      <a
+        href="/account/login/forgotten-password"
+        class="dark:text-orange-300 text-black text-sm hover:underline">Forgotten password</a>
     </div>
     <div class="dark:text-white text-center text-sm p-3">
       Do not have an account?<br />
-      <a href="/account/login/sign-up" class=" text-orange-300 w-full text-md hover:underline">Sign Up</a>
+      <a href="/account/login/sign-up" class=" text-black dark:text-orange-300 w-full text-md hover:underline"
+        >Sign Up</a>
     </div>
     <br />
   </div>
