@@ -9,10 +9,6 @@
   import { page } from "$app/stores"
   import { get } from "svelte/store"
 
-  const customAppearance = {
-    button: "",
-  }
-  let darkTheme = true
   onMount(() => {
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
@@ -20,22 +16,15 @@
         setTimeout(() => /\/account\//.test(get(page).url.pathname) && goto("/dashboard?from=login"), 50) // TODO: here should scroll down
       }
     })
-    // TODO: this is a hack to make the theme work
-    const html = document.querySelector("html")
-    if (html) darkTheme = html.classList.contains("dark")
   })
   $: supabaseClient = data.supabase
-  // if (ThemeSupa.default.colors) {
-  //   ThemeSupa.default.colors.brand = ""
-  //   ThemeSupa.default.colors.brandAccent = ""
-  // }
 </script>
 
 <svelte:head>
   <title>Faro - Login</title>
 </svelte:head>
 
-<div class="flex justify-center">
+<div class="flex justify-center h-screen-minus-240">
   <div class="w-64 my-4">
     <Auth
       {supabaseClient}
@@ -56,9 +45,7 @@
               brandAccent: "oklch(var(--ac))",
               inputText: "oklch(var(--bc))",
               brandButtonText: "oklch(var(--pc))",
-              // messageText: "oklch(var(--b))",
               dividerBackground: "oklch(var(--n))",
-              // inputLabelText: "oklch(var(--n))",
               defaultButtonText: "oklch(var(--n))",
               anchorTextColor: "oklch(var(--p))",
             },
