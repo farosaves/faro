@@ -9,6 +9,10 @@
   import { page } from "$app/stores"
   import { get } from "svelte/store"
 
+  const customAppearance = {
+    button: "",
+  }
+
   onMount(() =>
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
@@ -36,9 +40,22 @@
       showLinks={false}
       providers={["google", "github"]}
       view="sign_in"
-      appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
-    <div class="divider"></div>
-    <a href="/account/login/sign-up" class="underline">New user? Sign Up</a><br />
-    <a href="/account/login/forgotten-password" class="underline">Forgotten password?</a>
+      appearance={{
+        theme: ThemeSupa,
+        style: {
+          button: "border-radius: 20px",
+          input: "border-radius: 20px;",
+          //..
+        },
+      }} />
+    <div class=" w-full text-right py-1 pr-1">
+      <a href="/account/login/forgotten-password" class="text-orange-300 text-sm hover:underline"
+        >Forgotten password</a>
+    </div>
+    <div class="dark:text-white text-center text-sm p-3">
+      Do not have an account?<br />
+      <a href="/account/login/sign-up" class=" text-orange-300 w-full text-md hover:underline">Sign Up</a>
+    </div>
+    <br />
   </div>
 </div>
