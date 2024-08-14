@@ -37,12 +37,12 @@ export const handle: Handle = async ({ event, resolve }) => {
   }) as unknown as SupabaseClient
 
   event.locals.safeGetSession = async () => {
-    const {
-      data: { session },
-    } = await event.locals.supabase.auth.getSession()
+    let { data: { session } } = await event.locals.supabase.auth.getSession()
     if (!session) {
       return { session: null, user: null }
     }
+    if (session.expires_in < 900)
+      ({ data: { session } } = await event.locals.supabase.auth.refreshSession())
 
     const {
       data: { user },
