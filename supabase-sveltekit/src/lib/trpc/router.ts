@@ -25,9 +25,13 @@ const digest = async (str: string) => Array.from(new Int32Array(await subtle.dig
 
 export const router = t.router({
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
-    const { session } = await locals.safeGetSession()
+    let { session } = await locals.safeGetSession()
+
+    if (session && session.expires_in < 900)
+      ({ data: { session } } = await locals.supabase.auth.refreshSession())
     if (session) {
       const { access_token, refresh_token } = session
+
       return { access_token, refresh_token }
     }
     return
