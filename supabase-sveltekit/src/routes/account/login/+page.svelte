@@ -9,26 +9,22 @@
   import { page } from "$app/stores"
   import { get } from "svelte/store"
 
-  onMount(() =>
+  onMount(() => {
     data.supabase.auth.onAuthStateChange(async (event, session) => {
       if (event == "SIGNED_IN") {
         if (session) $sessStore = O.some(session)
-        setTimeout(() => /\/account\//.test(get(page).url.pathname) && goto("/dashboard?from=login"), 50)
+        setTimeout(() => /\/account\//.test(get(page).url.pathname) && goto("/dashboard?from=login"), 50) // TODO: here should scroll down
       }
-    }),
-  )
+    })
+  })
   $: supabaseClient = data.supabase
-  // if (ThemeSupa.default.colors) {
-  //   ThemeSupa.default.colors.brand = ""
-  //   ThemeSupa.default.colors.brandAccent = ""
-  // }
 </script>
 
 <svelte:head>
   <title>Faro - Login</title>
 </svelte:head>
 
-<div class="flex justify-center">
+<div class="flex justify-center h-screen-minus-240">
   <div class="w-64 my-4">
     <Auth
       {supabaseClient}
@@ -36,9 +32,35 @@
       showLinks={false}
       providers={["google", "github"]}
       view="sign_in"
-      appearance={{ theme: ThemeSupa, style: { input: "color: #fff" } }} />
-    <div class="divider"></div>
-    <a href="/account/login/sign-up" class="underline">New user? Sign Up</a><br />
-    <a href="/account/login/forgotten-password" class="underline">Forgotten password?</a>
+      appearance={{
+        theme: ThemeSupa,
+        style: {
+          button: "border-radius: 20px",
+          input: "border-radius: 20px",
+        },
+        variables: {
+          default: {
+            colors: {
+              brand: "oklch(var(--p))",
+              brandAccent: "oklch(var(--ac))",
+              inputText: "oklch(var(--bc))",
+              brandButtonText: "oklch(var(--pc))",
+              dividerBackground: "oklch(var(--n))",
+              defaultButtonText: "oklch(var(--n))",
+              anchorTextColor: "oklch(var(--p))",
+            },
+          },
+        },
+      }} />
+    <div class="w-full text-right py-1 pr-1">
+      <a href="/account/login/forgotten-password" class="dark:text-yellow-100 text-sm hover:underline"
+        >Forgotten password</a>
+    </div>
+    <div class="text-center text-sm p-3">
+      Do not have an account?<br />
+      <a href="/account/login/sign-up" class=" dark:text-yellow-100 w-full text-base hover:underline"
+        >Sign Up</a>
+    </div>
+    <br />
   </div>
 </div>
