@@ -164,13 +164,13 @@
 <CmModal />
 <div class="toast">
   {#if $activeLoadsStore}
-    <span out:fade class="loading loading-spinner text-secondary loading-lg"></span>
+    <span out:fade class="loading loading-spinner text-secondary loading-lg z-50"></span>
   {/if}
 </div>
 
 <div class="toast">
   {#each $toastStore as [toastMsg, n] (n)}
-    <div out:fade class="alert alert-info">
+    <div out:fade class="alert alert-info z-40">
       <span>{toastMsg}</span>
     </div>
   {/each}
