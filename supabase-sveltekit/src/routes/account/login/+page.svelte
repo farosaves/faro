@@ -35,14 +35,13 @@
       appearance={{
         theme: ThemeSupa,
         style: {
-          button: "border-radius: var(--rounded-btn, 0.5rem)",
-          input: "border-radius: var(--rounded-btn, 0.5rem)",
+          button: "border-radius: 1rem",
+          input: "border-radius: 1rem",
         },
         variables: {
           default: {
             colors: {
               brand: "oklch(var(--p))",
-              // brandAccent: "var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity)))",
               brandAccent: "oklch(var(--p)/0.9)",
               inputText: "oklch(var(--bc))",
               brandButtonText: "oklch(var(--pc))",
