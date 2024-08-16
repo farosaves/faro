@@ -5,7 +5,7 @@ import { persisted } from "./persisted-store"
 import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
 import { derived, get, type Readable, type Writable } from "svelte/store"
-import { type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle, neq } from "$lib/utils"
+import { type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle, neq, escapeRegExp } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
 import { flow, pipe } from "fp-ts/lib/function"
@@ -167,7 +167,7 @@ export class NoteSync {
     if (O.isSome(local)) return local.value
     const id = uuidv5(domainTitle(src))
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
-    await this.actionQueue.actSrc({ ...src, id })
+    await this.actionQueue.actSrc({ ...src, id }) // this IS blocking local update if online but high latency, but prevents flashing
     return id
   }
 
@@ -241,10 +241,13 @@ export class NoteSync {
           n.tags[i] = newTag.value
         else n.tags = n.tags.filter(neq(oldTag))
     }
-    this.updateAct(ns => // V this checks iff replace below succeedes
-      allTags.filter(x => x.split("/")[0] == oldTag).forEach(tag =>
+    // check if old is a prefix of this tag
+    const regex = RegExp(`^${escapeRegExp(oldTag)}(?=/|$)`)
+    this.updateAct((ns) => {
+      allTags.filter(x => regex.test(x)).forEach(tag =>
         ns.forEach(
-          updateTag(tag, pipe(newTag, O.map(s => tag.replace(RegExp(`^${oldTag}(?=/|$)`), s)))))))
+          updateTag(tag, pipe(newTag, O.map(s => tag.replace(regex, s))))))
+    })
   }
 
 

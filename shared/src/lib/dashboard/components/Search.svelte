@@ -43,7 +43,7 @@
   let focused = true
   let innerWidth: number
   onMount(() => {
-    if (innerWidth >= 768) callback()
+    if (innerWidth >= 900) callback()
   })
 </script>
 
@@ -63,7 +63,7 @@
       bind:value={query} />
     <button hidden on:click={() => query.length && $openFirst()}></button>
   </form>
-  <div class="join w-full">
+  <div class="join w-full py-3">
     {#each entries as [ariaLabel, value] (value)}
       <input
         class="join-item btn grow btn-sm"

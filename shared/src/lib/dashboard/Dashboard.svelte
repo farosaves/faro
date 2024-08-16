@@ -92,49 +92,54 @@
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
 
-<TagView {noteDeri} />
-<label for="my-drawer" class="btn btn-primary drawer-button md:hidden"> Open drawer</label>
-<div class="drawer md:drawer-open bg-base-300 sticky top-8 min-h-dvh">
+<label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden sticky top-0 z-20">
+  Open drawer</label>
+<div class="drawer mdlg:drawer-open bg-base-300 min-h-dvh">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content z-0" bind:clientWidth={$tilesWidth}>
-    <!-- my main here -->
-    {#each priorities as priority}
-      <div
-        class="flex flex-row flex-wrap border-secondary py-2"
-        class:border-b-2={!!$note_groupss[priority].length}>
-        {#each $note_groupss[priority] as [title, note_group]}
-          <div
-            class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200"
-            style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
-            <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
-            min-width: {$layoutey.noteWidth + 2}px" -->
-            <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
-            <a
-              target="_blank"
-              title={title.replaceAll(/<\/?b[^>]*>/g, "")}
-              href={note_group[0].url}
-              class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20">{@html title}</a>
-            <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
-              {#each note_group as note (note.id)}
-                <Note
-                  note_data={note}
-                  isOpen={noteOpens[note.id]}
-                  {closeAll}
-                  goto_function={gotoFunction(note)}
-                  syncLike={noteSync}
-                  px={innerWidth > 768 ? $layoutey.noteWidth : undefined}
-                  {allTags}
-                  isHighlighted={note.id == $idHighlighted} />
-              {/each}
+  <aside class="col-start-3 row-start-1 z-20"><TagView {noteDeri} /></aside>
+  <div class="drawer-content z-0">
+    <article bind:clientWidth={$tilesWidth}>
+      {#each priorities as priority}
+        <div
+          class="flex flex-row flex-wrap border-secondary py-2"
+          class:border-b-2={!!$note_groupss[priority].length}>
+          {#each $note_groupss[priority] as [title, note_group]}
+            <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
+              <div
+                class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 my-2 sm:mx-2">
+                <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
+                min-width: {$layoutey.noteWidth + 2}px" -->
+                <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
+                <a
+                  target="_blank"
+                  title={title.replaceAll(/<\/?b[^>]*>/g, "")}
+                  href={note_group[0].url}
+                  class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20 p-1"
+                  >{@html title}</a>
+                <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
+                  {#each note_group as note, i (note.id)}
+                    <Note
+                      note_data={note}
+                      isOpen={noteOpens[note.id]}
+                      {closeAll}
+                      goto_function={gotoFunction(note)}
+                      syncLike={noteSync}
+                      px={innerWidth > 640 ? $layoutey.noteWidth - 16 : undefined}
+                      {allTags}
+                      mr={i + 1 < note_group.length}
+                      isHighlighted={note.id == $idHighlighted} />
+                  {/each}
+                </div>
+              </div>
             </div>
-          </div>
-        {/each}
-      </div>
-    {/each}
+          {/each}
+        </div>
+      {/each}
+    </article>
   </div>
-  <div class="drawer-side z-10 border-r border-neutral top-8">
+  <div class="drawer-side z-10 no-scrollbar">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-[72] min-h-full bg-base-200 text-base-content space-y-4 mt-24 md:mt-0">
+    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-12 mdlg:pt-4">
       <li class="pt-4">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"
@@ -145,7 +150,7 @@
         <Search {noteDeri} openFirst={noteDeri.openFirst} />
       </li>
       <li></li>
-      <li><DomainFilter {noteDeri} /></li>
+      <li class="my-4"><DomainFilter {noteDeri} /></li>
       {#if false}
         <li hidden class="fixed bottom-8 left-12"><PriorityFilter noteArr={noteDeri.noteArr} /></li>
         <li hidden>
@@ -157,16 +162,29 @@
 </div>
 
 <CmModal />
-<div class="toast">
+<div class="toast z-50">
   {#if $activeLoadsStore}
-    <span out:fade class="loading loading-spinner text-secondary loading-lg"></span>
+    <span out:fade class="loading loading-spinner text-secondary loading-lg z-50"></span>
   {/if}
 </div>
 
-<div class="toast">
+<div class="toast z-40">
   {#each $toastStore as [toastMsg, n] (n)}
-    <div out:fade class="alert alert-info">
+    <div out:fade class="alert alert-info z-40">
       <span>{toastMsg}</span>
     </div>
   {/each}
 </div>
+
+<style>
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+</style>

@@ -13,10 +13,8 @@ if (DEBUG) console.log("hello")
 
 // const Tserver = createTRPCProxyClient({ links: [httpBatchLink({ url: API_ADDRESS + "/trpc" })] }) // trpc({ url: { origin: API_ADDRESS } })
 // const Tserver = trpc2()
-
-export const T = createTRPCProxyClient<AppRouter>({
-  links: [chromeLink({ port: chrome.runtime.connect() })],
-})
+const getT = () => createTRPCProxyClient<AppRouter>({ links: [chromeLink({ port: chrome.runtime.connect() })] })
+const T = getT()
 
 const ran2sel = (rann: Range) => {
   const sel = rangy.getSelection()
@@ -85,7 +83,7 @@ getHighlightedText.sub(async ([uuid]) => {
   const selectedText = window.getSelection()?.toString()
   if (!selectedText) return
   // now check if we're in a quote already
-  const T = createTRPCProxyClient<AppRouter>({ links: [chromeLink({ port: chrome.runtime.connect() })] })
+  const T = getT()
   if (await subSelection(selectedText, T)) return
   DEBUG && console.log(selectedText, window.getSelection()?.anchorNode?.textContent)
   DEBUG && console.log(rangy.createRange())

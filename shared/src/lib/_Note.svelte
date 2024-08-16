@@ -19,6 +19,7 @@
   export let syncLike: SyncLike
   export let allTags: Readable<string[]>
   export let px: number | undefined = undefined
+  export let mr = false
 
   export let goto_function: MouseEventHandler<any> | undefined
   export let deleteCbOpt: O.Option<() => any> = O.none
@@ -90,7 +91,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- class:p-0={hovered && $windowActive}border p-[1px]
   class:border-2={hovered && $windowActive} -->
-<div class="relative p-1" style={px ? `max-width: ${px}px; min-width: ${px}px` : ""}>
+<div class="relative p-1" style={px ? `max-width: ${px}px; min-width: ${px}px` : ""} class:sm:mr-4={mr}>
   <div
     class="collapse bg-base-100 border-primary"
     style="border-width: {1 + +(hovered && $windowActive) + 2 * +isHighlighted}px;

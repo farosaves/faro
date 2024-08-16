@@ -33,7 +33,7 @@
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
   import { derived, writable } from "svelte/store"
-  import { hasOrGivesPerm } from "$lib/utils"
+  import { hasOrGivesPerm, loc } from "$lib/utils"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -60,6 +60,9 @@
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
   const perm = { permissions: ["bookmarks"] }
+
+  // const goToDashboard = chrome.i18n.getMessage("dashboard")
+  // const loggedInAs = chrome.i18n.getMessage("loggedInAs")
 </script>
 
 <!-- on:keydown={handle_keydown} -->
@@ -72,7 +75,7 @@
     <div class="flex flex-row">
       <!-- prettier-ignore -->
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-      <span>If you just installed (or reloaded) the extension you need to refresh the page.</span>
+      <span>{loc("refreshPrompt")}</span>
     </div>
   </div>
 {/if}
@@ -82,7 +85,7 @@
   <div role="alert" class="alert alert-info grid-flow-col justify-items-start text-start p-1">
     <!-- prettier-ignore -->
     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-    <span>Not logged in! <a href={login_url} target="_blank" class="underline">link</a></span>
+    <span>{loc("notLoggedIn")} <a href={login_url} target="_blank" class="underline">link</a></span>
   </div>
 {/if}
 
@@ -95,13 +98,13 @@
         href={$email ? `${API_ADDRESS}/dashboard` : dashboardURL}
         target="_blank"
         class="tooltip tooltip-left"
-        data-tip="Go to dashboard ({altKey}+C)"
+        data-tip="{loc('dashboard')} ({altKey}+C)"
         use:shortcut={{ alt: true, code: "KeyC" }}
         ><IconLayoutDashboard transform="rotate(90)" font-size={iconSize} /></a>
 
       <button
         class="tooltip tooltip-left"
-        data-tip={"Logged in as: \n" + ($email || "...not logged in")}
+        data-tip={$email ? `${loc("loggedInAs")} ${$email}` : loc("notLoggedIn")}
         on:click={() => TB.refresh.query()}
         on:contextmenu|preventDefault={() => TB.disconnect.query()}>
         <!-- on:dblclick={() => setTimeout(TB.disconnect.query, 1000)} -->
@@ -122,7 +125,7 @@
                   TB.syncBookmarks.query()
                   toastNotify("Exporting to Other Bookmarks/Faro", 5000)
                 } else toastNotify("Sync turned off", 5000)
-              }}>Sync with bookmarks</button>
+              }}>{loc("exportToBookmarks")}</button>
           </li>
           <!-- <li>
             <button
@@ -140,7 +143,7 @@
           </li> -->
           <li>
             <details>
-              <summary>Theme</summary>
+              <summary>{loc("Theme")}</summary>
               <ul class="join join-vertical">
                 {#each themes as value}
                   <li>
@@ -160,8 +163,8 @@
               class="btn z-20 text-error"
               on:click={async () => {
                 await TB.hardReset.query()
-                toastNotify("Local data deleted", 5000)
-              }}>Delete local data</button>
+                toastNotify(loc("localDataDeleted"), 5000)
+              }}>{loc("deleteLocalData")}</button>
           </li>
         </div>
       </div>
