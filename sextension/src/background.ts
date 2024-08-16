@@ -134,7 +134,7 @@ createChromeHandler({
 pushStore("currSrcs", note_mut.currSrcs)
 
 const apiHostname = API_ADDRESS.replace(/http(s?):\/\//, "")
-const homeRegexp = RegExp(escapeRegExp(apiHostname) + "[(/account)(/dashboard)]")
+const dashboardRegexp = RegExp(escapeRegExp(apiHostname + "/dashboard"))
 const noteRegexp = RegExp(escapeRegExp(apiHostname) + "/notes/") // ! deprec: but fixes old notes
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
@@ -167,7 +167,7 @@ let toks: Awaited<ReturnType<typeof S.my_tokens.query>> = undefined
 const refreshOnline = async () => {
   const newToks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toUndefined)
   funLog("refresh toks")([toks, newToks])
-  if (newToks?.refreshed) chrome.tabs.create({ url: API_ADDRESS + "/auth/refresh" }) // TODO: open the refresh page
+  if (newToks?.refreshed) chrome.tabs.create({ url: API_ADDRESS + "/auth/refresh", active: false }) // TODO: open the refresh page
 
   // same tokens
   if ((newToks?.access_token == toks?.access_token) && O.isSome(get(sess))) {
@@ -210,7 +210,7 @@ const refresh = async (online = true) => {
 }
 const updateRefresh = (tab: chrome.tabs.Tab) => {
   updateCurrUrl(tab)
-  if (tab.url && homeRegexp.test(tab.url))
+  if (tab.url && dashboardRegexp.test(tab.url))
     refresh()
 }
 refresh()
@@ -219,7 +219,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
   // here closes the window
   const tab = await currTab()
   if (!tab) throw new Error("unreachable")
-  if (homeRegexp.test(tab.url || ""))
+  if (dashboardRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 
   updateRefresh(tab)
@@ -232,7 +232,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   const tab = await chrome.tabs.get(tabId)
   updateRefresh(tab)
-  if (homeRegexp.test(tab.url || ""))
+  if (dashboardRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
 })
 
