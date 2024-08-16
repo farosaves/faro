@@ -43,7 +43,7 @@
           <!-- <div class="divider"></div>
           yoo -->
           <div class="divider"></div>
-          <div class="h-20 w-full card font-medium rounded-box">
+          <div class="h-20 w-full card font-medium rounded-box" style="font-size: 17px">
             <!-- <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p> -->
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400">
               Faro combines web highlighting with a bookmark manager
@@ -99,9 +99,9 @@
     {/if}
   </div>
 </div>
-<div class="w-full pt-6 h-fit flex flex-col justify-center items-center" id="key-features">
+<div class="w-full pt-6 h-fit flex flex-col justify-center items-center mx-6" id="key-features">
   <div class=" p-4 text-center text-5xl font-bold">Dead simple</div>
-  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">See what makes it unique:</div>
+  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">What makes it unique:</div>
   <div class=" mt-12 w-full flex flex-col lg:flex-row items-center justify-center lg:items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
