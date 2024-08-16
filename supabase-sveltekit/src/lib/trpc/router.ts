@@ -28,13 +28,14 @@ export const router = t.router({
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
     let { session } = await locals.safeGetSession()
     let refreshed = false
-    funLog("first")([session?.refresh_token, session?.expires_in])
-
-    if (session && session.expires_in < 1790) {
+    const tok1 = session?.refresh_token
+    const exp1 = session?.expires_in
+    if (session && session.expires_in < 1770) { // after 30 s for testing
       ({ data: { session } } = await locals.supabase.auth.refreshSession())
       refreshed = true
     }
-    funLog("second")([session?.refresh_token, session?.expires_in])
+    funLog("my_tokens")([exp1, tok1?.slice(0, 10), session?.refresh_token.slice(0, 10)])
+
 
     if (session) {
       const { access_token, refresh_token } = session
