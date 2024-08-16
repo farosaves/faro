@@ -167,7 +167,7 @@ export class NoteSync {
     if (O.isSome(local)) return local.value
     const id = uuidv5(domainTitle(src))
     this.stuMapStore.update(M.upsertAt<UUID>(S.Eq)(id, src))
-    await this.actionQueue.actSrc({ ...src, id })
+    this.actionQueue.actSrc({ ...src, id }) // this was blocking local update if online but high latency
     return id
   }
 
