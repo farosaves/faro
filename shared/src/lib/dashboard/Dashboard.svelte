@@ -137,10 +137,9 @@
       {/each}
     </article>
   </div>
-  <div class="drawer-side z-10">
+  <div class="drawer-side z-10 no-scrollbar">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul
-      class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-12 mdlg:pt-4 no-scrollbar">
+    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-12 mdlg:pt-4">
       <li class="pt-4">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"
