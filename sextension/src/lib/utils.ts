@@ -24,6 +24,7 @@ export const getSetSession = async (supabase: SupabaseClient, tokens: ATokens) =
   const { data: { session } } = await supabase.auth.setSession({ access_token, refresh_token })
     .then(warnIfError(sbLogger(supabase))("setSession"))
     .catch(flow(funWarn(sbLogger(supabase))("setSessionCatch"), x => ({ data: { session: undefined } })))
+  // /TODO HERE if session is expiring within time X (1790) open the refresh route (todo also)
   return session
 }
 

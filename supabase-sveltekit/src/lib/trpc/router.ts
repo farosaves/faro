@@ -4,7 +4,7 @@ import { initTRPC } from "@trpc/server"
 import z from "zod"
 // import { add_card } from "./api/cards"
 import { createClient } from "@supabase/supabase-js"
-import { sbLogger, warnIfError, type Database } from "shared"
+import { funLog, sbLogger, warnIfError, type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 import { SERVICE_ROLE_KEY, TIMESTAMP_SALT } from "$env/static/private"
 import { subtle } from "node:crypto"
@@ -19,6 +19,7 @@ const encoder = new TextEncoder()
 const tokens = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
+  refreshed: z.boolean(),
 })
 // funLog2(sbLogger(serviceSb))("digest")(
 const digest = async (str: string) => Array.from(new Int32Array(await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
@@ -26,13 +27,18 @@ const digest = async (str: string) => Array.from(new Int32Array(await subtle.dig
 export const router = t.router({
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
     let { session } = await locals.safeGetSession()
+    let refreshed = false
+    funLog("first")([session?.refresh_token, session?.expires_in])
 
-    if (session && session.expires_in < 900)
+    if (session && session.expires_in < 1790) {
       ({ data: { session } } = await locals.supabase.auth.refreshSession())
+      refreshed = true
+    }
+    funLog("second")([session?.refresh_token, session?.expires_in])
+
     if (session) {
       const { access_token, refresh_token } = session
-
-      return { access_token, refresh_token }
+      return { access_token, refresh_token, refreshed }
     }
     return
   }),

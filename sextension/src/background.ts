@@ -167,10 +167,14 @@ let toks: Awaited<ReturnType<typeof S.my_tokens.query>> = undefined
 const refreshOnline = async () => {
   const newToks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toUndefined)
   funLog("refresh toks")([toks, newToks])
+  if (newToks?.refreshed) chrome.tabs.create({ url: API_ADDRESS + "/auth/refresh" }) // TODO: open the refresh page
+
+  // same tokens
   if ((newToks?.access_token == toks?.access_token) && O.isSome(get(sess))) {
     note_sync.refresh()
     return get(sess)
   }
+  // different
   toks = newToks
   const s = O.fromNullable(toks && await getSetSession(supabase, toks))
   sess.set(s)
@@ -279,6 +283,7 @@ const setIcon = async (n: number, _tabId?: number) => {
 }
 notesCurrWindow.subscribe(setIcon)
 chrome.tabs.onUpdated.addListener((tabId, _info, _tab) => setIcon(get(notesCurrWindow), tabId))
+
 
 // erros
 
