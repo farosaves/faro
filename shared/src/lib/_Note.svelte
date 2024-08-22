@@ -100,21 +100,20 @@
     on:mouseleave={() => {
       hovered = false
       isOpen = false
-    }}
-    on:contextmenu|preventDefault={showOptions}>
+    }}>
     <input type="checkbox" class="-z-10" bind:checked={isOpen} />
     <div
       class="collapse-title overflow-hidden text-center"
       bind:this={this_element}
       style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;">
       <button
-        on:click={async () => {
+        on:contextmenu|preventDefault={async () => {
           const saveIsOpen = isOpen
           closeAll()
           await sleep(1)
           isOpen = !saveIsOpen
         }}
-        on:dblclick={goto_function}>
+        on:click={goto_function}>
         <!-- class="h-16 text-ellipsis" -->
         <!-- class:overflow-hidden={!isOpen} omg :( -->
         {@html text}
