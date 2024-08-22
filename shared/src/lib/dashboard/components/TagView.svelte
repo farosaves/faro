@@ -258,7 +258,7 @@
     grid-template-rows: 0fr;
     overflow: hidden;
     opacity: 0%;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out 0.1s;
     max-height: 0;
   }
   .expander-content {
