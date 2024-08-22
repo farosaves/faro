@@ -172,9 +172,9 @@
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class="m-1" data-tip={cnt} class:dropdown={tags}>
+      <div class="m-1">
         <button
-          class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
+          class="tooltip tooltip-top tooltip-secondary dropdown font-bold kbd bg-base-100"
           on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
           on:contextmenu|preventDefault={onContextMenu(tag)}
           class:opacity-50={$excl(tgc)}
@@ -183,7 +183,11 @@
           >{tag}
         </button>
         {#if tags}
-          <ul class="p-1 dropdown-content z-20 bg-base-300 rounded-box">
+          <!-- style="transition: all 1s" -->
+          <ul
+            class="p-1 z-20 bg-base-300 rounded-box"
+            class:hiddeous={$excl(tgc)}
+            style="transition: all 0.3s; max-height: {38 * tags.length * +!$excl(tgc)}px">
             {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
               {@const [subTag, count] = tc}
               {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
@@ -249,5 +253,10 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+
+  .hiddeous {
+    opacity: 0;
+    overflow: hidden;
   }
 </style>
