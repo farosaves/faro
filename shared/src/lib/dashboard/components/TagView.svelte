@@ -184,27 +184,26 @@
         </button>
         {#if tags}
           <!-- style="transition: all 1s" -->
-          <ul
-            class="p-1 z-20 bg-base-300 rounded-box overflow-y-hidden"
-            class:opacity-0={$excl(tgc)}
-            style="transition: all 0.3s; max-height: {38 * tags.length * +!$excl(tgc)}px">
-            {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
-              {@const [subTag, count] = tc}
-              {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
-              <li>
-                <button
-                  class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
-                  data-tip={count}
-                  on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
-                  on:contextmenu|preventDefault={onContextMenu(subTag)}
-                  class:opacity-50={$excl(E.left(tc))}
-                  class:border-0={$excl(E.left(tc))}>
-                  <!-- class:p-y={$excl(E.left(tc))} -->
-                  {displayedTag}
-                </button>
-              </li>
-            {/each}
-          </ul>
+          <div class="expander" class:expanded={!$excl(tgc)}>
+            <ul class="p-1 z-20 bg-base-300 rounded-box min-h-0 expander-content">
+              {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
+                {@const [subTag, count] = tc}
+                {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
+                <li>
+                  <button
+                    class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
+                    data-tip={count}
+                    on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
+                    on:contextmenu|preventDefault={onContextMenu(subTag)}
+                    class:opacity-50={$excl(E.left(tc))}
+                    class:border-0={$excl(E.left(tc))}>
+                    <!-- class:p-y={$excl(E.left(tc))} -->
+                    {displayedTag}
+                  </button>
+                </li>
+              {/each}
+            </ul>
+          </div>
         {/if}
       </div>
     {:else}
@@ -252,5 +251,24 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+
+  .expander {
+    display: grid;
+    grid-template-rows: 0fr;
+    height: 0;
+    overflow: hidden;
+    transition: grid-template-rows 0.3s;
+  }
+  .expander-content {
+    min-height: 0;
+    visibility: hidden;
+  }
+  .expander.expanded {
+    grid-template-rows: 1fr;
+    height: auto;
+  }
+  .expander.expanded .expander-content {
+    visibility: visible;
   }
 </style>
