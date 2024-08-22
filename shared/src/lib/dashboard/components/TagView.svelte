@@ -185,8 +185,8 @@
         {#if tags}
           <!-- style="transition: all 1s" -->
           <ul
-            class="p-1 z-20 bg-base-300 rounded-box"
-            class:hiddeous={$excl(tgc)}
+            class="p-1 z-20 bg-base-300 rounded-box overflow-y-hidden"
+            class:opacity-0={$excl(tgc)}
             style="transition: all 0.3s; max-height: {38 * tags.length * +!$excl(tgc)}px">
             {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
               {@const [subTag, count] = tc}
@@ -224,9 +224,8 @@
 </div>
 <dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
-    <button
-      class="btn btn-sm btn-circle btn-ghost absolute top-2 top-2"
-      on:click={() => myModal && myModal.close()}>✕</button>
+    <button class="btn btn-sm btn-circle btn-ghost absolute top-2" on:click={() => myModal && myModal.close()}
+      >✕</button>
     <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
     <form class=" ">
       <input class="input input-bordered text-center" type="text" bind:value={newTag} />
@@ -253,10 +252,5 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
-  }
-
-  .hiddeous {
-    opacity: 0;
-    overflow: hidden;
   }
 </style>
