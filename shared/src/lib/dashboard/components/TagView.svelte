@@ -172,20 +172,20 @@
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class="m-1">
+      <div class="m-1 expander-parent">
         <button
-          class="tooltip tooltip-top tooltip-secondary dropdown font-bold kbd bg-base-100"
+          class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
           on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
           on:contextmenu|preventDefault={onContextMenu(tag)}
-          class:opacity-50={$excl(tgc)}
           class:border-0={$excl(tgc)}
+          class:bg-opacity-50={$excl(tgc)}
           data-tip={cnt}
-          >{tag}
+          ><span class:opacity-50={$excl(tgc)}>{tag}</span>
         </button>
         {#if tags}
           <!-- style="transition: all 1s" -->
           <div class="expander" class:expanded={!$excl(tgc)}>
-            <ul class="p-1 z-20 bg-base-300 rounded-box min-h-0 expander-content">
+            <ul class="p-1 bg-base-300 rounded-box min-h-0 expander-content">
               {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
                 {@const [subTag, count] = tc}
                 {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
@@ -256,19 +256,19 @@
   .expander {
     display: grid;
     grid-template-rows: 0fr;
-    height: 0;
     overflow: hidden;
-    transition: grid-template-rows 0.3s;
+    opacity: 0%;
+    transition: all 0.2s ease-in-out;
+    max-height: 0;
   }
   .expander-content {
     min-height: 0;
-    visibility: hidden;
   }
-  .expander.expanded {
+  .expander-parent:focus-within .expander {
     grid-template-rows: 1fr;
-    height: auto;
-  }
-  .expander.expanded .expander-content {
-    visibility: visible;
+    opacity: 100%;
+    overflow: visible;
+    /* HACK */
+    max-height: 500vh;
   }
 </style>
