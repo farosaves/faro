@@ -1,5 +1,5 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
-import { type Database, type SupabaseClient } from "shared"
+import { sleep, type Database, type SupabaseClient } from "shared"
 import { createContext } from "$lib/trpc/context"
 import { router } from "$lib/trpc/router"
 import { createServerClient } from "@supabase/ssr"
@@ -49,7 +49,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       // JWT validation has failed
       return { session: null, user: null }
     }
-    // await sleep(100) // ! what does this do?
+    await sleep(10) // ! what does this do?
     return { session, user }
   }
 

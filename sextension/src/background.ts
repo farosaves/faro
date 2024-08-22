@@ -1,4 +1,4 @@
-import { currTab, getSetSession } from "$lib/utils"
+import { currTab, getSetSession, openTabIfNotOpen } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
@@ -167,7 +167,7 @@ let toks: Awaited<ReturnType<typeof S.my_tokens.query>> = undefined
 const refreshOnline = async () => {
   const newToks = pipe(await TO.tryCatch(S.my_tokens.query)(), O.toUndefined)
   funLog("refresh toks")([toks, newToks])
-  if (newToks?.refreshed) chrome.tabs.create({ url: API_ADDRESS + "/auth/refresh", active: false }) // TODO: open the refresh page
+  if (newToks?.refreshed) openTabIfNotOpen(API_ADDRESS + "/auth/refresh") // , active: false }) // TODO: open the refresh page
 
   // same tokens
   if ((newToks?.access_token == toks?.access_token) && O.isSome(get(sess))) {

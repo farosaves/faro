@@ -61,3 +61,8 @@ export const localize = () => {
   })
   // })
 }
+
+export const openTabIfNotOpen = async (url: string, active = false) => {
+  const tabs = await chrome.tabs.query({ url })
+  tabs.length || chrome.tabs.create({ url, active })
+}
