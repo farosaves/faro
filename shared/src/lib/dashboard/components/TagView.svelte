@@ -172,35 +172,38 @@
 
     {#each $tagsCounts.filter((x) => E.toUnion(x)[0].length > 0) as tgc}
       {@const [tag, cnt, tags] = E.toUnion(tgc)}
-      <div class="m-1" data-tip={cnt} class:dropdown={tags}>
+      <div class="m-1 expander-parent">
         <button
           class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
           on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(tgc) : makeOnly(tgc))}
           on:contextmenu|preventDefault={onContextMenu(tag)}
-          class:opacity-50={$excl(tgc)}
           class:border-0={$excl(tgc)}
+          class:bg-opacity-50={$excl(tgc)}
           data-tip={cnt}
-          >{tag}
+          ><span class:opacity-50={$excl(tgc)}>{tag}</span>
         </button>
         {#if tags}
-          <ul class="p-1 dropdown-content z-20 bg-base-300 rounded-box">
-            {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
-              {@const [subTag, count] = tc}
-              {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
-              <li>
-                <button
-                  class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
-                  data-tip={count}
-                  on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
-                  on:contextmenu|preventDefault={onContextMenu(subTag)}
-                  class:opacity-50={$excl(E.left(tc))}
-                  class:border-0={$excl(E.left(tc))}>
-                  <!-- class:p-y={$excl(E.left(tc))} -->
-                  {displayedTag}
-                </button>
-              </li>
-            {/each}
-          </ul>
+          <!-- style="transition: all 1s" -->
+          <div class="expander" class:expanded={!$excl(tgc)}>
+            <ul class="p-1 bg-base-300 rounded-box min-h-0 expander-content">
+              {#each tags.toSorted(desc( ([t, _c]) => -t.split("/").length, ([_t, c]) => c, )) as tc}
+                {@const [subTag, count] = tc}
+                {@const displayedTag = subTag == tag ? tag : subTag.slice(tag.length)}
+                <li>
+                  <button
+                    class="tooltip tooltip-top tooltip-secondary font-bold kbd bg-base-100"
+                    data-tip={count}
+                    on:click={(e) => (e.shiftKey || isCmd(e) ? toggle(E.left(tc)) : makeOnly(E.left(tc)))}
+                    on:contextmenu|preventDefault={onContextMenu(subTag)}
+                    class:opacity-50={$excl(E.left(tc))}
+                    class:border-0={$excl(E.left(tc))}>
+                    <!-- class:p-y={$excl(E.left(tc))} -->
+                    {displayedTag}
+                  </button>
+                </li>
+              {/each}
+            </ul>
+          </div>
         {/if}
       </div>
     {:else}
@@ -220,9 +223,8 @@
 </div>
 <dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
-    <button
-      class="btn btn-sm btn-circle btn-ghost absolute top-2 top-2"
-      on:click={() => myModal && myModal.close()}>✕</button>
+    <button class="btn btn-sm btn-circle btn-ghost absolute top-2" on:click={() => myModal && myModal.close()}
+      >✕</button>
     <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
     <form class=" ">
       <input class="input input-bordered text-center" type="text" bind:value={newTag} />
@@ -249,5 +251,24 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+
+  .expander {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    opacity: 0%;
+    transition: all 0.2s ease-in-out;
+    max-height: 0;
+  }
+  .expander-content {
+    min-height: 0;
+  }
+  .expander-parent:focus-within .expander {
+    grid-template-rows: 1fr;
+    opacity: 100%;
+    overflow: visible;
+    /* HACK */
+    max-height: 500vh;
   }
 </style>
