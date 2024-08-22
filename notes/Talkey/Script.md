@@ -129,23 +129,36 @@ And everything gets immediately synced with the cloud if you're logged in.
 
 ### V6.5
 Do you have a mess in your bookmarks? Hundreds of open tabs?
-Maybe you think you need to be better organized?
-You don't - what you need is a better tool - and a much better one at that.
-Presenting Faro. It's the simplest solution for managing your online reading.
+Do you think you need to be better organized?
+You don't - what you need is a better tool - a much better one.
+*You don't - you need to get Faro Chrome extension.* (the simplest way to manage online reading)
+Presenting Faro. It's the simplest way to manage your online reading.
 Two features set it apart.
 First: A scrollable feed with all your saves, with taglines by which you remember them.
 Second: A web highlighter, so you can save a piece of the page as tagline.
-Let's say you want to save this page. You find it interesting that it doesn't need to drink, so you highlight and save it as you read it.
-Then, months pass by, and you want to find "the animal that doesn't need to drink in the desert". And you're able to find it - just like this.
+Let's have an example.
+You want to save *this* page. You find it interesting that it doesn't need to drink, so you highlight and save it as you read it.
+Then, months later, you want to find "the animal that doesn't need to drink in the desert". And you're able to find it - just like this.
+-
 The remaining organization essentials, are standard, but solid. Pinning... archiving... and tags... including nested tags. 
-But the best part is: you can use them *later* - because you'll still remember what you saved and why. 
-*So you don't need to worry about organizing while reading*
+But the best part is: you can use them *later* - because you'll still remember what you saved and why. Save first - organize second. Simple, but effective.
 Finally, all data gets synced immediately, so you can access it anywhere.
-Get Faro now, with a free trial of 1000 saves, it doesn't cost you anything to give it a try.
+Get Faro now, with export to bookmarks and a free trial of 1000 saves, it doesn't cost you anything to give it a try.
 Find Faro on Chrome Web Store.
 
 There's also undo and redo making it safe to experiment...
 And everything gets immediately synced with the cloud if you're logged in.
 
-
-
+# V7 - no voiceover
+(pop)
+Mess in your bookmarks?
+100s of open tabs?
+Faro is for you!
+Faro
+Faro smaller, top left 
+(fade)
+Save pages with highlights(slide in from the right)
+/ to highlight tag lines (pan over to sidebar)
+With a scrollable feed (slide in over?)
+And smart(?) tagging
+Faro /(fade) saving pages done right
