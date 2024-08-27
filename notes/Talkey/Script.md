@@ -160,5 +160,10 @@ Faro smaller, top left
 Save pages with highlights(slide in from the right)
 / to highlight tag lines (pan over to sidebar)
 With a scrollable feed (slide in over?)
-And smart(?) tagging
+Intuitive tags
+Text search
+Instant sync??
+*Something about the benefit*
+
 Faro /(fade) saving pages done right
+Get it on chrome webstore
