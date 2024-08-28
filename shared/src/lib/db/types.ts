@@ -140,7 +140,15 @@ export type Database = {
           user_id?: string | null
           where?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mylogs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notes: {
         Row: {
@@ -265,6 +273,29 @@ export type Database = {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]
             isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      redemption_codes: {
+        Row: {
+          assigned_to: string | null
+          code: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          code: string
+        }
+        Update: {
+          assigned_to?: string | null
+          code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemption_codes_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -445,6 +476,10 @@ export type UpdatePartingMsgs = Database["public"]["Tables"]["partingMsgs"]["Upd
 export type Profiles = Database["public"]["Tables"]["profiles"]["Row"]
 export type InsertProfiles = Database["public"]["Tables"]["profiles"]["Insert"]
 export type UpdateProfiles = Database["public"]["Tables"]["profiles"]["Update"]
+
+export type RedemptionCodes = Database["public"]["Tables"]["redemption_codes"]["Row"]
+export type InsertRedemptionCodes = Database["public"]["Tables"]["redemption_codes"]["Insert"]
+export type UpdateRedemptionCodes = Database["public"]["Tables"]["redemption_codes"]["Update"]
 
 export type Saves = Database["public"]["Tables"]["saves"]["Row"]
 export type InsertSaves = Database["public"]["Tables"]["saves"]["Insert"]

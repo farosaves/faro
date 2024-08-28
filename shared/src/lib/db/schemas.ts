@@ -62,6 +62,16 @@ export const cardsUpdateSchema = z.object({
   user_id: z.string().optional(),
 })
 
+export const cardsRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("cards_user_id_fkey"),
+    columns: z.tuple([z.literal("user_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
+
 export const emails2sendRowSchema = z.object({
   created_at: z.string(),
   email: z.string(),
@@ -79,6 +89,8 @@ export const emails2sendUpdateSchema = z.object({
   email: z.string().optional(),
   id: z.number().optional(),
 })
+
+export const emails2sendRelationshipsSchema = z.tuple([])
 
 export const keysRowSchema = z.object({
   created_at: z.string(),
@@ -106,6 +118,16 @@ export const keysUpdateSchema = z.object({
   using_derived: z.boolean().optional(),
   using_stored: z.boolean().optional(),
 })
+
+export const keysRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("keys_user_id_fkey"),
+    columns: z.tuple([z.literal("user_id")]),
+    isOneToOne: z.literal(true),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
 
 export const mylogsRowSchema = z.object({
   created_at: z.string(),
@@ -136,6 +158,16 @@ export const mylogsUpdateSchema = z.object({
   user_id: z.string().optional().nullable(),
   where: z.string().optional(),
 })
+
+export const mylogsRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("mylogs_user_id_fkey"),
+    columns: z.tuple([z.literal("user_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
 
 export const notesRowSchema = z.object({
   context: z.string().nullable(),
@@ -194,6 +226,23 @@ export const notesUpdateSchema = z.object({
   user_note: z.string().optional().nullable(),
 })
 
+export const notesRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("notes_user_id_fkey"),
+    columns: z.tuple([z.literal("user_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+  z.object({
+    foreignKeyName: z.literal("public_notes_source_id_fkey"),
+    columns: z.tuple([z.literal("source_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("sources"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
+
 export const partingMsgsRowSchema = z.object({
   created_at: z.string(),
   id: z.number(),
@@ -211,6 +260,8 @@ export const partingMsgsUpdateSchema = z.object({
   id: z.number().optional(),
   message: z.string().optional(),
 })
+
+export const partingMsgsRelationshipsSchema = z.tuple([])
 
 export const profilesRowSchema = z.object({
   avatar_url: z.string().nullable(),
@@ -242,6 +293,41 @@ export const profilesUpdateSchema = z.object({
   website: z.string().optional().nullable(),
 })
 
+export const profilesRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("profiles_id_fkey"),
+    columns: z.tuple([z.literal("id")]),
+    isOneToOne: z.literal(true),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
+
+export const redemptionCodesRowSchema = z.object({
+  assigned_to: z.string().nullable(),
+  code: z.string(),
+})
+
+export const redemptionCodesInsertSchema = z.object({
+  assigned_to: z.string().optional().nullable(),
+  code: z.string(),
+})
+
+export const redemptionCodesUpdateSchema = z.object({
+  assigned_to: z.string().optional().nullable(),
+  code: z.string().optional(),
+})
+
+export const redemptionCodesRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("redemption_codes_assigned_to_fkey"),
+    columns: z.tuple([z.literal("assigned_to")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
+
 export const savesRowSchema = z.object({
   created_at: z.string(),
   encrypted_data: z.array(z.number()),
@@ -266,6 +352,16 @@ export const savesUpdateSchema = z.object({
   user_id: z.string().optional(),
 })
 
+export const savesRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("saves_user_id_fkey"),
+    columns: z.tuple([z.literal("user_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
+
 export const sourcesRowSchema = z.object({
   created_at: z.string(),
   DOI: z.string().nullable(),
@@ -289,3 +385,5 @@ export const sourcesUpdateSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional().nullable(),
 })
+
+export const sourcesRelationshipsSchema = z.tuple([])
