@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { funLog, sessStore } from "shared"
+  import { sessStore } from "shared"
   import { option as O } from "fp-ts"
   import { page } from "$app/stores"
   import { trpc } from "$lib/trpc/client.js"
@@ -31,6 +31,9 @@
   onMount(async () => {
     const { data } = await supabase.auth.getSession()
     if (data) sessStore.set(O.fromNullable(data.session))
+    supabase.auth.onAuthStateChange((_event, session) => {
+      sessStore.set(O.fromNullable(session))
+    })
   })
 </script>
 
@@ -53,8 +56,12 @@
       {:else if redemptionStatus === "code update failed"}
         Database error. Retry or write to pawel@farosaves.com
       {:else if redemptionStatus === "bad code"}
-        Either invalid code or already used. <br /> If this is wrong, write to pawel@farosaves.com
+        Either invalid code or already used.
+        <span class="text-lg">If this is wrong, write to pawel@farosaves.com</span>
       {/if}
+    {:else}
+      Thanks for your purchase!<span class="text-lg">Log in first & come back here:</span>
+      <a class="btn btn-lg btn-primary" href="/account/login" target="_blank">Click here</a>
     {/if}
   </div>
 </div>
