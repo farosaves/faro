@@ -304,18 +304,29 @@ export const profilesRelationshipsSchema = z.tuple([
 ])
 
 export const redemptionCodesRowSchema = z.object({
+  assigned_to: z.string().nullable(),
   code: z.string(),
 })
 
 export const redemptionCodesInsertSchema = z.object({
+  assigned_to: z.string().optional().nullable(),
   code: z.string(),
 })
 
 export const redemptionCodesUpdateSchema = z.object({
+  assigned_to: z.string().optional().nullable(),
   code: z.string().optional(),
 })
 
-export const redemptionCodesRelationshipsSchema = z.tuple([])
+export const redemptionCodesRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("redemption_codes_assigned_to_fkey"),
+    columns: z.tuple([z.literal("assigned_to")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("users"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+])
 
 export const savesRowSchema = z.object({
   created_at: z.string(),

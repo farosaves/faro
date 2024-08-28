@@ -280,15 +280,26 @@ export type Database = {
       }
       redemption_codes: {
         Row: {
+          assigned_to: string | null
           code: string
         }
         Insert: {
+          assigned_to?: string | null
           code: string
         }
         Update: {
+          assigned_to?: string | null
           code?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "redemption_codes_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saves: {
         Row: {
