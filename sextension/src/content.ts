@@ -173,6 +173,8 @@ setTimeout(onLoad, 500) // wait half a second
 setTimeout(onLoad, 1000) // wait half a second
 setTimeout(onLoad, 2000) // wait a second
 setTimeout(onLoad, 5000) // wait 3 second
+setTimeout(onLoad, 10000) // wait 5 second again
+setTimeout(onLoad, 15000) // wait 5 second again
 
 let promptOpen = false
 window.addEventListener("keydown", async (e) => {
