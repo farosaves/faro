@@ -4,7 +4,7 @@ import { initTRPC } from "@trpc/server"
 import z from "zod"
 // import { add_card } from "./api/cards"
 import { createClient } from "@supabase/supabase-js"
-import { sbLogger, warnIfError, type Database } from "shared"
+import { funLog, sbLogger, typeCast, warnIfError, type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 import { SERVICE_ROLE_KEY, TIMESTAMP_SALT } from "$env/static/private"
 import { subtle } from "node:crypto"
@@ -23,7 +23,25 @@ const tokens = z.object({
 // funLog2(sbLogger(serviceSb))("digest")(
 const digest = async (str: string) => Array.from(new Int32Array(await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
 
+export type RedeemCodeErrors = "no user" | "bad code" | "code update failed" | null //  | "code already assigned"
+
 export const router = t.router({
+  redeemCode: t.procedure.input(z.object({ code: z.string() })).output(typeCast<{ error: RedeemCodeErrors }>).mutation(
+    async ({ input: { code }, ctx: { locals: { safeGetSession } } }) => {
+      const user_id = (await safeGetSession())?.user?.id
+      if (!user_id) return { error: "no user" }
+      const { data } = await serviceSb.from("redemption_codes").select("*").eq("code", code).maybeSingle()
+      if (!data) return { error: "bad code" }
+      if (data.assigned_to) return { error: "bad code" }
+      const { error } = await serviceSb.from("redemption_codes").update({ assigned_to: user_id }).eq("code", code).single()
+
+      if (error) {
+        funLog("redeemCode")(error)
+        return { error: "code update failed" }
+      }
+      return { error: null }
+    }),
+
   my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
     let { session } = await locals.safeGetSession()
 
