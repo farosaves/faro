@@ -18,7 +18,7 @@
     const storedSess = get(sessStore)
     let sess: Session | null | undefined
     if (O.isNone(storedSess)) {
-      const toks = await T.my_tokens.query()
+      const toks = await T.my_tokens.query({ eagerRefresh: true })
       sess = toks && (await supabase.auth.setSession(toks)).data.session
     } else {
       sess = storedSess.value
