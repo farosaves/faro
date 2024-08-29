@@ -30,7 +30,7 @@
       <h1 class="py-8 text-5xl font-bold">Welcome onboard!</h1>
       {#if !email}
         <h2 class="pt-8 text-xl font-semibold">
-          <a href="/account/login" target="_blank" class="btn btn-sm btn-primary">Log in</a><br />
+          <a href="/account/login" target="_blank" class="btn btn-sm btn-primary">Log in</a>
           If you want to sync
         </h2>
         <p class="pb-8 font-medium">
