@@ -42,18 +42,19 @@ export const router = t.router({
       return { error: null }
     }),
 
-  my_tokens: t.procedure.output(z.optional(tokens)).query(async ({ ctx: { locals } }) => {
-    let { session } = await locals.safeGetSession()
+  my_tokens: t.procedure.input(typeCast<{ eagerRefresh: boolean } | undefined>).output(z.optional(tokens)).query(
+    async ({ ctx: { locals }, input }) => {
+      let { session } = await locals.safeGetSession()
 
-    if (session && session.expires_in < 900)
-      ({ data: { session } } = await locals.supabase.auth.refreshSession())
-    if (session) {
-      const { access_token, refresh_token } = session
+      if (session && input?.eagerRefresh && session.expires_in < 2700)
+        ({ data: { session } } = await locals.supabase.auth.refreshSession())
+      if (session) {
+        const { access_token, refresh_token } = session
 
-      return { access_token, refresh_token }
-    }
-    return
-  }),
+        return { access_token, refresh_token }
+      }
+      return
+    }),
   // singleNoteBySnippetId: t.procedure.input(z.string()).query(async ({ input }) =>
   //   await serviceSb.from("notes").select("*").eq("snippet_uuid", input).single()),
   singleNote: t.procedure.input(z.string()).query(async ({ input }) =>
