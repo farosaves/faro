@@ -214,15 +214,13 @@
           </div>
         </div>
 
-        <!-- <div class="collapse collapse-arrow">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium text-left">How much does it cost?</div>
-      <div class="collapse-content">
-        Right now the beta is free. <br />As long as you sign up during beta you'll forever have the option
-        to buy lifetime access for $10 on
-        <a class="underline" href="https://ko-fi.com/farosapp">kofi</a>.<br />
-      </div>
-    </div> -->
+        <div class="collapse collapse-arrow">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium text-left">Pricing</div>
+          <div class="collapse-content">
+            The first 1000 saves is free. For more it's going to be $15 for life on AppSumo.
+          </div>
+        </div>
       </div>
     </div>
   </div>
