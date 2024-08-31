@@ -1,11 +1,14 @@
 import { trpc } from "$lib/trpc/client"
 import * as cheerio from "cheerio/lib/slim"
-import { API_ADDRESS, getOrElse, host, note_idKey } from "shared"
+import { API_ADDRESS, getOrElse, host, note_idKey, uuidRegex } from "shared"
 
 
 const T = trpc({ url: { origin: API_ADDRESS } })
 export const GET = async ({ params }) => {
   const { note_id } = params
+  if (!uuidRegex.test(note_id))
+    return new Response(null, { status: 302, headers: { Location: "/" } })
+
   const { data, error } = await T.singleNote.query(note_id)
   // const myString = (data?.quote) ? `window.location.href = "${data.url.split("#")[0]}#:~:text=${encodeURIComponent(data.quote)}"` : ""
   const pageUrl = data?.url
