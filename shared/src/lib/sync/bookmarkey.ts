@@ -65,7 +65,7 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
     A.map(O.fromNullable),
     A.compact,
   )
-  A.difference(MBEq)(desired, present).forEach(b =>
+  A.difference(MBEq)(desired, present).filter(({ url }) => isFaroUrl(url)).forEach(b =>
     chrome.bookmarks.create({ parentId: faroFolder.id, ...b }),
   )
   const isFaroUrl = (url: string) => uuidRegex.test(url.split("#_").at(-1) || "")
