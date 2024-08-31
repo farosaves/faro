@@ -23,13 +23,14 @@
 
 <div class="navbar z-30 h-20 relative" bind:this={navDiv}>
   <div class="navbar-start">
-    <a class="btn btn-ghost text-xl mont dark:text-yellow-100" href="/"><b>Faro</b></a>
+    <a class="btn btn-ghost text-xl mont dark:text-yellow-100" title="Main page" href="/"><b>Faro</b></a>
   </div>
   <div class="navbar-center">
     <ul class="menu menu-horizontal px-1 text-xl font-semibold">
       <li>
         <a
           href="/dashboard"
+          title="Go to your dashboard"
           on:click={() => scrollParent(navDiv.getBoundingClientRect().bottom)}
           data-umami-event="Nav DB">Dashboard</a>
       </li>

@@ -1,6 +1,6 @@
 <script>
   import { scrolled } from "$lib/utils"
-  import { altKey, funLog, hasExtensionStore, replacer, sessStore } from "shared"
+  import { altKey, API_ADDRESS, hasExtensionStore, sessStore } from "shared"
   import { onMount } from "svelte"
   import { fade } from "svelte/transition"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
@@ -22,9 +22,13 @@
 
 <svelte:head>
   <title>Faro - Saving links done right - save with highlighted taglines</title>
+  <meta property="og:url" content={API_ADDRESS} />
+  <meta property="og:title" content="Faro Browser Extension" />
+  <meta property="og:type" content="website" />
   <meta
     name="description"
-    content="Save website links for later with Faro browser extension. Highlight, save & organize. " />
+    content="Save website links for later with Faro browser extension - a cross of bookmark manager and web highlighter.
+    Organize with tags and search for easy access." />
 </svelte:head>
 
 <div class="h-screen-minus-80 flex flex-col xl:flex-row w-full pb-20 relative py-2">
@@ -33,10 +37,10 @@
       <div class="w-full">
         <div class="flex flex-col w-full">
           <div class="flex flex-col h-28 w-full text-center xl:text-left justify-around md:justify-between">
-            <h2 class="text-5xl font-bold pb-4">Saving pages done right</h2>
-            <h3 class="lg:text-3xl sm:text-xl font-bold text-gray-700 dark:text-gray-400">
+            <h1 class="text-5xl font-bold pb-4">Saving pages done right</h1>
+            <h2 class="lg:text-3xl sm:text-xl font-bold text-gray-700 dark:text-gray-400">
               Ditch bookmark chaos and 100s of open tabs
-            </h3>
+            </h2>
             <!-- <a class="btn btn-primary" href="login">Sign up</a> -->
             <!-- For those who love learning, but have too many interests to keep track of. -->
           </div>
@@ -161,7 +165,7 @@
   </div>
 </div>
 <!-- End Icon Blocks -->
-<div class="flex justify-center items-center h-[25rem] w-full mt-20 pb-32 relative">
+<div class="flex justify-center items-center h-min-[30rem] w-full mt-20 pb-32 relative">
   <div
     class="text-5xl font-bold mt-3 pt-3 top-0 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2">
     FAQ's
@@ -180,6 +184,20 @@
         <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
       </div>
     </div> -->
+        <div class="collapse collapse-arrow">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium text-left">Why is it better than bookmarks?</div>
+          <div class="collapse-content">
+            With bookmarks (and pocket etc.) after you save a page it's hard to remember what it's about. <br />
+            You <i class="italic">could</i> make custom notes for your bookmarks and put them in Notion or
+            Obisidian, but it's <i class="italic">too much effort</i>.<br />
+            Taglines in Faro require the <i class="italic">least effort</i> - just two clicks of the text
+            you're reading already.<br />
+            You don't need to make elaborate folders etc.. If you want to organize them later, it's easy, because
+            you remember the pages.
+          </div>
+        </div>
+
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Where is it available?</div>
