@@ -135,13 +135,17 @@ Chaos in your bookmarks? Can't find what you want? They end up gathering dust? O
 
 Faro is made to fix that! Use it to save pages.
 
-The main difference is that when saving, you highlight a sentence to act as a tagline. It helps you remember what the page is about and why you saved it. Usually it's just the sentence you read that made you want to save it, so 0 extra effort required.
+When saving, you highlight a sentence to act as a tagline. It helps you remember what the page is about and why you saved it. Usually it's just the one you read that made you want to save, so 0 extra effort required.
 
-All saves appear on your dashboard. They come most-recent-first by default, so you don't forget what you saved most recently. You can also pin & archive to further manipulate it.
+All saves appear on your dashboard. They come most-recent-first by default, so you don't forget what you recently saved. You can pick up your reading where you left off - no need for a separate reading list. You can also pin & archive to further arrange it.
 
-Organize them with tags. Since you're reminded what you saved and why, you can do it later. It's MUCH easier to manage your saves after some time, compared to bookmarks.
+Organize them with tags. Since you're reminded what you saved and why, you can do it later. It's MUCH easier to manage your saves, compared to bookmarks. It includes nested tags (like in Obsidian). 
 
+Clicking a save takes you right back to your highlight - useful for longer articles, esp. when you left reading partway through.
 
+Also:
+➣ export to bookmarks to keep them if you uninstall Faro
+➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.
 
 %% 
 
