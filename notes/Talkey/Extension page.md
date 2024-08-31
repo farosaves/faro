@@ -129,3 +129,33 @@ So you can:
 Also:
 ➣ export to bookmarks to keep them if you uninstall Faro
 ➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.
+
+## V7 
+Chaos in your bookmarks? Can't find what you want? They end up gathering dust? Or you don't even try and end up with 100s of open tabs?
+
+Faro is made to fix that! Use it to save pages.
+
+The main difference is that when saving, you highlight a sentence to act as a tagline. It helps you remember what the page is about and why you saved it. Usually it's just the sentence you read that made you want to save it, so 0 extra effort required.
+
+All saves appear on your dashboard. They come most-recent-first by default, so you don't forget what you saved most recently. You can also pin & archive to further manipulate it.
+
+Organize them with tags. Since you're reminded what you saved and why, you can do it later. It's MUCH easier to manage your saves after some time, compared to bookmarks.
+
+
+
+%% 
+
+
+You can:
+➣ remember easily what the page is about
+➣ search by text
+➣ get back to where you were in text without scrolling
+
+They're presented in a dashboard with a scrollable Pinterest-like feed.
+So you can:
+➣ check what you saved recently
+➣ organize your saves with tags later %%
+
+Also:
+➣ export to bookmarks to keep them if you uninstall Faro
+➣ copy links to highlights and share them or paste into Notion, Obsidian, etc.

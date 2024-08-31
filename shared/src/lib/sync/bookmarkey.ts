@@ -65,10 +65,11 @@ export const syncBookmarks = async (notes: NoteEx[]) => {
     A.map(O.fromNullable),
     A.compact,
   )
-  A.difference(MBEq)(desired, present).forEach(b =>
+  // funLog("diff")([desired, present])
+  const isFaroUrl = (url: string) => uuidRegex.test(url.split("#_").at(-1) || "")
+  A.difference(MBEq)(desired, present).filter(({ url }) => isFaroUrl(url)).forEach(b =>
     chrome.bookmarks.create({ parentId: faroFolder.id, ...b }),
   )
-  const isFaroUrl = (url: string) => uuidRegex.test(url.split("#_").at(-1) || "")
   A.difference(MBEq)(present, desired).filter(({ url }) => isFaroUrl(url)).forEach(b =>
     chrome.bookmarks.remove(unsafeBookmark2Id(faroFolder)(b)),
   )
