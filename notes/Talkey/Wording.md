@@ -160,3 +160,10 @@ Yeah, I know.
 
 ### AppSumo
 Faro is a chrome extension to 
+
+
+### What is the purpose of your extension? Describe the value that it provides to Chrome users
+
+The purpose of Faro is to help Chrome users manage their saved pages more effectively, reducing clutter and making it easier to find what they need. It allows users to save pages with a highlighted sentence that serves as a tagline, to easily remember why they saved the page in the first place.
+
+This makes it easy to e.g. update tags later, removes the need for a separate reading list, and allows saving longer articles multiple times when they have multiple points worth remembering and going back to.
