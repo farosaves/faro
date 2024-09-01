@@ -114,7 +114,7 @@
                   target="_blank"
                   title={title.replaceAll(/<\/?b[^>]*>/g, "")}
                   href={note_group[0].url}
-                  class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-20 p-1"
+                  class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-[5.5rem] p-1"
                   >{@html title}</a>
                 <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">
                   {#each note_group as note, i (note.id)}
