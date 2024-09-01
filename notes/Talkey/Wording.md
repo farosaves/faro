@@ -167,3 +167,11 @@ Faro is a chrome extension to
 The purpose of Faro is to help Chrome users manage their saved pages more effectively, reducing clutter and making it easier to find what they need. It allows users to save pages with a highlighted sentence that serves as a tagline, to easily remember why they saved the page in the first place.
 
 This makes it easy to e.g. update tags later, removes the need for a separate reading list, and allows saving longer articles multiple times when they have multiple points worth remembering and going back to.
+
+
+Saving articles for later: Highlight a key sentence and save the page to easily find and return to it later.
+Organizing research: Use tags to categorize and structure your saves, making it easy to find related pages and keep your research organized.
+Saving inspiration and ideas: Capture the essence of a page with a highlighted sentence and easily find it later for inspiration or reference.
+
+
+4. **Sharing and collaborating**: Export saves to bookmarks or copy links to highlights to share with others.
