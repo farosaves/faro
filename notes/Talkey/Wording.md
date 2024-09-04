@@ -34,11 +34,10 @@ Normally you'd:
 ### V2 moved to ext page
 
 ## V3 - show hn
-Show HN: chrome ext for managing reading - web clipper meets bookmark manager
+Show HN: Chrome extension for saving pages - web clipper meets bookmark manager
 
-When you're reading online and come across something you'd like to be able to revisit later there's no really good option of saving it.
-The extension is designed to make revisiting as easy as possible.
-More info on the web store page: https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo
+I was working on an AI flashcard app and in the card browser I added a functionality to open the page. I've started using it for saving pages (like bookmarks), and it worked way better. Ended up with just saving highlighted text, no AI now.
+
 
 
 
