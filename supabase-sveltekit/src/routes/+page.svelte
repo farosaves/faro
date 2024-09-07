@@ -235,7 +235,9 @@
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Pricing</div>
           <div class="collapse-content">
-            The first 1000 saves is free. For more it's going to be $15 for life on AppSumo.
+            The first 1000 saves are free.<br /> I'm planning to do $10 for life for unlimited saves. It's not
+            implemented yet, so right now there is no limit.
+            <!-- For more it's going to be $15 for life on AppSumo. -->
           </div>
         </div>
       </div>

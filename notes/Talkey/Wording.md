@@ -34,10 +34,21 @@ Normally you'd:
 ### V2 moved to ext page
 
 ## V3 - show hn
-Show HN: Chrome extension for saving pages - web clipper meets bookmark manager
+Show HN: Chrome extension for saving links - bookmark manager ⨯ web highlighter
 
-I was working on an AI flashcard app and in the card browser I added a functionality to open the page. I've started using it for saving pages (like bookmarks), and it worked way better. Ended up with just saving highlighted text, no AI now.
 
+
+I was working on an AI flashcard app and in the card browser I added a functionality to open the page. Then I've randomly started using it for saving pages (like bookmarks), and it worked way better. Removed the AI, and now it's just saving the highlighted text to be the tagline.
+
+So it works because a generic tagline, like page description, is usually not specific enough. But writing a full note for each save would be too much effort. So highlighting the snippet is the best compromise here - it's just enough context to remember what the page is.
+#### PH
+
+Faro - saving pages done right
+
+I'd love feedback - would you need it? Do you know teams/orgs that would be interested in such product? 
+%% I can  open-source it, add self-hosting & team-oriented features.  %%
+
+I was working on an AI flashcard app and in the card browser I added a functionality to open the page. Then I've randomly started using it for saving pages (like bookmarks), and it worked way better. Removed the , andnd now it's just saving the highlighted text to be the tagline.
 
 
 
@@ -173,4 +184,18 @@ Organizing research: Use tags to categorize and structure your saves, making it 
 Saving inspiration and ideas: Capture the essence of a page with a highlighted sentence and easily find it later for inspiration or reference.
 
 
-4. **Sharing and collaborating**: Export saves to bookmarks or copy links to highlights to share with others.
+### V8 - Show HN
+
+Title: Faro - Save pages with highlighted tag lines - Bookmark manager ⨯ web highlighter
+
+Another attempt at bookmark manager, I know... what makes this one is different is that you highlight a piece of the page to be a tagline for it. Raindrop supports optional highlights, but it's just one feature among many. Here all saves are with highlights, and the whole app is designed around it.
+
+It works because a generic tagline, like a page description, is usually not specific enough. On the other hand, writing a full note for each save would be too much effort. So highlighting the snippet is the best compromise here - it's just enough context to remember the page.
+
+I was working on an AI flashcard app and it had a card explorer. While working on it, I've repurposed the explorer as bookmarks alternative and here it is, ~completed.
+
+You don't need to sign up, it will work 100% locally, an account is needed for sync. So if bookmark chaos or 100s of open tabs are your problem, please try it out :)
+
+
+
+Then I've randomly started using it for saving pages (like bookmarks), and it worked way better. Removed the AI, and now it's just saving the highlighted text to be the tagline.
