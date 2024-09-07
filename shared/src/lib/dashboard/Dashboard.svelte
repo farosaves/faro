@@ -106,7 +106,7 @@
           {#each $note_groupss[priority] as [title, note_group]}
             <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
               <div
-                class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 my-2 sm:mx-2">
+                class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 my-2 sm:mx-1">
                 <!-- style="max-width: {$layoutey.noteWidth * note_group.length + 4}px;
                 min-width: {$layoutey.noteWidth + 2}px" -->
                 <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
