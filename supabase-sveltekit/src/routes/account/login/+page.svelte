@@ -24,7 +24,7 @@
   <title>Faro - Login</title>
 </svelte:head>
 
-<div class="flex justify-center h-screen-minus-240">
+<div class="flex justify-center" style="min-height: calc(100vh - 280px)">
   <div class="w-64 my-4">
     <Auth
       {supabaseClient}
