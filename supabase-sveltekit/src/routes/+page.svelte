@@ -76,8 +76,7 @@
     <div class="h-1/2 px-3 pb-20">
       <iframe
         loading="lazy"
-        width="560"
-        height="315"
+        class="embed"
         src="https://www.youtube.com/embed/ITR1xloUslE?si=NU5A-8O2ZDpBwY1N"
         title="YouTube video player"
         frameborder="0"
@@ -109,7 +108,7 @@
   <div class=" mt-12 w-full flex flex-col lg:flex-row items-center justify-center lg:items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
-    <div class=" w-1/2 lg:w-1/3 m-3">
+    <div class=" w-4/5 lg:w-1/3 m-3">
       <div
         class=" relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <IconHighlighter width="28" class="flex-shrink-0 size-6 text-black dark:text-white" />
@@ -126,7 +125,7 @@
     <!-- End Icon Block -->
 
     <!-- Icon Block -->
-    <div class="w-1/2 lg:w-1/3 m-3">
+    <div class="w-4/5 lg:w-1/3 m-3">
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <IconClipboard width="28" class="flex-shrink-0 size-6 text-black dark:text-white" />
@@ -144,7 +143,7 @@
     <!-- End Icon Block -->
 
     <!-- Icon Block -->
-    <div class="w-1/2 lg:w-1/3 m-3">
+    <div class="w-4/5 lg:w-1/3 m-3">
       <div
         class="relative flex justify-center items-center size-12 rounded-xl before:absolute before:-inset-px before:-z-[1] before:bg-gradient-to-br before:from-blue-600 before:via-transparent before:to-violet-600 before:rounded-xl dark:bg-neutral-900">
         <IconSearch width="28" class="flex-shrink-0 size-6 text-black dark:text-white" />
@@ -172,7 +171,7 @@
   </div>
   <div class=" w-full lg:w-4/6 h-full">
     <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
-      <div class="w-full rounded-2xl">
+      <div class="rounded-2xl" style="width: 90%">
         <!-- <div class="collapse collapse-arrow">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
@@ -190,8 +189,8 @@
           <div class="collapse-content">
             With bookmarks (and pocket etc.) after you save a page it's hard to remember what it's about. <br />
             You <i class="italic">could</i> make custom notes for your bookmarks and put them in Notion or
-            Obisidian, but it's <i class="italic">too much effort</i>.<br />
-            Taglines in Faro require the <i class="italic">least effort</i> - just two clicks of the text
+            Obisidian, but it's <i class="italic">too much</i> effort.<br />
+            Taglines in Faro require the <i class="italic">least</i> effor - just two clicks of the text
             you're reading already.<br />
             You don't need to make elaborate folders etc.. If you want to organize them later, it's easy, because
             you remember the pages.
@@ -204,8 +203,8 @@
           <div class="collapse-content">
             It's on <a
               href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo"
-              class="underline">chrome webstore</a
-            >(desktop only for now).<br />
+              class="underline">chrome webstore</a>
+            (desktop only for now).<br />
             Can do Firefox easily so <a href="/contact" class="underline">let us know if interested</a>.
           </div>
         </div>
@@ -221,7 +220,7 @@
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">How do I use it?</div>
           <div class="collapse-content">
-            <ul class="list-disc text-nowrap w-min text-left">
+            <ul class="list-disc text-left ml-4">
               <li class="list-item">Select text</li>
               <li class="list-item">
                 Press <kbd class="kbd">{altKey}</kbd> + <kbd class="kbd">X</kbd> <br />
@@ -236,7 +235,9 @@
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Pricing</div>
           <div class="collapse-content">
-            The first 1000 saves is free. For more it's going to be $15 for life on AppSumo.
+            The first 1000 saves are free.<br /> I'm planning to do $10 for life for unlimited saves. It's not
+            implemented yet, so right now there is no limit.
+            <!-- For more it's going to be $15 for life on AppSumo. -->
           </div>
         </div>
       </div>
@@ -257,3 +258,17 @@
   </div>
   -->
 </div>
+
+<style>
+  .embed {
+    /* position: absolute; */
+    top: 0;
+    left: 0;
+    width: 96vw;
+    height: 54vw;
+    max-width: 560px;
+    max-height: 315px;
+    /* min-width: 560px;
+    min-height: 315px; */
+  }
+</style>
