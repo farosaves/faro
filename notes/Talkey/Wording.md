@@ -199,3 +199,42 @@ You don't need to sign up, it will work 100% locally, an account is needed for s
 
 
 Then I've randomly started using it for saving pages (like bookmarks), and it worked way better. Removed the AI, and now it's just saving the highlighted text to be the tagline.
+
+## V9 reddit
+
+Another attempt at bookmark manager, I know... what makes Faro different is that you highlight a piece of the page to be a tagline for it. Raindrop supports optional highlights, but it's just one feature among many. Here all saves are with highlights, and the whole app is designed around it.
+
+You don't need to sign up, it will work 100% locally, an account is needed for sync. So if bookmark chaos or 100s of open tabs are your problem, [please try it out](https://chromewebstore.google.com/detail/faro/pdndbnolgapjdcebajmgcehndggfegeo) :)
+
+It works because a generic tagline, like a page description, is usually not specific enough. On the other hand, writing a full note for each save would be too much effort. So highlighting is the best compromise here - it's just enough context to remember the page.
+
+#### V 9.5 madewithsvelte
+Yet another attempt at bookmark manager. What makes Faro different is that you highlight a piece of the page to be a tagline. It works because a generic tagline, like a page description, is not specific enough. But writing a full note for each save would be too much effort. So highlighting is the best compromise here - very little effort, but you remember saves 90% of the time.
+
+Everything is done with Svelte. 
+It's made as a monorepo with:
+A shared folder of components used both by the web app and the extension.
+A SvelteKit web app.
+A Svelte+Vite extension with crxjs
+
+Supabase is used for the backend.
+
+### V9.6 sideproject
+I made an extension for saving online reading. 
+
+Faro is a tool for saving pages. I know there's plenty already.
+What's unique here is that you highlight tag lines for saves - it helps you remember pages, and is much less effort than writing a note. 
+Later, you can organize them with tags - you can nest tags like `tag/subTag` so it combines the best of tags and folders.
+
+You don't need to sign up, it works 100% locally, an account is needed for sync. 
+
+I'd love to get feedback. I built it for myself, and don't know yet what kind of people would be interested in it.
+
+#### Again
+
+I was working on an AI flashcard app and it had a card explorer. While working on it, I've started using the explorer instead of bookmarks. I liked it so much I thought some people might like it too, so here it is, ~completed.
+
+It's really not catching on, though. Maybe the benefit of using it is hard to convey? It's the first time I have to market anything.
+
+
+repurposed the explorer as bookmarks alternative and here it is, ~completed.
