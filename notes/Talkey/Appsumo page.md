@@ -25,11 +25,11 @@ Describe each feature in 3 to 5 sentences. Each feature should have room to brea
 
 
 # SourceForge
-Faro is a browser extension that combines a web highlighter and a bookmark manager. 
+Faro is a browser extension to save pages with highlighted taglines. Thus, it combines a bookmark manager with web highlighter.
 
-With Faro, when saving a page, you highlight a sentence to act as a tagline. Usually it's just the sentence you read that made you want to save it, so 0 extra effort required.
+When saving a page, you highlight a sentence to act as a tagline. Usually it's just the sentence you read that made you want to save it, so no extra effort required.
 
 All saves appear on your dashboard. They come most-recent-first by default, so you don't forget what you saved most recently. You can also pin & archive to further manipulate it.
 
-They are organized with tags. Since you're reminded what you saved and why, you can do it later. It's much easier to manage your saves after some time, compared to bookmarks.
+They are organized with tags. Since you're reminded what you saved and why, you can assign tags later. It's much easier to manage your saves after some time, compared to bookmarks.
 
