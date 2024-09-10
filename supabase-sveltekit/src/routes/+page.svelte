@@ -187,13 +187,13 @@
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Why is it better than bookmarks?</div>
           <div class="collapse-content">
-            With bookmarks (and pocket etc.) after you save a page it's hard to remember what it's about. <br />
+            With bookmarks after you save a page it's hard to remember what it's about. <br />
             You <i class="italic">could</i> make custom notes for your bookmarks and put them in Notion or
             Obisidian, but it's <i class="italic">too much</i> effort.<br />
-            Taglines in Faro require the <i class="italic">least</i> effor - just two clicks of the text
-            you're reading already.<br />
+            Taglines in Faro require the <i class="italic">least</i> effort - just two clicks to higlight the
+            text you're reading already.<br />
             You don't need to make elaborate folders etc.. If you want to organize them later, it's easy, because
-            you remember the pages.
+            you remember the pages, and tags are more flexible.
           </div>
         </div>
 

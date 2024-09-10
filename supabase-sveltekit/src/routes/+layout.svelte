@@ -61,6 +61,9 @@
 
           <ul
             class="flex flex-wrap items-center mb-3 text-sm font-medium text-gray-800 sm:mb-0 dark:text-gray-400">
+            <!-- <li>
+              <a href="/about" class="hover:underline me-4 md:me-6">About</a>
+            </li> -->
             <li>
               <a href="/legal/tos" class="hover:underline me-4 md:me-6">Terms of Service</a>
             </li>

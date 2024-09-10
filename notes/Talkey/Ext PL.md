@@ -32,3 +32,4 @@ Jedyne informacje, które kiedykolwiek są przesyłane (po zalogowaniu), gdy uż
 Rozszerzenie śledzi również aktualnie otwartą kartę dla każdego okna — aby aktualizować pasek boczny podczas nawigacji — ale nie zapisuje ani nie przesyła tych danych.
 
 
+``
