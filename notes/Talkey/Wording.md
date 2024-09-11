@@ -236,5 +236,22 @@ I was working on an AI flashcard app and it had a card explorer. While working o
 
 It's really not catching on, though. Maybe the benefit of using it is hard to convey? It's the first time I have to market anything.
 
+#### Again 
 
-repurposed the explorer as bookmarks alternative and here it is, ~completed.
+I'm surprised I thought it was a good idea
+
+Anyone else in the same boat?
+
+I wasn't intending on starting something, but I was solving my own problem and kinda kept polishing the product along the way.
+I know that the space is crowded
+
+## V10 show HN
+
+I made a tool to save links instead of browser bookmarks
+
+I know, it's yet another one. I'm surprised I ended up creating one myself. 
+What happened is, I was working on an AI flashcard extension, which had a card explorer, and ended up using the explorer instead of bookmarks. So I got rid of all the AI and flashcards and ended up with this.
+
+It worked well enough for me to keep using and polishing it over the course of 9 months, so now's the time to share it. Maybe some of you would find it useful too.
+
+

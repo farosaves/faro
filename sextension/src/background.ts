@@ -226,7 +226,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, _tab) => {
 })
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
-  const tab = await chrome.tabs.get(tabId)
+  const tab = await currTab()
+  if (!tab) throw new Error("unreachable")
   updateRefresh(tab)
   if (homeRegexp.test(tab.url || ""))
     chrome.sidePanel.setOptions({ enabled: false }).then(() => chrome.sidePanel.setOptions({ enabled: true }))
