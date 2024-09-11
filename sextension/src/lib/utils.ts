@@ -61,19 +61,19 @@ export const localize = () => {
   // })
 }
 
-const handleRuntimeError = () => {
-  const error = chrome.runtime.lastError
-  if (error)
-    throw new Error(error.message)
-}
+// const handleRuntimeError = () => {
+//   const error = chrome.runtime.lastError
+//   if (error)
+//     throw new Error(error.message)
+// }
 
-export const safeGetTab = async (tabId: number) => {
-  const tab = await chrome.tabs.get(parseInt(tabId))
-  try {
-    handleRuntimeError()
-    return tab
-  } catch (e) {
-    console.log("safeGetTab", e.message)
-  }
-  return {}
-}
+// export const safeGetTab = async (tabId: number) => {
+//   const tab = await chrome.tabs.get(parseInt(tabId))
+//   try {
+//     handleRuntimeError()
+//     return tab
+//   } catch (e) {
+//     console.log("safeGetTab", e.message)
+//   }
+//   return {}
+// }
