@@ -7,9 +7,10 @@
   import { option as O, taskOption as TO } from "fp-ts"
   import { DEBUG, Dashboard, NoteSync, chainN, funLog, sessStore, windowActive } from "shared"
   import { onMount } from "svelte"
-  import { get } from "svelte/store"
+  import { derived, get } from "svelte/store"
   const T = trpc()
   const noteSync = new NoteSync(supabase, undefined, T.online.query)
+  const hasNotes = derived(noteSync.noteStore, (ns) => ns.size > 0)
   let showLoginPrompt = false
   const extId = DEBUG ? "iigdnlokbommcbpkhlafbkhgpbmeagfl" : "???"
 
@@ -38,5 +39,6 @@
   on:focus={noteSync.refresh}
   on:focus={() => ($windowActive = true)}
   on:blur={() => ($windowActive = false)} />
-<LoginPrompt {showLoginPrompt} />
+<LoginPrompt {showLoginPrompt} hasNotes={$hasNotes} />
+
 <Dashboard {noteSync} />
