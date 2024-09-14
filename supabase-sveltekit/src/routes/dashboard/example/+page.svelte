@@ -26,13 +26,10 @@
         "64ba8738-2d05-48f6-9395-7019deff2ec4",
       ])
     ).data
+    window.umami.track("example dashboard open")
     if (!notes) return
     mock.notes = new Map(notes.map((n) => [n.id, n]))
     const srcs = (await T.multipleSources.query(notes.map((n) => n.source_id))).data || []
-    // this.stuMapStore.update((ss) => {
-    //   nss.forEach(s => ss.set(s.id as UUID, fillInTitleDomain(s)))
-    //   return ss
-    // })
 
     mock.stuMap = new Map(srcs.map((s) => [s.id as UUID, fillInTitleDomain(s)]))
 
@@ -40,6 +37,8 @@
     // if (!showLoginPrompt) {
     noteSync.noteStore.update((n) => new Map([...mock.notes, ...n])) // use user changes to mock notes or just use them
     noteSync.stuMapStore.update((_n) => mock.stuMap)
+
+    noteSync.noteStore.subscribe((_) => window.umami.track("example dashboard update"))
     // }
   })
 </script>
