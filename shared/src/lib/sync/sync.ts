@@ -53,10 +53,10 @@ export class NoteSync {
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   actionQueue: ActionQueue
-  _checkOnline: () => Promise<true>
+  _checkOnline: () => Promise<boolean>
   DEBUG: boolean
 
-  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<true>) {
+  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<boolean>) {
     this.sb = sb
     this.noteStore = noteStore
     // this block shall ensure local data gets overwritten on db schema changes

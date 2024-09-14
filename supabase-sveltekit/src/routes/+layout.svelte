@@ -47,7 +47,7 @@
   on:scroll={(e) => ($scrolled = e.currentTarget.scrollTop)}
   bind:this={myDiv}
   class="scroll-container absolute -z-10 h-full overflow-y-auto w-full flex flex-col items-center [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
-  <div class="w-full" class:max-w-screen-xl={browser && $page.url.pathname !== "/dashboard"}>
+  <div class="w-full" class:max-w-screen-xl={browser && !$page.url.pathname.startsWith("/dashboard")}>
     <Navbar scrollParent={(n) => myDiv.scrollTo({ top: n })} />
     <!-- <div class="flex-grow"> -->
     <slot />
