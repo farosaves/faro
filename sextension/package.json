@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "watch": "npm-watch",
     "bd": "VITE_PI_IP=https://dev.farosapp.com VITE_DEBUG=true vite build",
-    "bz": "VITE_PI_IP=https://farosaves.com VITE_DEBUG=false vite build && rm ../supabase-sveltekit/static/ext.zip && zip -r ../supabase-sveltekit/static/ext.zip dist",
+    "bz": "VITE_PI_IP=https://farosaves.com VITE_DEBUG=false vite build && rm -r dist/.vite && rm ../supabase-sveltekit/static/ext.zip && zip -r ../supabase-sveltekit/static/ext.zip dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "watch": {

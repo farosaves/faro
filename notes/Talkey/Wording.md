@@ -236,5 +236,30 @@ I was working on an AI flashcard app and it had a card explorer. While working o
 
 It's really not catching on, though. Maybe the benefit of using it is hard to convey? It's the first time I have to market anything.
 
+#### Again 
 
-repurposed the explorer as bookmarks alternative and here it is, ~completed.
+I'm surprised I thought it was a good idea
+
+Anyone else in the same boat?
+
+I wasn't intending on starting something, but I was solving my own problem and kinda kept polishing the product along the way.
+I know that the space is crowded
+
+## V10 show HN
+
+I made a tool for saving links - alternative to browser bookmarks
+
+I didn't even know I needed something like this. What happened is, I was working on an AI flashcard extension, which had a card explorer, and ended up using the explorer instead of bookmarks. The card layout with highlights worked surprisingly well. 
+
+Think of it this way - bookmarks only give you the page title, so it's easy to forget stuff you saved if you don't categorize it right away. A page description was too generic - in 50% of cases it didn't capture why I saved something. And writing a full note would be too much effort - I ended up writing keywords in the notes, but that got obsolete after improving tags (now it has nested tags like in obsidian i.e. "tag/subTag").
+
+So that's why I've found it effective enough to keep using and polishing it over the course of 9 months. 
+
+
+
+So I got rid of all the AI and flashcards and ended up with this.
+
+It worked well enough for me to keep using and polishing it over the course of 9 months, so now's the time to share it. Maybe some of you would find it useful too.
+
+~ it's simpler 
+
