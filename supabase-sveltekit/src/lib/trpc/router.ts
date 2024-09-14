@@ -59,6 +59,10 @@ export const router = t.router({
   //   await serviceSb.from("notes").select("*").eq("snippet_uuid", input).single()),
   singleNote: t.procedure.input(z.string()).query(async ({ input }) =>
     await serviceSb.from("notes").select("*").eq("id", input).single()),
+  multipleNotes: t.procedure.input(z.array(z.string())).query(async ({ input }) =>
+    await serviceSb.from("notes").select("*").in("id", input)),
+  multipleSources: t.procedure.input(z.array(z.string())).query(async ({ input }) =>
+    await serviceSb.from("sources").select("*").in("id", input)),
   // create_card: t.procedure
   //   .input(cardInput)
   //   .mutation(({ input, ctx: { locals } }) => add_card({ ...input, supabase: locals.supabase })),
