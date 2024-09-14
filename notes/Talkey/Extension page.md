@@ -133,15 +133,17 @@ Also:
 ## V7 
 Chaos in your bookmarks? Can't find what you want? They end up gathering dust? Or you don't even try and end up with 100s of open tabs?
 
-Faro is made to fix that! Use it to save pages.
+Faro is made to fix that! It's simplest way to save & keep track of pages.
+With it, even thousands of saves don't get overwhelming.
 
-When saving, you highlight a sentence to act as a tagline. It helps you remember what the page is about and why you saved it. Usually it's just the one you read that made you want to save, so 0 extra effort required.
+When saving, you highlight a sentence to act as a tagline. It helps you remember what the page is about and why you saved it. 
+If unsure - just save whatever sentence you're reading.a
 
 All saves appear on your dashboard. They come most-recent-first by default, so you don't forget what you recently saved. You can pick up your reading where you left off - no need for a separate reading list. You can also pin & archive to further arrange it.
 
-Organize them with tags. Since you're reminded what you saved and why, you can do it later. It's MUCH easier to manage your saves, compared to bookmarks. It includes nested tags (like in Obsidian). 
+Organize them with tags. Since you're reminded what you saved and why, you can do it later. It makes your saves much easier to manage than bookmarks. Faro supports nested tags (eg: recipes/vegan), so combines the best of tags and folders. 
 
-Clicking a save takes you right back to your highlight - useful for longer articles, esp. when you left reading partway through.
+Clicking a save takes you right back to your highlight - especially useful for longer articles.
 
 Also:
 ➣ export to bookmarks to keep them if you uninstall Faro
