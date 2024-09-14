@@ -184,7 +184,7 @@
           <h2 class="font-bold text-2xl md:text-3xl lg:text-4xl text-gray-800 dark:text-neutral-200">
             Worried what happens to your data when you quit?
           </h2>
-          <p class="text-gray-500 dark:text-neutral-500">
+          <p class="text-gray-500 dark:text-neutral-400">
             You can export saves to bookmarks to keep everything.
           </p>
         </div>
@@ -208,7 +208,7 @@
                 stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             <div class="grow">
-              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-500">
+              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-400">
                 Highlights are added to bookmark titles
               </span>
             </div>
@@ -230,7 +230,7 @@
                 stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             <div class="grow">
-              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-500">
+              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-400">
                 Tags turn into folders
               </span>
             </div>
@@ -252,7 +252,7 @@
                 stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             <div class="grow">
-              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-500">
+              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-400">
                 Text search will work in the browser's URL bar
               </span>
             </div>
