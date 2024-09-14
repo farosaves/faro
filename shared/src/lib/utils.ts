@@ -175,3 +175,8 @@ export const pickFields = <T, K extends keyof T>(obj: T) => A.map((k: K) => obj[
 
 export const union = <T, U>(obj1: T, obj2: U): T & U => ({ ...obj1, ...obj2 })
 
+type _T = {
+  title: string | null
+  domain: string | null
+} | undefined
+export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
