@@ -24,6 +24,7 @@
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, writable } from "svelte/store"
+  import { testCSV } from "$lib/csv"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
@@ -157,6 +158,12 @@
           <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
         </li>
       {/if}
+      <li class="absolute bottom-2 w-64">
+        <a
+          class="text-center m-auto tooltip tooltip-top"
+          data-tip="CSV is a text format that can be imported into spreadsheets etc."
+          on:click={testCSV}>Download as a CSV file</a>
+      </li>
     </ul>
   </div>
 </div>

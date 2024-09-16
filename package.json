@@ -3,6 +3,7 @@
   "dependencies": {
     "@yaireo/tagify": "^4.27.0",
     "aws-sdk": "^2.1607.0",
+    "csv-stringify": "^6.5.1",
     "devalue": "^4.3.2",
     "fflate": "^0.8.2",
     "fp-ts-std": "^0.19.1",
