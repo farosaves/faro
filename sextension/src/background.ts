@@ -79,9 +79,9 @@ const appRouter = (() => {
     serializedHighlights: t.procedure.query(({ ctx: { tab } }) =>
       (get(note_mut.panels).get(tab?.windowId || -1) || []).map(n => [n.snippet_uuid, n.serialized_highlight] as [string, string])), // !
     loadDeps: t.procedure.query(({ ctx: { tab } }) => {
-      if (!tab) return
+      if (!tab || !tab.id) return
       chrome.scripting.executeScript({
-        target: { tabId: tab.id! },
+        target: { tabId: tab.id },
         files: ["rangy/rangy-core.min.js", "rangy/rangy-classapplier.min.js", "rangy/rangy-highlighter.min.js"],
       })
     }),
