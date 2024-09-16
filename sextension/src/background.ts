@@ -281,9 +281,9 @@ const setIcon = async (n: number, _tabId?: number) => {
 notesCurrWindow.subscribe(setIcon)
 chrome.tabs.onUpdated.addListener((tabId, _info, _tab) => setIcon(get(notesCurrWindow), tabId))
 
-// erros
+// errors
 
 self.addEventListener("error", event =>
   err("unhandled error")(["Error:", event.message, "at", event.filename, "line", event.lineno, "column", event.colno].join(" ")),
 )
-self.addEventListener("unhandledrejection", event => warn("unhandled rejection")(event.reason))
+self.addEventListener("unhandledrejection", event => warn("unhandled rejection")(event))
