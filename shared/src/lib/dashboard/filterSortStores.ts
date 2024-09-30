@@ -16,6 +16,15 @@ const _exclTagSets = {
 
 // const highlightId =
 
+export const limit = writable(false)
+export const tempLimit = () => {
+  limit.set(true)
+  setTimeout(() => {
+    limit.set(false)
+  }, 50)
+}
+
+
 export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
 // export const exclTagSets = persisted<typeof _exclTagSets>("exclTagSets", _exclTagSets, { serializer: devalue }) // )
 const validate = z.object({ sets: z.record(z.string(), z.set(z.string())), currId: z.string() }).parse
