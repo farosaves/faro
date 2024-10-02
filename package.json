@@ -95,6 +95,7 @@
   "workspaces": [
     "sextension",
     "supabase-sveltekit",
-    "shared"
+    "shared",
+    "new-ext"
   ]
 }
