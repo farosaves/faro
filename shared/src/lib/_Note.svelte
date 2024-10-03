@@ -112,7 +112,7 @@
         await sleep(1)
         isOpen = !saveIsOpen
       }}>
-      <button on:click={goto_function} title="Right click to edit">
+      <button on:click={goto_function} title="Right click for more options">
         <!-- class="h-16 text-ellipsis" -->
         <!-- class:overflow-hidden={!isOpen} omg :( -->
         {@html text}
