@@ -112,7 +112,7 @@
         await sleep(1)
         isOpen = !saveIsOpen
       }}>
-      <button on:click={goto_function}>
+      <button on:click={goto_function} title="Right click to edit">
         <!-- class="h-16 text-ellipsis" -->
         <!-- class:overflow-hidden={!isOpen} omg :( -->
         {@html text}
@@ -151,6 +151,7 @@
         </StarArchive>
       {/if}
     </div>
+    <div class="h-1 bg-neutral tooltip tooltip-secondary" data-tip="Right click to edit"></div>
   </div>
 </div>
 
