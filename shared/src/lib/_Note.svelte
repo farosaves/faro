@@ -67,6 +67,13 @@
   // const onTagRemoved = (_: string, tags: string[]) => syncLike.tagChange(note_data.id)(tags)
   const changeP = syncLike.changePrioritised(note_data.id)
 
+  const openOptions = async () => {
+    const saveIsOpen = isOpen
+    closeAll()
+    await sleep(1)
+    isOpen = !saveIsOpen
+  }
+
   // let highlighting = false
   // const highlightMe = () => {
   //   this_element.scrollIntoView({ block: "center" })
@@ -106,13 +113,8 @@
       class="collapse-title overflow-hidden text-center"
       bind:this={this_element}
       style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;"
-      on:contextmenu|preventDefault={async () => {
-        const saveIsOpen = isOpen
-        closeAll()
-        await sleep(1)
-        isOpen = !saveIsOpen
-      }}>
-      <button on:click={goto_function}>
+      on:contextmenu|preventDefault={openOptions}>
+      <button on:click={goto_function} title="Right click for more options">
         <!-- class="h-16 text-ellipsis" -->
         <!-- class:overflow-hidden={!isOpen} omg :( -->
         {@html text}
@@ -151,6 +153,15 @@
         </StarArchive>
       {/if}
     </div>
+    {#if !isOpen}
+      <button
+        class="tooltip tooltip-secondary"
+        on:click={openOptions}
+        on:contextmenu|preventDefault={openOptions}
+        data-tip="More options... (right click)">
+        <div class="h-1 bg-neutral mb-1 mx-5 rounded-sm"></div>
+      </button>
+    {/if}
   </div>
 </div>
 

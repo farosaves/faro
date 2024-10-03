@@ -1,6 +1,5 @@
-import { type SupportedStorage } from "@supabase/supabase-js"
-import { API_ADDRESS, type Database } from "shared"
-import { createExtensionServiceWorkerAdapter } from "./adapter/extensionServiceWorkerAdapter"
+import { createClient, type SupportedStorage } from "@supabase/supabase-js"
+import type { Database } from "shared"
 export type { Session } from "@supabase/supabase-js"
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -20,17 +19,13 @@ const chromeStorageInterface: SupportedStorage = {
     await chrome.storage.local.remove(key)
   },
 }
-export const supabase = createExtensionServiceWorkerAdapter<Database>({ supabaseUrl,
-  supabaseKey: supabaseAnonKey,
-  websiteUrl: API_ADDRESS,
-})
 
-// export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-//   auth: {
-//     storage: chromeStorageInterface,
-//     persistSession: true,
-//     autoRefreshToken: false,
-//     detectSessionInUrl: false,
-//   },
-// })
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: chromeStorageInterface,
+    persistSession: true,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+  },
+})
 

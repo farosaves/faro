@@ -6,7 +6,7 @@ import type { Patch } from "immer"
 
 export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
   const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
-    .order("updated_at", { ascending: true }).limit(10000) // TODO: handle pagination
+    .order("updated_at", { ascending: true }).limit(1000)
   return data || []
 }
 
