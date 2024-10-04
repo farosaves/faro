@@ -11,6 +11,7 @@
 **/*.jls
 */another_one
 **/dist
+new-ext/output/
 node_modules/
 /test-results/
 /playwright-report/
