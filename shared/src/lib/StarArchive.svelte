@@ -27,7 +27,7 @@
   <label class="swap swap-flip grow-0" class:swap-active={p == 5}>
     <input
       type="checkbox"
-      class="tooltip tooltip-secondary tooltip-start"
+      class="tooltip tooltip-secondary tooltip-first"
       data-umami-event="Note Star"
       data-tip="Star {ctrlKey}+S"
       checked={false}
@@ -46,7 +46,7 @@
     <input
       type="checkbox"
       data-umami-event="Note Arch"
-      class="tooltip tooltip-secondary tooltip-end"
+      class="tooltip tooltip-secondary tooltip-last"
       data-tip="Archive {ctrlKey}+X"
       checked={false}
       on:click|preventDefault={archive}
@@ -58,10 +58,10 @@
 </span>
 
 <style>
-  .tooltip-start:before {
-    transform: translateX(-25%);
+  .tooltip-first:before {
+    left: 150%;
   }
-  .tooltip-end:before {
-    transform: translateX(-75%);
+  .tooltip-last:before {
+    left: -100%;
   }
 </style>
