@@ -177,6 +177,7 @@ export class NoteSync {
     funLog("newNote")(src)
     const source_id = await this.getsetSource_id(src)
     const n = { ...createMock(), ...note, source_id }
+    funLog("newNote note")(n)
     await this.updateAct((ns) => {
       ns.set(n.id, n)
     })
