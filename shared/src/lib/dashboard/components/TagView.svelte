@@ -90,13 +90,8 @@
     currTag = newTag
     return true
   }
-  const onContextMenu = (tag: string) => () => {
-    if (myModal) {
-      currTag = newTag = tag
-      myModal.showModal()
-      $tagModalOpenStore = true
-    }
-  }
+  const onContextMenu = (tag: string) => () => window.postMessage({ action: "editTag", tag }, "*")
+
   const deleteTag = () => {
     myModal && myModal.close()
     noteDeri.sync.tagUpdate(currTag, O.none, get(allTags))
@@ -124,6 +119,19 @@
 
   // let dropdownOpen = false
   let moreTags = false
+
+  // addEventListener("message", (event) => {event.data});
+  window.onmessage = (event) => {
+    console.log(event)
+    const { data } = event
+    if (data.action !== "editTag") return
+    if (myModal) {
+      currTag = newTag = data.tag
+      myModal.showModal()
+      $tagModalOpenStore = true
+    }
+  }
+
   // const twoPlusTags = writable(false)
 </script>
 
@@ -224,8 +232,9 @@
 </div>
 <dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
   <div class="modal-box flex flex-col border-2 items-center">
-    <button class="btn btn-sm btn-circle btn-ghost absolute top-2" on:click={() => myModal && myModal.close()}
-      >✕</button>
+    <button
+      class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
+      on:click={() => myModal && myModal.close()}>✕</button>
     <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
     <form class=" ">
       <input class="input input-bordered text-center" type="text" bind:value={newTag} />
