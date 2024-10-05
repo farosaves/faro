@@ -12,8 +12,8 @@
   exclTagSets.subscribe(funLog("exclTagSets"))
   import { getGroupTagCounts, groupize } from "./tagViewStores"
   import { onMount } from "svelte"
-  import addTag from "$lib/assets/addTag.png"
-  import addTag2 from "$lib/assets/addTag2.png"
+  import addTag from "$lib/assets/addTag.jpg"
+  import addTag2 from "$lib/assets/addTag2.jpg"
 
   export let noteDeri: NoteDeri
   // let noteStore = note_sync.noteStore
