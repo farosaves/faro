@@ -74,7 +74,7 @@
       .catch(() => undefined)
   })
   let innerWidth: number
-  const tilesWidth = writable(800)
+  const tilesWidth = writable(window.innerWidth)
   // min width for note is 256px
   const layoutey = derived(tilesWidth, (tW) => {
     const nNotes = Math.min(Math.floor(tW / 256), 5)
