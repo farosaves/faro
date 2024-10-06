@@ -258,17 +258,10 @@
             </div>
           </li>
         </ul>
-        <!-- End List -->
       </div>
     </div>
-    <!-- End Col -->
   </div>
-  <!-- </div>
-  </div> -->
-
-  <!-- End Grid -->
 </div>
-<!-- End Features -->
 <div class="flex justify-center items-center h-min-[30rem] w-full mt-20 pb-32 relative">
   <div
     class="text-5xl font-bold mt-3 pt-3 top-0 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2">
@@ -277,17 +270,6 @@
   <div class=" w-full lg:w-4/6 h-full">
     <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
       <div class="rounded-2xl" style="width: 90%">
-        <!-- <div class="collapse collapse-arrow">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
-      <div class="collapse-content">
-        <span class="my-2 block"
-          >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
-        <span class="my-2 block"
-          >If you bookmark it you'll likely forget why you did it in a few weeks.</span>
-        <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
-      </div>
-    </div> -->
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Why is it better than bookmarks?</div>
@@ -342,38 +324,20 @@
           <div class="collapse-content">
             The first 1000 saves are free.<br /> I'm planning to do $10 for life for unlimited saves. It's not
             implemented yet, so right now there is no limit.
-            <!-- For more it's going to be $15 for life on AppSumo. -->
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!--
-  <div class="xl:w-1/2 w-full h-full">
-    <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
-      <div class="w-full">
-        <h3 class="text-2xl p-3 xl:text-right text-center font-bold">TL;DW</h3>
-        <p class="p-3 xl:text-right text-center font-bold">Bookmarks ✕ Web Clipper</p>
-        <p class="p-3 xl:text-right text-center">You highlight a snippet to remember the page better.</p>
-        <p class="p-3 xl:text-right text-center">
-          Your saves show both the page title and the snippet you picked.
-        </p>
-      </div>
-    </div>
-  </div>
-  -->
 </div>
 
 <style>
   .embed {
-    /* position: absolute; */
     top: 0;
     left: 0;
     width: 96vw;
     height: 54vw;
     max-width: 560px;
     max-height: 315px;
-    /* min-width: 560px;
-    min-height: 315px; */
   }
 </style>
