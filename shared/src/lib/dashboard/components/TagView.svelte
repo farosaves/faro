@@ -122,7 +122,6 @@
 
   // addEventListener("message", (event) => {event.data});
   window.onmessage = (event) => {
-    console.log(event)
     const { data } = event
     if (data.action !== "editTag") return
     if (myModal) {
