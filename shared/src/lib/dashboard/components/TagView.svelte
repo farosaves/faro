@@ -230,11 +230,14 @@
   Type in the tag and press <kbd class="kbd">Enter</kbd>
 </div>
 <dialog class="modal" bind:this={myModal} on:close={() => ($tagModalOpenStore = false)}>
-  <div class="modal-box flex flex-col border-2 items-center">
+  <div class="modal-box flex flex-col border-2 items-center border-secondary">
     <button
       class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
       on:click={() => myModal && myModal.close()}>✕</button>
-    <p class="py-2 text-center">Rename this tag:<br /> {currTag}</p>
+    <p class="py-2 text-center">
+      Rename this tag
+      <!-- :<br /> {currTag} -->
+    </p>
     <form class=" ">
       <input class="input input-bordered text-center" type="text" bind:value={newTag} />
       <button hidden on:click={updateTag} />
