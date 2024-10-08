@@ -1,7 +1,17 @@
 <script lang="ts">
   export let data
   const { supabase } = data
-  import { ctrlKey, Dashboard, exclTagSet, fillInTitleDomain, NoteSync, persisted, type STUMap } from "shared"
+  import {
+    ctrlKey,
+    Dashboard,
+    exclTagSet,
+    fillInTitleDomain,
+    hasExtensionStore,
+    NoteSync,
+    persisted,
+    type STUMap,
+  } from "shared"
+  import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   import { onMount } from "svelte"
   import { get } from "svelte/store"
   import * as devalue from "devalue"
@@ -215,5 +225,14 @@
   <Popover>
     <span class="text-lg font-semibold my-4">That's it!</span>
     <span class="font-semibold mb-4"> I hope you found this useful. </span>
+    {#if !$hasExtensionStore}
+      <a
+        id="farogetitlink"
+        class="btn btn-primary max-w-[19rem] my-2"
+        target="_blank"
+        data-umami-event="WebStore-Example"
+        href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
+        <IconLogosChromeWebStore font-size="32" />Install the extension</a>
+    {/if}
   </Popover>
 {/if}
