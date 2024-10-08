@@ -60,7 +60,7 @@
     margin-top: -15px;
     border-width: 15px;
     border-style: solid;
-    border-color: transparent transparent transparent oklch(var(--p));
+    border-color: transparent transparent transparent color-mix(in srgb, oklch(var(--p)), #fef9c3);
   }
   .top:after {
     top: 100%;
@@ -69,6 +69,6 @@
     margin-left: -15px;
     border-width: 15px;
     border-style: solid;
-    border-color: oklch(var(--p)) transparent transparent transparent;
+    border-color: color-mix(in srgb, oklch(var(--p)), #fef9c3) transparent transparent transparent;
   }
 </style>

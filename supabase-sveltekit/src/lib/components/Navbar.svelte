@@ -41,16 +41,16 @@
   </div>
   <div class="navbar-end">
     <a
-      class="btn btn-ghost p-2 hidden md:inline-flex"
+      class="btn btn-ghost p-2 inline-flex"
       data-umami-event="WebStore"
       title="Webstore"
       href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
       <IconLogosChromeWebStore font-size="24" /></a>
-    <a
+    <!-- <a
       class="btn btn-ghost p-2"
       target="_blank"
       href="https://discord.gg/6TvDFPA6bs"
-      title="Join Discord server"><IconDiscord font-size={24} /></a>
+      title="Join Discord server"><IconDiscord font-size={24} /></a> -->
 
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="m-1"><IconMenu font-size="32" /></div>
