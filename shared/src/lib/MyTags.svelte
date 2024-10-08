@@ -22,7 +22,10 @@
       setTimeout(() => div.getElementsByClassName("tagify__input").item(0)?.focus(), 100)
     }}>
     {#each tags as tag}
-      <span class="kbd kbd-sm mt-1">{tag}</span>
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <span
+        class="kbd kbd-sm mt-1 hover:bg-base-300"
+        on:contextmenu|preventDefault={() => window.postMessage({ action: "editTag", tag }, "*")}>{tag}</span>
     {/each}
   </button>
 

@@ -41,11 +41,6 @@ export const updateStore
       return { patches, inverse }
     }
 
-type _T = {
-  title: string | null
-  domain: string | null
-} | undefined
-export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
 
 // export const maxDate = (dateStrs: string[]) => pipe(
 //   () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),

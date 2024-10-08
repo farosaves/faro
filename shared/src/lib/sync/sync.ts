@@ -5,7 +5,7 @@ import { persisted } from "./persisted-store"
 import type { Notes } from "../db/types"
 import type { Note, SupabaseClient } from "../db/typeExtras"
 import { derived, get, type Readable, type Writable } from "svelte/store"
-import { type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle, neq, escapeRegExp } from "$lib/utils"
+import { type Src, uuidv5, funLog, funWarn, sbLogger, sleep, logIfError, invertMap, domainTitle, neq, escapeRegExp, fillInTitleDomain } from "$lib/utils"
 import { option as O, string as S, map as M, array as A } from "fp-ts"
 
 import { flow, pipe } from "fp-ts/lib/function"
@@ -19,7 +19,7 @@ import { ActionQueue } from "./queue"
 import type { UnFreeze } from "structurajs"
 import { activeLoadsStore, requestedSync, toastNotify } from "$lib/stores"
 import { noop } from "rxjs"
-import { applyPatches, fillInTitleDomain, getUpdatedNotes, maxDate, updateStore } from "./utils"
+import { applyPatches, getUpdatedNotes, maxDate, updateStore } from "./utils"
 // import * as lzString from "lz-string"
 
 const validateNs = z.map(z.string(), notesRowSchema).parse
@@ -53,10 +53,10 @@ export class NoteSync {
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   actionQueue: ActionQueue
-  _checkOnline: () => Promise<true>
+  _checkOnline: () => Promise<boolean>
   DEBUG: boolean
 
-  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<true>) {
+  constructor(sb: SupabaseClient, user_id: string | undefined, checkOnline: () => Promise<boolean>) {
     this.sb = sb
     this.noteStore = noteStore
     // this block shall ensure local data gets overwritten on db schema changes

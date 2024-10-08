@@ -2,6 +2,7 @@
   import { hasExtensionStore } from "shared"
   import IconLogosChromeWebStore from "~icons/logos/chrome-web-store"
   export let showLoginPrompt: boolean
+  export let hasNotes: boolean
 </script>
 
 <div class="flex flex-col md:flex-row">
