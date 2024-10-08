@@ -70,9 +70,10 @@
                 <a
                   class="btn btn-lg btn-neutral text-xl max-w-[19rem] mx-2"
                   target="_blank"
+                  title="Example dashboard"
                   data-umami-event="WebStore"
                   href="/dashboard/example">
-                  See the demo</a>
+                  Open demo / tutorial</a>
               </div>
             {/if}
           </div>
