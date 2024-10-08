@@ -3,11 +3,10 @@ import { record as R, array as A, nonEmptyArray as NA, string as S, option as O,
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
-import { filterSort, desc, descS } from "$lib"
+import { filterSort, desc, descS, fillInTitleDomain } from "$lib"
 import type { UUID } from "crypto"
 import { gotoFunction } from "$lib/dashboard/utils"
 import type { Note } from "$lib/db/typeExtras"
-import { fillInTitleDomain } from "./utils"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)

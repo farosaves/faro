@@ -20,10 +20,12 @@ import * as dbtypes from "./db/types"
 import * as schemas from "./db/schemas"
 export * from "./stores"
 import type { NoteEx, SupabaseClient, SourceData } from "./db/typeExtras"
+import { exclTagSet } from "./dashboard/filterSortStores"
+
 
 export * from "./semaphore"
 
-export { MyTags, _Note, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal }
+export { MyTags, _Note, dbtypes, schemas, persisted, StarArchive, Dashboard, CmModal, exclTagSet }
 // export { Dashboard }
 export type { NoteEx, SupabaseClient, SourceData }
 
