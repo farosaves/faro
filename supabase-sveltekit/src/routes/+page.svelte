@@ -59,14 +59,20 @@
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}
-              <div class="w-full my-2 hidden md:flex justify-center xl:justify-start">
+              <div class="w-full my-2 hidden md:flex justify-center xl:justify-around">
                 <a
                   id="farogetitlink"
-                  class="btn btn-lg btn-primary text-xl max-w-[19rem]"
+                  class="btn btn-lg btn-primary text-xl max-w-[19rem] mx-2"
                   target="_blank"
                   data-umami-event="WebStore"
                   href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
                   <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
+                <a
+                  class="btn btn-lg btn-neutral text-xl max-w-[19rem] mx-2"
+                  target="_blank"
+                  data-umami-event="WebStore"
+                  href="/dashboard/example">
+                  See the demo</a>
               </div>
             {/if}
           </div>

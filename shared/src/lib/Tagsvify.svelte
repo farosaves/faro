@@ -1,9 +1,7 @@
 <script lang="ts">
-  // import "@yaireo/tagify/dist/tagify.css"
   import "./tagify.scss"
   import { onMount } from "svelte"
   import Tagify from "@yaireo/tagify"
-  import { funLog } from "./utils"
 
   export let whitelist: string[] = []
   export let tags: string[] = []
