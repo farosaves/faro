@@ -39,14 +39,15 @@
 
 <!-- Z index of modal is 999. -->
 <dialog
-  class="absolute bg-base-100 w-96 rounded-2xl bg-gradient-to-br from-secondary via-yellow-100 to-primary shadow-2xl m-0"
+  class="absolute w-96 rounded-2xl bg-gradient-to-br from-secondary via-yellow-100 to-primary shadow-2xl m-0"
   class:arrow
   class:top={align === "top"}
   transition:fade
   bind:this={tooltip}
   style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999">
   <div
-    class="flex flex-col place-content-center items-center bg-base-100 m-1 rounded-2xl z-[9999] text-center">
+    class="flex flex-col place-content-center items-center m-1 rounded-2xl z-[9999] text-center"
+    style="background-color: color-mix(in srgb, oklch(var(--p)), oklch(var(--b1)) 80%)">
     <slot />
   </div>
 </dialog>
@@ -60,7 +61,7 @@
     margin-top: -15px;
     border-width: 15px;
     border-style: solid;
-    border-color: transparent transparent transparent oklch(var(--p));
+    border-color: transparent transparent transparent color-mix(in srgb, oklch(var(--p)), #fef9c3);
   }
   .top:after {
     top: 100%;
@@ -69,6 +70,6 @@
     margin-left: -15px;
     border-width: 15px;
     border-style: solid;
-    border-color: oklch(var(--p)) transparent transparent transparent;
+    border-color: color-mix(in srgb, oklch(var(--p)), #fef9c3) transparent transparent transparent;
   }
 </style>
