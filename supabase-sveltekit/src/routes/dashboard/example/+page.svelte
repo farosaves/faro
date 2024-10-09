@@ -66,13 +66,15 @@
         .values()
         .some((n) => n.tags.includes("art/music"))
     )
-      tutorialStep.set(12)
+      tutorialStep.set(11)
 
     tutorialStep.subscribe((step) => {
-      if (step === 3) {
-        const element = getElementByText("items-stretch", "rubato", 0)
-        element?.addEventListener("click", () => tutorialStep.set("addTag"), { once: true })
-      } else if (
+      if (step === 3)
+        setTimeout(() => {
+          const elem = getElementByText("items-stretch", "rubato", 0)
+          elem?.addEventListener("click", () => tutorialStep.set("addTag"), { once: true })
+        }, 150)
+      else if (
         step === "addTag" &&
         get(noteSync.noteStore)
           .values()
@@ -82,11 +84,12 @@
         $tutorialStep = 5
       else if (step === 12) {
         const element = getElementByText("mb-2", "Sites", 0)
-        element?.addEventListener("click", () => tutorialStep.set(13), { once: true })
+        element?.addEventListener("click", () => setTimeout(() => tutorialStep.set(13), 500), { once: true })
       } else if (step === 13) {
         const element = getElementByText("max-w-xs", "", 0)
         element?.addEventListener("input", (e) => {
-          if ((e.target as HTMLInputElement).value === "dim" && step === 13) tutorialStep.set(14)
+          if ((e.target as HTMLInputElement).value === "dim" && step === 13)
+            setTimeout(() => tutorialStep.set(14), 500)
         })
       }
     })
@@ -102,7 +105,8 @@
     ) {
       $tutorialStep = 5
       setTimeout(() => document.getElementById("hackybtn")!.click(), 100)
-    } else if ($tutorialStep === 11) $tutorialStep = 12
+    } else if ($tutorialStep === 11) setTimeout(() => ($tutorialStep = "toggle all"), 3000)
+    else if ($tutorialStep === "toggle all" && s.size === 0) setTimeout(() => ($tutorialStep = 12), 1000)
   })
   $: console.log($tutorialStep)
   const handle_keydown = (e: KeyboardEvent) => {
@@ -148,11 +152,12 @@
   <Popover arrow={true} className="items-stretch" text="rubato" align={"top"}>
     <span class="text-lg font-semibold my-4">To open your save</span>
     <span class="font-semibold mb-4">Just click the note here.</span>
+    <span class=" mb-4">Remember to come back after ;)</span>
   </Popover>
 {:else if $tutorialStep === "addTag"}
   <Popover arrow={true} className="min-h-6" nth={1}>
-    <span class="text-lg font-semibold my-4">Cool!</span>
-    <span class="font-semibold mb-4">Click here to add more tags.</span>
+    <span class="text-lg font-semibold my-4">Yay!</span>
+    <span class="font-medium mb-4">Click here to add a new tag<br /> Call it whatever you want.</span>
   </Popover>
 {:else if $tutorialStep === 5}
   <Popover>
@@ -210,6 +215,11 @@
   <Popover arrow={true} className="expander-parent" text="art" align="left">
     <span class="text-lg font-semibold my-4">Yeah!</span>
     <span class="font-semibold mb-4"> Now clicking the tag will expand to show its children.</span>
+  </Popover>
+{:else if $tutorialStep === "toggle all"}
+  <Popover arrow={true} className="tooltip-bottom" text="" align="left">
+    <span class="text-lg font-semibold my-4">To revert</span>
+    <span class="font-semibold mb-4"> Click the toggle-all button.</span>
   </Popover>
 {:else if $tutorialStep === 12}
   <Popover arrow={true} className="mb-2" text="Sites" align="top">
