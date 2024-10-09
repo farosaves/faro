@@ -1,4 +1,5 @@
-// import type { SupabaseClient } from "@supabase/supabase-js";
+export const prerender = false
+
 import { fail } from "@sveltejs/kit"
 import { uuidv5 } from "shared"
 // import type { SupabaseClient } from x"shared";

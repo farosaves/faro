@@ -1,3 +1,5 @@
+export const prerender = false
+
 import { trpc } from "$lib/trpc/client"
 import { API_ADDRESS } from "shared"
 

@@ -1,3 +1,5 @@
+export const prerender = false
+
 import { fail, redirect } from "@sveltejs/kit"
 
 export const load = async ({ locals: { supabase, safeGetSession } }) => {
