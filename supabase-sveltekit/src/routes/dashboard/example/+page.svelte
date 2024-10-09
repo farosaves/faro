@@ -106,8 +106,8 @@
     ) {
       $tutorialStep = 5
       setTimeout(() => document.getElementById("hackybtn")!.click(), 100)
-    } else if ($tutorialStep === 11) setTimeout(() => ($tutorialStep = "toggle all"), 3000)
-    else if ($tutorialStep === "toggle all" && s.size === 0) setTimeout(() => ($tutorialStep = 12), 1000)
+    } else if ($tutorialStep === 11) setTimeout(() => ($tutorialStep = "toggle all"), 2000)
+    else if ($tutorialStep === "toggle all" && s.size === 0) setTimeout(() => ($tutorialStep = 12), 500)
   })
   $: console.log($tutorialStep)
   const handle_keydown = (e: KeyboardEvent) => {
@@ -234,6 +234,9 @@
   </Popover>
 {:else if $tutorialStep === 14}
   <Popover>
+    <button
+      class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
+      on:click={() => tutorialStep.set(0)}>✕</button>
     <span class="text-lg font-semibold my-4">That's it!</span>
     <span class="font-semibold mb-4"> I hope you found this useful. </span>
     {#if !$hasExtensionStore}
