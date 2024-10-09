@@ -48,7 +48,6 @@
       ])
     ).data?.map((n) => ({ ...n, prioritised: 0 }))
     DEBUG && console.log(notes)
-    !DEBUG && window.umami.track("example dashboard open")
     if (!notes) return
     startingTags = new Set(notes.map((n) => n.tags).flat())
     mock.notes = new Map(notes.map((n) => [n.id, n]))
@@ -94,6 +93,7 @@
         })
       }
     })
+    window.umami.track("example dashboard open")
   })
   exclTagSet.subscribe((s) => {
     if ($tutorialStep === 2) $tutorialStep = 3
