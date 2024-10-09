@@ -66,7 +66,7 @@
         .values()
         .some((n) => n.tags.includes("art/music"))
     )
-      tutorialStep.set(12)
+      tutorialStep.set(11)
 
     tutorialStep.subscribe((step) => {
       if (step === 3)
@@ -105,8 +105,8 @@
     ) {
       $tutorialStep = 5
       setTimeout(() => document.getElementById("hackybtn")!.click(), 100)
-    } else if ($tutorialStep === 11) setTimeout(() => ($tutorialStep = "toggle all"), 1000)
-    else if ($tutorialStep === "toggle all") setTimeout(() => ($tutorialStep = 12), 1000)
+    } else if ($tutorialStep === 11) setTimeout(() => ($tutorialStep = "toggle all"), 3000)
+    else if ($tutorialStep === "toggle all" && s.size === 0) setTimeout(() => ($tutorialStep = 12), 1000)
   })
   $: console.log($tutorialStep)
   const handle_keydown = (e: KeyboardEvent) => {
