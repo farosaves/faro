@@ -48,7 +48,7 @@
       ])
     ).data?.map((n) => ({ ...n, prioritised: 0 }))
     DEBUG && console.log(notes)
-    window.umami.track("example dashboard open")
+    !DEBUG && window.umami.track("example dashboard open")
     if (!notes) return
     startingTags = new Set(notes.map((n) => n.tags).flat())
     mock.notes = new Map(notes.map((n) => [n.id, n]))
