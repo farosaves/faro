@@ -59,14 +59,20 @@
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}
-              <div class="w-full my-2 hidden md:flex justify-center xl:justify-start">
+              <div class="w-full my-2 hidden md:flex justify-center xl:justify-around">
                 <a
                   id="farogetitlink"
-                  class="btn btn-lg btn-primary text-xl max-w-[19rem]"
+                  class="btn btn-lg btn-primary text-xl max-w-[19rem] mx-2"
                   target="_blank"
                   data-umami-event="WebStore"
                   href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
                   <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
+                <a
+                  class="btn btn-lg btn-neutral text-xl max-w-[19rem] mx-2"
+                  title="Example dashboard"
+                  data-umami-event="WebStore"
+                  href="/dashboard/example">
+                  Open demo / tutorial</a>
               </div>
             {/if}
           </div>
@@ -184,7 +190,7 @@
           <h2 class="font-bold text-2xl md:text-3xl lg:text-4xl text-gray-800 dark:text-neutral-200">
             Worried what happens to your data when you quit?
           </h2>
-          <p class="text-gray-500 dark:text-neutral-500">
+          <p class="text-gray-500 dark:text-neutral-400">
             You can export saves to bookmarks to keep everything.
           </p>
         </div>
@@ -208,7 +214,7 @@
                 stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             <div class="grow">
-              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-500">
+              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-400">
                 Highlights are added to bookmark titles
               </span>
             </div>
@@ -230,7 +236,7 @@
                 stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             <div class="grow">
-              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-500">
+              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-400">
                 Tags turn into folders
               </span>
             </div>
@@ -252,23 +258,16 @@
                 stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             <div class="grow">
-              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-500">
+              <span class="text-sm sm:text-base text-gray-500 dark:text-neutral-400">
                 Text search will work in the browser's URL bar
               </span>
             </div>
           </li>
         </ul>
-        <!-- End List -->
       </div>
     </div>
-    <!-- End Col -->
   </div>
-  <!-- </div>
-  </div> -->
-
-  <!-- End Grid -->
 </div>
-<!-- End Features -->
 <div class="flex justify-center items-center h-min-[30rem] w-full mt-20 pb-32 relative">
   <div
     class="text-5xl font-bold mt-3 pt-3 top-0 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2">
@@ -277,17 +276,6 @@
   <div class=" w-full lg:w-4/6 h-full">
     <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
       <div class="rounded-2xl" style="width: 90%">
-        <!-- <div class="collapse collapse-arrow">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium text-left">Why would I need it?</div>
-      <div class="collapse-content">
-        <span class="my-2 block"
-          >Imagine you're browsing and you come across something you want to be able to go back to later...</span>
-        <span class="my-2 block"
-          >If you bookmark it you'll likely forget why you did it in a few weeks.</span>
-        <span class="my-2 block">With Faros remembering & revisiting is as easy as possible.</span>
-      </div>
-    </div> -->
         <div class="collapse collapse-arrow">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium text-left">Why is it better than bookmarks?</div>
@@ -342,38 +330,20 @@
           <div class="collapse-content">
             The first 1000 saves are free.<br /> I'm planning to do $10 for life for unlimited saves. It's not
             implemented yet, so right now there is no limit.
-            <!-- For more it's going to be $15 for life on AppSumo. -->
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!--
-  <div class="xl:w-1/2 w-full h-full">
-    <div class=" h-full flex flex-col justify-center items-center my-16 w-full">
-      <div class="w-full">
-        <h3 class="text-2xl p-3 xl:text-right text-center font-bold">TL;DW</h3>
-        <p class="p-3 xl:text-right text-center font-bold">Bookmarks ✕ Web Clipper</p>
-        <p class="p-3 xl:text-right text-center">You highlight a snippet to remember the page better.</p>
-        <p class="p-3 xl:text-right text-center">
-          Your saves show both the page title and the snippet you picked.
-        </p>
-      </div>
-    </div>
-  </div>
-  -->
 </div>
 
 <style>
   .embed {
-    /* position: absolute; */
     top: 0;
     left: 0;
     width: 96vw;
     height: 54vw;
     max-width: 560px;
     max-height: 315px;
-    /* min-width: 560px;
-    min-height: 315px; */
   }
 </style>

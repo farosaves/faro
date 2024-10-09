@@ -1,12 +1,13 @@
 // import 'chrome';
 import { deserialize, gotoText, reserialize } from "$lib/serialiser/util"
-import { DEBUG, elemsOfClass, funLog, isCmd, makeQH, note_idKey, Semaphore, sleep, uuidRegex } from "shared"
+import { DEBUG, elemsOfClass, funLog, isCmd, note_idKey, Semaphore, sleep, uuidRegex } from "shared"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
 import { array as A, string as S } from "fp-ts"
 import type { AppRouter } from "./background"
 import { closeSavePrompt, getHighlightedText, optimisticNotes } from "$lib/chromey/messages"
 import type { UUID } from "crypto"
+import { makeQH } from "$lib/makeQH"
 // import { trpc2 } from "$lib/trpc-client"
 
 if (DEBUG) console.log("hello")
@@ -95,7 +96,7 @@ getHighlightedText.sub(async ([uuid]) => {
   // makeQH grabs text around the selected bit:
   // if it's <=3 words they're highlighted and surrounding sentence is a quote
   // if it's > 3 words the selection is the quote and nothing is highlighted
-  const { quote, highlights } = makeQH(htmlstr2body)(document, uuid, selectedText)
+  const { quote, highlights } = makeQH(document, uuid, selectedText)
   if (!quote) return { note_data: null }
   const note_data = {
     quote,

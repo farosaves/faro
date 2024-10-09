@@ -6,7 +6,7 @@ import type { Patch } from "immer"
 
 export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
   const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
-    .order("updated_at", { ascending: true }).limit(1000)
+    .order("updated_at", { ascending: true })// .limit(1000)  // TODO: pagination
   return data || []
 }
 
@@ -41,11 +41,6 @@ export const updateStore
       return { patches, inverse }
     }
 
-type _T = {
-  title: string | null
-  domain: string | null
-} | undefined
-export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
 
 // export const maxDate = (dateStrs: string[]) => pipe(
 //   () => pipe(dateStrs, A.map(parseISO), max, x => x.toISOString()),
