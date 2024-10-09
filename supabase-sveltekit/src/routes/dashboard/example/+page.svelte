@@ -4,6 +4,7 @@
   import {
     ctrlKey,
     Dashboard,
+    DEBUG,
     exclTagSet,
     fillInTitleDomain,
     hasExtensionStore,
@@ -46,7 +47,7 @@
         "4b859d3c-7959-4170-bacf-891adbc1eaa7",
       ])
     ).data?.map((n) => ({ ...n, prioritised: 0 }))
-
+    DEBUG && console.log(notes)
     window.umami.track("example dashboard open")
     if (!notes) return
     startingTags = new Set(notes.map((n) => n.tags).flat())
