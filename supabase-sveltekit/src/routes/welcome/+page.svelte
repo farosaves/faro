@@ -70,6 +70,7 @@
           <img alt="Pin extension" src={pin} />
         </div>
       </div>
+      <a href="/dashboard/example" class="btn btn-primary my-8">Tutorial dashboard</a>
     </div>
   </div>
 </div>
