@@ -39,7 +39,7 @@
 
 <!-- Z index of modal is 999. -->
 <dialog
-  class="absolute w-96 rounded-2xl bg-gradient-to-br from-secondary via-yellow-100 to-primary shadow-2xl m-0"
+  class="absolute w-96 rounded-2xl bg-gradient-to-br from-secondary via-yellow-100 to-primary shadow-2xl m-0 hidden sm:block"
   class:arrow
   class:top={align === "top"}
   transition:fade
