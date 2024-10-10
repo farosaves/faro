@@ -157,7 +157,7 @@ export class NoteSync {
     })
     funLog("nns.length")(nns.length)
     await sleep(1)
-    return nns.length < 1000 || this._fetchNewNotes(ts)
+    return nns.length < 10000 || this._fetchNewNotes(ts)
   }
 
 
