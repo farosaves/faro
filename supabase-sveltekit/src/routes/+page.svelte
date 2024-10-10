@@ -59,10 +59,10 @@
             </p>
             <p class="py-1 text-center xl:text-left text-gray-800 dark:text-neutral-400"></p>
             {#if !$hasExtensionStore}
-              <div class="w-full my-2 hidden md:flex justify-center xl:justify-around">
+              <div class="w-full my-2 flex justify-center xl:justify-around">
                 <a
                   id="farogetitlink"
-                  class="btn btn-lg btn-primary text-xl max-w-[19rem] mx-2"
+                  class="btn btn-lg btn-primary text-xl max-w-[19rem] mx-2 hidden md:inline-flex"
                   target="_blank"
                   data-umami-event="WebStore"
                   href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
@@ -81,7 +81,7 @@
     </div>
   </div>
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-end items-start xl:items-center">
-    <div class="h-1/2 px-3 pb-20">
+    <div class="h-1/2 px-3 pb-20 pt-16 md:pt-6">
       <iframe
         loading="lazy"
         class="embed"
