@@ -244,6 +244,7 @@
         id="farogetitlink"
         class="btn btn-primary max-w-[19rem] my-2"
         target="_blank"
+        autofocus
         data-umami-event="WebStore-Example"
         href="https://chromewebstore.google.com/detail/faros/pdndbnolgapjdcebajmgcehndggfegeo">
         <IconLogosChromeWebStore font-size="32" />Install the extension</a>
