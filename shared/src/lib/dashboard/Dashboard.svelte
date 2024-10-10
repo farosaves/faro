@@ -32,6 +32,8 @@
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, writable } from "svelte/store"
+  import IconUndo from "~icons/jam/undo"
+  import IconRedo from "~icons/jam/redo"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
@@ -110,9 +112,14 @@
 <div class="drawer mdlg:drawer-open bg-base-300 min-h-dvh">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
   <aside class="col-start-3 row-start-1 z-20">
-    <label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden sticky top-0 z-20 w-full">
-      Sidebar</label>
+    <label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden w-full"> Sidebar</label>
     <TagView {noteDeri} />
+    <div class="h-12 fixed flex mdlg:hidden bottom-0 right-0 w-24">
+      <button class="btn btn-ghost text-primary btn-outline btn-sm flex-grow h-full" title="Undo"
+        ><IconUndo /></button>
+      <button class="btn btn-ghost text-primary btn-outline btn-sm flex-grow h-full" title="Redo"
+        ><IconRedo /></button>
+    </div>
   </aside>
   <div class="drawer-content z-0">
     <article bind:clientWidth={$tilesWidth}>
@@ -166,14 +173,7 @@
       <li>
         <Search {noteDeri} openFirst={noteDeri.openFirst} />
       </li>
-      <li></li>
       <li class="my-4"><DomainFilter {noteDeri} /></li>
-      {#if false}
-        <li hidden class="fixed bottom-8 left-12"><PriorityFilter noteArr={noteDeri.noteArr} /></li>
-        <li hidden>
-          <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
-        </li>
-      {/if}
     </ul>
   </div>
 </div>
