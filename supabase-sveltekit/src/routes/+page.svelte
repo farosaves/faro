@@ -71,7 +71,7 @@
                   class="btn btn-lg btn-neutral text-xl max-w-[19rem] mx-2"
                   title="Example dashboard"
                   data-umami-event="WebStore"
-                  href="/dashboard/example">
+                  href="/dashboard/demo">
                   Open demo / tutorial</a>
               </div>
             {/if}
