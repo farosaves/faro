@@ -39,14 +39,14 @@
 
 <!-- Z index of modal is 999. -->
 <dialog
-  class="absolute w-96 rounded-2xl bg-gradient-to-br from-secondary via-yellow-100 to-primary shadow-2xl m-0 hidden sm:block"
+  class="absolute w-72 md:w-96 rounded-2xl bg-gradient-to-br from-secondary via-yellow-100 to-primary shadow-2xl m-0"
   class:arrow
   class:top={align === "top"}
   transition:fade
   bind:this={tooltip}
-  style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999">
+  style="top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 9999">
   <div
-    class="flex flex-col place-content-center items-center m-1 rounded-2xl z-[9999] text-center"
+    class="flex flex-col place-content-center items-center m-1 rounded-2xl z-[9999] text-center p-2"
     style="background-color: color-mix(in srgb, oklch(var(--p)), oklch(var(--b1)) 80%)">
     <slot />
   </div>
