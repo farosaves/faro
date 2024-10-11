@@ -32,6 +32,8 @@
   import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, writable } from "svelte/store"
+  import IconUndo from "~icons/jam/undo"
+  import IconRedo from "~icons/jam/redo"
 
   export let noteSync: SyncLikeNStores
   export let isInExt = false
@@ -62,7 +64,6 @@
     }
   }
 
-  let Xview = false
   const priorities = ["5", "0", "-5"] as const
   onMount(() => {
     tempLimit()
@@ -103,11 +104,37 @@
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
 
-<label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden sticky top-0 z-20">
-  Open drawer</label>
+<!-- <div class="w-full bg-base-300">
+  <label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden sticky top-0 z-20">
+    Open sidebar</label>
+</div> -->
 <div class="drawer mdlg:drawer-open bg-base-300 min-h-dvh">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <aside class="col-start-3 row-start-1 z-20"><TagView {noteDeri} /></aside>
+  <aside class="col-start-3 row-start-1 z-20">
+    <label for="my-drawer" class="btn btn-primary drawer-button mdlg:hidden w-full" id="sidebarBtn">
+      Sidebar
+    </label>
+    <TagView {noteDeri} />
+    <div class="h-12 fixed flex mdlg:hidden bottom-0 right-0 w-24 bg-base-300 z-30">
+      <button
+        class="btn btn-ghost text-primary btn-outline btn-sm flex-grow h-full"
+        title="Undo"
+        id="undoBtn"
+        on:click={() => noteDeri.sync.undo()}>
+        <IconUndo />
+      </button>
+      <button
+        class="btn btn-ghost text-primary btn-outline btn-sm flex-grow h-full"
+        title="Redo"
+        id="redoBtn"
+        on:click={() => {
+          noteDeri.sync.redo()
+          console.log("redo")
+        }}>
+        <IconRedo />
+      </button>
+    </div>
+  </aside>
   <div class="drawer-content z-0">
     <article bind:clientWidth={$tilesWidth}>
       {#each priorities as priority}
@@ -150,7 +177,7 @@
   </div>
   <div class="drawer-side z-10 no-scrollbar">
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-12 mdlg:pt-4">
+    <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-4">
       <li class="pt-4">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"
@@ -160,14 +187,7 @@
       <li>
         <Search {noteDeri} openFirst={noteDeri.openFirst} />
       </li>
-      <li></li>
       <li class="my-4"><DomainFilter {noteDeri} /></li>
-      {#if false}
-        <li hidden class="fixed bottom-8 left-12"><PriorityFilter noteArr={noteDeri.noteArr} /></li>
-        <li hidden>
-          <button class="underline" on:click={() => (Xview = !Xview)}>x view: {Xview}</button>
-        </li>
-      {/if}
     </ul>
   </div>
 </div>

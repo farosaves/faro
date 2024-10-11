@@ -60,7 +60,7 @@
     noteSync.noteStore.update((n) => new Map([...mock.notes, ...n])) // use user changes to mock notes or just use them
     noteSync.stuMapStore.update((_n) => mock.stuMap)
 
-    tutorialStep.set(1)
+    tutorialStep.set(1) // ! 1
     if (
       get(noteSync.noteStore)
         .values()
@@ -93,6 +93,15 @@
         })
       }
     })
+    document.getElementById("undoBtn")?.addEventListener("click", () => {
+      if ($tutorialStep === 5) $tutorialStep = 6
+    })
+    document.getElementById("redoBtn")?.addEventListener("click", () => {
+      if ($tutorialStep === 6) $tutorialStep = 7 // maybe skip and go to 8
+    })
+    document.getElementById("sidebarBtn")?.addEventListener("click", () => {
+      if ($tutorialStep === "openSidebar") $tutorialStep = 14
+    })
     window.umami.track("example dashboard open")
   })
   exclTagSet.subscribe((s) => {
@@ -107,7 +116,8 @@
       $tutorialStep = 5
       setTimeout(() => document.getElementById("hackybtn")!.click(), 100)
     } else if ($tutorialStep === 11) setTimeout(() => ($tutorialStep = "toggle all"), 2000)
-    else if ($tutorialStep === "toggle all" && s.size === 0) setTimeout(() => ($tutorialStep = 12), 500)
+    else if ($tutorialStep === "toggle all" && s.size === 0)
+      setTimeout(() => ($tutorialStep = innerWidth < 768 ? "openSidebar" : 12), 500)
   })
   $: console.log($tutorialStep)
   const handle_keydown = (e: KeyboardEvent) => {
@@ -117,6 +127,7 @@
       if ($tutorialStep === 6) $tutorialStep = 7
     }
   }
+
   noteSync.noteStore.subscribe((ns) => {
     if (
       $tutorialStep === 7 &&
@@ -138,10 +149,11 @@
   <Popover>
     <span class="text-2xl font-semibold my-4">Faro dashboard tutorial</span>
     <span class="text-lg font-semibold my-4">Welcome! Let's get you started.</span>
-    <div class="flex items-center">
-      <button class="btn btn-sm my-4 opacity-0 mx-1" disabled>Disable tutorial</button>
+    <div class="flex items-center justify-between w-full px-4">
+      <button class="btn btn-sm my-4 opacity-0 mx-1" disabled>Disable<br /> tutorial</button>
       <button class="btn btn-primary my-4 mx-1" autofocus on:click={() => tutorialStep.set(2)}>Start</button>
-      <button class="btn btn-sm my-4 mx-1" on:click={() => tutorialStep.set(0)}>Disable tutorial</button>
+      <button class="btn btn-sm my-4 mx-1" on:click={() => tutorialStep.set(0)}
+        >Disable<br /> tutorial</button>
     </div>
   </Popover>
 {:else if $tutorialStep === 2}
@@ -156,36 +168,40 @@
     <span class=" mb-4">Remember to come back after ;)</span>
   </Popover>
 {:else if $tutorialStep === "addTag"}
-  <Popover arrow={true} className="min-h-6" nth={1}>
+  <Popover arrow={true} className="min-h-6" nth={1} align={innerWidth < 768 ? "top" : "left"}>
     <span class="text-lg font-semibold my-4">Yay!</span>
-    <span class="font-medium mb-4">Click here to add a new tag<br /> Call it whatever you want.</span>
+    <span class="font-medium mb-4"
+      >Click here to add a new tag<br /> You can call it <span class="kbd kbd-sm">sea</span>.</span>
   </Popover>
 {:else if $tutorialStep === 5}
   <Popover>
     <button class="hidden" id="hackybtn"></button>
     <span class="text-lg font-semibold my-4">To undo</span>
-    <span class="font-semibold mb-4">
+    <span class="hidden md:block font-semibold mb-4">
       Press <div class="kbd kbd-sm">{ctrlKey}</div>
       +
       <div class="kbd kbd-sm">z</div></span>
+    <span class="md:hidden font-normal mb-4"> Press the undo arrow button in bottom right corner </span>
   </Popover>
 {:else if $tutorialStep === 6}
   <Popover>
     <span class="text-lg font-semibold my-4">To redo</span>
-    <span class="font-semibold my-4">
+    <span class="hidden md:block font-semibold my-4">
       Press <div class="kbd kbd-sm">{ctrlKey}</div>
       +
       <div class="kbd kbd-sm">shift</div>
       +
       <div class="kbd kbd-sm">z</div>
     </span>
+    <span class="md:hidden font-normal mb-4"> Press the redo button next to the undo button </span>
     <span class=" mb-4">This means you can experiment a bit and change your mind quickly.</span>
   </Popover>
 {:else if $tutorialStep === 7}
   <Popover arrow={true} className="items-stretch" nth={1} align="top">
     <span class="text-lg font-semibold my-4">More options!</span>
-    <span class="font-semibold mb-4"> Right click the save to see them.</span>
-    <span class="font-semibold mb-4"> & Click on a star to pin this save.</span>
+    <span class="hidden md:block font-semibold mb-4"> Right click the save to see them.</span>
+    <span class="md:hidden font-normal mb-4"> Press and hold the save to see them.</span>
+    <span class="font-normal mb-4"> & Click on a star to pin this save.</span>
   </Popover>
 {:else if $tutorialStep === 8}
   <Popover>
@@ -221,6 +237,12 @@
   <Popover arrow={true} className="tooltip-bottom" text="" align="left">
     <span class="text-lg font-semibold my-4">To revert</span>
     <span class="font-semibold mb-4"> Click the toggle-all button.</span>
+  </Popover>
+{:else if $tutorialStep === "openSidebar"}
+  <Popover>
+    <span class="text-lg font-semibold my-4">In the sidebar</span>
+    <span class="font-semibold mb-4">You can search by text and filter by sites.</span>
+    <span class="font-normal mb-4">Click the sidebar button to open it.</span>
   </Popover>
 {:else if $tutorialStep === 12}
   <Popover arrow={true} className="mb-2" text="Sites" align="top">
