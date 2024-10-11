@@ -60,7 +60,7 @@
     noteSync.noteStore.update((n) => new Map([...mock.notes, ...n])) // use user changes to mock notes or just use them
     noteSync.stuMapStore.update((_n) => mock.stuMap)
 
-    tutorialStep.set("addTag") // ! 1
+    tutorialStep.set(1) // ! 1
     if (
       get(noteSync.noteStore)
         .values()
