@@ -19,3 +19,17 @@ You organize them with tags - including Obsidian-inspired nested tags).
 7. Here's how big the market can be
 The limit is mostly by peoples willingness to use browser extension - going by password manager usage, you'd expect up to 10 million users.
 8. link to your website
+
+
+# pkms
+
+I used to bookmark much fewer pages that I wanted to, because it'd get difficult to keep track of them. 
+I find around 50 potentially useful pages per week (i.e. 2500/year), so I made a tool to make it manageable.
+
+Using it, you basically highlight a snippet when saving a page. And later you organize them with tags, including nested tags. 
+
+I'd like to get some feedback from you, so I made a demo page that you don't need to sign up nor download the extension for.
+
+
+
+Notably it's the only tool that doesn't allow you save pages without snippets.

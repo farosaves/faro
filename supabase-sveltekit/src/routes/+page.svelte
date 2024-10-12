@@ -111,8 +111,8 @@
   </div>
 </div>
 <div class="w-full pt-6 h-fit flex flex-col justify-center items-center" id="key-features">
-  <div class=" p-4 text-center text-5xl font-bold">Dead simple</div>
-  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">See what makes it unique:</div>
+  <div class=" p-4 text-center text-5xl font-bold">So simple</div>
+  <div class=" p-4 text-xl text-gray-700 dark:text-gray-400">3 features make it unique:</div>
   <div class=" mt-12 w-full flex flex-col lg:flex-row items-center justify-center lg:items-start">
     <!-- Icon Blocks -->
     <!-- Icon Block -->
@@ -124,9 +124,7 @@
       <div class="mt-5">
         <h3 class="text-lg font-semibold">Highlight and Save</h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          Pick a sentence to remember what the page is about and why you care about it. Highlight it and save
-          it.
-          <!-- Save your page with highlighted text snippets to remember what it is about and why you care about it. -->
+          Pick a sentence to remember the page and why you care about it. Highlight it and save it.
         </p>
       </div>
     </div>
@@ -157,12 +155,9 @@
         <IconSearch width="28" class="flex-shrink-0 size-6 text-black dark:text-white" />
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold text-black dark:text-white">Superb text search</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white">Easy text search</h3>
         <p class="mt-1 text-gray-800 dark:text-neutral-400">
-          <!-- Retrieve your saved pages instantly by simply searching for the highlighted snippets, boosting you
-          productivity. -->
-          Search for both titles and snippets at the same time - guaranteed to give you the relevant results. No
-          more googling for things you've seen.
+          Search for both titles and snippets at the same time - guaranteed to give you the relevant results.
         </p>
       </div>
     </div>
