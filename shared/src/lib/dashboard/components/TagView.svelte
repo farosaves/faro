@@ -8,7 +8,7 @@
   import { array as A, set as S, option as O, either as E, string as Str } from "fp-ts"
   import { NoteDeri, asc, desc, funLog, isCmd, sleep, tagModalOpenStore } from "$lib"
   import { derived, get, writable } from "svelte/store"
-  import { exclTagSet, exclTagSets, tempLimit } from "../filterSortStores"
+  import { exclTagSet, exclTagSets } from "../filterSortStores"
   exclTagSets.subscribe(funLog("exclTagSets"))
   import { getGroupTagCounts, groupize } from "./tagViewStores"
   import { onMount } from "svelte"
@@ -40,14 +40,12 @@
   )
 
   const checkClick = () => {
-    tempLimit()
     if (location.hash) history.replaceState("", document.title, location.pathname + location.search)
     // location.href = location.href.replace(/#$/, "")
     if ($exclTagSet.size > 0) $exclTagSets.sets[$exclTagSets.currId] = new Set()
     else $exclTagSets.sets[$exclTagSets.currId] = new Set($allTags)
   }
   const _toggleTag = (tag: string) => {
-    tempLimit()
     if (location.hash) history.replaceState("", document.title, location.pathname + location.search)
     // location.href = location.href.replace(/#$/, "")
     exclTagSets.update((s) => {
@@ -56,7 +54,6 @@
     })
   }
   const _toggleTagGroup = (tags: string[]) => {
-    tempLimit()
     if (location.hash) history.replaceState("", document.title, location.pathname + location.search)
     // location.href = location.href.replace(/#$/, "")
     exclTagSets.update((s) => {
