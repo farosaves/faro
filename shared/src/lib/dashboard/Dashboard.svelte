@@ -6,15 +6,7 @@
   import { flow, pipe } from "fp-ts/lib/function"
   import { record as R, tuple as T, array as A } from "fp-ts"
   import TagView from "./components/TagView.svelte"
-  import {
-    domainFilter,
-    fuzzySort,
-    newestFirst,
-    tagFilter,
-    priorityFilter,
-    tempLimit,
-    limit,
-  } from "./filterSortStores"
+  import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
@@ -42,7 +34,6 @@
   const allTags = noteDeri.allTags
 
   // let showing_contents: boolean[][]
-  $: applyLimit = <T,>(arr: T[]) => ($limit ? arr.slice(0, 20) : arr)
 
   let noteOpens: Record<string, boolean> = {}
   // export let note_sync: SyncLike
@@ -66,7 +57,6 @@
 
   const priorities = ["5", "0", "-5"] as const
   onMount(() => {
-    tempLimit()
     modalOpenStore.set(false)
     windowActive.set(true)
     isInExt && hasExtensionStore.set(true)
@@ -141,7 +131,7 @@
         <div
           class="flex flex-row flex-wrap border-secondary py-2"
           class:border-b-2={!!$note_groupss[priority].length}>
-          {#each applyLimit($note_groupss[priority]) as [title, note_group]}
+          {#each $note_groupss[priority] as [title, note_group]}
             <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
               <div
                 class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 my-2 sm:mx-1">
