@@ -49,7 +49,7 @@ export class NoteDeri {
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
     this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([n, s]) => {
-      const vals = [...n.values()] as Note[] // !
+      const vals = [...n.values()].filter(x => !!x.source_id) as Note[] // !
       return vals.map(n => ({ ...n, sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none }))
     })
 
