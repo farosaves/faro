@@ -180,3 +180,21 @@ type _T = {
   domain: string | null
 } | undefined
 export const fillInTitleDomain = (v: _T) => ({ title: v?.title || "missing Title", domain: v?.domain || "" })
+
+
+export const itMap = <T, U>(f: (item: T, index: number) => U) =>
+  function* (iterable: Iterable<T>): IterableIterator<U> {
+    let i = 0
+    for (const item of iterable)
+      yield f(item, i++)
+  }
+
+export const itFilter = <T>(f: (item: T, index: number) => boolean) =>
+  function* (iterable: Iterable<T>): IterableIterator<T> {
+    let i = 0
+    for (const item of iterable)
+      if (f(item, i++))
+        yield item
+  }
+
+
