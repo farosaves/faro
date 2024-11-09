@@ -200,7 +200,11 @@ const refreshOnline = async () => {
 
 const refresh = async (online = true) => {
   tabQueryUpdate()
-  if (online) return await refreshOnline()
+  if (online) {
+    const sess = await refreshOnline()
+    pipe(sess, O.map(s => s.expires_in > 1800 && setTimeout(refresh, s.expires_in / 2 + 1800 * 1000 / 2)))
+    return sess
+  }
   sess.set(O.none) // if offline
   return get(sess)
 }
