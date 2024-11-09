@@ -81,7 +81,7 @@
     </div>
   </div>
   <div class=" w-full xl:w-1/2 h-full flex justify-center xl:justify-end items-start xl:items-center">
-    <div class="h-1/2 px-3 pb-20 pt-16 md:pt-6">
+    <div class="h-1/2 px-3 pb-20 pt-16 md:pt-[30px]">
       <iframe
         loading="lazy"
         class="embed"
