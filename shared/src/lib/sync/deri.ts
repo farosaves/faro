@@ -3,7 +3,7 @@ import { record as R, array as A, nonEmptyArray as NA, string as S, option as O,
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
-import { filterSort, desc, descS, fillInTitleDomain } from "$lib"
+import { filterSort, desc, descS, fillInTitleDomain, itFilter, itMap } from "$lib"
 import type { UUID } from "crypto"
 import { gotoFunction } from "$lib/dashboard/utils"
 import type { Note } from "$lib/db/typeExtras"
@@ -48,10 +48,11 @@ export class NoteDeri {
     this.sync = noteSync
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
-    this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([n, s]) => {
-      const vals = [...n.values()].filter(x => !!x.source_id) as Note[] // !
-      return vals.map(n => ({ ...n, sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none }))
-    })
+    this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([ns, s]) =>
+      Array.from(pipe(ns.values(),
+        itFilter(n => !!n.source_id),
+        itMap(n => ({ ...(n as Note), sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none })))),
+    )
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
     this.allTags = derived(this.noteArr, ns => pipe(ns.toSorted(descS(x => x.updated_at)),
