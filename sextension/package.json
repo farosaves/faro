@@ -43,7 +43,7 @@
     "vite": "^5.1.4"
   },
   "dependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.23",
+    "@crxjs/vite-plugin": "^2.0.0-beta.28",
     "@extend-chrome/messages": "^1.2.2",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.39.8",
