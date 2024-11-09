@@ -197,7 +197,8 @@ export class NoteSync {
     console.log("undo", pT)
     if (!pT) return ({ undo, redo })
     toastNotify("Undo")
-    return ({ undo, redo: [...redo, this._xxdo(pT)] })
+    redo.push(this._xxdo(pT))
+    return ({ undo, redo })
   })
 
   redo = () => this.xxdoStacks.update(({ undo, redo }) => {
@@ -205,7 +206,8 @@ export class NoteSync {
     console.log("redo", pT)
     if (!pT) return ({ undo, redo })
     toastNotify("Redo")
-    return ({ redo, undo: [...undo, this._xxdo(pT)] })
+    undo.push(this._xxdo(pT))
+    return ({ redo, undo })
   })
 
   stackNAct = async (patchTup: PatchTup) => {

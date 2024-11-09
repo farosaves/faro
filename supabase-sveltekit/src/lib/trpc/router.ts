@@ -9,7 +9,7 @@ import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 import { SERVICE_ROLE_KEY, TIMESTAMP_SALT } from "$env/static/private"
 import { subtle } from "node:crypto"
 
-export const t = initTRPC.context<Context>().create()
+const t = initTRPC.context<Context>().create()
 
 const serviceSb = createClient<Database>(PUBLIC_SUPABASE_URL, SERVICE_ROLE_KEY)
 const warnIfErr = warnIfError(sbLogger(serviceSb))
