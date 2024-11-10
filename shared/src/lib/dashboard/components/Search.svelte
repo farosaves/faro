@@ -1,6 +1,6 @@
 <script lang="ts">
   import fuzzysort from "fuzzysort"
-  import { shortcut } from "$lib"
+  import { persisted, shortcut } from "$lib"
   import { fzRes, fzSelectedKeys, query, isSearchExact } from "../filterSortStores"
   import type { NoteDeri } from "$lib/sync/deri"
   import { writable, type Readable } from "svelte/store"
@@ -11,7 +11,7 @@
   const notes = noteDeri.noteArr
   const possibleSelections = ["sources.title", "quote"]
   const selectedKeys = possibleSelections // : (typeof possibleSelections)[number][]
-  let selectedMode = "Fuzzy"
+  const selectedMode = persisted("selectedMode", "Fuzzy")
   const norm = (s: number) => Math.max(s / 5000 + 1, 0) ** 8
   $: fzRes.set(
     !!$query &&
@@ -25,7 +25,7 @@
 
   $: fzSelectedKeys.set(selectedKeys)
   $: noteDeri.searching.set($query.length > 0 && focused)
-  $: $isSearchExact = selectedMode === "Exact"
+  $: $isSearchExact = $selectedMode === "Exact"
   const callback = () => document.getElementById("search_input")?.focus()
   let focused = true
   let innerWidth: number
@@ -55,14 +55,14 @@
       class="join-item btn grow btn-sm"
       type="radio"
       name="options"
-      bind:group={selectedMode}
+      bind:group={$selectedMode}
       value="Fuzzy"
       aria-label="Fuzzy search" />
     <input
       class="join-item btn grow btn-sm"
       type="radio"
       name="options"
-      bind:group={selectedMode}
+      bind:group={$selectedMode}
       value="Exact"
       aria-label="Exact search" />
   </div>
