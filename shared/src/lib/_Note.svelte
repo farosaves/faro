@@ -40,10 +40,8 @@
   $: text = pipe(
     note_data.searchArt,
     O.match(
-      () => {
-        const escaped = escapeHTML(note_data.quote)
-        return note_data.highlights ? replaceAll(escaped, replacer) : escaped
-      }, // only replace quote
+      () => replaceAll(escapeHTML(note_data.quote), replacer),
+
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,
