@@ -40,7 +40,7 @@
   $: text = pipe(
     note_data.searchArt,
     O.match(
-      () => replaceAll(escapeHTML(note_data.quote), replacer),
+      () => replaceAll(" " + escapeHTML(note_data.quote), replacer).trim(),
 
       ({ selectedKeys, optKR }) =>
         pipe(

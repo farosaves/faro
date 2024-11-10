@@ -6,7 +6,14 @@
   import { flow, pipe } from "fp-ts/lib/function"
   import { record as R, tuple as T, array as A } from "fp-ts"
   import TagView from "./components/TagView.svelte"
-  import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
+  import {
+    domainFilter,
+    fuzzySort,
+    newestFirst,
+    tagFilter,
+    priorityFilter,
+    textFilter,
+  } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
@@ -21,7 +28,6 @@
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
-  import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, writable } from "svelte/store"
   import IconUndo from "~icons/jam/undo"
@@ -38,7 +44,7 @@
   let noteOpens: Record<string, boolean> = {}
   // export let note_sync: SyncLike
   $: noteDeri.transformStore.set({
-    f: flow($fuzzySort.f, $tagFilter, $domainFilter, $priorityFilter),
+    f: flow($fuzzySort.f, $tagFilter, $domainFilter, $priorityFilter, $textFilter),
     overrideGroups: $fuzzySort.overrideGroups,
   })
   const note_groupss = noteDeri.groupStore

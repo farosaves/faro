@@ -15,6 +15,22 @@ const _exclTagSets = {
 }
 
 // const highlightId =
+export const query = writable("")
+export const isSearchExact = writable(false)
+const [rLeftEsc, rRightEsc] = escapeHTML(replacer("split")).split("split") // escaped version
+const [rLeftUnEsc, rRightUnEsc] = replacer("split").split("split") // unescaped version to replace in
+
+export const textFilter = derived([query, isSearchExact], ([t, b]) => (n: _A) => {
+  const query = b ? t : ""
+  if (query) {
+    const highlights = [query]
+    const priority = ((" " + n.sources.title).includes(query) || (" " + n.quote).includes(query)) ? n.priority : 0
+    if (priority) console.log(t, b, n.sources.title)
+    const sources = { title: n.sources.title.replace(t, replacer), domain: n.sources.domain }
+    return { ...n, highlights, priority, sources }
+  }
+  return n
+})
 
 
 export const exclTagSets = writable(_exclTagSets) // { serializer: devalue })
@@ -68,8 +84,8 @@ const fuzzySortDef = (newestFirst: boolean) => ({ f: (n: NoteEx): NoteEx & { pri
 
 export const fuzzySort = derived([fzRes, fzSelectedKeys, newestFirst], ([res, selectedKeys, newestFirst]) => {
   if (res && res.length) {
-    const [a1, b1] = escapeHTML(replacer("split")).split("split")
-    const [a2, b2] = replacer("split").split("split")
+    // const [a1, b1] = escapeHTML(replacer("split")).split("split") // escaped version
+    // const [a2, b2] = replacer("split").split("split") // unescaped version to replace in
 
     return ({ f: (n: NoteEx) => {
       let priority: number
@@ -96,8 +112,8 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, newestFirst], ([res, se
               chainN(i => optKR[i]),
               chainN(r => // no empty string
                 escapeHTML(fuzzysort.highlight(r, replacer)?.join("") || "")
-                  .replaceAll(a1, a2)
-                  .replaceAll(b1, b2) || undefined,
+                  .replaceAll(rLeftEsc, rLeftUnEsc)
+                  .replaceAll(rRightEsc, rRightUnEsc) || undefined,
               ),
             ),
           ),
