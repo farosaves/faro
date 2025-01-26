@@ -27,5 +27,13 @@
     "tslib": "^2.8.1",
     "typescript": "^5.6.3",
     "wxt": "^0.19.13"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "@trpc/client": "^10.45.2",
+    "devalue": "^5.1.1",
+    "fp-ts": "^2.16.9",
+    "fp-ts-std": "^1.0.0",
+    "trpc-chrome": "^1.0.0"
   }
 }
