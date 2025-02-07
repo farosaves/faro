@@ -169,7 +169,8 @@ export class NoteSync {
 
   // getSource_id = flow(domainTitle, n => get(this.invStuMapStore).get(n), O.fromNullable)
 
-  newNote = async (note: PendingNote & { tags: string[] }, src: Src) => {
+  newNote = async (note: Note) => {
+    // TODO: create bookmark
     // funLog("newNote")(src)
     // const source_id = await this.getsetSource_id(src)
     // const n = { ...createMock(), ...note, source_id }
@@ -184,7 +185,7 @@ export class NoteSync {
     const { patches, inverse } = patchTup
     const pTInverted = { inverse: patches, patches: inverse }
     updateStore(this.noteStore)(applyPatches(inverse)) // ! redo by 'default'
-    this.actionQueue.act(this._user_id)(pTInverted)
+    // this.actionQueue.act(this._user_id)(pTInverted)
     return pTInverted
   }
 
@@ -208,13 +209,13 @@ export class NoteSync {
 
   stackNAct = async (patchTup: PatchTup) => {
     this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-    await this.actionQueue.act(this._user_id)(patchTup)
+    // await this.actionQueue.act(this._user_id)(patchTup)
     // Bookmarks update here?
     // if (await chrome.permissions.contains(perm)) syncBookmarks()
     // getNotesOps(patchTup.patches, get(this.noteStore))
   }
 
-  updateAct = async (up: (arg: UnFreeze<Map<string, Notes>>) => void | Map<string, Notes>) =>
+  updateAct = async (up: (arg: UnFreeze<Map<string, Note>>) => void | Map<string, Note>) =>
     this.stackNAct(updateStore(this.noteStore)(up))
 
   deleteit = async (noteId: string) =>
