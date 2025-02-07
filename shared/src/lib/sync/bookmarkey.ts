@@ -1,7 +1,7 @@
 import { writable } from "svelte/store"
 import type { NotesOps } from "./notes_ops"
 import { array as A, option as O, eq, string as S, number as N } from "fp-ts"
-import type { NoteEx } from "$lib/db/typeExtras"
+import type { Note } from "$lib/note"
 import { pipe } from "fp-ts/lib/function"
 import { note2Url } from "$lib/dashboard/utils"
 import { asc, desc, funLog, uuidRegex } from "$lib/utils"
@@ -15,10 +15,6 @@ export const createBookmark = async (d: chrome.bookmarks.BookmarkCreateArg) => {
   await chrome.bookmarks.create(d)
   dontTrigger.set(false)
 }
-// const desiredTree = NA.groupBy((n: Notes) => A.sort(S.Ord)(n.tags).at(0) || "")
-// const desiredTree = (ns: NoteEx[]) => new Map(
-//   ns.map(n => [{ url: n.url, title: n.sources.title + " " + n.quote }, A.sort(S.Ord)(n.tags).at(0) || ""]),
-// )
 interface Bookmark extends chrome.bookmarks.BookmarkTreeNode {
   url: string
   children: undefined
@@ -35,16 +31,28 @@ type MyBookmark = { title: string, url: string, folders: string[] }
 const MBEq = eq.contramap((b: MyBookmark) => b.title + ";;" + b.url + ";;" + b.folders.join(";;"))(S.Eq)
 const BEq = eq.contramap((b: Bookmark & { folders: string[] }) => b.title + ";;" + b.url + ";;" + b.folders.join(";;"))(S.Eq)
 const folders = (tags: string[]) => tags.toSorted(desc(t => t.split("/").length, t => t.charCodeAt(0))).at(0)?.split("/") || []
-const note2Bookmark = (n: NoteEx): MyBookmark => ({ url: note2Url(n).href, title: n.sources.title + " \"" + n.quote + "\"", folders: folders(n.tags) })
-// const unsafeBookmark2Id = (f: Folder) => (b: MyBookmark): string =>
-//   f.children.filter(c => c.title == b.title).filter(c => c.url == b.url)[0].id
+const note2Bookmark = (n: Note): MyBookmark => ({
+  url: note2Url(n).href,
+  title: n.title + " \"" + n.quote + "\"" + n.tags.map(t => " #" + t).join(""),
+  folders: folders(n.tags),
+})
+
+const bookmark2Note = (b: MyBookmark): { title: string, quote: string, tags: string[] } => {
+  const quoteMatch = b.title.match(/"(.*?)" /)
+  const tagsMatch = b.title.match(/ #[^ ]*/g)
+  return {
+    title: b.title.split(" \"")[0],
+    quote: quoteMatch ? quoteMatch[1] : "",
+    tags: tagsMatch ? tagsMatch.map(t => t.trim().slice(1)) : [],
+  }
+}
 
 let prevHash: ArrayBuffer
 const encoder = new TextEncoder()
 // const abEq = (x: ArrayBuffer, y: ArrayBuffer) => pipe([x, y].map(t => Array.from(new Int32Array(t))), ([a, b]) => .equals(a, b))
 const abEq = eq.contramap((x: ArrayBuffer) => Array.from(new Int32Array(x)))(A.getEq(N.Eq)).equals
 const faroFolderTitle = "Faro"
-export const syncBookmarks = async (notes: NoteEx[]) => {
+export const syncBookmarks = async (notes: Note[]) => {
   const hash = await subtle.digest("SHA-256", encoder.encode(notes.map(x => [x.id, ...x.tags].join("")).join("")))
   if (abEq(hash, prevHash)) return funLog("syncBookmarks hash same")(hash) // & noop
   prevHash = hash

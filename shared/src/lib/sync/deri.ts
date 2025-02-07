@@ -6,7 +6,7 @@ import { pipe, flow } from "fp-ts/lib/function"
 import { filterSort, desc, descS, fillInTitleDomain, itFilter, itMap } from "$lib"
 import type { UUID } from "crypto"
 import { gotoFunction } from "$lib/dashboard/utils"
-import type { Note } from "$lib/db/typeExtras"
+import type { Note } from "$lib/note"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)
@@ -38,7 +38,7 @@ export class NoteDeri {
   sync: SyncLikeNStores
   groupStore: Readable<ReturnType<typeof applyTransform>>
   transformStore: Writable<typeof defTransform>
-  noteArr: Readable<NoteEx[]>
+  noteArr: Readable<Note[]>
   allTags: Readable<string[]>
   first
   openFirst: Readable<() => void>
@@ -50,8 +50,8 @@ export class NoteDeri {
     // this.nq = this.sb.from("notes")
     this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([ns, s]) =>
       Array.from(pipe(ns.values(),
-        itFilter(n => !!n.source_id),
-        itMap(n => ({ ...(n as Note), sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none })))),
+        // itFilter(n => !!n.source_id),
+        itMap(n => ({ ...(n as Note), sources: {title: n.title, domain: n.domain}, searchArt: O.none })))),
     )
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
