@@ -41,3 +41,18 @@
     tags = newTags
     onTagsChange(tags)
   }} />
+
+<style>
+  @media (prefers-color-scheme: dark) {
+    :global(.tagify__dropdown) {
+      background: #333;
+      color: #fff;
+    }
+    :global(.tagify__dropdown__item) {
+      color: #eee;
+    }
+    :global(.tagify__dropdown__item--active) {
+      background: #555;
+    }
+  }
+</style>
