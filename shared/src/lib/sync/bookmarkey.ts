@@ -1,7 +1,7 @@
 import { writable } from "svelte/store"
 import type { NotesOps } from "./notes_ops"
 import { array as A, option as O, eq, string as S, number as N } from "fp-ts"
-import type { Note } from "$lib/note"
+import type { Note } from "./note"
 import { pipe } from "fp-ts/lib/function"
 import { note2Url } from "$lib/dashboard/utils"
 import { asc, desc, funLog, uuidRegex } from "$lib/utils"
@@ -28,8 +28,9 @@ type Node = Folder | Bookmark
 const otherBookmarks = async () => (await chrome.bookmarks.getSubTree("2"))[0] as Node
 
 type MyBookmark = { title: string, url: string, folders: string[] }
-const MBEq = eq.contramap((b: MyBookmark) => b.title + ";;" + b.url + ";;" + b.folders.join(";;"))(S.Eq)
-const BEq = eq.contramap((b: Bookmark & { folders: string[] }) => b.title + ";;" + b.url + ";;" + b.folders.join(";;"))(S.Eq)
+const SEPARATOR = ";;"
+const MBEq = eq.contramap((b: MyBookmark) => b.title + SEPARATOR + b.url + SEPARATOR + b.folders.join(SEPARATOR))(S.Eq)
+const BEq = eq.contramap((b: Bookmark & { folders: string[] }) => b.title + SEPARATOR + b.url + SEPARATOR + b.folders.join(SEPARATOR))(S.Eq)
 const folders = (tags: string[]) => tags.toSorted(desc(t => t.split("/").length, t => t.charCodeAt(0))).at(0)?.split("/") || []
 const note2Bookmark = (n: Note): MyBookmark => ({
   url: note2Url(n).href,

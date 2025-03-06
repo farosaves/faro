@@ -1,6 +1,6 @@
 import { option as O, record as R, string as S, array as A, map as M, eq } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
-import type { Notes } from "$lib/db/types"
+import type { Note } from "./note"
 import type { Patch } from "immer"
 import { funLog, getOrElse } from "$lib/utils"
 import { persisted, type StorageType } from "./persisted-store"
@@ -15,11 +15,11 @@ export const xxdoStacks = (storage?: StorageType) => persisted<typeof _xxdoStack
 
 export type NotesOps = {
   op: "upsert" | "delete"
-  note: Notes
+  note: Note
 }[]
 const _getOp = (x: Patch): NotesOps[0]["op"] => (x.op == "remove" && x.path.length == 1) ? "delete" : "upsert"
 
-export const getNotesOps = (patches: Patch[], ns: Map<string, Notes>): NotesOps => patches
+export const getNotesOps = (patches: Patch[], ns: Map<string, Note>): NotesOps => patches
   .map(funLog("getNotesOps"))
   .map(x =>
     pipe(
@@ -43,7 +43,7 @@ export const getNotesOps = (patches: Patch[], ns: Map<string, Notes>): NotesOps 
 
 export const opAndNotes = (notesOps: NotesOps) => {
   const ops = notesOps.map(x => x.op)
-  const notes = pipe(notesOps, A.map(x => x.note), A.uniq(eq.contramap((n: Notes) => n.id)(S.Eq)))
+  const notes = pipe(notesOps, A.map(x => x.note), A.uniq(eq.contramap((n: Note) => n.id)(S.Eq)))
   if (A.uniq(S.Eq)(ops).length > 1) throw new Error("more than 1 operation type in action")
   const [op] = ops
   return { op, notes }

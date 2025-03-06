@@ -5,7 +5,7 @@
   import { option as O, array as A, predicate } from "fp-ts"
   import { ctrlKey, escapeHTML, sleep, replacer } from "./utils"
   import { modalOpenStore, modalNote, toastNotify, windowActive } from "./stores"
-  import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
+  import { MyTags, shortcut } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import IconTrash from "~icons/tabler/trash"
   import IconLink from "~icons/tabler/link"
@@ -13,7 +13,8 @@
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   import fuzzysort from "fuzzysort"
-  export let note_data: Omit<NoteEx, keyof SourceData>
+  import type { Note } from "./sync/note"
+  export let note_data: Note
   export let isOpen: boolean
   export let closeAll: () => void
   export let syncLike: SyncLike
