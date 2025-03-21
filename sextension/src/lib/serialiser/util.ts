@@ -47,8 +47,6 @@ export const createTextFragment = (text: string, numOccurrence: number): TextFra
   const fullText = normalize(document.body.textContent)
 
   // For long text (>15 chars), use textStart and textEnd format instead of full text
-  let fragment: TextFragment = ":~:text="
-
   const textStartEnd = text.length > 15
     ? encodeURIComponent(text.substring(0, 8)) + "," + encodeURIComponent(text.substring(text.length - 8))
     : encodeURIComponent(text)
@@ -76,6 +74,7 @@ export const createTextFragment = (text: string, numOccurrence: number): TextFra
   }
 
   // Add prefix if available (must be properly encoded)
+  let fragment = ""
   if (prefix) {
     fragment += encodeURIComponent(prefix) + "-,"
   }
@@ -96,7 +95,7 @@ export const createTextFragment = (text: string, numOccurrence: number): TextFra
     fragment += ",-" + encodeURIComponent(suffix)
   }
 
-  return fragment as TextFragment
+  return `:~:text=${fragment}`
 }
 
 /**
@@ -157,36 +156,6 @@ export const textFragmentToIndices = (fragment: string, testBody?: HTMLElement):
 }
 
 /**
- * Extracts a Range from a Text Fragment
- * @param fragment The text fragment URL
- * @param testBody Optional HTML body element for testing
- */
-export const textFragmentToRange = (fragment: string, testBody?: HTMLElement): Range | null => {
-  // Get the indices for the text
-  const [startIndex, endIndex] = textFragmentToIndices(fragment, testBody)
-
-  // If we're in a test environment with a provided body
-  if (testBody && typeof window !== "undefined") {
-    try {
-      // Create a range in the test document
-      const range = document.createRange()
-      const node = testBody
-      if (node.firstChild && node.firstChild.nodeType === Node.TEXT_NODE) {
-        range.setStart(node.firstChild, startIndex)
-        range.setEnd(node.firstChild, endIndex)
-        return range
-      }
-    } catch (e) {
-      console.error("Error creating range in test environment:", e)
-      return null
-    }
-  }
-
-  // For browser environment, use createRangeFromPositions
-  return createRangeFromPositions(startIndex, endIndex)
-}
-
-/**
  * Converts text indices to a Rangy serialization format
  * @param startIndex The start index
  * @param endIndex The end index
@@ -238,20 +207,16 @@ export const deserialize = (applierOptions: unknown) =>
     const app = _rangy.createClassApplier("_" + uuid, applierOptions)
     hl.addClassApplier(app)
 
-    // Check if it's a text fragment
+    let prepared: string
     if (serialized.startsWith(":~:text=")) {
-      const range = textFragmentToRange(serialized, testBody)
-      if (range) {
-        // Apply highlighter to the range
-        app.applyToRange(range)
-      }
+      prepared = serialized // TODO: this is wrong
     } else {
       // Legacy deserialization
-      const prepared = prepare2deserialize(doc.body.textContent || "", serialized)
-      try {
-        hl.deserialize(prepared)
-      } catch { return }
+      prepared = prepare2deserialize(doc.body.textContent || "", serialized)
     }
+    try {
+      hl.deserialize(prepared)
+    } catch { return }
   }
 
 export const adjIdxs = (
@@ -297,50 +262,3 @@ export const adjIdxs = (
   }
 }
 
-/**
- * Helper function to create a Range from text positions
- * @param startIndex Start index in the document text
- * @param endIndex End index in the document text
- */
-const createRangeFromPositions = (startIndex: number, endIndex: number): Range | null => {
-  if (typeof document === "undefined" || !document.body) return null
-
-  // Use a TreeWalker to find the positions in the DOM
-  const walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_TEXT,
-    null,
-  )
-
-  let currentPos = 0
-  let startNode = null, startOffset = 0
-  let endNode = null, endOffset = 0
-
-  while (walker.nextNode()) {
-    const nodeLength = walker.currentNode.textContent?.length || 0
-
-    // Check if start position is in this node
-    if (startNode === null && startIndex < currentPos + nodeLength) {
-      startNode = walker.currentNode
-      startOffset = startIndex - currentPos
-    }
-
-    // Check if end position is in this node
-    if (endNode === null && endIndex <= currentPos + nodeLength) {
-      endNode = walker.currentNode
-      endOffset = endIndex - currentPos
-      break // Found both nodes, no need to continue
-    }
-
-    currentPos += nodeLength
-  }
-
-  if (startNode && endNode) {
-    const range = document.createRange()
-    range.setStart(startNode, startOffset)
-    range.setEnd(endNode, endOffset)
-    return range
-  }
-
-  return null
-}
