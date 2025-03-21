@@ -28,6 +28,7 @@ type Node = Folder | Bookmark
 const otherBookmarks = async () => (await chrome.bookmarks.getSubTree("2"))[0] as Node
 
 type MyBookmark = { title: string, url: string, folders: string[] }
+// separator used for comparisons
 const SEPARATOR = ";;"
 const MBEq = eq.contramap((b: MyBookmark) => b.title + SEPARATOR + b.url + SEPARATOR + b.folders.join(SEPARATOR))(S.Eq)
 const BEq = eq.contramap((b: Bookmark & { folders: string[] }) => b.title + SEPARATOR + b.url + SEPARATOR + b.folders.join(SEPARATOR))(S.Eq)
@@ -39,12 +40,12 @@ const note2Bookmark = (n: Note): MyBookmark => ({
 })
 
 const bookmark2Note = (b: MyBookmark): { title: string, quote: string, tags: string[] } => {
-  const quoteMatch = b.title.match(/"(.*?)" /)
-  const tagsMatch = b.title.match(/ #[^ ]*/g)
+  const quoteMatch = b.title.matchAll(/"(.*)" /g).toArray().at(-1)
+  const tagsMatch = b.title.matchAll(/ #[^ ]*/g).toArray()
   return {
     title: b.title.split(" \"")[0],
     quote: quoteMatch ? quoteMatch[1] : "",
-    tags: tagsMatch ? tagsMatch.map(t => t.trim().slice(1)) : [],
+    tags: tagsMatch ? tagsMatch.map(t => t[1].trim().slice(1)) : [],
   }
 }
 
