@@ -13,7 +13,6 @@ export * from "./shortcut"
 export * from "./cryptic/cryptic"
 export * from "./funs/extract_char"
 // import { makeQH } from "./snippetiser/snip"
-import { persisted } from "./sync/persisted-store"
 export * from "./stores"
 import { exclTagSet } from "./dashboard/filterSortStores"
 

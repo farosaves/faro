@@ -3,7 +3,6 @@ import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
 import { filterSort, desc, descS, itMap } from "$lib"
-import type { UUID } from "crypto"
 import { gotoFunction } from "$lib/dashboard/utils"
 import type { Note } from "./note"
 

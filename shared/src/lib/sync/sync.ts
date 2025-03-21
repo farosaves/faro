@@ -3,15 +3,15 @@
 // @ts-ignore
 import { persisted } from "./persisted-store"
 import type { Note } from "./note"
-import { derived, get, type Readable, type Writable } from "svelte/store"
-import {  funLog, invertMap, domainTitle, neq, escapeRegExp } from "$lib/utils"
+import { derived, type Readable, type Writable } from "svelte/store"
+import { invertMap, domainTitle, neq, escapeRegExp } from "$lib/utils"
 import { option as O, map as M } from "fp-ts"
 import { flow, pipe } from "fp-ts/lib/function"
 import * as devalue from "devalue"
 import { xxdoStacks, type PatchTup } from "./notes_ops"
 import type { UUID } from "crypto"
 import type { UnFreeze } from "structurajs"
-import { activeLoadsStore, requestedSync, toastNotify } from "$lib/stores"
+import { activeLoadsStore, toastNotify } from "$lib/stores"
 import { applyPatches, updateStore } from "./utils"
 // import * as lzString from "lz-string"
 
