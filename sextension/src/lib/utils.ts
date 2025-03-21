@@ -2,7 +2,6 @@
 import { API_ADDRESS, DEBUG } from "shared"
 import { deleteSnippetMsg } from "./chromey/messages"
 import type { UUID } from "crypto"
-import { flow } from "fp-ts/lib/function"
 
 /**  STRIPS TRAILING '/' */
 
