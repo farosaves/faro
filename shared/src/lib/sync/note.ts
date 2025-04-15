@@ -22,6 +22,7 @@ export type Note = {
   // user_id: string
   // user_note: string | null
 }
+export type SourceData = { sources: { title: string, domain: string } }
 
 export type NoteEx = Note &
   SourceData & {

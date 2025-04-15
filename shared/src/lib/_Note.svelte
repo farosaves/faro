@@ -13,8 +13,8 @@
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   import fuzzysort from "fuzzysort"
-  import type { Note } from "./sync/note"
-  export let note_data: Note
+  import type { NoteEx } from "./sync/note"
+  export let note_data: NoteEx
   export let isOpen: boolean
   export let closeAll: () => void
   export let syncLike: SyncLike
