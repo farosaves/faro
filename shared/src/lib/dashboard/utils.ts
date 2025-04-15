@@ -4,11 +4,7 @@ import { hasExtensionStore } from "$lib/stores"
 import { API_ADDRESS } from "$lib/utils"
 import { get } from "svelte/store"
 
-export const note2Url = (n: Note) => {
-  const url = new URL(n.url)
-  n.snippet_uuid && (url.hash = "_" + n.snippet_uuid)
-  return url
-}
+export const note2Url = (n: Note) => n.url
 
 export const gotoFunction = (nd: NoteEx | undefined) => () => {
   if (nd === undefined) return
