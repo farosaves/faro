@@ -104,6 +104,15 @@ test("regexTextFragment", async () => {
   expect(mainStart4).toBe("skeletal")
   expect(mainEnd4).toBe(undefined)
   expect(suffix4).toBe(undefined)
+
+  const fragment5 = ":~:text=ure%20and%20-,plate,-%20arrange"
+  const match5 = fragment5.match(regexTextFragment)
+  console.log(match5?.groups)
+  const { prefix: prefix5, mainStart: mainStart5, mainEnd: mainEnd5, suffix: suffix5 } = match5?.groups || {}
+  expect(prefix5).toBe("ure%20and%20")
+  expect(mainStart5).toBe("plate")
+  expect(mainEnd5).toBe(undefined)
+  expect(suffix5).toBe("%20arrange")
 })
 
 test("html text fragment test with mocked document", async () => {
@@ -125,7 +134,7 @@ test("html text fragment test with mocked document", async () => {
     expect(x).toBe(":~:text=skeletal,nd%20plate")
 
     // Get indices from the text fragment and verify
-    const [l, r] = textFragmentToIndices(x, mock.document.body)
+    const [l, r] = textFragmentToIndices(x)
     expect(l).toBe(quoteIndex) // Start index should match where the text is found
     expect(r).toBe(quoteIndex + quote.length) // End index should be start + length
 
@@ -160,7 +169,7 @@ test("html text fragment test with mocked v2", async () => {
     expect(x).toBe(":~:text=ure%20and%20-,plate,-%20arrange")
 
     // Get indices from the text fragment and verify
-    const [l, r] = textFragmentToIndices(x, mock.document.body)
+    const [l, r] = textFragmentToIndices(x)
     expect(l).toBe(quoteIndex) // Start index should match where the text is found
     expect(r).toBe(quoteIndex + quote.length) // End index should be start + length
 

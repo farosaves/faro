@@ -123,107 +123,69 @@ export const createTextFragment = (text: string, numOccurrence: number): TextFra
   return `:~:text=${fragment}`
 }
 
-// Text fragment regex with the following format:
-// :~:text=prefix-,main,-suffix
-// Where:
-// - prefix-,      = optional prefix followed by -,
-// - main          = the main text fragment (can contain commas)
-// - ,-suffix      = optional suffix with ,- prefix
 export const regexTextFragment = new RegExp(
-  // eslint-disable-next-line @stylistic/comma-dangle
   ":~:text=" // The text fragment prefix
   + "(?:(?<prefix>[^-]*)-,)?" // optional prefix followed by -,
   + "(?<mainStart>[^-,]+)" // main text fragment
-  + "(,(?!-)(?<mainEnd>[^-,]+))?" // optional second main text
-  + "(?:,-(?<suffix>[^-]*))?" // optional suffix with ,- prefix
+  + "(,(?!-)(?<mainEnd>[^-,]+))?" // optional second main textxe
+  + "(?:,-(?<suffix>[^-]*))?", // optional suffix with ,- prefix
 )
 
-export const textFragmentToIndices = (fragment: string, testBody?: HTMLElement): [number, number] => {
+export const textFragmentToIndices = (fragment: string): [number, number] => {
+  // Parse the text fragment using the regex
   const textMatch = fragment.match(regexTextFragment)
   if (!textMatch) return [0, 0]
 
-  // destructure properly - match[0] is the full match
-  const [_fullMatch, prefix, mainStart, mainEnd, suffix] = textMatch
-
-  // Decode the components
-  const decodedMainStart = decodeURIComponent(mainStart || "")
-  const decodedMainEnd = mainEnd ? decodeURIComponent(mainEnd.substring(1)) : "" // remove the comma
-  const decodedPrefix = prefix ? decodeURIComponent(prefix) : ""
-  const decodedSuffix = suffix ? decodeURIComponent(suffix) : ""
+  // Extract and decode components using destructuring and ternaries
+  const { prefix, mainStart, mainEnd, suffix } = textMatch.groups || {}
+  const decodedMainStart = decodeURIComponent(mainStart ?? "")
+  const decodedMainEnd = decodeURIComponent(mainEnd ?? "")
+  const decodedPrefix = decodeURIComponent(prefix ?? "")
+  const decodedSuffix = decodeURIComponent(suffix ?? "")
 
   if (!decodedMainStart) return [0, 0]
 
-  // Get the text content, either from the document body or the test body
-  let fullText = ""
-  if (testBody) {
-    // Use the provided test body
-    fullText = normalize(testBody.textContent)
-  } else if (typeof window !== "undefined" && window.document && window.document.body) {
-    // Use the browser's document body
-    fullText = normalize(document.body.textContent)
-  } else if (typeof document !== "undefined" && document.body) {
-    // Another way to access document body
-    fullText = normalize(document.body.textContent)
+  // Get the document text content
+  const fullText = typeof document !== "undefined" && document.body
+    ? normalize(document.body.textContent)
+    : ""
+
+  if (!fullText) throw new Error("No text content found")
+
+  // Create pattern fragments with concise ternary operators
+  const prefixPattern = decodedPrefix ? `${escapeRegExp(decodedPrefix)}` : ""
+  const mainStartPattern = `(${escapeRegExp(decodedMainStart)}`
+  const mainEndPattern = decodedMainEnd ? `[\\s\\S]*?${escapeRegExp(decodedMainEnd)}` : ""
+  const suffixPattern = decodedSuffix ? `)${escapeRegExp(decodedSuffix)}` : ")"
+
+  // Combine patterns
+  const fullPattern = new RegExp(`${prefixPattern}${mainStartPattern}${mainEndPattern}${suffixPattern}`, "i")
+
+  // Find the match
+  const match = fullText.match(fullPattern)
+
+  // If we found a match with our pattern
+  if (match && match.index !== undefined && match[1]) {
+    const startIndex = match.index + (decodedPrefix.length || 0)
+    const matchedLength = match[1].length
+    return [startIndex, startIndex + matchedLength]
   }
 
-  // If we still have no text content, return default values for testing
-  if (!fullText) {
-    return [0, decodedMainStart.length + decodedMainEnd.length]
-  }
+  // Fallback: try finding just the main start text
+  const startIndex = fullText.indexOf(decodedMainStart)
+  if (startIndex === -1) return [0, 0]
 
-  // If we have both mainStart and mainEnd, they represent the first and last parts of a longer text
-  if (decodedMainEnd) {
-    // Create a regex pattern to find text that starts with mainStart and ends with mainEnd
-    // We use [\s\S]* to match any characters (including newlines) between start and end
-    const pattern = new RegExp(escapeRegExp(decodedMainStart) + "[\\s\\S]*?" + escapeRegExp(decodedMainEnd), "i")
-    const fullTextMatch = fullText.match(pattern)
+  // If no end text, return just the start
+  if (!decodedMainEnd) return [startIndex, startIndex + decodedMainStart.length]
 
-    if (fullTextMatch && fullTextMatch.index !== undefined) {
-      const matchedText = fullTextMatch[0]
-      return [fullTextMatch.index, fullTextMatch.index + matchedText.length]
-    }
-  }
+  // Try to find end text after start
+  const textAfterStart = fullText.substring(startIndex + decodedMainStart.length)
+  const endIndex = textAfterStart.indexOf(decodedMainEnd)
 
-  // Handle prefix and suffix contexts if available
-  if (decodedPrefix && decodedSuffix) {
-    // Find text that has prefix before it and suffix after it
-    const pattern = new RegExp(
-      escapeRegExp(decodedPrefix)
-      + "(" + escapeRegExp(decodedMainStart)
-      + (decodedMainEnd ? "[\\s\\S]*?" + escapeRegExp(decodedMainEnd) : "")
-      + ")"
-      + escapeRegExp(decodedSuffix),
-      "i"
-    )
-
-    const match = fullText.match(pattern)
-    if (match && match.index !== undefined && match[1]) {
-      const startIndex = match.index + decodedPrefix.length
-      return [startIndex, startIndex + match[1].length]
-    }
-  }
-
-  // Just try to find mainStart text
-  const textIndex = fullText.indexOf(decodedMainStart)
-  if (textIndex !== -1) {
-    // If we only have mainStart, just use its length
-    if (!decodedMainEnd) {
-      return [textIndex, textIndex + decodedMainStart.length]
-    }
-
-    // Otherwise, try to find a reasonable endpoint by looking for mainEnd after mainStart
-    const textAfterStart = fullText.substring(textIndex + decodedMainStart.length)
-    const endIndex = textAfterStart.indexOf(decodedMainEnd)
-
-    if (endIndex !== -1) {
-      return [textIndex, textIndex + decodedMainStart.length + endIndex + decodedMainEnd.length]
-    }
-
-    // Fallback to just returning mainStart
-    return [textIndex, textIndex + decodedMainStart.length]
-  }
-
-  return [0, 0]
+  // Return appropriate range based on whether we found the end text
+  return endIndex !== -1
+    ? [startIndex, startIndex + decodedMainStart.length + endIndex + decodedMainEnd.length]
+    : [startIndex, startIndex + decodedMainStart.length]
 }
 
 /**
