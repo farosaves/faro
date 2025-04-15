@@ -21,3 +21,5 @@ export type Note = {
   // user_id: string
   // user_note: string | null
 }
+
+export type NoteEx = Note & {}
