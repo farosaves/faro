@@ -1,4 +1,5 @@
 import type { UUID } from "crypto"
+import type { Option } from "fp-ts/lib/Option"
 
 export type Note = {
   id: UUID
@@ -22,4 +23,8 @@ export type Note = {
   // user_note: string | null
 }
 
-export type NoteEx = Note & {}
+export type NoteEx = Note &
+  SourceData & {
+    searchArt: Option<{ selectedKeys: string[], optKR: Fuzzysort.KeysResult<NoteEx> }>
+  }
+
