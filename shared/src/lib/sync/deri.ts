@@ -1,12 +1,12 @@
-import { record as R, array as A, nonEmptyArray as NA, string as S, option as O, tuple as T } from "fp-ts"
+import { record as R, array as A, nonEmptyArray as NA, string as S, tuple as T } from "fp-ts"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
 import { filterSort, desc, descS, itMap } from "$lib"
 import { gotoFunction } from "$lib/dashboard/utils"
-import type { Note } from "./note"
+import { note2NoteEx, type NoteEx } from "./note"
 
-const defTransform = { f: (n: Note) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
+const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)
 
 // each patch may need validation if persisted..
@@ -16,7 +16,7 @@ const recordDefaults = <T extends string>(flds: T[]) => <U>(r: Record<string, U[
   return r as Record<T, U[]>
 }
 
-const applyTransform = ([ns, transform]: [Note[], typeof defTransform]) =>
+const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
   pipe(
     ns,
     A.map(transform.f),
@@ -24,7 +24,7 @@ const applyTransform = ([ns, transform]: [Note[], typeof defTransform]) =>
     NA.groupBy(n => transform.overrideGroups ? "0" : n.prioritised.toString()),
     recordDefaults(["5", "0", "-5"]),
     R.map(NA.groupBy(n => n.source_id)),
-    R.map(R.toArray<string, (Note & { priority: number })[]>),
+    R.map(R.toArray<string, (NoteEx & { priority: number })[]>),
     R.map(filterSort(
       flow(T.snd, A.map(x => x.priority), A.reduce(0, Math.max)), // sort groups by max highest priority
     )),
@@ -36,9 +36,9 @@ export class NoteDeri {
   sync: SyncLikeNStores
   groupStore: Readable<ReturnType<typeof applyTransform>>
   transformStore: Writable<typeof defTransform>
-  noteArr: Readable<Note[]>
+  noteArr: Readable<NoteEx[]>
   allTags: Readable<string[]>
-  first
+  first: Readable<NoteEx | undefined>
   openFirst: Readable<() => void>
   idHighlighted: Readable<string>
   searching
@@ -46,9 +46,9 @@ export class NoteDeri {
     this.sync = noteSync
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
-    this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([ns, s]) =>
+    this.noteArr = derived(this.sync.noteStore, ns =>
       Array.from(pipe(ns.values(),
-        itMap(n => ({ ...n, searchArt: O.none })))),
+        itMap(note2NoteEx))),
     )
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
