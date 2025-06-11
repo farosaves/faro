@@ -1,8 +1,7 @@
-import type { Session } from "@supabase/supabase-js"
 import { writable } from "svelte/store"
 import { option as O, array as A } from "fp-ts"
 import type { Action } from "svelte/action"
-import type { Notes } from "./db/types"
+import type { Note } from "./sync/note"
 import { persisted } from "./sync/persisted-store"
 
 export const modalOpenStore = writable(false)
@@ -14,11 +13,7 @@ export const tagModalOpenStore = writable(false)
 
 export const windowActive = writable(false)
 
-const _sess: O.Option<Session> = O.none
-
-export const sessStore = writable(_sess)
-
-export const modalNote = writable<O.Option<Notes>>(O.none)
+export const modalNote = writable<O.Option<Note>>(O.none)
 
 let nToast = 0
 export const toastStore = writable<[string, number][]>([])

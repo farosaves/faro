@@ -5,7 +5,7 @@
   import { option as O, array as A, predicate } from "fp-ts"
   import { ctrlKey, escapeHTML, sleep, replacer } from "./utils"
   import { modalOpenStore, modalNote, toastNotify, windowActive } from "./stores"
-  import { MyTags, shortcut, type NoteEx, type SourceData } from "./index"
+  import { MyTags, shortcut } from "./index"
   import { pipe } from "fp-ts/lib/function"
   import IconTrash from "~icons/tabler/trash"
   import IconLink from "~icons/tabler/link"
@@ -13,7 +13,8 @@
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   import fuzzysort from "fuzzysort"
-  export let note_data: Omit<NoteEx, keyof SourceData>
+  import type { NoteEx } from "./sync/note"
+  export let note_data: NoteEx
   export let isOpen: boolean
   export let closeAll: () => void
   export let syncLike: SyncLike
@@ -30,20 +31,17 @@
   let this_element: Element
   $: tags = note_data.tags || []
 
-  const replaceAll = (escaped: string, replacer: (c: string) => string) => {
-    for (const hl of note_data.highlights) escaped = escaped.replace(hl, replacer)
-    return escaped
-  }
+  // const replaceAll = (escaped: string, replacer: (c: string) => string) => {
+  //   for (const hl of note_data.highlights) escaped = escaped.replace(hl, replacer)
+  //   return escaped
+  // }
   $: [a1, b1] = escapeHTML(replacer("split")).split("split")
   $: [a2, b2] = replacer("split").split("split")
 
   $: text = pipe(
     note_data.searchArt,
     O.match(
-      () => {
-        const escaped = escapeHTML(note_data.quote)
-        return note_data.highlights ? replaceAll(escaped, replacer) : escaped
-      }, // only replace quote
+      () => {}, // only replace quote
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,

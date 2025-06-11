@@ -1,15 +1,14 @@
-import type { SupabaseClient } from "$lib/db/typeExtras"
 import { DEBUG } from "$lib/utils"
 import { array as A } from "fp-ts"
 import type { Patch } from "immer"
 
 
-export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
-  const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
-    .order("updated_at", { ascending: true }).limit(10000) // TODO: pagination
-    // I think the pagination should be handled here and not in the fetch new notes function.
-  return data || []
-}
+// export const getUpdatedNotes = async (supabase: SupabaseClient, user_id: string, lastDate: string) => {
+//   const { data } = await supabase.from("notes").select("*").eq("user_id", user_id).gt("updated_at", lastDate)
+//     .order("updated_at", { ascending: true }).limit(10000) // TODO: pagination
+//     // I think the pagination should be handled here and not in the fetch new notes function.
+//   return data || []
+// }
 
 import {
   applyPatchesMutatively as _applyPatches,

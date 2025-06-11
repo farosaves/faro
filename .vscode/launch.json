@@ -6,25 +6,11 @@
     "configurations": [
         {
             "type": "node-terminal",
-            "name": "Run Script: test",
-            "request": "launch",
-            "command": "npm run test",
-            "cwd": "${workspaceFolder}/supabase-sveltekit"
-        },
-        {
-            "type": "node-terminal",
             "name": "Run Script: test shared",
             "request": "launch",
-            "command": "npm run test",
+            "command": "npm run test -w=shared",
             "cwd": "${workspaceFolder}/shared"
         },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Launch Chrome",
-            "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/supabase-sveltekit"
-          }
       
     ]
 }

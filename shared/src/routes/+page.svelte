@@ -5,7 +5,7 @@
   import { DEBUG, Dashboard, NoteSync, chainN, funLog, windowActive, type SyncLikeNStores } from "$lib"
   import { onMount } from "svelte"
   import { writable } from "svelte/store"
-  import Tagsvify from "$lib/Tagsvify.svelte"
+  // import Tagsvify from "$lib/Tagsvify.svelte"
   //   const noteSync = new NoteSync(supabase, undefined, async () => false)
 
   onMount(async () => {})

@@ -1,4 +1,3 @@
-import type { SourceData, SupabaseClient } from "./db/typeExtras"
 import { array as A, option as O, either as E } from "fp-ts"
 import type { Option } from "fp-ts/lib/Option"
 import { flow, identity, pipe } from "fp-ts/lib/function"
@@ -8,12 +7,12 @@ import { Observable } from "rxjs"
 import { v5 } from "uuid"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
-export const domainTitle = (src: Src) => [src.domain, src.title].join(";")
+export const domainTitle = (note: Note) => [note.domain, note.title].join(";")
 
 import type { UUID } from "crypto"
+import type { Note } from "./sync/note"
 // setAutoFreeze(false)  only for perf reasons makes sense if tested..
 
-export type Src = SourceData["sources"]
 // strips trailing /
 export const delTr = (s: string | undefined) => s?.replace(/\/$/, "") || ""
 export const API_ADDRESS = delTr(import.meta.env.VITE_PI_IP as string)
@@ -84,7 +83,6 @@ export const funLog = (where = "", from = "", time = true) => <T>(n: T) => {
 }
 export type DebugMsg = { severity: "warn" | "info" | "err", where: string, from: string, msg: string }
 type _F = (m: DebugMsg) => Promise<unknown>
-export const sbLogger = (sb: SupabaseClient): _F => async m => await sb.from("mylogs").insert(m)// .then(console.log)
 
 export const funLog2 = (f: _F) => (where = "", from = "", time = true) => <T>(n: T) => {
   if (doLog()) console.log(from, n, where && ("at " + where), time && new Date().toISOString())
@@ -158,8 +156,6 @@ export const retryOnce = async <T>(f: (() => T), delay = 500, debugMsg = "retry"
 export const isMac = () => navigator.userAgent.includes("Mac OS X")
 export const isCmd = (e: KeyboardEvent | MouseEvent) => isMac() ? e.metaKey : e.ctrlKey
 
-export const getKey = async (sb: SupabaseClient) =>
-  (await sb.from("keys").select("*").maybeSingle().then(warnIfError(sbLogger(sb))("getKey"))).data?.key || undefined
 
 export const pick = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

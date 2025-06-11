@@ -1,4 +1,4 @@
-import type { NoteEx } from "$lib/db/typeExtras"
+import type { NoteEx } from "$lib/sync/note"
 import { replacer } from "$lib/utils"
 import { persisted } from "$lib/sync/persisted-store"
 import { chainN, escapeHTML, getOrElse } from "$lib/utils"
@@ -61,57 +61,62 @@ export const fzSelectedKeys = writable<string[]>([])
 
 export const newestFirst = writable(true)
 
-const fuzzySortDef = (newestFirst: boolean) => ({ f: (n: NoteEx): NoteEx & { priority: number } => ({
-  ...n,
-  priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
-}), overrideGroups: false })
+const fuzzySortDef = (newestFirst: boolean) => ({
+  f: (n: NoteEx): NoteEx & { priority: number } => ({
+    ...n,
+    priority: newestFirst ? Date.parse(n.created_at) : Date.now() - Date.parse(n.created_at),
+  }),
+  overrideGroups: false,
+})
 
 export const fuzzySort = derived([fzRes, fzSelectedKeys, newestFirst], ([res, selectedKeys, newestFirst]) => {
   if (res && res.length) {
     const [a1, b1] = escapeHTML(replacer("split")).split("split")
     const [a2, b2] = replacer("split").split("split")
 
-    return ({ f: (n: NoteEx) => {
-      let priority: number
-      let searchArt
-      let title: string
-      if (res && res.length) {
-        priority = pipe(
-          Array.from(res),
-          A.findFirstMap(r => (r.obj.id == n.id ? O.some(r.score) : O.none)),
-          O.match(() => 0, identity),
-        )
-        searchArt = pipe(
-          Array.from(res),
-          A.findFirst(r => r.obj.id == n.id),
-          O.map(optKR => ({ selectedKeys, optKR })),
-        )
-        // todo this is almost the same as one in shared _Note
-        title = pipe(
-          searchArt,
-          O.chain(({ selectedKeys, optKR }) =>
-            pipe(
-              selectedKeys,
-              A.findIndex(n => n == "sources.title"),
-              chainN(i => optKR[i]),
-              chainN(r => // no empty string
-                escapeHTML(fuzzysort.highlight(r, replacer)?.join("") || "")
-                  .replaceAll(a1, a2)
-                  .replaceAll(b1, b2) || undefined,
+    return ({
+      f: (n: NoteEx) => {
+        let priority: number
+        let searchArt
+        let title: string
+        if (res && res.length) {
+          priority = pipe(
+            Array.from(res),
+            A.findFirstMap(r => (r.obj.id == n.id ? O.some(r.score) : O.none)),
+            O.match(() => 0, identity),
+          )
+          searchArt = pipe(
+            Array.from(res),
+            A.findFirst(r => r.obj.id == n.id),
+            O.map(optKR => ({ selectedKeys, optKR })),
+          )
+          // todo this is almost the same as one in shared _Note
+          title = pipe(
+            searchArt,
+            O.chain(({ selectedKeys, optKR }) =>
+              pipe(
+                selectedKeys,
+                A.findIndex(n => n == "sources.title"),
+                chainN(i => optKR[i]),
+                chainN(r => // no empty string
+                  escapeHTML(fuzzysort.highlight(r, replacer)?.join("") || "")
+                    .replaceAll(a1, a2)
+                    .replaceAll(b1, b2) || undefined,
+                ),
               ),
             ),
-          ),
-          O.getOrElse(() => n.sources.title),
-        )
-      } else {
-        const createdMilis = Date.parse(n.created_at)
-        priority = newestFirst ? createdMilis : Date.now() - createdMilis
-        searchArt = O.none
-        title = n.sources.title
-      }
-      const sources = { domain: n.sources.domain, title }
-      return { ...n, priority, searchArt, sources }
-    }, overrideGroups: true })
+            O.getOrElse(() => n.sources.title),
+          )
+        } else {
+          const createdMilis = Date.parse(n.created_at)
+          priority = newestFirst ? createdMilis : Date.now() - createdMilis
+          searchArt = O.none
+          title = n.sources.title
+        }
+        const sources = { domain: n.sources.domain, title }
+        return { ...n, priority, searchArt, sources }
+      }, overrideGroups: true,
+    })
   } else {
     return fuzzySortDef(newestFirst)
   }

@@ -1,12 +1,10 @@
-import type { NoteEx } from "$lib"
-import { record as R, array as A, nonEmptyArray as NA, string as S, option as O, tuple as T } from "fp-ts"
+import { record as R, array as A, nonEmptyArray as NA, string as S, tuple as T } from "fp-ts"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
 import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
-import { filterSort, desc, descS, fillInTitleDomain, itFilter, itMap } from "$lib"
-import type { UUID } from "crypto"
+import { filterSort, desc, descS, itMap } from "$lib"
 import { gotoFunction } from "$lib/dashboard/utils"
-import type { Note } from "$lib/db/typeExtras"
+import { note2NoteEx, type NoteEx } from "./note"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)
@@ -25,7 +23,7 @@ const applyTransform = ([ns, transform]: [NoteEx[], typeof defTransform]) =>
     A.filter(n => n.priority > 0),
     NA.groupBy(n => transform.overrideGroups ? "0" : n.prioritised.toString()),
     recordDefaults(["5", "0", "-5"]),
-    R.map(NA.groupBy(n => n.sources.title)),
+    R.map(NA.groupBy(n => n.source_id)),
     R.map(R.toArray<string, (NoteEx & { priority: number })[]>),
     R.map(filterSort(
       flow(T.snd, A.map(x => x.priority), A.reduce(0, Math.max)), // sort groups by max highest priority
@@ -40,7 +38,7 @@ export class NoteDeri {
   transformStore: Writable<typeof defTransform>
   noteArr: Readable<NoteEx[]>
   allTags: Readable<string[]>
-  first
+  first: Readable<NoteEx | undefined>
   openFirst: Readable<() => void>
   idHighlighted: Readable<string>
   searching
@@ -48,10 +46,9 @@ export class NoteDeri {
     this.sync = noteSync
     this.transformStore = transformStore
     // this.nq = this.sb.from("notes")
-    this.noteArr = derived([this.sync.noteStore, this.sync.stuMapStore], ([ns, s]) =>
+    this.noteArr = derived(this.sync.noteStore, ns =>
       Array.from(pipe(ns.values(),
-        itFilter(n => !!n.source_id),
-        itMap(n => ({ ...(n as Note), sources: fillInTitleDomain(s.get(n.source_id as UUID)), searchArt: O.none })))),
+        itMap(note2NoteEx))),
     )
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)

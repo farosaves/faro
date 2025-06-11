@@ -21,7 +21,7 @@
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
-  import PriorityFilter from "./components/PriorityFilter.svelte"
+  // import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, writable } from "svelte/store"
   import IconUndo from "~icons/jam/undo"
