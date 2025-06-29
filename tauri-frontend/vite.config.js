@@ -5,7 +5,6 @@ import Icons from "unplugin-icons/vite"
 const host = process.env.TAURI_DEV_HOST
 
 // https://vitejs.dev/config/
-// @ts-expect-error process is a nodejs global
 export default defineConfig(async () => ({
   plugins: [
     sveltekit(),
