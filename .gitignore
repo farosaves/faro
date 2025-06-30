@@ -21,3 +21,5 @@ node_modules/
 /playwright/.cache/
 /python_test
 /supabase
+.env
+**/.env
