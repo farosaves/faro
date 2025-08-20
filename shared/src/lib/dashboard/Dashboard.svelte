@@ -6,7 +6,14 @@
   import { flow, pipe } from "fp-ts/lib/function"
   import { record as R, tuple as T, array as A } from "fp-ts"
   import TagView from "./components/TagView.svelte"
-  import { domainFilter, fuzzySort, newestFirst, tagFilter, priorityFilter } from "./filterSortStores"
+  import {
+    domainFilter,
+    fuzzySort,
+    newestFirst,
+    tagFilter,
+    priorityFilter,
+    showingAll,
+  } from "./filterSortStores"
   // import Overview from "./components/Overview.svelte"
   // import Tabs from "./components/Tabs.svelte"
   // import type { Notes } from "$lib/db/types"
@@ -21,7 +28,6 @@
   import { NoteDeri, type SyncLikeNStores } from "$lib/sync/deri"
   import { fade } from "svelte/transition"
   import CmModal from "./components/CmModal.svelte"
-  import PriorityFilter from "./components/PriorityFilter.svelte"
   import { gotoFunction } from "./utils"
   import { derived, writable } from "svelte/store"
   import IconUndo from "~icons/jam/undo"
@@ -41,7 +47,16 @@
     f: flow($fuzzySort.f, $tagFilter, $domainFilter, $priorityFilter),
     overrideGroups: $fuzzySort.overrideGroups,
   })
-  const note_groupss = noteDeri.groupStore
+  const allNoteGroups = noteDeri.groupStore
+  const note_groupss = derived([showingAll, allNoteGroups], ([$showingAll, $allNoteGroups]) => {
+    if ($showingAll) return $allNoteGroups
+    const res = pipe(
+      $allNoteGroups,
+      R.map((t) => t.slice(0, 200)),
+    )
+    // res["-5"] = []
+    return res as typeof $allNoteGroups
+  })
 
   let closeAll = () => {
     noteOpens = R.map((v) => false)(noteOpens)
@@ -169,13 +184,19 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu px-4 pb-4 w-[72] min-h-full bg-base-300 text-base-content space-y-4 pt-4">
       <li class="pt-4">
+        <Search {noteDeri} openFirst={noteDeri.openFirst} />
+      </li>
+      <li class="">
         <button
           class="btn btn-sm bg-base-100 border-neutral mx-4"
           on:click={() => ($newestFirst = !$newestFirst)}>
           {$newestFirst ? "New" : "Old"}est first</button>
       </li>
-      <li>
-        <Search {noteDeri} openFirst={noteDeri.openFirst} />
+      <li class="pt-2">
+        <button
+          class="btn btn-sm bg-base-100 border-neutral mx-4"
+          on:click={() => ($showingAll = !$showingAll)}>
+          {$showingAll ? "Hide" : "Show"} all</button>
       </li>
       <li class="my-4"><DomainFilter {noteDeri} /></li>
     </ul>
