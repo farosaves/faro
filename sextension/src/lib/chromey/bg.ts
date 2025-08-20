@@ -4,6 +4,7 @@ export type { Session } from "@supabase/supabase-js"
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+console.log("supabaseAnonKey", supabaseAnonKey)
 
 const chromeStorageInterface: SupportedStorage = {
   async getItem(key: string): Promise<string | null> {
@@ -28,4 +29,14 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 })
+
+;(async () => {
+  const { error } = await supabase.auth.getSession()
+  if (error) {
+    console.error("Supabase key check failed:", error)
+  } else {
+    console.log("Supabase key seems ok.")
+  }
+})()
+
 

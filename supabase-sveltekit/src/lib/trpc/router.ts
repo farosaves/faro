@@ -6,8 +6,7 @@ import z from "zod"
 import { createClient } from "@supabase/supabase-js"
 import { funLog, sbLogger, typeCast, warnIfError, type Database } from "shared"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
-import { SERVICE_ROLE_KEY, TIMESTAMP_SALT } from "$env/static/private"
-import { subtle } from "node:crypto"
+import { SERVICE_ROLE_KEY } from "$env/static/private"
 
 const t = initTRPC.context<Context>().create()
 
@@ -21,7 +20,7 @@ const tokens = z.object({
   refresh_token: z.string(),
 })
 // funLog2(sbLogger(serviceSb))("digest")(
-const digest = async (str: string) => Array.from(new Int32Array(await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
+// const digest = async (str: string) => Array.from(new Int32Array(await subtle.digest("SHA-256", encoder.encode(str + TIMESTAMP_SALT))).slice(0, 16))
 
 export type RedeemCodeErrors = "no user" | "bad code" | "code update failed" | null //  | "code already assigned"
 
@@ -75,11 +74,11 @@ export const router = t.router({
   partingMsg: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: input }).then(warnIfErr("partingMsg"))),
   featRequest: t.procedure.input(z.string()).mutation(async ({ input }) => await serviceSb.from("partingMsgs").insert({ message: "FEAT_REQUEST: " + input }).then(warnIfErr("featRequest"))),
 
-  nonce: t.procedure.input(z.string()).query(async ({ input }) => digest(input)), // digest id
-  userSalt: t.procedure.query(async ({ ctx: { locals } }) => {
-    const ts = (await locals.safeGetSession()).user?.id
-    if (ts) return digest(ts)
-  }),
+  // nonce: t.procedure.input(z.string()).query(async ({ input }) => digest(input)), // digest id
+  // userSalt: t.procedure.query(async ({ ctx: { locals } }) => {
+  //   const ts = (await locals.safeGetSession()).user?.id
+  //   if (ts) return digest(ts)
+  // }),
 
   // uploadMHTML: t.procedure.input(typeCast<{ id: UUID, data: string }>).mutation(({ input }) => uploadMHTML(input.data, input.id)),
   // signInAnon: t.procedure.query(async ({ ctx }) => ctx.locals.supabase.auth.s),
