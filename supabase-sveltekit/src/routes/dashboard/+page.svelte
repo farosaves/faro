@@ -8,14 +8,18 @@
   import { DEBUG, Dashboard, NoteSync, chainN, funLog, sessStore, windowActive } from "shared"
   import { onMount } from "svelte"
   import { derived, get } from "svelte/store"
+  import { createWorkerSync } from "$lib/worker/client"
+  import SyncWorker from "$lib/worker/sync.worker?worker"
+  import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
+
   const T = trpc()
-  const noteSync = new NoteSync(supabase, undefined, T.online.query)
-  const hasNotes = derived(noteSync.noteStore, (ns) => ns.size > 0)
-  let showLoginPrompt = false
-  const extId = DEBUG ? "iigdnlokbommcbpkhlafbkhgpbmeagfl" : "???"
+  
+  let noteSync: ReturnType<typeof createWorkerSync>
 
   onMount(async () => {
-    // console.log("slug", slug)
+    const worker = new SyncWorker()
+    noteSync = createWorkerSync(worker)
+
     const storedSess = get(sessStore)
     let sess: Session | null | undefined
     if (O.isNone(storedSess)) {
@@ -26,19 +30,28 @@
     }
     sessStore.set(O.fromNullable(sess))
     DEBUG && console.log(sess)
-    if (sess) await noteSync.setUser_id(sess.user.id) // refreshes
+    if (sess) {
+      await noteSync.setUser_id(sess.user.id, { 
+        url: PUBLIC_SUPABASE_URL, 
+        key: PUBLIC_SUPABASE_ANON_KEY 
+      })
+      await noteSync.setOnline(await T.online.query().catch(() => false))
+    }
     showLoginPrompt = O.isNone($sessStore)
-    // at the end so np if fails
-    // should it be here or at which page?
-    // if (sess) await chrome.runtime.sendMessage(extId, { action: "key", key: "??", user_id: sess.user.id })
   })
+
+  const hasNotes = derived(noteSync?.noteStore || derived([], () => new Map()), (ns) => ns.size > 0)
+  let showLoginPrompt = false
+  const extId = DEBUG ? "iigdnlokbommcbpkhlafbkhgpbmeagfl" : "???"
 </script>
 
 <!-- <button class="btn" on:click={() => {}}>ref</button> -->
 <svelte:window
-  on:focus={noteSync.refresh}
+  on:focus={() => noteSync?.refresh()}
   on:focus={() => ($windowActive = true)}
   on:blur={() => ($windowActive = false)} />
 <LoginPrompt {showLoginPrompt} hasNotes={$hasNotes} />
 
-<Dashboard {noteSync} />
+{#if noteSync}
+  <Dashboard {noteSync} />
+{/if}
