@@ -330,6 +330,19 @@
       </div>
     </div>
   </div>
+  <div class="flex justify-center my-8">
+    <a
+      href="https://launchbuff.com/products/faro-h01y4x"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="Featured on LaunchBuff">
+      <img
+        src="https://launchbuff.com/badge-featured-dark.svg"
+        alt="Featured on LaunchBuff"
+        width="256"
+        height="80" />
+    </a>
+  </div>
 </div>
 
 <style>
