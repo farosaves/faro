@@ -14,6 +14,8 @@ import { flow, identity, pipe } from "fp-ts/lib/function"
 import { groupBy } from "fp-ts/lib/NonEmptyArray"
 
 const bookmarkStore = createBookmarkStore()
+// listeners must be registered synchronously at start so bookmark events wake the service worker
+bookmarkStore.listen()
 const note_sync = new NoteSync(bookmarkStore)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
