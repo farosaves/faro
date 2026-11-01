@@ -1,0 +1,30 @@
+{
+  "name": "site",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@iconify-json/jam": "^1.1.8",
+    "@iconify-json/logos": "^1.1.42",
+    "@sveltejs/adapter-cloudflare": "^4.9.0",
+    "@sveltejs/kit": "^2.70.3",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "autoprefixer": "^10.4.19",
+    "daisyui": "^4.12.24",
+    "postcss": "^8.4.39",
+    "svelte": "^4.2.20",
+    "svelte-check": "^3.8.6",
+    "tailwindcss": "^3.4.19",
+    "theme-change": "^2.5.2",
+    "tslib": "^2.6.3",
+    "typescript": "^5.4.2",
+    "unplugin-icons": "^0.22.0",
+    "vite": "^5.4.21"
+  }
+}
