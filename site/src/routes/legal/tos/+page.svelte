@@ -1,3 +1,7 @@
+<svelte:head>
+  <title>Faro - Terms of Service</title>
+</svelte:head>
+
 <h1 id="terms-of-service">Terms of Service</h1>
 <h3 id="definitions">Definitions</h3>
 <p>
@@ -6,7 +10,7 @@
 </p>
 <p>
   &quot;User&quot; or &quot;You&quot; means the individual or the business entity to which a license is
-  granted by Web Highlights for the use of the Software.
+  granted by Faro for the use of the Software.
 </p>
 <p>“Licensed Software” means the web-based software extension called Faro.</p>
 <!--“Licensee Data” means all electronic data or information submitted by User to the Service; -->

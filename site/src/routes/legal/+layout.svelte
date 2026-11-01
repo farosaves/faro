@@ -1,4 +1,4 @@
-<div class="m-auto max-w-5xl md">
+<div class="m-auto max-w-5xl px-4 md">
   <slot />
 </div>
 
