@@ -40,7 +40,7 @@ Is stored only in your browser - as bookmarks (the highlighted text, tags and ma
 bookmark title and URL) and in the extension's local storage. It is not uploaded to any Faro server.
 
 <h3 id="website">This website</h3>
-This website uses Umami analytics to count page visits.
+This website uses Simple Analytics to count page visits. It sets no cookies and collects no personal data.
 
 <h2 id="security">Security</h2>
 It is your responsibility not to save sensitive information e.g. your passwords as a part of a highlight.<br />Your

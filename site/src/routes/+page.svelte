@@ -58,7 +58,6 @@
               class="btn btn-lg btn-primary text-xl max-w-[19rem]"
               target="_blank"
               rel="noopener noreferrer"
-              data-umami-event="WebStore"
               href={WEB_STORE_URL}>
               <IconLogosChromeWebStore font-size="32" />Get it on chrome store</a>
           </div>

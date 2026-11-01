@@ -6,10 +6,7 @@
 
 <svelte:head>
   <meta property="og:image" content="{SITE_URL}/tile.png" />
-  <script
-    defer
-    src="https://analytics.us.umami.is/script.js"
-    data-website-id="d6ea5b3a-1a06-4012-8968-336951400cb0"></script>
+  <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </svelte:head>
 
 <div

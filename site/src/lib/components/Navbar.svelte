@@ -17,7 +17,7 @@
     <a class="btn btn-ghost text-xl mont dark:text-yellow-100" title="Main page" href="/"><b>Faro</b></a>
   </div>
   <div class="navbar-end">
-    <a class="btn btn-ghost p-2 inline-flex" data-umami-event="WebStore" title="Webstore" href={WEB_STORE_URL}>
+    <a class="btn btn-ghost p-2 inline-flex" title="Webstore" href={WEB_STORE_URL}>
       <IconLogosChromeWebStore font-size="24" /></a>
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="m-1" aria-label="Menu"><IconMenu font-size="32" /></div>
