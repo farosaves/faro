@@ -114,8 +114,12 @@ type Faro = {
     loadFromBookmarks: () => Promise<void>
   }
   store: { idle: () => Promise<void> }
+  /** The background's NoteMut (side-panel state per window). */
+  mut: { currSrcs: { update: (f: (m: Map<number, { domain: string, title: string }>) => Map<number, { domain: string, title: string }>) => void } }
   notes: () => NoteLike[]
   idbNotes: () => Promise<NoteLike[]>
+  /** The "save" context-menu click on a tab. */
+  contextMenuSave: (tabId: number) => Promise<unknown>
 }
 export type Helpers = {
   idle: () => Promise<void>

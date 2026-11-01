@@ -89,9 +89,12 @@ if (import.meta.env.VITE_E2E) {
     __faro: {
       sync: note_sync,
       store: bookmarkStore,
+      mut: note_mut,
       notes: () => [...get(note_sync.noteStore).values()],
       // what IndexedDB holds right now (persisted writes are async: poll)
       idbNotes: async () => [...(await readPersisted<Map<string, Note>>("noteStore", devalue))?.values() ?? []],
+      // the "save" context-menu click on a tab (Alt+X can't be pressed from Playwright)
+      contextMenuSave: async (tabId: number) => onContextMenuClicked({ menuItemId: "save" }, await chrome.tabs.get(tabId)),
     },
   })
 }
@@ -149,8 +152,9 @@ chrome.runtime.onInstalled.addListener(() => {
   })
 })
 
-chrome.contextMenus.onClicked.addListener((info, tab) =>
-  info.menuItemId == "save" && tab && activate(tab))
+const onContextMenuClicked = (info: Pick<chrome.contextMenus.OnClickData, "menuItemId">, tab?: chrome.tabs.Tab) =>
+  info.menuItemId == "save" && tab && activate(tab)
+chrome.contextMenus.onClicked.addListener(onContextMenuClicked)
 
 if (DEBUG) console.log("loaded all background")
 
