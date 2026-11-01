@@ -11,6 +11,7 @@
 **/*.jls
 */another_one
 **/dist
+**/dist-e2e
 new-ext/.output
 new-ext/output
 new-ext/.wxt

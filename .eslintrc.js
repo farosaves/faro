@@ -11,14 +11,14 @@ const customized = stylistic.configs.customize({
 /** @type { import("eslint").Linter.Config } */
 // eslint-disable-next-line no-undef
 module.exports = {
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:svelte/recommended"],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
 
   plugins: ["@stylistic", "@typescript-eslint", "unused-imports"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     sourceType: "module",
     ecmaVersion: 2020,
-    extraFileExtensions: [".svelte"],
+    // extraFileExtensions: [".svelte"],
   },
   env: {
     browser: true,
@@ -56,5 +56,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ["supabase-sveltekit/static/*", "sextension/public.*"],
+  ignorePatterns: ["supabase-sveltekit/static/*", "sextension/public.*", "**/dist/**"],
 }
