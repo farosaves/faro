@@ -1,7 +1,7 @@
 /**
  * Bookmark codec: pure conversion between Faro notes and browser bookmarks (no `chrome.*` API).
  *
- * Browser bookmarks are the master copy of notes (docs/v2.0-implementation-plan.md §1–§3.1).
+ * Browser bookmarks are the master copy of notes (docs/1.0-implementation-plan.md §1–§3.1).
  *
  * ## API
  * - `noteId(url)`             – note id = uuidv5(url); the URL includes any `#:~:text=` fragment.

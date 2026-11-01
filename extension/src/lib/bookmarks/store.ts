@@ -1,4 +1,4 @@
-// BookmarkStore: browser bookmarks are the master copy of notes (docs/v2.0-implementation-plan.md §1, §2, WS-C).
+// BookmarkStore: browser bookmarks are the master copy of notes (docs/1.0-implementation-plan.md §1, §2, WS-C).
 //
 // - Note id = uuidv5(bookmark.url) (codec `noteId`). Bookmarks sharing a URL are one note; the primary bookmark is
 //   the one under `Faro/` if any, else the oldest (`dateAdded`, then id).

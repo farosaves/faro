@@ -1,4 +1,4 @@
-// WS-E checks 1–7 (docs/v2.0-implementation-plan.md) as far as they concern the BookmarkStore.
+// WS-E checks 1–7 (docs/1.0-implementation-plan.md) as far as they concern the BookmarkStore.
 // Bookmarks are seeded and asserted through chrome.bookmarks inside the background service worker; saves and
 // edits go through the background's NoteSync (the `__faro` hook of the e2e build).
 import { expect, launch, serviceWorker, test } from "./fixtures"

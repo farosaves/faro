@@ -1,6 +1,6 @@
 // chrome.bookmarks tree helpers for the BookmarkStore: locating bookmarks (folder path, under `Faro/` or not),
 // creating the folder a note is forced into, and removing `Faro/` folders that a change left empty.
-// See docs/v2.0-implementation-plan.md §3, §4 and WS-C.
+// See docs/1.0-implementation-plan.md §3, §4 and WS-C.
 
 /** Chrome's "Other bookmarks" root. Its title is localised, so it is found by id only. Firefox is deferred. */
 export const FARO_PARENT_ID = "2"

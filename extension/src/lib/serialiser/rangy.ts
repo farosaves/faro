@@ -1,5 +1,5 @@
 // dormant: kept for dynamic-content anchoring
-// Rangy highlight serialise/deserialise from v1. Not imported by the extension in v2.0
+// Rangy highlight serialise/deserialise from 0.x. Not imported by the extension in 1.0
 // (text fragments are the only anchor, see lib/serialiser/textFragment.ts); kept so we can
 // come back to it for dynamic pages (Reddit etc.). Needs the rangy scripts in public/rangy/.
 /* eslint-disable @stylistic/comma-dangle */

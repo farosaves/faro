@@ -1,5 +1,5 @@
 /* eslint-disable @stylistic/comma-dangle */
-// Text-fragment (`#:~:text=`) anchoring: the only note anchor in v2.0.
+// Text-fragment (`#:~:text=`) anchoring: the only note anchor in 1.0.
 //
 // `rangeToTextFragment(range)` builds a directive (https://wicg.github.io/scroll-to-text-fragment/) that the
 // browser resolves to the selected occurrence:
