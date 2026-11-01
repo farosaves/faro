@@ -4,7 +4,9 @@
   import Search from "./components/Search.svelte"
   import DomainFilter from "./components/DomainFilter.svelte"
   import { flow, pipe } from "fp-ts/lib/function"
-  import { record as R, tuple as T, array as A } from "fp-ts"
+  import { record as R, tuple as T, array as A, option as O } from "fp-ts"
+  import { escapeHTML } from "../utils"
+  import { stripTextFragment } from "../bookmarks/store"
   import TagView from "./components/TagView.svelte"
   import {
     domainFilter,
@@ -139,7 +141,10 @@
         <div
           class="flex flex-row flex-wrap border-secondary py-2"
           class:border-b-2={!!$note_groupss[priority].length}>
-          {#each $note_groupss[priority] as [title, note_group]}
+          {#each $note_groupss[priority] as [_sourceId, note_group]}
+            {@const first = note_group[0]}
+            <!-- while searching, sources.title is escaped HTML with the match highlighted -->
+            {@const title = O.isSome(first.searchArt) ? first.sources.title : escapeHTML(first.sources.title)}
             <div style="width: {(note_group.length / $layoutey.nNotes) * 100}%">
               <div
                 class="border-2 text-center rounded-lg border-neutral flex flex-col bg-base-200 my-2 sm:mx-1">
@@ -148,8 +153,9 @@
                 <!-- "max-w-[{wRem * note_group.length * 4 + 1}] min-w-[{wRem * note_group.length * 4 + 1}]" -->
                 <a
                   target="_blank"
-                  title={title.replaceAll(/<\/?b[^>]*>/g, "")}
-                  href={note_group[0].url}
+                  title={first.title}
+                  href={stripTextFragment(first.url)}
+                  data-testid="group-title"
                   class="text-lg text-wrap overflow-clip flex-grow-0 hover:underline max-h-[5.5rem] p-1"
                   >{@html title}</a>
                 <div class="flex flex-row flex-wrap overflow-auto items-stretch flex-grow justify-center">

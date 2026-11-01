@@ -41,7 +41,7 @@
   $: text = pipe(
     note_data.searchArt,
     O.match(
-      () => {}, // only replace quote
+      () => escapeHTML(note_data.quote), // no search: the plain quote
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,

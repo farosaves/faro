@@ -108,7 +108,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, newestFirst], ([res, se
                 ),
               ),
             ),
-            O.getOrElse(() => n.sources.title),
+            O.getOrElse(() => escapeHTML(n.sources.title)),
           )
         } else {
           const createdMilis = Date.parse(n.created_at)
