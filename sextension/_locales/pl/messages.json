@@ -45,5 +45,8 @@
 
   "notLoggedIn": {
     "message": "Niezalogowano"
+  },
+  "bookmarkNotice": {
+    "message": "Faro przenosi się do zakładek: Twoje notatki są teraz eksportowane do \"Inne zakładki/Faro\"."
   }
 }

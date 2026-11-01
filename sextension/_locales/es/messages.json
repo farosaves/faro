@@ -45,5 +45,8 @@
 
   "notLoggedIn": {
     "message": "No conectado"
+  },
+  "bookmarkNotice": {
+    "message": "Faro se está trasladando a los marcadores: tus notas ahora se exportan a \"Otros marcadores/Faro\"."
   }
 }
