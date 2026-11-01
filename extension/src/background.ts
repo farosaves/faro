@@ -2,7 +2,7 @@ import { currTab } from "$lib/chromey/utils"
 import { option as O, array as A, record as R, map as M, number as N } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { DEBUG, NoteDeri, NoteSync, createBookmarkStore, funLog, host, internalSearchParams, persisted, requestedSync, syncBookmarks, typeCast, walker } from "$lib"
+import { DEBUG, NoteDeri, NoteSync, createBookmarkStore, host, internalSearchParams, persisted, typeCast } from "$lib"
 import type { Note, PendingNote } from "$lib"
 import { NoteMut } from "$lib/note_mut"
 import * as devalue from "devalue"
@@ -27,7 +27,6 @@ const note_mut: NoteMut = new NoteMut(note_sync, currWindowId)
 pushStore("panels", note_mut.panels)
 
 const newNote = (n: PendingNote, windowId?: number) => {
-  setTimeout(syncBookmarksIfOn, 2000)
   const panel = get(note_mut.panels).get(windowId || -1) || []
   const commonTags = pipe(panel,
     A.flatMap(x => x.tags),
@@ -42,7 +41,6 @@ const newNote = (n: PendingNote, windowId?: number) => {
   if (src) return note_sync.newNote({ ...n, url: u.href, title: src.title, tags: commonTags })
 }
 const wantsNoPrompt = persisted<boolean>("wantsNoPrompt", false, { serializer: devalue })
-const log = funLog
 
 const appRouter = (() => {
   const tagChangeInput = z.tuple([z.string(), z.array(z.string())])
@@ -60,10 +58,6 @@ const appRouter = (() => {
     // prompt
     requestedNoPrompt: t.procedure.query(() => get(wantsNoPrompt)),
     toggleNoPrompt: t.procedure.mutation(() => wantsNoPrompt.update(x => !x)),
-    // BOOKMARKS  -- assumes has perm
-    syncBookmarks: t.procedure.query(() => syncBookmarks(get(noteDeri.noteArr)).then(log("syncBookmarks"))),
-    walker: t.procedure.query(walker),
-
     // forward note_sync
     tagChange: t.procedure.input(tagChangeInput).mutation(({ input }) => note_sync.tagChange(input[0])(input[1])),
     tagUpdate: t.procedure.input(typeCast<[string, O.Option<string>, string[]]>).mutation(({ input }) => note_sync.tagUpdate(...input)),
@@ -77,9 +71,6 @@ const appRouter = (() => {
   })
 })()
 export type AppRouter = typeof appRouter
-
-const syncBookmarksIfOn = () => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr))
-setInterval(syncBookmarksIfOn, 60 * 1000) // sync every minute
 
 // @ts-expect-error
 createChromeHandler({
