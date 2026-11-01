@@ -49,13 +49,13 @@
 </p>
 <h2 id="support">Support</h2>
 <p>
-  You may contact me by mail at pawel@Faroapp.com. Support is only provided in English, Spanish, Portugese,
+  You may contact me by mail at pawel@farosaves.com. Support is only provided in English, Spanish, Portugese,
   German and Polish.
 </p>
 <h2 id="copyright">Copyright</h2>
 <p>
   If you believe that the Service has been used in a way that consitutes copyright infringement, you should
-  send email at dmca@Faroapp.com to commence the notice-and-takedown procedure.
+  send email at dmca@farosaves.com to commence the notice-and-takedown procedure.
 </p>
 <h2 id="disclaimer-of-warranties">Disclaimer of Warranties</h2>
 <p>
