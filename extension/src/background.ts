@@ -5,6 +5,7 @@ import { derived, get, writable } from "svelte/store"
 import { DEBUG, NoteDeri, NoteSync, createBookmarkStore, host, internalSearchParams, persisted, typeCast } from "$lib"
 import type { Note, PendingNote } from "$lib"
 import { NoteMut } from "$lib/note_mut"
+import { readPersisted } from "$lib/sync/persisted-store"
 import * as devalue from "devalue"
 
 import { createChromeHandler } from "trpc-chrome/adapter"
@@ -81,6 +82,19 @@ createChromeHandler({
 pushStore("currSrcs", note_mut.currSrcs)
 
 note_sync.loadFromBookmarks()
+
+// e2e test hook (tests/): only in builds made with VITE_E2E=true (`npm run e2e`), never in release builds
+if (import.meta.env.VITE_E2E) {
+  Object.assign(globalThis, {
+    __faro: {
+      sync: note_sync,
+      store: bookmarkStore,
+      notes: () => [...get(note_sync.noteStore).values()],
+      // what IndexedDB holds right now (persisted writes are async: poll)
+      idbNotes: async () => [...(await readPersisted<Map<string, Note>>("noteStore", devalue))?.values() ?? []],
+    },
+  })
+}
 
 const updateCurrUrl = (tab: chrome.tabs.Tab) => {
   const { url, title: _title } = tab

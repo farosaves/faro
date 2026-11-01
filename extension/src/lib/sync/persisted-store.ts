@@ -43,6 +43,12 @@ function getStorage(type: StorageType) {
   return type === "local" ? localStorage : sessionStorage
 }
 
+/** Reads a value straight from IndexedDB, bypassing the in-memory store (used by the e2e test hook). */
+export const readPersisted = async <T>(key: string, serializer: Serializer<T>): Promise<T | undefined> => {
+  const raw = await getStorage("indexedDB").getItem(key)
+  return raw == null ? undefined : serializer.parse(raw)
+}
+
 /** A persisted store; `ready` resolves once the stored value (if any) has been loaded. */
 export type Persisted<T> = Writable<T> & { ready: Promise<void> }
 
