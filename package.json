@@ -78,6 +78,7 @@
   "license": "ISC",
   "description": "",
   "workspaces": [
-    "extension"
+    "extension",
+    "site"
   ]
 }
