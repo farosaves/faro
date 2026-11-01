@@ -134,8 +134,12 @@ test("a plain bookmark shows without a quote and with its folder as a read-only 
   await card.getByTestId("note-tags").click()
   const input = card.locator(".tagify__input")
   await input.click()
-  await input.pressSequentially("dinner")
-  await input.press("Enter")
+  await input.pressSequentially("dinner", { delay: 50 })
+  // Tagify handles Enter only once it has processed the typed text: retry until the tag is created
+  await expect(async () => {
+    if (await input.textContent()) await input.press("Enter")
+    await expect(card.locator("tag")).toHaveCount(1, { timeout: 500 })
+  }).toPass({ timeout: 5_000 })
   await expect.poll(() => sw.evaluate(({ id }) => h.get(id), { id: bm.id }), { timeout: 10_000 })
     .toMatchObject({ title: "Pasta page #Recipes/Italian #dinner" })
   expect((await sw.evaluate(({ id }) => h.pathOf(id), { id: bm.id })).slice(1)).toEqual(["Faro", "Recipes", "Italian"])
