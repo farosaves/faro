@@ -11,8 +11,8 @@
   export let openFirst: Readable<() => void>
   const notes = noteDeri.noteArr
   let query = ""
-  const possibleSelections = ["sources.title", "quote"]
-  const texts = ["Titles", "Text"]
+  const possibleSelections = ["sources.title", "quote", "tagsText"]
+  const texts = ["Titles", "Text", "Tags"]
   const entries = A.zip(possibleSelections)(texts)
   let selectedKeys = possibleSelections // : (typeof possibleSelections)[number][]
   const norm = (s: number) => Math.max(s / 5000 + 1, 0) ** 8
@@ -34,7 +34,7 @@
       fuzzysort.go(query, $notes, {
         keys: selectedKeys,
         limit: 15,
-        scoreFn: (a) => (a[0] ? norm(a[0].score) : 0) + (a[1] ? norm(a[1].score) : 0),
+        scoreFn: (a) => Array.from(a).reduce((acc, r) => acc + (r ? norm(r.score) : 0), 0),
       }),
   )
   $: fzSelectedKeys.set(selectedKeys)
