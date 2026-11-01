@@ -13,6 +13,13 @@ export type Note = {
   url: string
   source_id: UUID
   prioritised: number
+  /** True once the bookmark lives under `Faro/` (adopted); plain bookmarks elsewhere are false. */
+  underFaro: boolean
+  /**
+   * Read-only tags from the folder path(s) of a plain bookmark and its same-URL duplicates (decision 5.1c).
+   * Never written to the bookmark; on adoption they become real tags. Always `[]` once `underFaro`.
+   */
+  derivedTags: string[]
   // context: string | null
   // highlights: string[]
   // id: string

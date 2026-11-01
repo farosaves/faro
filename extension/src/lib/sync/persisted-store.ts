@@ -5,7 +5,7 @@ import { get, set } from "idb-keyval"
 import { compressSync, decompressSync, strFromU8, strToU8 } from "fflate"
 
 declare type Updater<T> = (value: T) => T
-declare type StoreDict<T> = { [key: string]: Writable<T> }
+declare type StoreDict<T> = { [key: string]: Writable<T> & { ready: Promise<void> } }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Stores {
@@ -43,7 +43,10 @@ function getStorage(type: StorageType) {
   return type === "local" ? localStorage : sessionStorage
 }
 
-export function persisted<T>(key: string, initialValue: T, options?: Options<T>): Writable<T> {
+/** A persisted store; `ready` resolves once the stored value (if any) has been loaded. */
+export type Persisted<T> = Writable<T> & { ready: Promise<void> }
+
+export function persisted<T>(key: string, initialValue: T, options?: Options<T>): Persisted<T> {
   const serializer = options?.serializer ?? JSON
   const storageType = options?.storage ?? "indexedDB"
   const syncTabs = options?.syncTabs ?? true
@@ -96,14 +99,21 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
     })
 
     const { subscribe, set } = store
-    maybeLoadInitial().then(O.map(set))
+    // a set/update that happens before the stored value arrives wins over the (now stale) stored value
+    let touched = false
+    const ready = maybeLoadInitial().then((o) => {
+      if (!touched) O.map(set)(o)
+    })
 
     stores[storageType][key] = {
+      ready,
       set(value: T) {
+        touched = true
         set(value)
         updateStorage(key, value) // .then(() => console.log("updated", key, value))
       },
       update(callback: Updater<T>) {
+        touched = true
         return store.update((last) => {
           const value = callback(last)
 

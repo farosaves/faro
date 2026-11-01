@@ -2,7 +2,7 @@ import { currTab } from "$lib/chromey/utils"
 import { option as O, array as A, record as R, map as M, number as N } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { DEBUG, NoteDeri, NoteSync, funLog, host, internalSearchParams, persisted, requestedSync, syncBookmarks, typeCast, walker } from "$lib"
+import { DEBUG, NoteDeri, NoteSync, createBookmarkStore, funLog, host, internalSearchParams, persisted, requestedSync, syncBookmarks, typeCast, walker } from "$lib"
 import type { Note, PendingNote } from "$lib"
 import { NoteMut } from "$lib/note_mut"
 import * as devalue from "devalue"
@@ -13,7 +13,8 @@ import { createContext, t } from "./lib/chromey/trpc"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import { groupBy } from "fp-ts/lib/NonEmptyArray"
 
-const note_sync = new NoteSync()
+const bookmarkStore = createBookmarkStore()
+const note_sync = new NoteSync(bookmarkStore)
 pushStore("noteStore", note_sync.noteStore)
 pushStore("stuMapStore", note_sync.stuMapStore)
 const noteDeri = new NoteDeri(note_sync)
