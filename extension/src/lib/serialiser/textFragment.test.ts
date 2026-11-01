@@ -1,72 +1,150 @@
 import { expect, test } from "vitest"
 import {
-  createTextFragment,
-  normalize,
+  matchDirective,
+  pageText,
+  parseDirective,
+  type PageText,
+  rangeIndices,
+  rangeToTextFragment,
   regexTextFragment,
-  textFragmentToIndices,
 } from "./textFragment"
-import { convertIndicesToRangy } from "./rangy"
 import { JSDOM } from "jsdom"
 import { readFile } from "fs/promises"
 
-// Create a mock document that can be used in tests
-const mockDocument = (html: string) => {
-  const dom = new JSDOM(html)
-  const originalDocument = global.document
-
-  // Save the original document
-  const restoreDocument = () => {
-    if (originalDocument) {
-      global.document = originalDocument
-    } else {
-      // Instead of deleting, set to undefined
-      global.document = undefined as unknown as Document
+/** Range over the `nth` (0-based) occurrence of `text` inside a single text node of `doc.body`. */
+const rangeOver = (doc: Document, text: string, nth = 0): Range => {
+  const walker = doc.createTreeWalker(doc.body, 4 /* NodeFilter.SHOW_TEXT */)
+  let seen = 0
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const data = (n as Text).data
+    for (let i = data.indexOf(text); i >= 0; i = data.indexOf(text, i + 1)) {
+      if (seen++ < nth) continue
+      const r = doc.createRange()
+      r.setStart(n, i)
+      r.setEnd(n, i + text.length)
+      return r
     }
   }
+  throw new Error(`occurrence ${nth} of ${text} not found`)
+}
 
-  // Set the mocked document
-  global.document = dom.window.document
-
-  // Return the DOM, mock document, and cleanup function
+/** The fragment for the range, and whether the (simulated) browser's first match of it is exactly the selection. */
+const roundTrip = (doc: Document, r: Range, pt: PageText = pageText(doc.body)) => {
+  const fragment = rangeToTextFragment(r, pt)
+  const d = parseDirective(fragment)
+  expect(d).toBeDefined()
+  const m = matchDirective(pt, d!)
+  const want = rangeIndices(pt, r)
   return {
-    dom,
-    document: dom.window.document,
-    restore: restoreDocument,
+    fragment,
+    matched: m && pt.text.slice(...m),
+    wanted: pt.text.slice(...want),
+    hits: m?.[0] === want[0] && m?.[1] === want[1],
   }
 }
 
-// test("long", async () => {
-//   const s = "Which is 5 + 1, or 2+4."
-//   expect(prepostfixes(s)).toStrictEqual(["Which is", " or 2+4."])
-// })
-// test("short", async () => {
-//   const s = "hey!"
-//   expect(prepostfixes(s)).toStrictEqual(["hey!", "hey!"])
-// })
+const dom = (body: string) => new JSDOM(`<!doctype html><body>${body}</body>`).window.document
 
-// const load = async (s: string): Promise<HTMLElement> =>
-//   pipe(await readFile(__dirname + s, {}), x => new JSDOM(x.toString()).window.document.body)
+test("unique text → plain text= directive, no context", () => {
+  const doc = dom("<p>The quick brown fox jumps over the lazy dog.</p>")
+  const r = roundTrip(doc, rangeOver(doc, "brown fox"))
+  expect(r.fragment).toBe(":~:text=brown%20fox")
+  expect(r.hits).toBe(true)
+})
 
-// test("adjIdxs html", async () => {
-//   const body = await load("/steg2.html")
-//   const quote = "skeletal mounts and plate"
-//   const pre_post = prepostfixes(quote)
-//   const [l, r] = adjIdxs(body.textContent || "", pre_post, 1200, 1200 + quote.length)
-//   // compared with rangy indices seem fine
-//   expect(normalize(body.textContent).substring(l, r)).toBe(quote)
-// })
+test("text repeated fewer than 16 times no longer throws", () => {
+  // the old rangyToTextFragment called createTextFragment(quote, 15), which threw unless the text occurred ≥ 16 times
+  const doc = dom("<p>alpha beta</p><p>alpha gamma</p>")
+  expect(() => rangeToTextFragment(rangeOver(doc, "alpha", 1))).not.toThrow()
+})
 
-// const ser = "type:textContent|443$488$1$_bce066f4-f72c-407f-a89e-6ab478629cfb$"
+test("repeated text gets context for the selected occurrence only when needed", () => {
+  const doc = dom("<p>red apple and green apple and blue apple</p>")
+  const want = [":~:text=apple", ":~:text=green-,apple", ":~:text=blue-,apple"]
+  want.forEach((fragment, nth) => {
+    const r = roundTrip(doc, rangeOver(doc, "apple", nth))
+    expect(r.hits).toBe(true)
+    expect(r.fragment).toBe(fragment)
+  })
+})
 
-// test("subIdxs", async () => {
-//   expect(subIdxs(ser, 445, 489)).toBe("type:textContent|445$489$1$_bce066f4-f72c-407f-a89e-6ab478629cfb$")
-// })
+test("context does not cross block boundaries; a suffix is used when there is no prefix", () => {
+  const doc = dom("<p>cat sat</p><p>cat ran</p>")
+  const r = roundTrip(doc, rangeOver(doc, "cat", 1))
+  expect(r.fragment).toBe(":~:text=cat,-ran")
+  expect(r.hits).toBe(true)
+})
 
-// test("extractQuote", async () => {
-//   expect(extractPrePost(ser + "henlo ev$eryone!")).toStrictEqual(["henlo ev", "eryone!"])
-//   expect(extractPrePost(ser + "henlo$yone!")).toStrictEqual(["henlo", "yone!"])
-//   expect(stripQuote(ser + "henlo ev$eryone!")).toBe(ser)
-// })
+test("a selection inside a word is widened to the whole word (matches must be word-bounded)", () => {
+  const doc = dom("<p>a template, a plate, plates</p>")
+  const r = roundTrip(doc, rangeOver(doc, "late", 1)) // inside "plate"
+  expect(r.wanted).toBe("plate")
+  expect(r.fragment).toBe(":~:text=plate")
+  expect(r.hits).toBe(true)
+})
+
+test("matching is case-insensitive, so differently-cased text counts as a repeat", () => {
+  const doc = dom("<p>Hello world. And then hello again.</p>")
+  const r = roundTrip(doc, rangeOver(doc, "hello"))
+  expect(r.fragment).toBe(":~:text=then-,hello")
+  expect(r.hits).toBe(true)
+})
+
+test("whitespace is collapsed and '-' / ',' / '&' are percent-encoded", () => {
+  const doc = dom("<p>well-known,\n   fact &amp; more</p>")
+  const r = roundTrip(doc, rangeOver(doc, "well-known,\n   fact & more"))
+  expect(r.fragment).toBe(":~:text=well%2Dknown%2C%20fact%20%26%20more")
+  expect(r.hits).toBe(true)
+})
+
+test("a selection across paragraphs uses textStart,textEnd", () => {
+  const doc = dom("<p>first paragraph starts here and goes on</p><p>second one ends right there</p>")
+  const range = doc.createRange()
+  const [p1, p2] = [...doc.querySelectorAll("p")]
+  range.setStart(p1.firstChild!, "first paragraph starts here and ".length)
+  range.setEnd(p2.firstChild!, "second one ends".length)
+  const r = roundTrip(doc, range)
+  expect(r.wanted).toBe("goes on second one ends")
+  expect(r.fragment).toBe(":~:text=goes%20on,one%20ends")
+  expect(r.hits).toBe(true)
+})
+
+test("script and style text is ignored", () => {
+  const doc = dom("<script>var unique = 1</script><style>.unique{}</style><p>a unique word</p>")
+  const r = roundTrip(doc, rangeOver(doc, "unique", 2))
+  expect(r.fragment).toBe(":~:text=unique")
+  expect(r.hits).toBe(true)
+})
+
+test("every occurrence of a word on a real page (steg2.html) gets a fragment that resolves to it", async () => {
+  const html = await readFile(__dirname + "/steg2.html", {}).then(x => x.toString())
+  const doc = new JSDOM(html).window.document
+  const pt = pageText(doc.body) // computed once: getComputedStyle is slow in jsdom
+  let checked = 0
+  for (let nth = 0; ; nth++) {
+    let range: Range
+    try {
+      range = rangeOver(doc, "plate", nth)
+    } catch {
+      break
+    }
+    if (range.startContainer.parentElement?.closest("script,style")) continue
+    const [s, e] = rangeIndices(pt, range)
+    // a passage that occurs twice on the page can't be told apart by context from inside its block: best effort
+    const breaks = [...pt.breaks]
+    const blockStart = Math.max(0, ...breaks.filter(b => b < s))
+    const blockEnd = Math.min(pt.text.length, ...breaks.filter(b => b >= e))
+    const around = pt.text.slice(Math.max(blockStart, s - 150), Math.min(blockEnd, e + 150))
+    if (pt.text.indexOf(around) !== pt.text.lastIndexOf(around)) continue
+    const r = roundTrip(doc, range, pt)
+    expect(r.hits, `occurrence ${nth}: ${r.fragment}`).toBe(true)
+    checked++
+  }
+  expect(checked).toBeGreaterThan(10)
+
+  const r = roundTrip(doc, rangeOver(doc, "skeletal mounts and plate"), pt)
+  expect(r.hits).toBe(true)
+})
 
 test("regexTextFragment", async () => {
   const fragment = ":~:text=skeletal,nd%20plate"
@@ -113,75 +191,5 @@ test("regexTextFragment", async () => {
   expect(mainStart5).toBe("plate")
   expect(mainEnd5).toBe(undefined)
   expect(suffix5).toBe("%20arrange")
-})
-
-test("html text fragment test with mocked document", async () => {
-  // Load the HTML content
-  const html = await readFile(__dirname + "/steg2.html", {}).then(x => x.toString())
-  const quote = "skeletal mounts and plate"
-
-  // Set up mocked document
-  const mock = mockDocument(html)
-
-  try {
-    // First verify the text actually exists in the document
-    const bodyText = normalize(mock.document.body.textContent)
-    const quoteIndex = bodyText.indexOf(quote)
-    expect(quoteIndex).toBeGreaterThan(-1) // Make sure text is found
-
-    // Test createTextFragment with mocked
-    const x = createTextFragment(quote, 0)
-    expect(x).toBe(":~:text=skeletal,nd%20plate")
-
-    // Get indices from the text fragment and verify
-    const [l, r] = textFragmentToIndices(x)
-    expect(l).toBe(quoteIndex) // Start index should match where the text is found
-    expect(r).toBe(quoteIndex + quote.length) // End index should be start + length
-
-    // Convert to Rangy format and verify
-    const rangySerialized = convertIndicesToRangy(l, r)
-    expect(rangySerialized).toMatch(/^type:textContent\|(\d+)\$(\d+)/)
-
-    // Final check - the extracted text should match our quote
-    expect(normalize(mock.document.body.textContent).substring(l, r)).toBe(quote)
-  } finally {
-    // Restore the original document
-    mock.restore()
-  }
-})
-
-test("html text fragment test with mocked v2", async () => {
-  // Load the HTML content
-  const html = await readFile(__dirname + "/steg2.html", {}).then(x => x.toString())
-  const quote = "plate" // number 9: posture and plate arrangement
-
-  // Set up mocked document
-  const mock = mockDocument(html)
-
-  try {
-    // First verify the text actually exists in the document
-    const bodyText = normalize(mock.document.body.textContent)
-    const quoteIndex = bodyText.indexOf("ure and plate arrange") + 8 // adjust for preix
-    expect(quoteIndex).toBeGreaterThan(-1) // Make sure text is found
-
-    // Test createTextFragment with mocked
-    const x = createTextFragment(quote, 5) // it should be 9th based on browser rendering.....
-    expect(x).toBe(":~:text=ure%20and%20-,plate,-%20arrange")
-
-    // Get indices from the text fragment and verify
-    const [l, r] = textFragmentToIndices(x)
-    expect(l).toBe(quoteIndex) // Start index should match where the text is found
-    expect(r).toBe(quoteIndex + quote.length) // End index should be start + length
-
-    // Convert to Rangy format and verify
-    const rangySerialized = convertIndicesToRangy(l, r)
-    expect(rangySerialized).toMatch(/^type:textContent\|(\d+)\$(\d+)/)
-
-    // Final check - the extracted text should match our quote
-    expect(normalize(mock.document.body.textContent).substring(l, r)).toBe(quote)
-  } finally {
-    // Restore the original document
-    mock.restore()
-  }
 })
 
