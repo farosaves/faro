@@ -59,10 +59,11 @@ export const syncBookmarks = async (notes: Note[]) => {
   prevHash = hash
   const treeInit = await otherBookmarks()
   // ! fix it for Firefox: "Unfiled bookmarks" ?
-  if (treeInit.title !== "Other Bookmarks" || !treeInit.children) {
+  // root id "2" is "Other Bookmarks" in Chrome; its title is localised, so don't check it
+  if (!treeInit.children) {
     throw new Error("other root bookmark structures not implemented yet")
   }
-  if (!treeInit.children.map(x => x.title == faroFolderTitle).reduce((x, y) => x || y)) {
+  if (!treeInit.children.some(x => x.title == faroFolderTitle)) {
     await createBookmark({ parentId: "2", title: faroFolderTitle })
   }
   const tree = await otherBookmarks()
