@@ -1,4 +1,4 @@
-import type { NoteEx } from "$lib/sync/note"
+import { filterTags, type NoteEx } from "$lib/sync/note"
 import { replacer } from "$lib/utils"
 import { persisted } from "$lib/sync/persisted-store"
 import { chainN, escapeHTML, getOrElse } from "$lib/utils"
@@ -29,7 +29,7 @@ type _A = NoteEx & { priority: number }
 export const tagFilter = derived(exclTagSet, set => (n: _A) => ({
   ...n,
   priority: pipe(
-    NA.fromArray(n.tags),
+    NA.fromArray(filterTags(n)),
     O.getOrElse(() => [""]),
     A.map(s => !set.has(s)),
     A.reduce(false, (x, y) => x || y),
@@ -108,7 +108,7 @@ export const fuzzySort = derived([fzRes, fzSelectedKeys, newestFirst], ([res, se
                 ),
               ),
             ),
-            O.getOrElse(() => n.sources.title),
+            O.getOrElse(() => escapeHTML(n.sources.title)),
           )
         } else {
           const createdMilis = Date.parse(n.created_at)

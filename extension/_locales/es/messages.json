@@ -15,9 +15,6 @@
   "dashboard": {
     "message": "Ir al panel"
   },
-  "loggedInAs": {
-    "message": "Conectado como"
-  },
   "noSavesYet": {
     "message": "Aún no hay ningún guardado."
   },
@@ -26,9 +23,6 @@
   },
   "howToExpl": {
     "message": "Resalta texto en una página y haz clic en el icono de la extensión o"
-  },
-  "exportToBookmarks": {
-    "message": "Exportar a marcadores"
   },
   "theme": {
     "message": "Tema"
@@ -41,9 +35,5 @@
   },
   "refreshPrompt": {
     "message": "Si acabas de instalar la extensión, debes actualizar la página."
-  },
-
-  "notLoggedIn": {
-    "message": "No conectado"
   }
 }

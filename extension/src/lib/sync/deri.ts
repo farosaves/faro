@@ -4,7 +4,7 @@ import type { NoteStoreR, STUMapStoreR, SyncLike } from "./sync"
 import { pipe, flow } from "fp-ts/lib/function"
 import { filterSort, desc, descS, itMap } from "$lib"
 import { gotoFunction } from "$lib/dashboard/utils"
-import { note2NoteEx, type NoteEx } from "./note"
+import { filterTags, note2NoteEx, type NoteEx } from "./note"
 
 const defTransform = { f: (n: NoteEx) => ({ ...n, priority: Date.parse(n.created_at) }), overrideGroups: false }
 const transformStore = writable(defTransform)
@@ -52,7 +52,7 @@ export class NoteDeri {
 
     this.groupStore = derived([this.noteArr, this.transformStore], applyTransform)
     this.allTags = derived(this.noteArr, ns => pipe(ns.toSorted(descS(x => x.updated_at)),
-      A.flatMap(n => n.tags || []), A.uniq(S.Eq))) // ns => A.uniq(S.Eq)(ns.flatMap(n => n.tags || []))
+      A.flatMap(filterTags), A.uniq(S.Eq))) // own tags and plain bookmarks' folder tags (filterable, decision 5.1c)
     this.first = derived(
       this.groupStore,
       r => pipe(r, R.toArray, A.map(T.snd), A.flatMap(A.flatMap(T.snd))).toSorted(desc(x => x.priority)).at(0),

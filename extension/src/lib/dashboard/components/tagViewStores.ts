@@ -3,6 +3,7 @@ import { desc, sum, tup } from "$lib/utils"
 import { array as A, nonEmptyArray as NA, record as R, either as E } from "fp-ts"
 import { flow, identity, pipe } from "fp-ts/lib/function"
 import { derived } from "svelte/store"
+import { filterTags } from "$lib/sync/note"
 
 type TC = [string, number]
 type TG = [string, number, TC[]]
@@ -10,11 +11,11 @@ export type TGC = E.Either<TC, TG>
 
 export const getGroupTagCounts = (noteDeri: NoteDeri) => derived(noteDeri.noteArr, x =>
   pipe(x,
-    A.flatMap(note => note.tags || []),
+    A.flatMap(filterTags),
     NA.groupBy(identity),
     R.map(x => x.length),
     R.toArray,
-    A.append(tup(["", pipe(x, A.filter(note => !note.tags.length), A.size)])),
+    A.append(tup(["", pipe(x, A.filter(note => !filterTags(note).length), A.size)])),
     groupTagsCounts,
   ),
 )

@@ -15,9 +15,6 @@
   "dashboard": {
     "message": "Idź do panelu"
   },
-  "loggedInAs": {
-    "message": "Zalogowano jako"
-  },
   "noSavesYet": {
     "message": "Żadnych zapisek."
   },
@@ -26,9 +23,6 @@
   },
   "howToExpl": {
     "message": "Zaznacz tekst na stronie i kliknij ikonę rozszerzenia lub"
-  },
-  "exportToBookmarks": {
-    "message": "Eksportuj do zakładek"
   },
   "theme": {
     "message": "Motyw"
@@ -41,9 +35,5 @@
   },
   "refreshPrompt": {
     "message": "Jeśli właśnie zainstalowałeś wtyczkę, odśwież stronę."
-  },
-
-  "notLoggedIn": {
-    "message": "Niezalogowano"
   }
 }

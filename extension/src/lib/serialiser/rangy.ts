@@ -3,7 +3,7 @@
 // (text fragments are the only anchor, see lib/serialiser/textFragment.ts); kept so we can
 // come back to it for dynamic pages (Reddit etc.). Needs the rangy scripts in public/rangy/.
 /* eslint-disable @stylistic/comma-dangle */
-import { normalize, rangyToTextFragment } from "./textFragment"
+import { normalize, rangeToTextFragment as rangyToTextFragment } from "./textFragment"
 
 const elemsOfClass = (cls: string) => document.querySelectorAll(`.${cls}`) as NodeListOf<HTMLElement>
 

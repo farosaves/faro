@@ -34,10 +34,6 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["icon.svg"],
-      "matches": ["https://farosaves.com/*", "https://dev.farosapp.com/*", "http://localhost:5173/*"]
-    },
-    {
       "resources": ["prompt.html"],
       "matches": ["<all_urls>"]
     }

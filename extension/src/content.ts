@@ -1,4 +1,4 @@
-import { rangyToTextFragment } from "$lib/serialiser/textFragment"
+import { rangeToTextFragment } from "$lib/serialiser/textFragment"
 import { DEBUG, funLog, isCmd } from "$lib"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
@@ -14,11 +14,11 @@ const T = getT()
 /** Page URL with the selection's `#:~:text=` fragment (replacing any existing hash). */
 const fragmentUrl = (range: Range) => {
   const u = new URL(window.location.href)
-  u.hash = rangyToTextFragment(range)
+  u.hash = rangeToTextFragment(range)
   return u.href
 }
 
-// selection -> text fragment -> newNote. TODO(WS-D): final save flow / newNote signature.
+// selection -> quote + text-fragment URL -> background newNote (NoteSync.newNote with the page title and tags)
 getHighlightedText.sub(async () => {
   const selection = window.getSelection()
   const quote = selection?.toString().replaceAll(/\s+/g, " ").trim()

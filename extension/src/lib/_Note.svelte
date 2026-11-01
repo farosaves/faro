@@ -10,6 +10,7 @@
   import IconTrash from "~icons/tabler/trash"
   import IconLink from "~icons/tabler/link"
   import IconDotsVertical from "~icons/tabler/dots-vertical"
+  import IconBookmark from "~icons/tabler/bookmark"
   import StarArchive from "./StarArchive.svelte"
   import type { Readable } from "svelte/motion"
   import fuzzysort from "fuzzysort"
@@ -30,6 +31,9 @@
 
   let this_element: Element
   $: tags = note_data.tags || []
+  $: derivedTags = note_data.derivedTags || []
+  // a bookmark without a highlight shows no quote text, only its page (decision 5.2)
+  $: hasQuote = !!note_data.quote
 
   // const replaceAll = (escaped: string, replacer: (c: string) => string) => {
   //   for (const hl of note_data.highlights) escaped = escaped.replace(hl, replacer)
@@ -41,7 +45,7 @@
   $: text = pipe(
     note_data.searchArt,
     O.match(
-      () => {}, // only replace quote
+      () => escapeHTML(note_data.quote), // no search: the plain quote
       ({ selectedKeys, optKR }) =>
         pipe(
           selectedKeys,
@@ -96,7 +100,13 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- class:p-0={hovered && $windowActive}border p-[1px]
   class:border-2={hovered && $windowActive} -->
-<div class="relative p-1" style={px ? `max-width: ${px}px; min-width: ${px}px` : ""} class:sm:mr-3={mr}>
+<div
+  class="relative p-1"
+  style={px ? `max-width: ${px}px; min-width: ${px}px` : ""}
+  class:sm:mr-3={mr}
+  data-testid="note"
+  data-note-id={note_data.id}
+  data-plain={!note_data.underFaro}>
   <div
     class="collapse bg-base-100 border-primary"
     style="border-width: {1 + +(hovered && $windowActive) + 2 * +isHighlighted}px;
@@ -112,12 +122,22 @@
       bind:this={this_element}
       style="font-size: 0.95rem; padding: 0.5rem; grid-column-start:1; position: static;"
       on:contextmenu|preventDefault={openOptions}>
-      <button on:click={goto_function} title="Right click for more options">
-        <!-- class="h-16 text-ellipsis" -->
-        <!-- class:overflow-hidden={!isOpen} omg :( -->
-        {@html text}
-      </button>
-      <MyTags {tags} autoComplete={$allTags} {onTagsChange} />
+      {#if hasQuote}
+        <button on:click={goto_function} title="Right click for more options" data-testid="note-quote">
+          <!-- class="h-16 text-ellipsis" -->
+          <!-- class:overflow-hidden={!isOpen} omg :( -->
+          {@html text}
+        </button>
+      {:else}
+        <button
+          on:click={goto_function}
+          title={note_data.title}
+          class="inline-flex items-center gap-1 text-sm opacity-70 hover:underline max-w-full"
+          data-testid="note-page">
+          <IconBookmark class="shrink-0" /><span class="truncate">{note_data.domain || note_data.title}</span>
+        </button>
+      {/if}
+      <MyTags {tags} {derivedTags} autoComplete={$allTags} {onTagsChange} />
     </div>
     <div class="collapse-content z-40">
       {#if hovered || isOpen}
