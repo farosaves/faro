@@ -67,10 +67,10 @@
     </div>
   </div>
   <div class="w-full xl:w-1/2 flex justify-center xl:justify-end items-start xl:items-center">
-    <div class="px-3 pt-6 xl:pt-0">
+    <div class="w-full max-w-[560px] px-3 pt-6 xl:pt-0">
       <iframe
         loading="lazy"
-        class="embed"
+        class="w-full aspect-video"
         src="https://www.youtube.com/embed/ITR1xloUslE?si=NU5A-8O2ZDpBwY1N"
         title="YouTube video player"
         frameborder="0"
@@ -282,12 +282,3 @@
     </a>
   </div>
 </div>
-
-<style>
-  .embed {
-    width: 96vw;
-    height: 54vw;
-    max-width: 560px;
-    max-height: 315px;
-  }
-</style>
