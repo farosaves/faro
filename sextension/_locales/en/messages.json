@@ -44,5 +44,8 @@
   },
   "notLoggedIn": {
     "message": "Not logged in"
+  },
+  "bookmarkNotice": {
+    "message": "Faro is moving to bookmarks: your notes are now exported to \"Other Bookmarks/Faro\"."
   }
 }
