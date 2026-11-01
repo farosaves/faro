@@ -143,7 +143,7 @@ chrome.action.onClicked.addListener(activate)
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "save",
-    title: "Faro save",
+    title: "Save highlight with Faro Bookmark Manager",
     contexts: ["all"],
     documentUrlPatterns: ["<all_urls>"],
   })

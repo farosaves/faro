@@ -54,8 +54,6 @@
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
 
-  // const goToDashboard = chrome.i18n.getMessage("dashboard")
-  // const loggedInAs = chrome.i18n.getMessage("loggedInAs")
 </script>
 
 <!-- on:keydown={handle_keydown} -->

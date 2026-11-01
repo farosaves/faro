@@ -98,7 +98,7 @@
 </script>
 
 <svelte:head>
-  <title>Faro - Dashboard</title>
+  <title>Faro Bookmark Manager - Dashboard</title>
 </svelte:head>
 
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />

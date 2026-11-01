@@ -15,9 +15,6 @@
   "dashboard": {
     "message": "Go to dashboard"
   },
-  "loggedInAs": {
-    "message": "Logged in as"
-  },
   "noSavesYet": {
     "message": "No saves yet"
   },
@@ -26,9 +23,6 @@
   },
   "howToExpl": {
     "message": "Highlight text on a page and click the extension icon or"
-  },
-  "exportToBookmarks": {
-    "message": "Export to bookmarks"
   },
   "theme": {
     "message": "Theme"
@@ -41,8 +35,5 @@
   },
   "refreshPrompt": {
     "message": "If you just installed the extension refresh the page."
-  },
-  "notLoggedIn": {
-    "message": "Not logged in"
   }
 }
