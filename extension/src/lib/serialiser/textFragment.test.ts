@@ -1,11 +1,11 @@
 import { expect, test } from "vitest"
 import {
-  convertIndicesToRangy,
   createTextFragment,
   normalize,
   regexTextFragment,
   textFragmentToIndices,
-} from "./util"
+} from "./textFragment"
+import { convertIndicesToRangy } from "./rangy"
 import { JSDOM } from "jsdom"
 import { readFile } from "fs/promises"
 

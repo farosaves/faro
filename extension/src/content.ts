@@ -1,4 +1,4 @@
-import { rangyToTextFragment } from "$lib/serialiser/util"
+import { rangyToTextFragment } from "$lib/serialiser/textFragment"
 import { DEBUG, funLog, isCmd } from "$lib"
 import { createTRPCProxyClient } from "@trpc/client"
 import { chromeLink } from "trpc-chrome/link"
