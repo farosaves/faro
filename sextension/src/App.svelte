@@ -5,7 +5,7 @@
 
   import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { persisted, requestedImport, requestedSync, updateTheme, type PendingNote, type Src } from "shared"
+  import { persisted, requestedImport, updateTheme, type PendingNote, type Src } from "shared"
   import { CmModal, API_ADDRESS, toastStore, funLog, windowActive, toastNotify, altKey } from "shared"
   import { shortcut } from "shared"
   import NotePanel from "$lib/components/NotePanel.svelte"
@@ -33,7 +33,7 @@
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
   import { derived, writable } from "svelte/store"
-  import { hasOrGivesPerm, loc } from "$lib/utils"
+  import { loc } from "$lib/utils"
 
   const dashboardURL = chrome.runtime.getURL("dashboard.html")
   onMount(async () => {
@@ -59,7 +59,6 @@
   // }
   const iconSize = 15
   const themes = ["default", "light", "dark", "retro", "cyberpunk", "aqua"]
-  const perm = { permissions: ["bookmarks"] }
 
   // const goToDashboard = chrome.i18n.getMessage("dashboard")
   // const loggedInAs = chrome.i18n.getMessage("loggedInAs")
@@ -113,20 +112,6 @@
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button"><IconCog font-size={iconSize} /></div>
         <div class="dropdown-content bg-base-100 menu z-20">
-          <li>
-            <button
-              class="btn z-20 tooltip tooltip-left btn-primary"
-              data-tip={$requestedSync ? "Bookmark export on" : "Click for bookmark export"}
-              class:btn-outline={!$requestedSync}
-              on:click={async () => {
-                if (!(await hasOrGivesPerm(perm))) return //rejected
-                $requestedSync = !$requestedSync
-                if ($requestedSync) {
-                  TB.syncBookmarks.query()
-                  toastNotify("Exporting to Other Bookmarks/Faro", 5000)
-                } else toastNotify("Sync turned off", 5000)
-              }}>{loc("exportToBookmarks")}</button>
-          </li>
           <!-- <li>
             <button
               class="btn z-20 tooltip tooltip-left btn-primary"
