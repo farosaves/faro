@@ -3,20 +3,16 @@
   import IconCog from "~icons/jam/cog"
   import IconLayoutDashboard from "~icons/tabler/layout-dashboard"
 
-  import type { Session } from "@supabase/gotrue-js"
   import { onMount } from "svelte"
-  import { persisted, requestedImport, requestedSync, updateTheme, type PendingNote, type Src } from "$lib"
-  import { CmModal, API_ADDRESS, toastStore, funLog, windowActive, toastNotify, altKey } from "$lib"
+  import { requestedSync, updateTheme, type Src } from "$lib"
+  import { CmModal, toastStore, funLog, windowActive, toastNotify, altKey } from "$lib"
   import { shortcut } from "$lib"
   import NotePanel from "$lib/components/NotePanel.svelte"
-  import { option as O } from "fp-ts"
   import { createTRPCProxyClient } from "@trpc/client"
   import type { AppRouter } from "./background"
   import { chromeLink } from "trpc-chrome/link"
   import { optimisticNotes, RemoteStore } from "$lib/chromey/messages"
   import { getBgSync } from "$lib/bgSync"
-  let login_url = API_ADDRESS + "/account/login"
-  // $: T = trpc2()
   const port = chrome.runtime.connect()
   export const TB = createTRPCProxyClient<AppRouter>({
     links: [chromeLink({ port })],
@@ -27,8 +23,6 @@
   const windowId = writable(-1)
   const currSrc = derived([currSrcs, windowId], ([srcs, id]) => srcs.get(id) || { title: "", domain: "" })
   const needsRefresh = RemoteStore("needsRefresh", false)
-  const session = RemoteStore("session", O.none as O.Option<Session>)
-  const email = derived(session, (s) => O.toNullable(s)?.user?.email)
 
   import { themeChange } from "theme-change"
   import { fade } from "svelte/transition"
@@ -80,22 +74,13 @@
   </div>
 {/if}
 
-<!-- {$source_id} {session} -->
-{#if O.isNone($session)}
-  <div role="alert" class="alert alert-info grid-flow-col justify-items-start text-start p-1">
-    <!-- prettier-ignore -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-    <span>{loc("notLoggedIn")} <a href={login_url} target="_blank" class="underline">link</a></span>
-  </div>
-{/if}
-
 <div class="max-w-xs mx-auto space-y-4">
   <div class="flex">
     <div class=" text-xl text-center w-full italic">{$currSrc.title}</div>
 
     <div class="grid h-min">
       <a
-        href={$email ? `${API_ADDRESS}/dashboard` : dashboardURL}
+        href={dashboardURL}
         target="_blank"
         class="tooltip tooltip-left"
         data-tip="{loc('dashboard')} ({altKey}+C)"
@@ -104,10 +89,8 @@
 
       <button
         class="tooltip tooltip-left"
-        data-tip={$email ? `${loc("loggedInAs")} ${$email}` : loc("notLoggedIn")}
-        on:click={() => TB.refresh.query()}
-        on:contextmenu|preventDefault={() => TB.disconnect.query()}>
-        <!-- on:dblclick={() => setTimeout(TB.disconnect.query, 1000)} -->
+        data-tip="Refresh"
+        on:click={() => TB.refresh.query()}>
         <IconRefresh font-size={iconSize} />
       </button>
       <div class="dropdown dropdown-end">
@@ -127,20 +110,6 @@
                 } else toastNotify("Sync turned off", 5000)
               }}>{loc("exportToBookmarks")}</button>
           </li>
-          <!-- <li>
-            <button
-              class="btn z-20 tooltip tooltip-left btn-primary"
-              data-tip={$requestedImport ? "Bookmark import on" : "Click for bookmark import"}
-              class:btn-outline={!$requestedImport}
-              on:click={async () => {
-                if (!(await hasOrGivesPerm(perm))) return //rejected
-                $requestedImport = !$requestedImport
-                if ($requestedImport) {
-                  TB.walker.query()
-                  toastNotify("Importing bookmarks", 5000)
-                } else toastNotify("Bookmark import off", 5000)
-              }}>Import from bookmarks</button>
-          </li> -->
           <li>
             <details>
               <summary>{loc("Theme")}</summary>

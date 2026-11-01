@@ -3,7 +3,7 @@
 // @ts-ignore
 import { persisted } from "./persisted-store"
 import type { Note } from "./note"
-import { derived, type Readable, type Writable } from "svelte/store"
+import { derived, get, type Readable, type Writable } from "svelte/store"
 import { invertMap, domainTitle, neq, escapeRegExp } from "$lib/utils"
 import { option as O, map as M } from "fp-ts"
 import { flow, pipe } from "fp-ts/lib/function"
@@ -13,6 +13,7 @@ import type { UUID } from "crypto"
 import type { UnFreeze } from "structurajs"
 import { activeLoadsStore, toastNotify } from "$lib/stores"
 import { applyPatches, updateStore } from "./utils"
+import { stubBookmarkStore, type BookmarkStore, type NewNoteInput } from "$lib/bookmarks/store"
 // import * as lzString from "lz-string"
 
 type NoteMapR = Map<string, Note>
@@ -39,13 +40,15 @@ const stuMapStore = persisted("stuMapStore", stuMap, { serializer: devalue, stor
 // const perm = { permissions: ["bookmarks"] }
 
 export class NoteSync {
+  store: BookmarkStore
   noteStore: Writable<NoteMapR>
   stuMapStore: Writable<STUMap>
   invStuMapStore: Readable<Map<string, UUID>>
   xxdoStacks: ReturnType<typeof xxdoStacks>
   DEBUG: boolean
 
-  constructor() {
+  constructor(store: BookmarkStore = stubBookmarkStore) {
+    this.store = store
     this.noteStore = noteStore
     this.stuMapStore = stuMapStore
     this.invStuMapStore = derived(this.stuMapStore,
@@ -58,33 +61,28 @@ export class NoteSync {
 
 
   loadFromBookmarks = async () => {
-    // const warn = funWarn(sbLogger(this.sb))
     activeLoadsStore.update(x => x + 1)
-    // await this._fetchNewNotes()
-    // await this._fetchNewSources()
-    // await this.actionQueue.goOnline(this._user_id as UUID)
-    activeLoadsStore.update(x => x - 1)
+    try {
+      const notes = await this.store.load()
+      this.noteStore.set(new Map(notes.map(n => [n.id, n])))
+    } finally {
+      activeLoadsStore.update(x => x - 1)
+    }
   }
 
   hardReset = () => {
     this.noteStore.set(new Map())
     this.stuMapStore.set(new Map())
-    // TODO: here load from current bookmarks
-    // this.actionQueue.queueStore.set([])
     return this.loadFromBookmarks()
   }
 
 
-  newNote = async (note: Note) => {
-    // TODO: create bookmark
-    // funLog("newNote")(src)
-    // const source_id = await this.getsetSource_id(src)
-    // const n = { ...createMock(), ...note, source_id }
-    // funLog("newNote note")(n)
-    // await this.updateAct((ns) => {
-    //   ns.set(n.id, n)
-    // })
-    // return n
+  newNote = async (input: NewNoteInput) => {
+    const n = await this.store.newNote(input)
+    if (n) updateStore(this.noteStore)((ns) => {
+      ns.set(n.id, n)
+    })
+    return n
   }
 
   _xxdo = (patchTup: PatchTup) => {
@@ -114,29 +112,37 @@ export class NoteSync {
 
   stackNAct = async (patchTup: PatchTup) => {
     this.xxdoStacks.update(({ undo }) => ({ undo: [...undo, patchTup], redo: [] }))
-    // await this.actionQueue.act(this._user_id)(patchTup)
-    // Bookmarks update here?
-    // if (await chrome.permissions.contains(perm)) syncBookmarks()
-    // getNotesOps(patchTup.patches, get(this.noteStore))
+    // TODO(WS-C): write every patch (incl. undo/redo, tagUpdate) through to this.store
   }
 
   updateAct = async (up: (arg: UnFreeze<Map<string, Note>>) => void | Map<string, Note>) =>
     this.stackNAct(updateStore(this.noteStore)(up))
 
-  deleteit = async (noteId: string) =>
-    this.updateAct((ns) => {
+  _writeThrough = (noteId: string) => {
+    const n = get(this.noteStore).get(noteId)
+    return n ? this.store.update(n) : Promise.resolve()
+  }
+
+  deleteit = async (noteId: string) => {
+    await this.updateAct((ns) => {
       ns.delete(noteId)
     })
+    await this.store.delete(noteId)
+  }
 
-  updateNote = async (note: Note) =>
-    this.updateAct((ns) => {
+  updateNote = async (note: Note) => {
+    await this.updateAct((ns) => {
       ns.set(note.id, note)
     })
+    await this._writeThrough(note.id)
+  }
 
-  tagChange = (noteId: string) => async (tags: string[]) =>
-    this.updateAct((ns) => {
+  tagChange = (noteId: string) => async (tags: string[]) => {
+    await this.updateAct((ns) => {
       ns.get(noteId)!.tags = tags
     })
+    await this._writeThrough(noteId)
+  }
 
   tagUpdate = async (oldTag: string, newTag: O.Option<string>, allTags: string[]) => {
     const updateTag = (oldTag: string, newTag: O.Option<string>) => (n: Note) => {
@@ -156,40 +162,10 @@ export class NoteSync {
   }
 
 
-  changePrioritised = (noteId: string) => async (prioritised: number) =>
-    this.updateAct((ns) => {
+  changePrioritised = (noteId: string) => async (prioritised: number) => {
+    await this.updateAct((ns) => {
       ns.get(noteId)!.prioritised = prioritised
     })
-
-  _sub = (user_id: string) => {
-    // TODO: it should just listen to bookmarks.onCreated
-  //   this.sb
-  //     .channel("notes")
-  //     .on(
-  //       "postgres_changes",
-  //       {
-  //         event: "*",
-  //         schema: "public",
-  //         table: "notes",
-  //         filter: `user_id=eq.${user_id}`,
-  //       },
-  //       (payload: { new: Note | object }) => {
-  //         if ("id" in payload.new) {
-  //           const nn = payload.new
-  //           updateStore(this.noteStore)((ns) => {
-  //             ns.set(nn.id, nn)
-  //           })
-  //           if (!(get(this.stuMapStore).has(nn.source_id)))
-  //             this._fetchNewSources()
-  //           // const a = R.lookup(nn.source_id.toString())(get(this.stuMapStore))
-  //         } else this._filter4Present(user_id, new Date().toISOString())// .then(() => funLog("_sub")("_filter4Present"))
-  //       },
-  //     )
-  //     .subscribe((status) => {
-  //       this.DEBUG && console.log("status change- ", status)
-  //       if (status !== "SUBSCRIBED") {
-  //         // this.refresh_sources().then(() => this.refresh_notes())
-  //       }
-  //     })
+    await this._writeThrough(noteId)
   }
 }

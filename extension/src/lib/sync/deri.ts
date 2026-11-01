@@ -45,7 +45,6 @@ export class NoteDeri {
   constructor(noteSync: SyncLikeNStores) {
     this.sync = noteSync
     this.transformStore = transformStore
-    // this.nq = this.sb.from("notes")
     this.noteArr = derived(this.sync.noteStore, ns =>
       Array.from(pipe(ns.values(),
         itMap(note2NoteEx))),

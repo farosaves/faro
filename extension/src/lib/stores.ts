@@ -23,7 +23,5 @@ export const toastNotify = (msg: string, delay = 2000) => {
   setTimeout(() => toastStore.update(A.dropLeft(1)), delay)
 }
 
-export const hasExtensionStore = writable(false)
-
 export const requestedSync = persisted("requestedSync", false)
 export const requestedImport = persisted("requestedImport", false)

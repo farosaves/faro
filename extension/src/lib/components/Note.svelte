@@ -1,21 +1,17 @@
 <script lang="ts">
-  import { _Note as Note, type Notes } from "$lib"
+  import { _Note as Note, type NoteEx } from "$lib"
   import type { NoteDeri, SyncLike } from "$lib"
-  import { deleteSnippet, gotoSnippet } from "$lib/chromey/utils"
-  import { some, type Option } from "fp-ts/lib/Option"
-  import type { UUID } from "crypto"
+  import { gotoNoteUrl } from "$lib/chromey/utils"
   export let syncLike: SyncLike & Pick<NoteDeri, "allTags">
   const { allTags } = syncLike
-  export let note_data: Notes & { searchArt: Option<never> } // no searching
+  export let note_data: NoteEx
   export let isOpen: boolean
   export let closeAll: () => void
-  // export let allTags: Readable<string[]>
 
-  $: goto_function = () => gotoSnippet(note_data.snippet_uuid as UUID)
-  $: deleteCbOpt = some(() => deleteSnippet(note_data.snippet_uuid as UUID, note_data.serialized_highlight!))
+  $: goto_function = () => gotoNoteUrl(note_data.url)
 </script>
 
 <div class="relative">
   <!-- relative binds the tag input placement to this div; the div below should be relative to, but maybe other rules interact with -->
-  <Note {note_data} {syncLike} bind:isOpen {closeAll} {goto_function} {deleteCbOpt} {allTags} />
+  <Note {note_data} {syncLike} bind:isOpen {closeAll} {goto_function} {allTags} />
 </div>

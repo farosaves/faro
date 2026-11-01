@@ -19,7 +19,6 @@
   // import type { Notes } from "$lib/db/types"
   import {
     activeLoadsStore,
-    hasExtensionStore,
     modalOpenStore,
     tagModalOpenStore,
     toastStore,
@@ -34,7 +33,6 @@
   import IconRedo from "~icons/jam/redo"
 
   export let noteSync: SyncLikeNStores
-  export let isInExt = false
   const noteDeri = new NoteDeri(noteSync)
   const idHighlighted = noteDeri.idHighlighted
   const allTags = noteDeri.allTags
@@ -74,10 +72,6 @@
   onMount(() => {
     modalOpenStore.set(false)
     windowActive.set(true)
-    isInExt && hasExtensionStore.set(true)
-    fetch("chrome-extension://pdndbnolgapjdcebajmgcehndggfegeo/icon.svg")
-      .then((_r) => hasExtensionStore.set(true))
-      .catch(() => undefined)
   })
   let innerWidth: number
   const tilesWidth = writable(window.innerWidth)
@@ -105,7 +99,6 @@
   <title>Faro - Dashboard</title>
 </svelte:head>
 
-<!-- <LoginPrompt bind:showLoginPrompt /> -->
 <svelte:window on:keydown={handle_keydown} bind:innerWidth />
 <!-- <Tabs {note_sync} /> -->
 

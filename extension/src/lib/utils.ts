@@ -7,7 +7,7 @@ import { Observable } from "rxjs"
 import { v5 } from "uuid"
 // import { produceWithPatches as pWPimmer, enablePatches } from "immer"
 
-export const domainTitle = (note: Note) => [note.domain, note.title].join(";")
+export const domainTitle = (note: Pick<Note, "domain" | "title">) => [note.domain, note.title].join(";")
 
 import type { UUID } from "crypto"
 import type { Note } from "./sync/note"
@@ -15,7 +15,6 @@ import type { Note } from "./sync/note"
 
 // strips trailing /
 export const delTr = (s: string | undefined) => s?.replace(/\/$/, "") || ""
-export const API_ADDRESS = delTr(import.meta.env.VITE_PI_IP as string)
 
 
 export const namespaceUuid: UUID = "0646f4ce-17c9-4a66-963e-280982b6ac8a"

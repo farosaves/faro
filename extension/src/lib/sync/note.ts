@@ -24,6 +24,10 @@ export type Note = {
   // user_note: string | null
 }
 export type SourceData = { sources: { title: string, domain: string } }
+export type Src = SourceData["sources"]
+
+/** What the content script sends when the user saves a selection: url carries the `#:~:text=` fragment. */
+export type PendingNote = Pick<Note, "quote" | "url">
 
 // importante: all dashboard components expect this type
 export type NoteEx = Note &

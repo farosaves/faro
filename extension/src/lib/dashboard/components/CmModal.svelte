@@ -7,7 +7,7 @@
   let greenCheck = false
   const onclick = () => {
     greenCheck = true
-    navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/" + p((n) => n.id, ""))
+    navigator.clipboard.writeText(p((n) => n.url, ""))
     toastNotify("Copied to clipboard.")
     setTimeout(() => (greenCheck = false), 1000)
   }

@@ -126,7 +126,7 @@
           <button
             on:click={() => {
               if (hovered) {
-                navigator.clipboard.writeText(import.meta.env.VITE_PI_IP + "/" + note_data.id)
+                navigator.clipboard.writeText(note_data.url)
                 toastNotify("Copied to clipboard.")
               }
             }}

@@ -1,29 +1,15 @@
-// import { PUBLIC_PI_IP } from '$env/static/public';
-import { API_ADDRESS, DEBUG } from "$lib"
-import { deleteSnippetMsg } from "./messages"
-import type { UUID } from "crypto"
-
-/**  STRIPS TRAILING '/' */
-
-DEBUG && console.log("API_ADDRESS", API_ADDRESS)
-
-export type ATokens = { access_token: string, refresh_token: string }
+import { DEBUG } from "$lib"
 
 export const currTab = () => chrome.tabs.query({ active: true, currentWindow: true }).then(xs => xs[0])
 
-export async function gotoSnippet(uuid: UUID) {
-  DEBUG && console.log("going to..", uuid)
+/** Jump to a note: open its (text-fragment) URL in the current tab. */
+export async function gotoNoteUrl(url: string) {
+  DEBUG && console.log("going to..", url)
   const tab = await currTab()
-  deleteSnippetMsg.send(uuid)
-  chrome.tabs.sendMessage(tab.id!, { action: "goto", uuid })
+  if (tab?.id) chrome.tabs.update(tab.id, { url })
 }
 
 export const loc = (s: string) => chrome.i18n.getMessage(s)
-export async function deleteSnippet(uuid: UUID, serialized: string) {
-  DEBUG && console.log("deleting..", uuid, serialized)
-  const tab = await currTab()
-  chrome.tabs.sendMessage(tab.id!, { action: "delete", uuid, serialized })
-}
 export { DEBUG }
 
 export const hasOrGivesPerm = async (perm: chrome.permissions.Permissions) => {

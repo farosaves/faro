@@ -33,10 +33,6 @@
   "side_panel": {
     "default_path": "index.html"
   },
-  "externally_connectable": {
-    "matches": ["https://farosaves.com/*", "https://dev.farosapp.com/*", "<all_urls>"]
-  },
-
   "web_accessible_resources": [
     {
       "resources": ["icon.svg"],

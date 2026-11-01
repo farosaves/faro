@@ -1,5 +1,4 @@
-import { NoteSync, chainN, domainTitle, type Notes } from "$lib"
-import type { Src } from "$lib"
+import { NoteSync, chainN, domainTitle, type Note, type Src } from "$lib"
 import { option as O, map as M } from "fp-ts"
 import { flow, pipe } from "fp-ts/lib/function"
 import { derived, writable, type Readable, type Writable } from "svelte/store"
@@ -9,7 +8,7 @@ import { derived, writable, type Readable, type Writable } from "svelte/store"
 export class NoteMut {
   ns: NoteSync
   currSrc: Readable<Src>
-  panels: Readable<Map<number, Notes[]>>
+  panels: Readable<Map<number, Note[]>>
   currSrcs: Writable<Map<number, Src>>
   currWindowId: Readable<number>
   constructor(ns: NoteSync, currWindowId: Readable<number>) {
@@ -26,7 +25,7 @@ export class NoteMut {
           O.map(domainTitle),
           chainN(n => isms.get(n)),
           O.map(source_id => [...ns.values()].filter(n => n.source_id == source_id)),
-          O.getOrElse<Notes[]>(() => [])),
+          O.getOrElse<Note[]>(() => [])),
         ),
       ))
   }

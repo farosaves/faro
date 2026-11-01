@@ -14,4 +14,4 @@
 
 <!-- <a href="dashboard" class="btn btn-primary">whao</a> -->
 <!-- {JSON.stringify($session)} -->
-<Dashboard {noteSync} isInExt />
+<Dashboard {noteSync} />
