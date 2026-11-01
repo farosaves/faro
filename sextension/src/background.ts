@@ -2,7 +2,7 @@ import { currTab, getSetSession } from "$lib/utils"
 import { option as O, array as A, record as R, map as M, number as N, taskOption as TO, ord } from "fp-ts"
 import { pushStore, getHighlightedText } from "$lib/chromey/messages"
 import { derived, get, writable } from "svelte/store"
-import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, requestedSync, sbLogger, syncBookmarks, typeCast, walker } from "shared"
+import { API_ADDRESS, DEBUG, NoteDeri, NoteSync, escapeRegExp, funErr, funLog, funLog2, funWarn, host, internalSearchParams, note_idKey, persisted, activeLoadsStore, sbLogger, syncBookmarks, typeCast, walker } from "shared"
 import type { Notes, PendingNote } from "shared"
 import { trpc2 } from "$lib/trpc-client"
 import type { Session } from "@supabase/supabase-js"
@@ -45,7 +45,7 @@ user_id.subscribe(onUser_idUpdate)
 //   return newSess
 // }
 const newNote = (n: PendingNote, windowId?: number) => {
-  setTimeout(syncBookmarksIfOn, 2000)
+  setTimeout(exportBookmarks, 2000)
   const panel = get(note_mut.panels).get(windowId || -1) || []
   const commonTags = pipe(panel,
     A.flatMap(x => x.tags),
@@ -122,8 +122,15 @@ const appRouter = (() => {
 })()
 export type AppRouter = typeof appRouter
 
-const syncBookmarksIfOn = () => get(requestedSync) && syncBookmarks(get(noteDeri.noteArr))
-setInterval(syncBookmarksIfOn, 60 * 1000) // sync every minute
+// Bookmark export is mandatory from 0.6.0 (v2.0 migrates to bookmarks as the only store).
+// Never export an empty or half-loaded store: syncBookmarks removes Faro bookmarks missing from `notes`.
+const exportBookmarks = () => {
+  const notes = get(noteDeri.noteArr)
+  if (!notes.length || get(activeLoadsStore) > 0) return
+  return syncBookmarks(notes).catch(err("exportBookmarks"))
+}
+setTimeout(exportBookmarks, 10 * 1000)
+setInterval(exportBookmarks, 60 * 1000) // sync every minute
 
 // @ts-expect-error
 createChromeHandler({
