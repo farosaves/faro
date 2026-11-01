@@ -63,7 +63,7 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
     return pipe(await storage?.getItem(key),
       E.fromNullable("not present key: " + key),
       E.chain(data => E.tryCatch(() => serializer.parse(data), x => x?.toString() || "unknown error")),
-      E.mapLeft(console.log),
+      E.mapLeft(() => null),
       O.fromEither)
   }
 

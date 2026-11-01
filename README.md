@@ -1,3 +1,11 @@
+# faro bookmark manager/highligter
+
+## development
+
+* 
+
+## v2.0
+
 This branch is a new extension built with the crxjs vite plugin.
 
 The change in version 2.0 is that the online functionality is going to be discontinued.
